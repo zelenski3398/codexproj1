@@ -9,7 +9,9 @@ off, bank over the fields, return, land and brake. No combat or paid assets.
 1. Install the standard **Godot 4.3 or newer** editor (not the .NET edition;
    tested with Godot 4.6.3).
 2. Import `project.godot` from this folder in Godot's project manager.
-3. Open the project and press **F5** (Run Project).
+3. Open the project and press **F5** (Run Project), then click inside the game
+   view so it receives keyboard input. Hold **W**; throttle should rise by
+   about 30 percentage points per second.
 
 The aircraft starts stationary, with all three wheels down, near the south end
 of the 1,800 m runway. The project uses the Compatibility renderer for broad PC
@@ -33,6 +35,19 @@ Source files created in the cloud must first be brought into your local checkout
 copied to `C:\firstcodexproj` automatically. Exporting a Windows executable is
 optional: install Godot's matching export templates, add a Windows Desktop
 preset in Project → Export, and export. No executable is included here.
+
+### Keyboard input in Godot's embedded game
+
+The controls are saved in Project → Project Settings → Input Map, with both
+physical-key and logical-key bindings. This also accepts keycode-only events
+forwarded by embedded/remote game views. Escape and R run before GUI navigation,
+including while paused; returning from a menu releases keyboard focus.
+
+After updating the project, stop the game and close/reopen the project to reload
+`project.godot`, press F5 and click inside the running game. If the editor still
+captures your keys, launch a separate game window (or `godot --path .`) and
+focus that window. Never use the visual-capture test script to play: it enables
+the automated pilot for screenshots. Use F5 / `main.tscn` for gameplay.
 
 ## Controls
 
@@ -119,6 +134,7 @@ From this project folder, import scripts once and run the integration suite:
 ```sh
 godot --headless --path . --editor --import --quit
 godot --headless --path . --fixed-fps 120 --script res://tests/flight_checks.gd
+godot --headless --path . --fixed-fps 120 --script res://tests/keyboard_checks.gd
 ```
 
 `flight_checks.gd` runs the real scene, rigid body, collision terrain, suspension
@@ -136,6 +152,15 @@ paused physics, hard-impact crashes, crash recovery and gear-up belly crashes.
 Left and right banks both turn the actual heading/velocity, manual rudder
 produces yaw, and fixture assertions confirm requested initial altitude/velocity.
 The camera also corrects a deliberately initialized below-terrain position.
+
+**Keyboard regression result: 24/24 passed.** These inject `InputEventKey`
+events through Godot's input pipeline, exercising physical and keycode-only
+events for throttle, both arrow/rudder directions, brakes, gear, reset and
+pause/resume. They check held throttle, key releases, auto-repeat and shortcuts
+with GUI focus. The previous physical-only bindings failed nine of these checks
+for keycode-only input. Native OS-level W, S, Escape pause/resume and R were also
+verified in a rendered X11 window (5/5 checks). Windows embedded input still
+requires confirmation on the user's machine.
 
 A rendered smoke check can also save runway, airborne and pause screenshots:
 

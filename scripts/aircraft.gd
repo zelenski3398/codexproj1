@@ -77,11 +77,11 @@ func _ready() -> void:
 	physics_material_override.bounce = 0.0
 	global_transform = Transform3D(Basis(Vector3.RIGHT, 0.117), reset_position)
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("reset"):
-		request_reset()
-	elif event.is_action_pressed("gear") and not is_crashed:
+func _input(event: InputEvent) -> void:
+	# HUD owns reset/pause. Discrete commands ignore OS key-repeat.
+	if event.is_action_pressed("gear") and not event.is_echo() and not is_crashed:
 		gear.toggle()
+		get_viewport().set_input_as_handled()
 
 func request_reset() -> void:
 	pending_reset_pose = Transform3D(Basis(Vector3.RIGHT, 0.117), reset_position)

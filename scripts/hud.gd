@@ -111,10 +111,12 @@ func _ready() -> void:
 	menu.add_child(_label(CONTROLS, 17, INK))
 	resume_button = Button.new()
 	resume_button.text = "RESUME FLIGHT  /  ESC"
-	resume_button.pressed.connect(func(): get_tree().paused = false)
+	resume_button.focus_mode = Control.FOCUS_NONE
+	resume_button.pressed.connect(_resume)
 	menu.add_child(resume_button)
 	var reset_button := Button.new()
 	reset_button.text = "RESET AT RUNWAY START  /  R"
+	reset_button.focus_mode = Control.FOCUS_NONE
 	reset_button.pressed.connect(_reset)
 	menu.add_child(reset_button)
 	overlay.visible = false
@@ -160,9 +162,14 @@ func _instrument(parent: HBoxContainer, title: String, value: String, unit: Stri
 	row.add_child(units)
 	return number
 
-func _unhandled_input(event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
+	# Handle flight shortcuts before GUI navigation can consume them. This
+	# CanvasLayer processes while paused, so Escape and R always remain usable.
+	if event.is_echo():
+		return
 	if event.is_action_pressed("pause"):
 		get_tree().paused = not get_tree().paused
+		get_viewport().gui_release_focus()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("reset"):
 		_reset()
@@ -170,7 +177,12 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _reset() -> void:
 	get_tree().paused = false
+	get_viewport().gui_release_focus()
 	aircraft.request_reset()
+
+func _resume() -> void:
+	get_tree().paused = false
+	get_viewport().gui_release_focus()
 
 func _process(delta: float) -> void:
 	if not is_instance_valid(aircraft):
@@ -203,6 +215,8 @@ func _process(delta: float) -> void:
 		help_label.text = "HOLD W TO SET POWER  ·  AT 160–180 KM/H, GENTLY HOLD ↓ TO LIFT OFF"
 	else:
 		help_label.text = "BANK TO TURN  ·  KEEP AIRSPEED ABOVE 140 KM/H  ·  LOWER GEAR BEFORE LANDING"
+	if not get_window().has_focus() and not aircraft.is_crashed and not get_tree().paused:
+		help_label.text = "CLICK INSIDE THE GAME VIEW TO FOCUS IT · THEN HOLD W TO SET POWER"
 	overlay.visible = get_tree().paused or aircraft.is_crashed
 	resume_button.disabled = aircraft.is_crashed
 	if overlay.visible:
