@@ -17,17 +17,17 @@ func _run() -> void:
 	aircraft.destroyed.connect(func(): destruction_count += 1)
 	await _frames(3)
 	_check(aircraft.health.hp == 100 and world.hud.hp_bar.value == 100 and world.hud.hp_label.text == "HP: 100/100", "Aircraft starts with 100 HP and visible numeric/bar health")
-	var ports := aircraft.model.gun_ports
+	var ports: Array[Marker3D] = aircraft.model.gun_ports
 	_check(ports.size() == 8, "Eight firing origins exist")
-	var correct := true
+	var correct: bool = true
 	for i in range(4):
-		var left := ports[i].position
-		var right := ports[i + 4].position
-		var t := absf(left.x) / 5.6
-		var edge := -0.35 + t * 0.45 - 2.35 * sqrt(1 - t * t) * 0.5
+		var left: Vector3 = ports[i].position
+		var right: Vector3 = ports[i + 4].position
+		var t: float = absf(left.x) / 5.6
+		var edge: float = -0.35 + t * 0.45 - 2.35 * sqrt(1 - t * t) * 0.5
 		correct = correct and left.x < -2 and right.x > 2 and absf(left.x + right.x) < 0.01 and absf(left.z - (edge - 0.08)) < 0.01
 	_check(correct, "Four symmetric ports per wing lie on the leading edge, not the nose")
-	var convergence := aircraft.global_position - aircraft.global_basis.z * aircraft.guns.convergence_distance
+	var convergence: Vector3 = aircraft.global_position - aircraft.global_basis.z * aircraft.guns.convergence_distance
 	_check(aircraft.guns.shot_direction(ports[0]).dot((convergence - ports[0].global_position).normalized()) > 0.9999, "Convergence directions aim toward the configured aircraft-relative point")
 	aircraft.guns.convergence_distance = 0
 	_check(aircraft.guns.shot_direction(ports[0]).dot(-aircraft.global_basis.z) > 0.9999, "Disabling convergence makes guns parallel")
@@ -46,7 +46,7 @@ func _run() -> void:
 	_key(KEY_LEFT, false)
 	_key(KEY_A, false)
 	await _frames(2)
-	var count := aircraft.guns.pool.total_spawned
+	var count: int = aircraft.guns.pool.total_spawned
 	await _frames(30)
 	_check(aircraft.guns.pool.total_spawned == count, "Releasing Ctrl stops firing")
 	_key(KEY_CTRL, true, true, false, true)
@@ -62,7 +62,7 @@ func _run() -> void:
 	aircraft.pilot.fire = true
 	aircraft.pilot.roll = 0.4
 	aircraft.pilot.throttle = 0.7
-	var starting_salvos := aircraft.guns.salvo_count
+	var starting_salvos: int = aircraft.guns.salvo_count
 	await _frames(150)
 	_check(absi(aircraft.guns.salvo_count - starting_salvos - roundi(aircraft.guns.rounds_per_second * 1.25)) <= 1, "Configured firing rate is maintained across physics ticks")
 	_check(absf(aircraft.global_basis.x.y) > 0.2 and aircraft.guns.pool.total_spawned > count + 80, "Aircraft banks physically while sustained guns keep firing")
@@ -76,7 +76,7 @@ func _run() -> void:
 	await _frames(90)
 	aircraft.pilot.fire = false
 	_check(world.practice_target.health.hp < 500 and aircraft.guns.pool.total_hits > 0, "Swept projectiles damage the airfield target")
-	var impact_visible := false
+	var impact_visible: bool = false
 	for spark in aircraft.guns.pool.sparks:
 		impact_visible = impact_visible or spark.visible
 	_check(impact_visible, "Hits display pooled world-space impact effects")
@@ -102,25 +102,25 @@ func _run() -> void:
 	_check(aircraft.health.hp == 50 and not aircraft.damage_effects.emitting and aircraft.damage_effects.active_count() == 0, "Exactly 50 HP: neither smoke nor fire emits")
 	aircraft.take_damage(1)
 	await _frames(60)
-	var smoke_visible := false
-	var flame_visible := false
+	var smoke_visible: bool = false
+	var flame_visible: bool = false
 	for i in range(aircraft.damage_effects.particles.size()):
 		if aircraft.damage_effects.particles[i].visible:
 			smoke_visible = smoke_visible or aircraft.damage_effects.is_smoke[i]
 			flame_visible = flame_visible or not aircraft.damage_effects.is_smoke[i]
 	_check(aircraft.health.hp == 49 and aircraft.damage_effects.emitting and smoke_visible and flame_visible, "49 HP starts both visible engine smoke and fire")
-	var low_intensity := aircraft.damage_effects.intensity
+	var low_intensity: float = aircraft.damage_effects.intensity
 	aircraft.take_damage(29)
 	_check(aircraft.damage_effects.intensity > low_intensity, "Damage effect intensity increases as HP decreases")
-	var smoke_index := -1
+	var smoke_index: int = -1
 	for i in range(aircraft.damage_effects.particles.size()):
 		if aircraft.damage_effects.particles[i].visible and aircraft.damage_effects.is_smoke[i]:
 			smoke_index = i
 			break
-	var particle_position := aircraft.damage_effects.particles[smoke_index].global_position
-	var plane_position := aircraft.global_position
+	var particle_position: Vector3 = aircraft.damage_effects.particles[smoke_index].global_position
+	var plane_position: Vector3 = aircraft.global_position
 	await _frames(12)
-	var smoke_travel := aircraft.damage_effects.particles[smoke_index].global_position.distance_to(particle_position)
+	var smoke_travel: float = aircraft.damage_effects.particles[smoke_index].global_position.distance_to(particle_position)
 	_check(aircraft.damage_effects.top_level and smoke_travel < aircraft.global_position.distance_to(plane_position) * 0.6, "Smoke remains behind the moving aircraft in world space")
 	aircraft.health.heal(30)
 	_check(aircraft.health.hp == 50 and not aircraft.damage_effects.emitting, "Healing to exactly 50 stops all new damage emission")
@@ -136,7 +136,7 @@ func _run() -> void:
 	aircraft.pilot.fire = true
 	aircraft.take_damage(999)
 	aircraft.take_damage(10)
-	var destroyed_y := aircraft.global_position.y
+	var destroyed_y: float = aircraft.global_position.y
 	await _frames(120)
 	_check(aircraft.health.hp == 0 and aircraft.is_destroyed and destruction_count == 1, "HP clamps at zero and destruction occurs exactly once")
 	_check(aircraft.pilot.throttle == 0 and aircraft.guns.pool.active.is_empty(), "Destroyed aircraft cannot fire or power its engine")
@@ -150,7 +150,7 @@ func _run() -> void:
 	aircraft.request_reset()
 	await _frames(5)
 	_check(aircraft.health.hp == 100 and not aircraft.is_destroyed and not aircraft.is_crashed, "Reset restores 100 HP and normal aircraft state")
-	var flashes_cleared := true
+	var flashes_cleared: bool = true
 	for flash in aircraft.guns.flashes:
 		flashes_cleared = flashes_cleared and not flash.visible
 	for spark in aircraft.guns.pool.sparks:
@@ -184,7 +184,7 @@ func _fixture(position: Vector3, velocity: Vector3) -> void:
 	await _frames(2) # allow trigger release to arm guns
 
 func _key(code: Key, pressed: bool, control: bool = false, echo: bool = false, logical_only: bool = false) -> void:
-	var event := InputEventKey.new()
+	var event: InputEventKey = InputEventKey.new()
 	event.physical_keycode = 0 if logical_only else code
 	event.keycode = code
 	event.ctrl_pressed = control or (code == KEY_CTRL and pressed)
