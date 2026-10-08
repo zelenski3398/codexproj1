@@ -13,6 +13,7 @@ func _run() -> void:
 	var world := scene.instantiate()
 	root.add_child(world)
 	aircraft = world.aircraft
+	world.enemy.ai.combat_enabled = false
 	aircraft.pilot.automated = true
 	await _frames(360)
 	_check(not aircraft.is_crashed, "Stationary aircraft survives suspension settling")

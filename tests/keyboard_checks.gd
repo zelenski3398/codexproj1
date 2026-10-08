@@ -13,6 +13,7 @@ func _run() -> void:
 	var world := (load("res://main.tscn") as PackedScene).instantiate()
 	root.add_child(world)
 	aircraft = world.aircraft
+	world.enemy.ai.combat_enabled = false
 	hud = world.hud
 	await _frames(3)
 	for physical in [true, false]:

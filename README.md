@@ -2,8 +2,8 @@
 
 A single-player 3D **Godot 4 / GDScript** flight prototype set at a fictional RAF
 countryside airfield in 1940. Fly a procedural Spitfire Mk I placeholder, take
-off, bank over the fields, return, land and brake. Eight wing guns, a practice
-target and aircraft health/damage effects are included. No paid assets.
+off, bank over the fields, return, land and brake. Eight wing guns, a flying
+Ju 87-inspired enemy that shoots back, and aircraft health/damage effects are included. No paid assets.
 
 ## Open and play
 
@@ -27,12 +27,12 @@ godot --path .
 On Windows, use your Godot executable path if `godot` is not on PATH, for example:
 
 ```powershell
-cd C:\firstcodexproj
+cd C:\firstcodexproj-latest
 & 'C:\Tools\Godot\Godot_v4.6.3-stable_win64.exe' --path . --editor
 ```
 
 To update your Windows checkout, stop Godot and run `git pull origin main`
-inside `C:\firstcodexproj`, then reopen the project. Adding Godot to PATH is
+inside `C:\firstcodexproj-latest`, then reopen the project. Adding Godot to PATH is
 optional and does not affect keyboard controls. Exporting a Windows executable
 is optional: install Godot's matching export templates, add a Windows Desktop
 preset in Project → Export, and export. No executable is included here.
@@ -63,13 +63,15 @@ the automated pilot for screenshots. Use F5 / `main.tscn` for gameplay.
 | G | Toggle landing gear; retraction is blocked with weight on wheels |
 | Space (hold) | Wheel brakes on the ground |
 | H | **TEMPORARY DEBUG**: remove 10 player HP per press (key repeat ignored) |
-| R | Reset at runway start: 100 HP, gear down, zero throttle, clean effects/bullets; also repair target |
+| R | Reset at runway start: 100 HP, gear down, zero throttle, clean effects/bullets; also restore the enemy and restart its airborne patrol |
 | Escape | Pause / resume and display full controls |
 
 The pause/crash panel also has clickable resume and reset buttons. The HUD
 shows airspeed in km/h, fuselage-centre altitude above the collision surface in
 metres, throttle, gear, heading, flight state, stall warning, a gun-convergence
-aim marker and a numeric **HP: 100/100** health bar. At rest, altitude
+aim marker and a numeric **HP: 100/100** health bar. An orange Stuka marker
+locates the enemy, with an edge cue when it is out of view; its HP, bearing,
+distance and AI state appear below your health bar. At rest, altitude
 is about 1 m because it measures the aircraft centre rather than wheel clearance.
 
 ## First circuit
@@ -94,7 +96,7 @@ is about 1 m because it measures the aircraft centre rather than wheel clearance
   gear shows a crash panel. Press R to try again. Wheel sink faster than
   5.5 m/s counts as a hard landing.
 
-## Guns, target and damage
+## Guns, enemy and damage
 
 Hold Ctrl while flying to fire **four guns per wing** from visible ports on the
 elliptical leading edges, following the requested eight-port Spitfire layout.
@@ -103,13 +105,31 @@ projects that point. Turning/banking changes the direction of newly fired rounds
 Existing rounds travel in world space. Throttle, arrows, rudder, gear, brakes,
 reset and pause keep their existing bindings and work while Ctrl is held.
 
-The large red/cream **PRACTICE TARGET** is beside the west side of the runway,
-left/ahead of the initial aircraft: world position **(-75, 12, 440)**. It has
-500 HP, a thin collision panel and a world-space HP label. Fly a shallow pass
-along its south-facing side and align the aiming marker with the bullseye before
-holding Ctrl. It does not shoot back. R repairs it. Projectiles also show impact
-sparks on terrain/buildings. The automated target test initializes an approach
-at (-75, 12, 620), facing -Z, then fires the actual guns at it.
+The stationary practice board has been replaced by a **Ju 87-inspired Stuka**
+with an original procedural model based on the supplied reference: inverted
+gull wings, long framed canopy, fixed wheel fairings, yellow cowling/fin and
+red spinner. It starts airborne at **(-450, 160, 0)** and circles the airfield.
+Both planes have **100 HP**, use the same damage/health effects, and can be
+shot down by the other's swept-collision bullets. The enemy has two forward
+wing guns with orange tracers, 6 rounds/sec per gun, 650 m/s bullet speed and
+2 damage/round. It fires 0.75-second bursts separated by 1.25-second rests.
+
+Take off, climb above 25 m and stay above 126 km/h. After eight seconds in this
+state, the enemy pursues within 1,800 m and fires within 650 m when its nose is
+within 6° of its predicted aim point. It does not attack while you are on the
+ground or after your aircraft is lost. Follow the marker, bank behind it and
+hold Ctrl with your aiming marker over the enemy. Bank to evade its return
+fire. Terrain/buildings obstruct both bullets and the enemy's sight line. The
+AI breaks away on very close passes to reduce head-on collisions. You can
+outpace this slower aircraft or return to land; it resumes patrol when you
+land. R restarts both aircraft and clears both sets of bullets/effects.
+
+The AI flies using **pilot commands and the same real rigid-body flight forces**;
+it never translates or rotates the aircraft directly during flight. It predicts
+interception using relative velocity (bullets inherit shooter velocity), with
+small aiming assistance limited to the 6° nose cone. Player guns retain their
+fixed wing convergence. This is a simple forgiving opponent, not authentic
+Stuka tactics; there is no rear gunner, bombing, AI takeoff or AI landing.
 
 Press H five times: the aircraft reaches **exactly 50 HP with no smoke/fire**.
 One more press reaches 40 HP and starts cowling smoke and fire. Emission density
@@ -129,8 +149,7 @@ crash state; the new HP state is independent of that crash detection.
 
 R immediately clears bullets, muzzle flashes, impact sparks and damage effects.
 If Ctrl is still held, release it and press again to resume firing safely.
-There are no enemy aircraft, weapon audio, recoil, ammunition limits or reloads
-in this milestone. Bullets use constant velocity (including inherited aircraft
+There is no weapon audio, recoil, ammunition limit or reload in this milestone. Bullets use constant velocity (including inherited aircraft
 velocity), without bullet gravity or wind; convergence is a visual/prototype
 approximation rather than a historical ballistic model.
 
@@ -143,7 +162,8 @@ Lift depends on forward airspeed and angle of attack, with a smooth stall
 falloff. Drag includes parasite, induced, stall and landing-gear drag. A simple
 fin force damps sideslip. Bank angle feeds a coordinated yaw torque; the banked
 lift and fin forces turn the actual velocity. Angular damping makes keyboard
-inputs manageable, but there is no altitude, heading or speed autopilot.
+inputs manageable, but the player has no altitude, heading or speed autopilot. The enemy controller
+sets its own pitch, roll, rudder and throttle commands.
 
 The main scripts are deliberately small separate components:
 
@@ -158,10 +178,13 @@ The main scripts are deliberately small separate components:
 | `scripts/airfield.gd` | Runway, terrain collision, rolling countryside, hangars, control tower, fields, trees and daylight |
 | `scripts/main.gd` | Connects the scene components |
 | `scripts/wing_guns.gd` | Eight-gun salvos: 12 rounds/sec **per gun**, 850 m/s bullet speed, 2 s lifetime, 4 damage/round, 250 m convergence, every fourth round a tracer; exported tuning values |
-| `scripts/projectile_pool.gd` | 384 fixed bullet slots, swept ray collision from previous to next position, shooter RID exclusion, 32 recycled impact flashes; mask 7 includes terrain/aircraft/target layers |
-| `scripts/health.gd` | Reusable HP, clamping, damage/heal/reset and one-shot depleted signal; player maximum 100, target maximum 500 |
+| `scripts/projectile_pool.gd` | 384 fixed bullet slots, swept ray collision from previous to next position, shooter RID exclusion, 32 recycled impact flashes; mask 7 includes terrain/player/enemy layers |
+| `scripts/health.gd` | Reusable HP, clamping, damage/heal/reset and one-shot depleted signal; both aircraft maximum 100 |
 | `scripts/damage_effects.gd` | 128 pooled CPU mesh particles; procedurally generated soft billboard smoke, flame spheres, intensity-driven emission, world-space lifetime; Compatibility/ANGLE-friendly, no GPU particles |
-| `scripts/practice_target.gd` | Damageable thin target with HP label, hit receiver, destroyed appearance and reset |
+| `scripts/enemy_aircraft.gd` | Enemy configuration using shared flight, health, effects and weapons; 26 m² wing area, 11,500 N thrust, separate collision layer and airborne reset |
+| `scripts/enemy_pilot.gd` | Force-driven patrol/pursuit/break-away pilot, speed/altitude control, intercept prediction, line of sight and firing bursts; exported speed 58 m/s, patrol radius 450 m, minimum desired height 65 m, detection 1,800 m, firing 650 m, cone 6°, grace 8 s |
+| `scripts/stuka_model.gd` | Original reference-inspired gull-wing/canopy/fixed-gear model and two leading-edge gun ports |
+| `scripts/practice_target.gd` | Thin stationary test fixture retained only for swept-collision regression checks |
 
 Defaults and `@export` properties can be adjusted in the scripts. To expose
 them directly in the Inspector, create a scene node with the relevant script
@@ -185,13 +208,16 @@ godot --headless --path . --editor --import --quit
 godot --headless --path . --fixed-fps 120 --script res://tests/flight_checks.gd
 godot --headless --path . --fixed-fps 120 --script res://tests/keyboard_checks.gd
 godot --headless --path . --fixed-fps 120 --script res://tests/weapons_checks.gd
+godot --headless --path . --fixed-fps 120 --script res://tests/enemy_checks.gd
 ```
 
 `flight_checks.gd` runs the real scene, rigid body, collision terrain, suspension
 and input commands. Its fixtures initialize approach/stall/crash situations;
 flight thereafter is integrated entirely by the live simulation. A failing
-assertion exits with code 1. The automated pilot used for takeoff/approach
-checks is only in the test script, not in gameplay.
+assertion exits with code 1. The player autopilot used for takeoff/approach checks is only in the test
+script; gameplay automation belongs solely to the enemy. Original regression
+suites disable enemy combat to isolate flight/input/weapon behavior. The enemy
+suite runs the live armed AI and both aircraft in the complete scene.
 
 **Current result: 35/35 integration checks passed on Godot 4.6.3.** These cover
 stable three-wheel parking, ground gear lock, takeoff/climb, held and adjusted
@@ -221,10 +247,20 @@ damage, bounded sustained-fire pooling, H press/repeat, 50 versus 49 HP,
 increasing emission, world-space smoke, healing and fade-out, clamping,
 one-shot destruction, thrust/gun lockout, physics-driven falling, destroyed HUD,
 and complete reset followed by restored throttle/fire. Together with flight and
-keyboard regressions, **95/95 checks pass on Godot 4.6.3**.
+keyboard regressions, **95/95 original checks pass on Godot 4.6.3**. The thin
+practice board is spawned only by the weapon test.
 
-A rendered check can save runway, airborne, 50-HP/no-effects, firing/damaged,
-pause, destroyed and reset screenshots:
+**Enemy result: 31/31 passed; all four suites total 126/126 on Godot 4.6.3.**
+The additional `enemy_checks.gd` suite verifies the reference-inspired model,
+separate input/collision ownership, stable 90-second physics patrol, ground
+protection, a 75-second pursuit from patrol, live projectile damage in both directions,
+airborne grace/rest/burst timing, owner exclusion, pause, shooting down either
+plane, falling wrecks, enemy defeat HUD, reset of both lives/bullet pools/trails,
+H/G/Ctrl isolation, obstacle line of sight, close-pass break-away and the actual
+R key after hostile destruction.
+
+A rendered check can save runway, airborne, enemy encounter/model close-up,
+50-HP/no-effects, firing/damaged, pause, destroyed and reset screenshots:
 
 ```sh
 godot --path . --audio-driver Dummy --fixed-fps 120 --script res://tests/visual_capture.gd -- /path/to/captures
@@ -232,11 +268,11 @@ godot --path . --audio-driver Dummy --fixed-fps 120 --script res://tests/visual_
 
 It requires a graphical display; `--headless` cannot validate rendering.
 The prototype was also launched with OpenGL Compatibility on a virtual X11
-display using Mesa software rendering. All seven frames were captured and
-inspected, including wing flashes/tracers, engine smoke/fire, the HP threshold,
-health bar, target, destroyed/reset UI and unchanged flight instruments.
+display using Mesa software rendering. Rendered frames were captured and inspected, including the Stuka model,
+enemy marker/HP/state, wing flashes/tracers, engine smoke/fire, the HP threshold,
+player health bar, destroyed/reset UI and flight instruments.
 Automated physics checks do not replace interactive playtesting. Keyboard
-handling feel, a player-flown full circuit, Windows hardware/performance and
+handling and dogfight difficulty, a player-flown full circuit, Windows hardware/performance and
 exported-executable behavior remain unverified. Windows ANGLE and Godot 4.7
 were not available for verification; the effects use only Compatibility-supported
 CPU mesh/sprite rendering, but should be checked on that actual configuration.
@@ -249,10 +285,11 @@ worktree is required.
 
 ## Known limitations and next steps
 
-* No enemy aircraft/AI, multiplayer, campaign, per-part damage or complex menus.
-* Meshes, buildings and camouflage are simple original placeholders. No image
-  reference was available in the cloud conversation, so the model uses the
-  Spitfire's familiar elliptical-wing silhouette rather than matching a photo.
+* One simple AI opponent; no multiplayer, campaign, per-part damage, AI landing,
+  rear gunner, ammunition management or complex menus.
+* Meshes, buildings and camouflage are simple original placeholders. The
+  Spitfire uses its familiar elliptical-wing silhouette; the Stuka follows
+  the supplied photograph with approximate proportions and detail.
 * No wind, engine audio, tyre audio, propwash, ground effect, flap controls,
   fuel, historical engine dynamics, wheel rotation, or gradual gear animation.
 * Terrain is a finite 10 × 10 km patch with coarse rolling hills. Stay within
@@ -263,5 +300,4 @@ worktree is required.
   predictable approach surface. Hard wing contact is intentionally fatal.
 
 The aircraft's local **-Z** axis is forward, +Y up, +X right, leaving a clear
-place for future enemy aircraft without coupling them to input, camera or HUD
-code. The eight wing markers are now the authoritative gun origins.
+shared coordinate convention for player and enemy physics and weapons. The eight wing markers are now the authoritative gun origins.

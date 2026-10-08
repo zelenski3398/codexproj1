@@ -2,6 +2,7 @@ extends SceneTree
 ## Live scene integration: swept collision, real key events, bounded pools,
 ## health thresholds, engine-off physics, and reset of all new components.
 var aircraft: FlightAircraft
+var practice_target: PracticeTarget
 var world: Node3D
 var failures: int = 0
 var checks: int = 0
@@ -14,6 +15,11 @@ func _run() -> void:
 	world = (load("res://main.tscn") as PackedScene).instantiate()
 	root.add_child(world)
 	aircraft = world.aircraft
+	world.enemy.ai.combat_enabled = false
+	# Thin stationary panel is a test fixture only; gameplay uses a flying enemy.
+	practice_target = PracticeTarget.new()
+	world.add_child(practice_target)
+	aircraft.reset_completed.connect(practice_target.reset_target)
 	aircraft.destroyed.connect(func(): destruction_count += 1)
 	await _frames(3)
 	_check(aircraft.health.hp == 100 and world.hud.hp_bar.value == 100 and world.hud.hp_label.text == "HP: 100/100", "Aircraft starts with 100 HP and visible numeric/bar health")
@@ -75,17 +81,17 @@ func _run() -> void:
 	aircraft.pilot.fire = true
 	await _frames(90)
 	aircraft.pilot.fire = false
-	_check(world.practice_target.health.hp < 500 and aircraft.guns.pool.total_hits > 0, "Swept projectiles damage the airfield target")
+	_check(practice_target.health.hp < 500 and aircraft.guns.pool.total_hits > 0, "Swept projectiles damage the airfield target")
 	var impact_visible: bool = false
 	for spark in aircraft.guns.pool.sparks:
 		impact_visible = impact_visible or spark.visible
 	_check(impact_visible, "Hits display pooled world-space impact effects")
 	# Explicit overshoot: a single 30,000 m/s step crosses the whole thin target.
-	var before: float = world.practice_target.health.hp
+	var before: float = practice_target.health.hp
 	aircraft.guns.pool.clear()
 	aircraft.guns.pool.spawn(Vector3(-75, 12, 450), Vector3(0, 0, -30000), 1.0, 7.0, aircraft.get_rid(), true)
 	await _frames(3)
-	_check(world.practice_target.health.hp == before - 7, "Very fast bullets cannot tunnel and apply their configured damage exactly")
+	_check(practice_target.health.hp == before - 7, "Very fast bullets cannot tunnel and apply their configured damage exactly")
 	# Reset, then exercise H as a press/release key (repeat must do nothing).
 	await _fixture(Vector3(0, 100, 620), Vector3(0, 0, -55))
 	aircraft.pilot.automated = false
@@ -156,7 +162,7 @@ func _run() -> void:
 	for spark in aircraft.guns.pool.sparks:
 		flashes_cleared = flashes_cleared and not spark.visible
 	_check(aircraft.guns.pool.active.is_empty() and flashes_cleared and aircraft.damage_effects.active_count() == 0 and not aircraft.damage_effects.emitting, "Reset immediately clears bullets, flashes and damage effects")
-	_check(world.practice_target.health.hp == 500, "Reset also repairs the practice target")
+	_check(practice_target.health.hp == 500, "Reset also repairs the practice target")
 	aircraft.pilot.automated = false
 	_key(KEY_CTRL, false)
 	await _frames(2)

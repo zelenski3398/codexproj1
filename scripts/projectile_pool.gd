@@ -19,11 +19,13 @@ var impact_cursor: int = 0
 var total_spawned: int = 0
 var total_hits: int = 0
 var dropped_rounds: int = 0
+var tracer_material: StandardMaterial3D
 
 func _ready() -> void:
 	top_level = true
 	global_transform = Transform3D.IDENTITY
 	var tracer_mat := MeshKit.material(Color("ffdb85"))
+	tracer_material = tracer_mat
 	tracer_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	var tracer_mesh := BoxMesh.new()
 	tracer_mesh.size = Vector3(0.035, 0.035, 3.2)

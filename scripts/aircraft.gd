@@ -21,6 +21,7 @@ signal destroyed
 @export var coordinated_turn: float = 1.4
 @export var angular_response: float = 3.5
 @export var reset_position: Vector3 = Vector3(0.0, 1.18, 650.0)
+@export var collision_wing_span: float = 9.8
 
 var pilot: PilotInput
 var gear: LandingGear
@@ -61,7 +62,7 @@ func _ready() -> void:
 	gear = LandingGear.new()
 	gear.name = "LandingGear"
 	add_child(gear)
-	model = SpitfireModel.new()
+	model = create_model()
 	add_child(model)
 	health = AircraftHealth.new()
 	health.name = "Health"
@@ -86,7 +87,7 @@ func _ready() -> void:
 	add_child(collider)
 	var wings := CollisionShape3D.new()
 	var box := BoxShape3D.new()
-	box.size = Vector3(9.8, 0.12, 1.3)
+	box.size = Vector3(collision_wing_span, 0.12, 1.3)
 	wings.shape = box
 	wings.position = Vector3(0.0, -0.12, -0.25)
 	add_child(wings)
@@ -94,6 +95,9 @@ func _ready() -> void:
 	physics_material_override.friction = 0.55
 	physics_material_override.bounce = 0.0
 	global_transform = Transform3D(Basis(Vector3.RIGHT, 0.117), reset_position)
+
+func create_model() -> SpitfireModel:
+	return SpitfireModel.new()
 
 func _input(event: InputEvent) -> void:
 	# HUD owns reset/pause. Discrete commands ignore OS key-repeat.

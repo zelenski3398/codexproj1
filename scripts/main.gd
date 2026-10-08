@@ -2,7 +2,7 @@ extends Node3D
 var aircraft: FlightAircraft
 var chase: ChaseCamera
 var hud: FlightHUD
-var practice_target: PracticeTarget
+var enemy: EnemyAircraft
 
 func _ready() -> void:
 	var field := Airfield.new()
@@ -11,10 +11,12 @@ func _ready() -> void:
 	aircraft = FlightAircraft.new()
 	aircraft.name = "Spitfire"
 	add_child(aircraft)
-	practice_target = PracticeTarget.new()
-	practice_target.name = "PracticeTarget"
-	add_child(practice_target)
-	aircraft.reset_completed.connect(practice_target.reset_target)
+	enemy = EnemyAircraft.new()
+	enemy.name = "EnemyStuka"
+	enemy.target = aircraft
+	add_child(enemy)
+	aircraft.collision_mask = 5 # terrain and enemy airframes
+	aircraft.reset_completed.connect(enemy.reset_encounter)
 	chase = ChaseCamera.new()
 	chase.name = "ChaseCamera"
 	chase.aircraft = aircraft
@@ -22,5 +24,6 @@ func _ready() -> void:
 	aircraft.reset_completed.connect(chase.snap)
 	hud = FlightHUD.new()
 	hud.aircraft = aircraft
+	hud.enemy = enemy
 	add_child(hud)
 

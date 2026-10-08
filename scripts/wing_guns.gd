@@ -13,6 +13,10 @@ var flash_times: Array[float] = []
 var flashes: Array[MeshInstance3D] = []
 var salvo_count: int = 0
 var trigger_ready: bool = true
+## AI only: small, bounded aiming assistance; player guns keep fixed convergence.
+var use_assisted_aim: bool = false
+var assisted_aim: Vector3 = Vector3.ZERO
+@export var max_assist_degrees: float = 6.0
 
 func _ready() -> void:
 	pool = ProjectilePool.new()
@@ -50,6 +54,10 @@ func _physics_process(delta: float) -> void:
 
 func shot_direction(port: Marker3D) -> Vector3:
 	var forward: Vector3 = -aircraft.global_basis.z.normalized()
+	if use_assisted_aim:
+		var aim_direction: Vector3 = (assisted_aim - aircraft.global_position).normalized()
+		if forward.angle_to(aim_direction) <= deg_to_rad(max_assist_degrees):
+			return (assisted_aim - port.global_position).normalized()
 	if convergence_distance <= 0.0:
 		return forward
 	var aim: Vector3 = aircraft.global_position + forward * convergence_distance
@@ -66,6 +74,7 @@ func _fire_salvo() -> void:
 
 func reset() -> void:
 	pool.clear()
+	use_assisted_aim = false
 	cooldown = 0.0
 	# Avoid a held Ctrl immediately spawning new rounds in the reset frame.
 	trigger_ready = false

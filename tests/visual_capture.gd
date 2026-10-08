@@ -15,6 +15,7 @@ func _run() -> void:
 	world = (load("res://main.tscn") as PackedScene).instantiate()
 	root.add_child(world)
 	aircraft = world.aircraft
+	world.enemy.ai.combat_enabled = false
 	aircraft.pilot.automated = true
 	for i in range(120):
 		await physics_frame
@@ -30,6 +31,26 @@ func _run() -> void:
 	for i in range(90):
 		await physics_frame
 	await _capture("airborne")
+	# Controlled encounter view, then a paused model inspection camera.
+	world.enemy.request_reset()
+	world.enemy.pending_reset_pose = Transform3D(Basis(Vector3.FORWARD, -0.15), aircraft.global_position + Vector3(14, 3, -48))
+	world.enemy.pending_reset_velocity = Vector3(0, 0, -58)
+	for i in range(5):
+		await physics_frame
+	await _capture("enemy_encounter")
+	paused = true
+	world.hud.visible = false
+	var inspection: Camera3D = Camera3D.new()
+	inspection.fov = 45.0
+	world.add_child(inspection)
+	inspection.global_position = world.enemy.global_position + Vector3(13, 6, -14)
+	inspection.look_at(world.enemy.global_position)
+	inspection.make_current()
+	await _capture("stuka_reference_model")
+	inspection.queue_free()
+	world.chase.make_current()
+	world.hud.visible = true
+	paused = false
 	print("Rendered flight altitude: ", aircraft.altitude)
 	aircraft.take_damage(50)
 	await _capture("hp50_no_effects")

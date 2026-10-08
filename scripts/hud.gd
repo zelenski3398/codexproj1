@@ -4,8 +4,11 @@ const INK := Color("e9e8d7")
 const MUTED := Color("abb8ad")
 const GOLD := Color("e4bf75")
 const PANEL := Color(0.055, 0.09, 0.085, 0.90)
-const CONTROLS := "↑ / ↓   Nose down / up\n← / →   Bank left / right\nA / D   Rudder left / right\nW / S   Increase / decrease throttle\nCTRL (hold)   Eight wing guns\nG   Toggle landing gear\nSPACE   Hold wheel brakes\nH   DEBUG: remove 10 HP\nR   Reset aircraft / target\nESC   Pause / controls"
+const CONTROLS := "↑ / ↓   Nose down / up\n← / →   Bank left / right\nA / D   Rudder left / right\nW / S   Increase / decrease throttle\nCTRL (hold)   Eight wing guns\nG   Toggle landing gear\nSPACE   Hold wheel brakes\nH   DEBUG: remove 10 HP\nR   Reset both aircraft\nESC   Pause / controls"
 var aircraft: FlightAircraft
+var enemy: EnemyAircraft
+var enemy_label: Label
+var enemy_marker: Label
 var speed_label: Label
 var altitude_label: Label
 var throttle_label: Label
@@ -33,6 +36,9 @@ func _ready() -> void:
 	aim_marker = _label("⊕", 26, GOLD)
 	aim_marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(aim_marker)
+	enemy_marker = _label("◇ STUKA", 16, Color("ff946a"))
+	enemy_marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(enemy_marker)
 	var masthead := PanelContainer.new()
 	masthead.position = Vector2(26, 18)
 	masthead.add_theme_stylebox_override("panel", _style(Color(0.055, 0.09, 0.085, 0.76), 12))
@@ -41,7 +47,7 @@ func _ready() -> void:
 	masthead.add_child(header)
 	header.add_child(_label("R A F   /   S O U T H E R N   E N G L A N D   /   1 9 4 0", 12, MUTED))
 	header.add_child(_label("FIRST SORTIE", 34, INK))
-	header.add_child(_label("SPITFIRE Mk I     ·     FLIGHT TRIAL", 13, GOLD))
+	header.add_child(_label("SPITFIRE Mk I     ·     AIRFIELD ENCOUNTER", 13, GOLD))
 	var status_panel := PanelContainer.new()
 	status_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 	status_panel.offset_left = -310
@@ -69,6 +75,8 @@ func _ready() -> void:
 	hp_fill = _style(Color("88b279"), 0)
 	hp_bar.add_theme_stylebox_override("fill", hp_fill)
 	top_right.add_child(hp_bar)
+	enemy_label = _label("STUKA · PATROL", 13, Color("ff946a"))
+	top_right.add_child(enemy_label)
 	var footer := MarginContainer.new()
 	footer.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	footer.offset_left = 38
@@ -219,6 +227,7 @@ func _process(delta: float) -> void:
 	aim_marker.visible = camera != null and not camera.is_position_behind(aim) and not aircraft.is_destroyed and not aircraft.is_crashed and not get_tree().paused
 	if aim_marker.visible:
 		aim_marker.position = camera.unproject_position(aim) - aim_marker.size * 0.5
+	_update_enemy(camera)
 	gear_label.modulate = GOLD if not aircraft.gear.extended else Color.WHITE
 	var heading := fposmod(rad_to_deg(atan2(-aircraft.global_basis.z.x, aircraft.global_basis.z.z)), 360.0)
 	heading_label.text = "HDG %03d°    ·    RUNWAY 18 / 36" % roundi(heading)
@@ -237,6 +246,11 @@ func _process(delta: float) -> void:
 		notice_label.text = "STALL WARNING   /   NOSE DOWN · ADD POWER"
 	elif not aircraft.gear.last_notice.is_empty():
 		notice_label.text = aircraft.gear.last_notice
+	elif is_instance_valid(enemy) and not aircraft.is_destroyed and not aircraft.is_crashed:
+		if enemy.is_destroyed or enemy.is_crashed:
+			notice_label.text = "ENEMY DOWN · R TO RESTART THE ENCOUNTER"
+		elif enemy.pilot.fire:
+			notice_label.text = "INCOMING FIRE · BANK TO EVADE"
 	if aircraft.is_destroyed:
 		help_label.text = "AIRCRAFT DESTROYED · ENGINE AND GUNS OFF · PRESS R TO RESET"
 	elif aircraft.is_crashed:
@@ -244,7 +258,7 @@ func _process(delta: float) -> void:
 	elif aircraft.gear.contact_count > 0:
 		help_label.text = "HOLD W TO SET POWER  ·  AT 160–180 KM/H, GENTLY HOLD ↓ TO LIFT OFF"
 	else:
-		help_label.text = "BANK TO TURN  ·  KEEP AIRSPEED ABOVE 140 KM/H  ·  LOWER GEAR BEFORE LANDING"
+		help_label.text = "CTRL  FIRE · FOLLOW THE STUKA MARKER · KEEP AIRSPEED ABOVE 140 KM/H"
 	if not get_window().has_focus() and not aircraft.is_crashed and not aircraft.is_destroyed and not get_tree().paused:
 		help_label.text = "CLICK INSIDE THE GAME VIEW TO FOCUS IT · THEN HOLD W TO SET POWER"
 	overlay.visible = get_tree().paused or aircraft.is_crashed or aircraft.is_destroyed
@@ -252,3 +266,30 @@ func _process(delta: float) -> void:
 	if overlay.visible:
 		overlay_title.text = "DESTROYED" if aircraft.is_destroyed else ("AIRCRAFT LOST" if aircraft.is_crashed else "PAUSED")
 		overlay_detail.text = "0 HP · engine and guns disabled.\nPress R for a fresh aircraft." if aircraft.is_destroyed else (aircraft.crash_reason + "\nPress R for a fresh aircraft." if aircraft.is_crashed else "Take your time. The aircraft is waiting.")
+
+func _update_enemy(camera: Camera3D) -> void:
+	enemy_marker.visible = false
+	if not is_instance_valid(enemy):
+		return
+	var delta: Vector3 = enemy.global_position - aircraft.global_position
+	var bearing: float = fposmod(rad_to_deg(atan2(delta.x, -delta.z)), 360.0)
+	enemy_label.text = "STUKA %d HP · %03d° · %d m\n%s" % [ceili(enemy.health.hp), roundi(bearing), roundi(delta.length()), enemy.ai.mode]
+	if enemy.is_destroyed or enemy.is_crashed:
+		enemy_label.text = "STUKA DOWN · R FOR A NEW ENCOUNTER"
+		return
+	if camera == null or get_tree().paused or aircraft.is_destroyed or aircraft.is_crashed:
+		return
+	# Keep a directional cue at screen edges even when the enemy is behind us.
+	var screen: Vector2 = get_viewport().get_visible_rect().size
+	var local: Vector3 = camera.to_local(enemy.global_position)
+	var projected: Vector2 = screen * 0.5
+	if local.z > -0.1:
+		projected = screen * 0.5 + Vector2(local.x, -local.y).normalized() * screen.length()
+		if absf(local.x) < 0.001 and absf(local.y) < 0.001:
+			projected = Vector2(screen.x - 60, screen.y * 0.5)
+	else:
+		projected = camera.unproject_position(enemy.global_position)
+	var in_view: bool = local.z < -0.1 and Rect2(Vector2(60, 180), screen - Vector2(180, 340)).has_point(projected)
+	enemy_marker.text = "◇ STUKA  %d m" % roundi(delta.length()) if in_view else "STUKA →" if projected.x > screen.x / 2 else "← STUKA"
+	enemy_marker.position = Vector2(clampf(projected.x - 50, 20, screen.x - 170), clampf(projected.y - 20, 190, screen.y - 170))
+	enemy_marker.visible = true
