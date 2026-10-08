@@ -9,6 +9,7 @@ var roll: float = 0.0
 var rudder: float = 0.0
 var brakes: bool = false
 var automated: bool = false
+var fire: bool = false
 
 # Bindings live in project.godot so the editor and embedded game share them.
 # Each action accepts physical keys and keycode-only forwarded events.
@@ -21,6 +22,7 @@ func sample(delta: float) -> void:
 	rudder = Input.get_axis("rudder_right", "rudder_left")
 	throttle = clampf(throttle + Input.get_axis("throttle_down", "throttle_up") * throttle_rate * delta, 0.0, 1.0)
 	brakes = Input.is_action_pressed("brake")
+	fire = Input.is_action_pressed("fire")
 
 func reset_commands() -> void:
 	throttle = 0.0
@@ -28,3 +30,4 @@ func reset_commands() -> void:
 	roll = 0.0
 	rudder = 0.0
 	brakes = false
+	fire = false

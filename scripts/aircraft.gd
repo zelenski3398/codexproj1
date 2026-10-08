@@ -2,6 +2,7 @@ class_name FlightAircraft
 extends RigidBody3D
 signal crashed(reason: String)
 signal reset_completed
+signal destroyed
 
 @export_group("Aerodynamics")
 @export var wing_area: float = 22.5
@@ -24,6 +25,10 @@ signal reset_completed
 var pilot: PilotInput
 var gear: LandingGear
 var model: SpitfireModel
+var health: AircraftHealth
+var guns: WingGuns
+var damage_effects: DamageEffects
+var is_destroyed: bool = false
 var airspeed: float = 0.0
 var altitude: float = 0.0
 var angle_of_attack: float = 0.0
@@ -58,6 +63,19 @@ func _ready() -> void:
 	add_child(gear)
 	model = SpitfireModel.new()
 	add_child(model)
+	health = AircraftHealth.new()
+	health.name = "Health"
+	add_child(health)
+	damage_effects = DamageEffects.new()
+	damage_effects.aircraft = self
+	damage_effects.name = "EngineDamageEffects"
+	add_child(damage_effects)
+	health.changed.connect(damage_effects.set_health)
+	health.depleted.connect(_destroy)
+	guns = WingGuns.new()
+	guns.aircraft = self
+	guns.name = "EightWingGuns"
+	add_child(guns)
 	var collider := CollisionShape3D.new()
 	var shape := CapsuleShape3D.new()
 	shape.radius = 0.46
@@ -79,9 +97,24 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	# HUD owns reset/pause. Discrete commands ignore OS key-repeat.
-	if event.is_action_pressed("gear") and not event.is_echo() and not is_crashed:
+	if event.is_action_pressed("gear") and not event.is_echo() and not is_crashed and not is_destroyed:
 		gear.toggle()
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("debug_damage") and not event.is_echo():
+		# Temporary development key; one hit per press, never OS repeat.
+		take_damage(10.0)
+		get_viewport().set_input_as_handled()
+
+func take_damage(amount: float) -> void:
+	health.take_damage(amount)
+
+func _destroy() -> void:
+	if is_destroyed:
+		return
+	is_destroyed = true
+	pilot.reset_commands()
+	guns.reset()
+	destroyed.emit()
 
 func request_reset() -> void:
 	pending_reset_pose = Transform3D(Basis(Vector3.RIGHT, 0.117), reset_position)
@@ -98,6 +131,10 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		gear.contact_count = 0
 		gear.last_notice = ""
 		is_crashed = false
+		is_destroyed = false
+		health.reset()
+		guns.reset()
+		damage_effects.clear()
 		crash_reason = ""
 		stalled = false
 		airborne_time = 0.0
@@ -106,6 +143,8 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		return
 	var dt := state.step
 	pilot.sample(dt)
+	if is_destroyed:
+		pilot.reset_commands()
 	var basis := state.transform.basis.orthonormalized()
 	var velocity := state.linear_velocity
 	airspeed = velocity.length()
@@ -113,7 +152,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	var forward_speed := maxf(-local_velocity.z, 0.0)
 	angle_of_attack = atan2(-local_velocity.y, maxf(forward_speed, 0.1))
 	_update_altitude(state.transform.origin)
-	var sink := gear.integrate(state, self, pilot.brakes or is_crashed)
+	var sink := gear.integrate(state, self, pilot.brakes or is_crashed or is_destroyed)
 	if gear.contact_count == 0:
 		airborne_time += dt
 	else:
@@ -121,7 +160,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 			_crash("Hard landing · excessive sink rate")
 		airborne_time = 0.0
 	# Body and wing collision catch belly landings, terrain, and buildings.
-	if state.get_contact_count() > 0 and not is_crashed:
+	if state.get_contact_count() > 0 and not is_crashed and not is_destroyed:
 		for i in range(state.get_contact_count()):
 			var impact := state.get_contact_local_velocity_at_position(i).length()
 			if not gear.extended or impact > 9.0 or gear.contact_count == 0:
@@ -149,13 +188,17 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	state.apply_central_force(-direction * 0.5 * air_density * airspeed * airspeed * wing_area * drag_coefficient)
 	# Propeller thrust loses effectiveness with speed; no velocity cap or
 	# direct transform movement is used in normal flight.
-	var thrust := engine_thrust * pilot.throttle / (1.0 + forward_speed / 130.0)
+	var thrust := engine_thrust * pilot.throttle / (1.0 + forward_speed / 130.0) if not is_destroyed else 0.0
 	state.apply_central_force(-basis.z * thrust)
 	# Vertical fin resists sideslip. Forces change the actual travel direction.
 	state.apply_central_force(-basis.x * local_velocity.x * (180.0 + forward_speed * 22.0))
 	var authority := clampf(forward_speed / 45.0, 0.12, 1.5)
 	var local_omega := basis.transposed() * state.angular_velocity
 	var torque := Vector3(pilot.pitch * pitch_torque, pilot.rudder * rudder_torque, pilot.roll * roll_torque) * authority
+	if is_destroyed:
+		# Dead engine/controls, but passive lift, drag, gravity and angular
+		# stability still act. Do not freeze or scripted-translate the wreck.
+		torque = Vector3.ZERO
 	# Mild weathercock stability and nose-down stall tendency, not an autopilot.
 	if gear.contact_count == 0:
 		torque.x += -angle_of_attack * 5500.0 * authority - stall_blend * 8000.0
@@ -179,7 +222,7 @@ func _update_altitude(origin: Vector3) -> void:
 	altitude = maxf(origin.y - float(hit.position.y), 0.0) if not hit.is_empty() else maxf(origin.y, 0.0)
 
 func _crash(reason: String) -> void:
-	if is_crashed:
+	if is_crashed or is_destroyed:
 		return
 	is_crashed = true
 	crash_reason = reason
@@ -187,4 +230,4 @@ func _crash(reason: String) -> void:
 	crashed.emit(reason)
 
 func _process(delta: float) -> void:
-	model.animate(delta, pilot.throttle, gear, is_crashed)
+	model.animate(delta, pilot.throttle, gear, is_crashed or is_destroyed)

@@ -4,7 +4,7 @@ const INK := Color("e9e8d7")
 const MUTED := Color("abb8ad")
 const GOLD := Color("e4bf75")
 const PANEL := Color(0.055, 0.09, 0.085, 0.90)
-const CONTROLS := "↑ / ↓   Nose down / up\n← / →   Bank left / right\nA / D   Rudder left / right\nW / S   Increase / decrease throttle\nG   Toggle landing gear\nSPACE   Hold wheel brakes\nR   Reset at runway start\nESC   Pause / controls"
+const CONTROLS := "↑ / ↓   Nose down / up\n← / →   Bank left / right\nA / D   Rudder left / right\nW / S   Increase / decrease throttle\nCTRL (hold)   Eight wing guns\nG   Toggle landing gear\nSPACE   Hold wheel brakes\nH   DEBUG: remove 10 HP\nR   Reset aircraft / target\nESC   Pause / controls"
 var aircraft: FlightAircraft
 var speed_label: Label
 var altitude_label: Label
@@ -19,6 +19,10 @@ var overlay_title: Label
 var overlay_detail: Label
 var resume_button: Button
 var elapsed: float = 0.0
+var hp_label: Label
+var hp_bar: ProgressBar
+var aim_marker: Label
+var hp_fill: StyleBoxFlat
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -26,6 +30,9 @@ func _ready() -> void:
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
+	aim_marker = _label("⊕", 26, GOLD)
+	aim_marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(aim_marker)
 	var masthead := PanelContainer.new()
 	masthead.position = Vector2(26, 18)
 	masthead.add_theme_stylebox_override("panel", _style(Color(0.055, 0.09, 0.085, 0.76), 12))
@@ -51,6 +58,17 @@ func _ready() -> void:
 	heading_label = _label("", 13, MUTED)
 	heading_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	top_right.add_child(heading_label)
+	hp_label = _label("HP: 100/100", 20, INK)
+	top_right.add_child(hp_label)
+	hp_bar = ProgressBar.new()
+	hp_bar.max_value = 100
+	hp_bar.value = 100
+	hp_bar.show_percentage = false
+	hp_bar.custom_minimum_size = Vector2(230, 14)
+	hp_bar.add_theme_stylebox_override("background", _style(Color("28332d"), 0))
+	hp_fill = _style(Color("88b279"), 0)
+	hp_bar.add_theme_stylebox_override("fill", hp_fill)
+	top_right.add_child(hp_bar)
 	var footer := MarginContainer.new()
 	footer.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	footer.offset_left = 38
@@ -74,14 +92,14 @@ func _ready() -> void:
 	strip.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
 	strip.offset_left = -402
 	strip.offset_right = -38
-	strip.offset_top = -318
+	strip.offset_top = -355
 	strip.offset_bottom = -155
 	strip.add_theme_stylebox_override("panel", _style(PANEL))
 	root.add_child(strip)
 	var list := VBoxContainer.new()
 	strip.add_child(list)
 	list.add_child(_label("PILOT NOTES", 12, GOLD))
-	list.add_child(_label("ARROWS  Pitch / bank     A / D  Rudder\nW / S  Throttle     G  Gear     SPACE  Brakes\nR  Reset     ESC  Pause & full controls", 13, INK))
+	list.add_child(_label("ARROWS  Pitch / bank     A / D  Rudder\nW / S  Throttle     G  Gear     SPACE  Brakes\nCTRL (hold)  Wing guns\nH  DEBUG: −10 HP     R  Reset     ESC  Pause", 13, INK))
 	list.add_child(_label("APPROACH  155–180 km/h · gear down\nFlare gently · aim for less than 3 m/s sink", 12, MUTED))
 	notice_label = _label("", 16, GOLD)
 	notice_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
@@ -95,8 +113,8 @@ func _ready() -> void:
 	overlay.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	overlay.offset_left = -290
 	overlay.offset_right = 290
-	overlay.offset_top = -285
-	overlay.offset_bottom = 285
+	overlay.offset_top = -330
+	overlay.offset_bottom = 330
 	overlay.add_theme_stylebox_override("panel", _style(Color(0.035, 0.06, 0.055, 0.97), 28))
 	root.add_child(overlay)
 	var menu := VBoxContainer.new()
@@ -193,10 +211,20 @@ func _process(delta: float) -> void:
 	altitude_label.text = "%04d" % roundi(aircraft.altitude)
 	throttle_label.text = "%d" % roundi(aircraft.pilot.throttle * 100.0)
 	gear_label.text = "DOWN" if aircraft.gear.extended else "UP"
+	hp_label.text = "HP: %d/%d" % [floori(aircraft.health.hp), roundi(aircraft.health.max_hp)]
+	hp_bar.value = aircraft.health.hp
+	hp_fill.bg_color = Color("db744d") if aircraft.health.hp < 50.0 else Color("88b279")
+	var camera := get_viewport().get_camera_3d()
+	var aim := aircraft.global_position - aircraft.global_basis.z * maxf(aircraft.guns.convergence_distance, 250.0)
+	aim_marker.visible = camera != null and not camera.is_position_behind(aim) and not aircraft.is_destroyed and not aircraft.is_crashed and not get_tree().paused
+	if aim_marker.visible:
+		aim_marker.position = camera.unproject_position(aim) - aim_marker.size * 0.5
 	gear_label.modulate = GOLD if not aircraft.gear.extended else Color.WHITE
 	var heading := fposmod(rad_to_deg(atan2(-aircraft.global_basis.z.x, aircraft.global_basis.z.z)), 360.0)
 	heading_label.text = "HDG %03d°    ·    RUNWAY 18 / 36" % roundi(heading)
-	if aircraft.is_crashed:
+	if aircraft.is_destroyed:
+		state_label.text = "DESTROYED · R TO RESET"
+	elif aircraft.is_crashed:
 		state_label.text = "AIRCRAFT LOST"
 	elif aircraft.stalled:
 		state_label.text = "STALL · LOWER THE NOSE"
@@ -209,16 +237,18 @@ func _process(delta: float) -> void:
 		notice_label.text = "STALL WARNING   /   NOSE DOWN · ADD POWER"
 	elif not aircraft.gear.last_notice.is_empty():
 		notice_label.text = aircraft.gear.last_notice
-	if aircraft.is_crashed:
+	if aircraft.is_destroyed:
+		help_label.text = "AIRCRAFT DESTROYED · ENGINE AND GUNS OFF · PRESS R TO RESET"
+	elif aircraft.is_crashed:
 		help_label.text = "AIRCRAFT LOST · PRESS R TO RESET"
 	elif aircraft.gear.contact_count > 0:
 		help_label.text = "HOLD W TO SET POWER  ·  AT 160–180 KM/H, GENTLY HOLD ↓ TO LIFT OFF"
 	else:
 		help_label.text = "BANK TO TURN  ·  KEEP AIRSPEED ABOVE 140 KM/H  ·  LOWER GEAR BEFORE LANDING"
-	if not get_window().has_focus() and not aircraft.is_crashed and not get_tree().paused:
+	if not get_window().has_focus() and not aircraft.is_crashed and not aircraft.is_destroyed and not get_tree().paused:
 		help_label.text = "CLICK INSIDE THE GAME VIEW TO FOCUS IT · THEN HOLD W TO SET POWER"
-	overlay.visible = get_tree().paused or aircraft.is_crashed
-	resume_button.disabled = aircraft.is_crashed
+	overlay.visible = get_tree().paused or aircraft.is_crashed or aircraft.is_destroyed
+	resume_button.disabled = aircraft.is_crashed or aircraft.is_destroyed
 	if overlay.visible:
-		overlay_title.text = "AIRCRAFT LOST" if aircraft.is_crashed else "PAUSED"
-		overlay_detail.text = aircraft.crash_reason + "\nPress R for a fresh aircraft." if aircraft.is_crashed else "Take your time. The aircraft is waiting."
+		overlay_title.text = "DESTROYED" if aircraft.is_destroyed else ("AIRCRAFT LOST" if aircraft.is_crashed else "PAUSED")
+		overlay_detail.text = "0 HP · engine and guns disabled.\nPress R for a fresh aircraft." if aircraft.is_destroyed else (aircraft.crash_reason + "\nPress R for a fresh aircraft." if aircraft.is_crashed else "Take your time. The aircraft is waiting.")

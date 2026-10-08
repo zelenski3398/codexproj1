@@ -31,9 +31,28 @@ func _run() -> void:
 		await physics_frame
 	await _capture("airborne")
 	print("Rendered flight altitude: ", aircraft.altitude)
+	aircraft.take_damage(50)
+	await _capture("hp50_no_effects")
+	aircraft.take_damage(30)
+	aircraft.pilot.fire = true
+	for i in range(120):
+		await physics_frame
+	# Trigger a fresh salvo so the capture includes the very short flashes.
+	aircraft.guns._fire_salvo()
+	await _capture("firing_and_engine_damage")
+	aircraft.pilot.fire = false
 	paused = true
 	await process_frame
 	await _capture("paused")
+	paused = false
+	aircraft.take_damage(100)
+	for i in range(30):
+		await physics_frame
+	await _capture("destroyed")
+	aircraft.request_reset()
+	for i in range(3):
+		await physics_frame
+	await _capture("reset")
 	print("Rendered captures saved to ", output)
 	quit()
 

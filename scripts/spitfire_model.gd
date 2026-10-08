@@ -5,6 +5,7 @@ extends Node3D
 var propeller: Node3D
 var wheel_roots: Array[Node3D] = []
 var struts: Array[MeshInstance3D] = []
+var gun_ports: Array[Marker3D] = []
 var green := MeshKit.material(Color("505b40"))
 var brown := MeshKit.material(Color("655442"))
 var underside := MeshKit.material(Color("9caeaa"))
@@ -15,6 +16,19 @@ func _ready() -> void:
 	_fuselage()
 	_wing(5.6, 2.35, -0.35, -0.1, green)
 	_wing(2.05, 1.25, 3.55, 0.05, green)
+	# Four ports on each wing, on the actual elliptical leading edge. All
+	# weapon origins use these markers; none fire from the nose/propeller.
+	for side in [-1.0, 1.0]:
+		for distance in [2.25, 2.7, 3.15, 3.6]:
+			var t: float = distance / 5.6
+			var leading_z := -0.35 + t * 0.45 - 2.35 * sqrt(1.0 - t * t) * 0.5
+			var port := Marker3D.new()
+			port.name = "GunPort%d" % gun_ports.size()
+			port.position = Vector3(side * distance, -0.1 + t * 0.12, leading_z - 0.08)
+			add_child(port)
+			gun_ports.append(port)
+			var barrel := MeshKit.cylinder(port, 0.06, 0.14, Vector3.ZERO, rubber)
+			barrel.rotation.x = PI / 2.0
 	# Camouflage patches follow the main wing's curved silhouette.
 	for side in [-1.0, 1.0]:
 		var patch := MeshKit.sphere(self, Vector3(2.1, 0.019, 0.9), Vector3(side * 2.35, -0.02, -0.28), brown)

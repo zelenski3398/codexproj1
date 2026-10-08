@@ -16,6 +16,15 @@ window/stretch/mode="canvas_items"
 
 [input]
 
+fire={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":4194326), Object(InputEventKey,"keycode":4194326)]
+}
+debug_damage={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":72), Object(InputEventKey,"keycode":72)]
+}
+
 pitch_down={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"physical_keycode":4194320), Object(InputEventKey,"keycode":4194320)]
