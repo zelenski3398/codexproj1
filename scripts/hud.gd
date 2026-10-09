@@ -1,10 +1,11 @@
 class_name FlightHUD
 extends CanvasLayer
+signal change_aircraft_requested
 const INK := Color("e9e8d7")
 const MUTED := Color("abb8ad")
 const GOLD := Color("e4bf75")
 const PANEL := Color(0.055, 0.09, 0.085, 0.90)
-const CONTROLS := "↑ / ↓   Nose down / up\n← / →   Bank left / right\nA / D   Rudder left / right\nW / S   Increase / decrease throttle\nCTRL (hold)   Eight wing guns\nG   Toggle landing gear\nSPACE   Hold wheel brakes\nH   DEBUG: remove 10 HP\nR   Reset both aircraft\nESC   Pause / controls"
+const CONTROLS := "↑ / ↓   Nose down / up\n← / →   Bank left / right\nA / D   Rudder left / right\nW / S   Increase / decrease throttle\nCTRL (hold)   %s\nG   %s\nSPACE   Hold wheel brakes\nH   DEBUG: remove 10 HP\nR   Reset both aircraft\nESC   Pause / controls"
 var aircraft: FlightAircraft
 var enemy: EnemyAircraft
 var enemy_label: Label
@@ -26,6 +27,7 @@ var hp_label: Label
 var hp_bar: ProgressBar
 var aim_marker: Label
 var hp_fill: StyleBoxFlat
+var change_aircraft_button: Button
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -47,7 +49,7 @@ func _ready() -> void:
 	masthead.add_child(header)
 	header.add_child(_label("R A F   /   S O U T H E R N   E N G L A N D   /   1 9 4 0", 12, MUTED))
 	header.add_child(_label("FIRST SORTIE", 34, INK))
-	header.add_child(_label("SPITFIRE Mk I     ·     AIRFIELD ENCOUNTER", 13, GOLD))
+	header.add_child(_label(aircraft.display_name.to_upper() + " · AIRFIELD ENCOUNTER", 13, GOLD))
 	var status_panel := PanelContainer.new()
 	status_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 	status_panel.offset_left = -310
@@ -107,8 +109,8 @@ func _ready() -> void:
 	var list := VBoxContainer.new()
 	strip.add_child(list)
 	list.add_child(_label("PILOT NOTES", 12, GOLD))
-	list.add_child(_label("ARROWS  Pitch / bank     A / D  Rudder\nW / S  Throttle     G  Gear     SPACE  Brakes\nCTRL (hold)  Wing guns\nH  DEBUG: −10 HP     R  Reset     ESC  Pause", 13, INK))
-	list.add_child(_label("APPROACH  155–180 km/h · gear down\nFlare gently · aim for less than 3 m/s sink", 12, MUTED))
+	list.add_child(_label("ARROWS  Pitch / bank     A / D  Rudder\nW / S  Throttle     G  Gear     SPACE  Brakes\nCTRL (hold)  %s\nH  DEBUG: −10 HP     R  Reset     ESC  Pause" % aircraft.gun_description, 13, INK))
+	list.add_child(_label("APPROACH  %s km/h · %s\nFlare gently · aim for less than 3 m/s sink" % [aircraft.approach_speed_hint, "gear down" if aircraft.gear.retractable else "fixed gear"], 12, MUTED))
 	notice_label = _label("", 16, GOLD)
 	notice_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
 	notice_label.offset_left = -310
@@ -134,7 +136,7 @@ func _ready() -> void:
 	overlay_detail = _label("Take your time. The aircraft is waiting.", 14, MUTED)
 	menu.add_child(overlay_detail)
 	menu.add_child(HSeparator.new())
-	menu.add_child(_label(CONTROLS, 17, INK))
+	menu.add_child(_label(CONTROLS % [aircraft.gun_description, "Toggle landing gear" if aircraft.gear.retractable else "Fixed landing gear (cannot retract)"], 17, INK))
 	resume_button = Button.new()
 	resume_button.text = "RESUME FLIGHT  /  ESC"
 	resume_button.focus_mode = Control.FOCUS_NONE
@@ -145,6 +147,11 @@ func _ready() -> void:
 	reset_button.focus_mode = Control.FOCUS_NONE
 	reset_button.pressed.connect(_reset)
 	menu.add_child(reset_button)
+	change_aircraft_button = Button.new()
+	change_aircraft_button.text = "CHOOSE ANOTHER AIRCRAFT"
+	change_aircraft_button.focus_mode = Control.FOCUS_NONE
+	change_aircraft_button.pressed.connect(func(): change_aircraft_requested.emit())
+	menu.add_child(change_aircraft_button)
 	overlay.visible = false
 
 func _label(text: String, size: int, color: Color) -> Label:
@@ -218,7 +225,7 @@ func _process(delta: float) -> void:
 	speed_label.text = "%03d" % roundi(aircraft.airspeed * 3.6)
 	altitude_label.text = "%04d" % roundi(aircraft.altitude)
 	throttle_label.text = "%d" % roundi(aircraft.pilot.throttle * 100.0)
-	gear_label.text = "DOWN" if aircraft.gear.extended else "UP"
+	gear_label.text = "FIXED" if not aircraft.gear.retractable else ("DOWN" if aircraft.gear.extended else "UP")
 	hp_label.text = "HP: %d/%d" % [floori(aircraft.health.hp), roundi(aircraft.health.max_hp)]
 	hp_bar.value = aircraft.health.hp
 	hp_fill.bg_color = Color("db744d") if aircraft.health.hp < 50.0 else Color("88b279")
@@ -256,9 +263,9 @@ func _process(delta: float) -> void:
 	elif aircraft.is_crashed:
 		help_label.text = "AIRCRAFT LOST · PRESS R TO RESET"
 	elif aircraft.gear.contact_count > 0:
-		help_label.text = "HOLD W TO SET POWER  ·  AT 160–180 KM/H, GENTLY HOLD ↓ TO LIFT OFF"
+		help_label.text = "HOLD W TO SET POWER  ·  AT %s KM/H, GENTLY HOLD ↓ TO LIFT OFF" % aircraft.takeoff_speed_hint
 	else:
-		help_label.text = "CTRL  FIRE · FOLLOW THE STUKA MARKER · KEEP AIRSPEED ABOVE 140 KM/H"
+		help_label.text = "CTRL  FIRE · FOLLOW THE STUKA MARKER · KEEP AIRSPEED ABOVE %d KM/H" % aircraft.safe_speed_hint
 	if not get_window().has_focus() and not aircraft.is_crashed and not aircraft.is_destroyed and not get_tree().paused:
 		help_label.text = "CLICK INSIDE THE GAME VIEW TO FOCUS IT · THEN HOLD W TO SET POWER"
 	overlay.visible = get_tree().paused or aircraft.is_crashed or aircraft.is_destroyed

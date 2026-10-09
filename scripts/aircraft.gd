@@ -4,6 +4,13 @@ signal crashed(reason: String)
 signal reset_completed
 signal destroyed
 
+@export_group("Aircraft and pilot guidance")
+@export var display_name: String = "Spitfire Mk I"
+@export var gun_description: String = "Eight wing guns"
+@export var takeoff_speed_hint: String = "160–180"
+@export var approach_speed_hint: String = "155–180"
+@export var safe_speed_hint: int = 140
+
 @export_group("Aerodynamics")
 @export var wing_area: float = 22.5
 @export var air_density: float = 1.225

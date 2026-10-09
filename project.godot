@@ -2,10 +2,10 @@
 config_version=5
 
 [application]
-config/name="Spitfire • First Sortie"
+config/name="First Sortie • RAF Fighters"
 run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
-config/description="A playable flight, takeoff and landing prototype over a WWII countryside airfield."
+config/description="Choose a Spitfire Mk I or Gloster Sea Gladiator, fly from a WWII airfield, and fight an airborne opponent."
 
 [display]
 window/size/viewport_width=1440

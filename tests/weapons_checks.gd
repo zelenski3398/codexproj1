@@ -14,6 +14,7 @@ func _initialize() -> void:
 func _run() -> void:
 	world = (load("res://main.tscn") as PackedScene).instantiate()
 	root.add_child(world)
+	world.start_flight("spitfire")
 	aircraft = world.aircraft
 	world.enemy.ai.combat_enabled = false
 	# Thin stationary panel is a test fixture only; gameplay uses a flying enemy.

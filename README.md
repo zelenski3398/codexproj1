@@ -1,20 +1,22 @@
 # First Sortie
 
 A single-player 3D **Godot 4 / GDScript** flight prototype set at a fictional RAF
-countryside airfield in 1940. Fly a procedural Spitfire Mk I placeholder, take
-off, bank over the fields, return, land and brake. Eight wing guns, a flying
-Ju 87-inspired enemy that shoots back, and aircraft health/damage effects are included. No paid assets.
+countryside airfield in 1940. Choose a **Spitfire Mk I** or **Gloster Sea
+Gladiator**, take off, bank over the fields, return, land and brake. Both have
+guns, health/damage effects, and a flying Ju 87-inspired opponent that shoots
+back. All aircraft are original procedural mesh placeholders. No paid assets.
 
 ## Open and play
 
 1. Install the standard **Godot 4.3 or newer** editor (not the .NET edition;
    tested with Godot 4.6.3).
 2. Import `project.godot` from this folder in Godot's project manager.
-3. Open the project and press **F5** (Run Project), then click inside the game
-   view so it receives keyboard input. Hold **W**; throttle should rise by
-   about 30 percentage points per second.
+3. Press **F5** (Run Project), then click inside the game view. Choose an
+   aircraft and click **Fly**, or use **Left/Right** (or **1/2**) to select and
+   **Enter** to start.
+4. Hold **W**; throttle should rise by about 30 percentage points per second.
 
-The aircraft starts stationary, with all three wheels down, near the south end
+The selected aircraft starts stationary, with all three wheels down, near the south end
 of the 1,800 m runway. The project uses the Compatibility renderer for broad PC
 support. No package installation, asset download, login, or environment variables
 are required. Alternatively, with Godot on your PATH:
@@ -50,6 +52,41 @@ captures your keys, launch a separate game window (or `godot --path .`) and
 focus that window. Never use the visual-capture test script to play: it enables
 the automated pilot for screenshots. Use F5 / `main.tscn` for gameplay.
 
+## Aircraft choice
+
+The startup screen shows both fighters and a live model preview. No player
+physics or enemy combat runs until you choose **Fly**. R resets the selected
+aircraft; it does not revert to the Spitfire. To change aircraft without closing
+the game, press Escape and click **Choose another aircraft**. This clears the
+previous player, enemy, bullets and effects, then returns to the selector.
+
+The Sea Gladiator follows the supplied images: rounded stacked wings with
+crossed bracing wires and struts, an exposed radial engine inside a silver
+cowling, three-blade propeller, framed cockpit, fixed main wheels/tailwheel,
+camouflage, RAF roundels and fin flashes, plus a cosmetic naval hook. The
+**FAITH** marking is reference-inspired; this is an approximate original mesh.
+The Gloster Sea Gladiator was a late-1930s naval biplane used during WWII.
+
+| Prototype characteristic | Spitfire Mk I | Gloster Sea Gladiator |
+| --- | --- | --- |
+| Measured full-throttle level speed | About 365 km/h | About 228 km/h |
+| Measured climb in the comparison fixture | About 16.2 m/s | About 7.8 m/s |
+| Mass / wing area | 3,000 kg / 22.5 m² | 2,200 kg / 30 m² |
+| Engine thrust / parasite drag | 12,500 N / 0.034 | 8,500 N / 0.044 |
+| Landing gear | Retractable; G toggles | Fixed; G displays a notice |
+| Machine guns | Eight wing guns | Four: two fuselage + two lower-wing guns |
+| Takeoff guidance | 160–180 km/h | 115–135 km/h |
+| Landing approach guidance | 155–180 km/h | 115–135 km/h |
+| Low-speed stall warning | Below about 115 km/h | Below about 86 km/h |
+| Health / controls | 100 HP / existing flight keys | 100 HP / same flight keys |
+
+These are **measured game-tuning values**, not historical aircraft performance.
+The weaker engine and increased biplane/fixed-gear drag produce slower flight,
+acceleration and climb through the shared aerodynamic forces. There is no
+scripted speed cap. The biplane's larger wing area allows lower-speed flying.
+Its roll/pitch torques are reduced as well. HUD takeoff/approach advice, aircraft
+name, gun count and fixed/retractable gear state follow your selection.
+
 ## Controls
 
 | Key | Action |
@@ -59,14 +96,14 @@ the automated pilot for screenshots. Use F5 / `main.tscn` for gameplay.
 | Left / right arrows | Roll left / right; gentle coordinated yaw helps turns |
 | A / D | Manual rudder left / right; steering while taxiing |
 | W / S | Increase / decrease throttle; setting holds when released |
-| Ctrl (hold) | Fire all eight wing-mounted machine guns; release to stop |
-| G | Toggle landing gear; retraction is blocked with weight on wheels |
+| Ctrl (hold) | Fire the selected aircraft's guns (eight Spitfire / four Gladiator); release to stop |
+| G | Spitfire: toggle gear, blocked with weight on wheels; Gladiator: fixed-gear notice |
 | Space (hold) | Wheel brakes on the ground |
 | H | **TEMPORARY DEBUG**: remove 10 player HP per press (key repeat ignored) |
 | R | Reset at runway start: 100 HP, gear down, zero throttle, clean effects/bullets; also restore the enemy and restart its airborne patrol |
 | Escape | Pause / resume and display full controls |
 
-The pause/crash panel also has clickable resume and reset buttons. The HUD
+The pause/crash panel has clickable resume, reset and aircraft-choice buttons. The HUD
 shows airspeed in km/h, fuselage-centre altitude above the collision surface in
 metres, throttle, gear, heading, flight state, stall warning, a gun-convergence
 aim marker and a numeric **HP: 100/100** health bar. An orange Stuka marker
@@ -77,17 +114,21 @@ is about 1 m because it measures the aircraft centre rather than wheel clearance
 ## First circuit
 
 * **Takeoff:** release brakes and hold W until the HUD reads 100%. Keep the
-  aircraft straight. Around 160–180 km/h, briefly hold Down to raise the nose;
+  aircraft straight. Around 160–180 km/h in the Spitfire or 115–135 km/h in the
+  Gladiator, briefly hold Down to raise the nose;
   use short inputs to maintain a shallow climb. The tail-down stance may let
-  the aircraft lift off by itself near this speed. Retract gear after climbing.
+  the aircraft lift off by itself near this speed. Retract Spitfire gear after
+  climbing; Gladiator gear stays extended.
 * **Fly:** bank with short Left/Right inputs. Centre the controls and the bank
   largely holds; use opposite roll to level the wings. Add a little nose-up
   input in a turn to maintain height. A/D can adjust heading independently.
-* **Stall:** low airspeed (below about 115 km/h) or angle of attack above 16°
+* **Stall:** low airspeed (about 115 km/h Spitfire / 86 km/h Gladiator) or angle
+  of attack above 16°
   produces a warning and reduced lift. Lower the nose, level the wings and add
   power. Recover at altitude; stalls close to terrain can still cause a crash.
-* **Land:** line up with the runway from either end. Extend gear, reduce power
-  and approach around 155–180 km/h. Keep wings level and descent shallow. Just
+* **Land:** line up with the runway from either end. Extend Spitfire gear, reduce
+  power and approach around 155–180 km/h (115–135 in the Gladiator, whose wheels
+  are fixed). Keep wings level and descent shallow. Just
   above the runway, gently raise the nose to reduce sink; aim below 3 m/s at
   contact. Lower power fully after touchdown, then hold Space to stop. Release
   brakes and raise throttle to take off again. All grass is also landable, but
@@ -98,8 +139,11 @@ is about 1 m because it measures the aircraft centre rather than wheel clearance
 
 ## Guns, enemy and damage
 
-Hold Ctrl while flying to fire **four guns per wing** from visible ports on the
-elliptical leading edges, following the requested eight-port Spitfire layout.
+Hold Ctrl while flying to fire **four guns per wing in the Spitfire** from visible
+ports on the elliptical leading edges. The **Gladiator fires four guns**: two
+from ports beside the forward fuselage and two at the lower wings' leading edges,
+reflecting its different armament layout. No bullets originate at the centre
+of either aircraft's propeller.
 Rounds converge on a point 250 m ahead of the aircraft; the HUD aim marker
 projects that point. Turning/banking changes the direction of newly fired rounds.
 Existing rounds travel in world space. Throttle, arrows, rudder, gear, brakes,
@@ -128,7 +172,7 @@ The AI flies using **pilot commands and the same real rigid-body flight forces**
 it never translates or rotates the aircraft directly during flight. It predicts
 interception using relative velocity (bullets inherit shooter velocity), with
 small aiming assistance limited to the 6° nose cone. Player guns retain their
-fixed wing convergence. This is a simple forgiving opponent, not authentic
+fixed aircraft-relative convergence. This is a simple forgiving opponent, not authentic
 Stuka tactics; there is no rear gunner, bombing, AI takeoff or AI landing.
 
 Press H five times: the aircraft reaches **exactly 50 HP with no smoke/fire**.
@@ -176,8 +220,11 @@ The main scripts are deliberately small separate components:
 | `scripts/hud.gd` | Instrument cards, controls, pause and crash overlays |
 | `scripts/spitfire_model.gd` | Original procedural silhouette, camouflage, canopy, RAF roundels, propeller and suspension-linked wheels |
 | `scripts/airfield.gd` | Runway, terrain collision, rolling countryside, hangars, control tower, fields, trees and daylight |
-| `scripts/main.gd` | Connects the scene components |
-| `scripts/wing_guns.gd` | Eight-gun salvos: 12 rounds/sec **per gun**, 850 m/s bullet speed, 2 s lifetime, 4 damage/round, 250 m convergence, every fourth round a tracer; exported tuning values |
+| `scripts/main.gd` | Startup/aircraft-switch lifecycle and selected player/enemy/camera/HUD connections |
+| `scripts/aircraft_selector.gd` | Mouse/keyboard aircraft choice and live mesh preview, with no gameplay simulation until Fly |
+| `scripts/sea_gladiator.gd` | Biplane flight variant: 2,200 kg, wing area 30 m², thrust 8,500 N, parasite drag 0.044, zero-alpha lift 0.60, stall speed 24 m/s; pitch/roll/rudder torque 13,000/14,000/10,000; fixed gear and upper-wing collider |
+| `scripts/sea_gladiator_model.gd` | Original reference-inspired biplane, radial engine, bracing, canopy, RAF markings, fixed suspension-linked wheels and four gun ports |
+| `scripts/wing_guns.gd` | Salvos from the selected model's gun ports: 12 rounds/sec **per gun**, 850 m/s bullet speed, 2 s lifetime, 4 damage/round, 250 m convergence, every fourth round a tracer; exported tuning values |
 | `scripts/projectile_pool.gd` | 384 fixed bullet slots, swept ray collision from previous to next position, shooter RID exclusion, 32 recycled impact flashes; mask 7 includes terrain/player/enemy layers |
 | `scripts/health.gd` | Reusable HP, clamping, damage/heal/reset and one-shot depleted signal; both aircraft maximum 100 |
 | `scripts/damage_effects.gd` | 128 pooled CPU mesh particles; procedurally generated soft billboard smoke, flame spheres, intensity-driven emission, world-space lifetime; Compatibility/ANGLE-friendly, no GPU particles |
@@ -209,6 +256,7 @@ godot --headless --path . --fixed-fps 120 --script res://tests/flight_checks.gd
 godot --headless --path . --fixed-fps 120 --script res://tests/keyboard_checks.gd
 godot --headless --path . --fixed-fps 120 --script res://tests/weapons_checks.gd
 godot --headless --path . --fixed-fps 120 --script res://tests/enemy_checks.gd
+godot --headless --path . --fixed-fps 120 --script res://tests/aircraft_choice_checks.gd
 ```
 
 `flight_checks.gd` runs the real scene, rigid body, collision terrain, suspension
@@ -250,7 +298,7 @@ and complete reset followed by restored throttle/fire. Together with flight and
 keyboard regressions, **95/95 original checks pass on Godot 4.6.3**. The thin
 practice board is spawned only by the weapon test.
 
-**Enemy result: 31/31 passed; all four suites total 126/126 on Godot 4.6.3.**
+**Enemy result: 31/31 passed; the original four suites total 126/126 on Godot 4.6.3.**
 The additional `enemy_checks.gd` suite verifies the reference-inspired model,
 separate input/collision ownership, stable 90-second physics patrol, ground
 protection, a 75-second pursuit from patrol, live projectile damage in both directions,
@@ -259,17 +307,39 @@ plane, falling wrecks, enemy defeat HUD, reset of both lives/bullet pools/trails
 H/G/Ctrl isolation, obstacle line of sight, close-pass break-away and the actual
 R key after hostile destruction.
 
-A rendered check can save runway, airborne, enemy encounter/model close-up,
-50-HP/no-effects, firing/damaged, pause, destroyed and reset screenshots:
+**Aircraft choice / Gladiator result: 31/31 passed; all five suites total 157/157.**
+This checks startup before simulation, physical and keycode-only menu navigation,
+Enter start, focus release, four-gun firing while steering, fixed-gear G behavior,
+aircraft-specific HUD, stable suspension, takeoff, banking, low-speed stall and
+recovery, gentle landing, braking, a second takeoff, actual projectile damage in
+both directions, exact 50-HP/no-effects threshold, smoke/fire, destruction,
+selected-aircraft reset, pause-menu aircraft change, returning to the original
+Spitfire, repeated-switch cleanup, and measured lower speed/acceleration/climb.
+The performance fixture starts both planes at 40 m/s and 800 m altitude, holds
+full throttle with the same altitude controller for 45 simulated seconds, then
+holds the same nose-up attitude for a 20-second climb. The Spitfire retracts its
+gear; the Gladiator's gear stays fixed. Controllers exist only in tests.
+
+**Native mouse/keyboard result: 10/10 passed in a rendered X11 window.** These
+use OS mouse/key events to select each plane, click Fly, start with Enter,
+verify W and Ctrl after leaving the menu, check fixed-gear G behavior, H/R
+damage/reset preserving the Gladiator, and click the paused aircraft-change
+button before selecting/starting the Spitfire. These window-level checks are
+separate from the 157 reproducible Godot integration assertions.
+
+A rendered check saves both selection screens, runway, airborne, enemy encounter,
+player/enemy model close-ups, 50-HP/no-effects, firing/damaged, pause, destruction
+and reset screenshots:
 
 ```sh
-godot --path . --audio-driver Dummy --fixed-fps 120 --script res://tests/visual_capture.gd -- /path/to/captures
+godot --path . --audio-driver Dummy --fixed-fps 120 --script res://tests/visual_capture.gd -- /path/to/captures sea_gladiator
 ```
 
+The final argument selects the captured aircraft (omit it for Spitfire).
 It requires a graphical display; `--headless` cannot validate rendering.
 The prototype was also launched with OpenGL Compatibility on a virtual X11
-display using Mesa software rendering. Rendered frames were captured and inspected, including the Stuka model,
-enemy marker/HP/state, wing flashes/tracers, engine smoke/fire, the HP threshold,
+display using Mesa software rendering. Rendered frames were captured and inspected, including both selection screens, the Gladiator/Spitfire/Stuka models,
+selected-aircraft controls and gear state, enemy marker/HP/state, gun flashes/tracers, engine smoke/fire, the HP threshold,
 player health bar, destroyed/reset UI and flight instruments.
 Automated physics checks do not replace interactive playtesting. Keyboard
 handling and dogfight difficulty, a player-flown full circuit, Windows hardware/performance and
@@ -289,7 +359,9 @@ worktree is required.
   rear gunner, ammunition management or complex menus.
 * Meshes, buildings and camouflage are simple original placeholders. The
   Spitfire uses its familiar elliptical-wing silhouette; the Stuka follows
-  the supplied photograph with approximate proportions and detail.
+  the supplied photograph with approximate proportions and detail. The Sea
+  Gladiator follows the supplied biplane references; rigging, cockpit and
+  engine detail remain simplified. The naval hook has no carrier interaction.
 * No wind, engine audio, tyre audio, propwash, ground effect, flap controls,
   fuel, historical engine dynamics, wheel rotation, or gradual gear animation.
 * Terrain is a finite 10 × 10 km patch with coarse rolling hills. Stay within
@@ -300,4 +372,4 @@ worktree is required.
   predictable approach surface. Hard wing contact is intentionally fatal.
 
 The aircraft's local **-Z** axis is forward, +Y up, +X right, leaving a clear
-shared coordinate convention for player and enemy physics and weapons. The eight wing markers are now the authoritative gun origins.
+shared coordinate convention for player and enemy physics and weapons. Each model's gun markers are the authoritative firing origins.

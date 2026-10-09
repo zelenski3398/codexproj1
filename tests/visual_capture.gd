@@ -14,6 +14,13 @@ func _run() -> void:
 	DirAccess.make_dir_recursive_absolute(output)
 	world = (load("res://main.tscn") as PackedScene).instantiate()
 	root.add_child(world)
+	var kind: String = args[1] if args.size() > 1 else "spitfire"
+	for i in range(3):
+		await physics_frame
+	await _capture("selection_spitfire")
+	world.selector.select("sea_gladiator")
+	await _capture("selection_sea_gladiator")
+	world.start_flight(kind)
 	aircraft = world.aircraft
 	world.enemy.ai.combat_enabled = false
 	aircraft.pilot.automated = true
@@ -25,7 +32,8 @@ func _run() -> void:
 	aircraft.pending_reset_velocity = Vector3(0, 0, -65)
 	for i in range(3):
 		await physics_frame
-	aircraft.gear.extended = false
+	if aircraft.gear.retractable:
+		aircraft.gear.extended = false
 	aircraft.pilot.throttle = 0.7
 	world.chase.snap()
 	for i in range(90):
@@ -47,6 +55,9 @@ func _run() -> void:
 	inspection.look_at(world.enemy.global_position)
 	inspection.make_current()
 	await _capture("stuka_reference_model")
+	inspection.global_position = aircraft.global_position + Vector3(10, 8, -12)
+	inspection.look_at(aircraft.global_position + Vector3.UP * 0.3)
+	await _capture("player_model")
 	inspection.queue_free()
 	world.chase.make_current()
 	world.hud.visible = true

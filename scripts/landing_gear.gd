@@ -10,6 +10,7 @@ extends Node
 @export var tyre_friction: float = 0.75
 @export var fatal_sink_speed: float = 5.5
 var extended: bool = true
+var retractable: bool = true
 var contact_count: int = 0
 var compression: Array[float] = [0.0, 0.0, 0.0]
 var last_notice: String = ""
@@ -20,6 +21,9 @@ var radii: Array[float] = [0.32, 0.32, 0.18]
 
 func toggle() -> bool:
 	notice_time = 3.0
+	if not retractable:
+		last_notice = "FIXED LANDING GEAR · cannot retract"
+		return false
 	if extended and contact_count > 0:
 		last_notice = "GEAR LOCKED · weight on wheels"
 		return false

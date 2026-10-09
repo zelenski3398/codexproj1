@@ -12,6 +12,7 @@ func _initialize() -> void:
 func _run() -> void:
 	var world := (load("res://main.tscn") as PackedScene).instantiate()
 	root.add_child(world)
+	world.start_flight("spitfire")
 	aircraft = world.aircraft
 	world.enemy.ai.combat_enabled = false
 	hud = world.hud
