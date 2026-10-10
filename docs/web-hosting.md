@@ -22,10 +22,15 @@ workflow. There are no personal token/secrets to enter for this workflow; the
 repository's scoped Actions token handles the deployment. Pages and Actions
 must be allowed by the repository's organization/account policies.
 
-**Public site activation is unverified here.** The cloud proxy returns a 403
+GitHub's first **build job succeeded**, including its native checks and release
+export, and produced the **first-sortie-web** and **github-pages** artifacts
+(about 9.74 MB each). Its first deployment reported Pages was disabled; the owner
+has since enabled the required Pages setting. A main push reruns deployment.
+
+The cloud proxy returns a 403
 CONNECT denial for `api.github.com` and `zelenski3398.github.io`. Git read/push
 and public Godot release downloads work. This prevented changing the Pages
-setting or fetching the public site; it did not prevent a real local browser
+setting directly or fetching the public site; it did not prevent a real local browser
 build/test. Do not interpret a successful local test as a public deployment.
 
 ## Build locally
