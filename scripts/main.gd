@@ -1,4 +1,10 @@
 extends Node3D
+var environment_id: String = "countryside"
+var field: Node3D
+var malta_menu: MaltaDepartureMenu
+var malta_mission: MaltaMission
+var home_airfield: String = "ta_qali"
+var departure_kind: String = "spitfire"
 var aircraft: FlightAircraft
 var chase: ChaseCamera
 var hud: FlightHUD
@@ -23,7 +29,7 @@ func _ready() -> void:
 		var web: WebSupport = WebSupport.new()
 		web.session = self
 		add_child(web)
-	var field := Airfield.new()
+	field = Airfield.new()
 	field.name = "CountrysideAirfield"
 	add_child(field)
 	encounter_effects = Node3D.new()
@@ -33,6 +39,7 @@ func _ready() -> void:
 
 func show_selection() -> void:
 	_remember_difficulty()
+	_clear_malta()
 	_clear_encounter_effects()
 	_enemy_restart_queued = false
 	enemy_defeated = false
@@ -56,6 +63,7 @@ func show_selection() -> void:
 	selector.chosen.connect(start_flight, CONNECT_DEFERRED)
 	add_child(selector)
 	selector.select(selected_aircraft)
+	selector.malta_requested.connect(show_malta_selection, CONNECT_DEFERRED)
 
 func start_flight(kind: String) -> void:
 	if is_instance_valid(aircraft) or kind not in ["spitfire", "sea_gladiator"]:
@@ -98,7 +106,15 @@ func _exported_settings(component: Node) -> Dictionary:
 
 func _remember_difficulty() -> void:
 	if is_instance_valid(enemy):
-		_ai_settings = _exported_settings(enemy.ai)
+		var settings: Dictionary = _exported_settings(enemy.ai)
+		for key in ["world_extent", "measured_terrain"]:
+			settings.erase(key)
+		# Malta expands pursuit for this environment only; retain countryside tuning.
+		if environment_id == "malta":
+			settings.erase("pursuit_release_range")
+			if _ai_settings.has("pursuit_release_range"):
+				settings.pursuit_release_range = _ai_settings.pursuit_release_range
+		_ai_settings = settings
 		_gun_settings = _exported_settings(enemy.guns)
 		_rear_gunner_settings = _exported_settings(enemy.rear_gunner)
 
@@ -111,11 +127,13 @@ func _spawn_enemy() -> void:
 	enemy.name = "EnemyStuka"
 	enemy.target = aircraft
 	var spawn: Vector3 = enemy_spawn_position
+	if environment_id == "malta":
+		spawn = aircraft.global_position + Vector3(-950, 220, -1000)
 	# The normal runway start is >750 m away. Alternate player start positions
 	# still receive clearance and safe terrain height, rather than overlapping.
 	if spawn.distance_to(aircraft.global_position) < 400:
 		spawn = aircraft.global_position + Vector3(-550, 100, -300)
-	spawn.y = maxf(spawn.y, Airfield.height_at(spawn.x, spawn.z) + 120)
+	spawn.y = maxf(spawn.y, 500.0) if environment_id == "malta" else maxf(spawn.y, Airfield.height_at(spawn.x, spawn.z) + 120)
 	enemy.reset_position = spawn
 	add_child(enemy)
 	for key in _ai_settings:
@@ -124,6 +142,11 @@ func _spawn_enemy() -> void:
 		enemy.guns.set(key, _gun_settings[key])
 	for key in _rear_gunner_settings:
 		enemy.rear_gunner.set(key, _rear_gunner_settings[key])
+	if environment_id == "malta":
+		enemy.ai.measured_terrain = true
+		enemy.ai.world_extent = INF # no countryside boundary or island travel gate
+		enemy.ai.patrol_center = spawn
+		enemy.ai.pursuit_release_range = 100000
 	enemy.ai.reset()
 	enemy.rear_gunner.reset()
 	aircraft.guns.telemetry_target = enemy
@@ -194,3 +217,101 @@ func _clear_encounter_effects() -> void:
 	for effect in encounter_effects.get_children():
 		encounter_effects.remove_child(effect)
 		effect.queue_free()
+
+func show_malta_selection() -> void:
+	if is_instance_valid(malta_menu) or is_instance_valid(malta_mission):
+		return
+	if is_instance_valid(selector):
+		remove_child(selector)
+		selector.queue_free()
+	selector = null
+	environment_id = "malta"
+	malta_menu = MaltaDepartureMenu.new()
+	malta_menu.selected_field = home_airfield
+	malta_menu.selected_kind = selected_aircraft
+	malta_menu.departed.connect(start_malta, CONNECT_DEFERRED)
+	malta_menu.back_requested.connect(show_selection, CONNECT_DEFERRED)
+	add_child(malta_menu)
+
+func _clear_malta() -> void:
+	for node in [malta_menu, malta_mission]:
+		if is_instance_valid(node):
+			remove_child(node)
+			node.queue_free()
+	malta_menu = null
+	malta_mission = null
+	if environment_id == "malta":
+		# Fleet lives under the mission and is already queued, not a direct child.
+		aircraft = null
+		if is_instance_valid(field):
+			remove_child(field)
+			field.queue_free()
+		field = Airfield.new()
+		field.name = "CountrysideAirfield"
+		add_child(field)
+	environment_id = "countryside"
+
+func start_malta(field_id: String, kind: String) -> void:
+	if MaltaGeography.field(field_id).is_empty() or kind not in ["spitfire", "sea_gladiator"]:
+		return
+	if is_instance_valid(malta_mission):
+		return
+	if is_instance_valid(malta_menu):
+		remove_child(malta_menu)
+		malta_menu.queue_free()
+	malta_menu = null
+	if is_instance_valid(selector):
+		remove_child(selector)
+		selector.queue_free()
+	selector = null
+	if is_instance_valid(field):
+		remove_child(field)
+		field.queue_free()
+	environment_id = "malta"
+	home_airfield = field_id
+	selected_aircraft = kind
+	departure_kind = kind
+	field = MaltaWorld.new()
+	add_child(field)
+	malta_mission = MaltaMission.new()
+	malta_mission.session = self
+	malta_mission.world = field
+	malta_mission.home = field_id
+	malta_mission.initial_kind = kind
+	add_child(malta_mission)
+	aircraft = malta_mission.initial_aircraft
+	_spawn_enemy()
+	enemy.target = null
+	enemy.ai.target = null
+	get_viewport().gui_release_focus()
+
+func attach_malta_player(player: FlightAircraft) -> void:
+	for node in [hud, component_debug, chase]:
+		if is_instance_valid(node):
+			remove_child(node)
+			node.queue_free()
+	aircraft = player
+	selected_aircraft = "sea_gladiator" if player is SeaGladiator else "spitfire"
+	chase = ChaseCamera.new()
+	chase.aircraft = player
+	add_child(chase)
+	chase.far = 100000
+	hud = FlightHUD.new()
+	hud.aircraft = player
+	hud.enemy = enemy
+	hud.enemy_defeated = enemy_defeated
+	hud.mission = malta_mission
+	add_child(hud)
+	hud.change_aircraft_requested.connect(show_selection, CONNECT_DEFERRED)
+	component_debug = ComponentDamageDebug.new()
+	component_debug.session = self
+	add_child(component_debug)
+	component_debug.toggled.connect(func(enabled: bool): hud.component_debugging = enabled)
+
+func restart_malta() -> void:
+	if environment_id != "malta":
+		return
+	var saved_home: String = home_airfield
+	var saved_kind: String = departure_kind
+	show_selection()
+	start_malta(saved_home, saved_kind)

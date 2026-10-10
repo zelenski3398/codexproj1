@@ -1,0 +1,117 @@
+{
+  "origin_lon_lat": [
+    14.4,
+    35.93
+  ],
+  "crs": "EPSG:32633",
+  "units": "metres",
+  "chart_bounds": [
+    -21000.0,
+    -18500.0,
+    18000.0,
+    17500.0
+  ],
+  "airfields": [
+    {
+      "id": "ta_qali",
+      "name": "RAF Ta' Qali",
+      "longitude": 14.4153,
+      "latitude": 35.8953,
+      "position": [
+        1357.1550942739705,
+        123.98494682256587,
+        3857.117503037676
+      ],
+      "heading": 130.0,
+      "length": 1450.0,
+      "slope": 0.004413003077970787,
+      "stationed_aircraft": [
+        "spitfire",
+        "sea_gladiator"
+      ]
+    },
+    {
+      "id": "luqa",
+      "name": "RAF Luqa",
+      "longitude": 14.4775,
+      "latitude": 35.8586,
+      "position": [
+        6948.8215844673105,
+        79.31992287343888,
+        7959.45468694903
+      ],
+      "heading": 140.0,
+      "length": 1600.0,
+      "slope": 0.007626527091790794,
+      "stationed_aircraft": [
+        "spitfire",
+        "sea_gladiator"
+      ]
+    },
+    {
+      "id": "hal_far",
+      "name": "RAF \u0126al Far",
+      "longitude": 14.5067,
+      "latitude": 35.8153,
+      "position": [
+        9561.061691343435,
+        67.90009501110268,
+        12775.674105946906
+      ],
+      "heading": 130.0,
+      "length": 1400.0,
+      "slope": -0.02,
+      "stationed_aircraft": [
+        "spitfire",
+        "sea_gladiator"
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "name": "Valletta",
+      "position": [
+        10131.40449513786,
+        42.14868927001953,
+        3472.6771794026718
+      ]
+    },
+    {
+      "name": "Grand Harbour",
+      "position": [
+        10713.235649405571,
+        0.0,
+        4440.535166881047
+      ]
+    },
+    {
+      "name": "Gozo",
+      "position": [
+        -13974.59285625501,
+        88.73534393310547,
+        -12742.304291220848
+      ]
+    },
+    {
+      "name": "Comino",
+      "position": [
+        -5892.447060752835,
+        47.73174285888672,
+        -9022.828951342031
+      ]
+    }
+  ],
+  "terrain_bounds": [
+    [
+      -19403.959,
+      -30,
+      -16980.369
+    ],
+    [
+      15887.997,
+      250.865,
+      15938.015
+    ]
+  ],
+  "placement_note": "Approximate site coordinates; prototype runway headings, lengths, raised grading and parking layouts. No historical airfield reference image supplied."
+}

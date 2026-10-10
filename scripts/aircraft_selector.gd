@@ -3,6 +3,8 @@ extends Node3D
 ## Startup selection owns only a display model; no aircraft physics or combat
 ## exist until Fly is chosen. Keyboard navigation works in embedded game views.
 signal chosen(kind: String)
+signal malta_requested
+var malta_button: Button
 const GOLD: Color = Color("e4bf75")
 const INK: Color = Color("e9e8d7")
 var selected: String = "spitfire"
@@ -53,6 +55,11 @@ func _build_ui() -> void:
 	var stack: VBoxContainer = VBoxContainer.new()
 	stack.add_theme_constant_override("separation", 16)
 	panel.add_child(stack)
+	malta_button = Button.new()
+	malta_button.text = "MAP: COUNTRYSIDE  ·  CHOOSE MALTA →"
+	malta_button.custom_minimum_size.y = 36
+	malta_button.pressed.connect(func(): malta_requested.emit())
+	stack.add_child(malta_button)
 	stack.add_child(_label("SELECT A FIGHTER", 14, GOLD))
 	var group: ButtonGroup = ButtonGroup.new()
 	var kinds: Array[String] = ["spitfire", "sea_gladiator"]

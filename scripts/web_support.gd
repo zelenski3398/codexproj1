@@ -29,19 +29,33 @@ func _process(delta: float) -> void:
 	if sample_clock > 0:
 		return
 	sample_clock = 0.2
-	var state: Dictionary = {"selecting": session.selector != null, "selected": session.selected_aircraft, "paused": get_tree().paused}
+	var state: Dictionary = {"selecting": session.selector != null, "selected": session.selected_aircraft, "paused": get_tree().paused, "environment": session.environment_id, "airfield_selecting": is_instance_valid(session.malta_menu), "on_foot": is_instance_valid(session.malta_mission) and session.malta_mission.occupied == null}
 	if is_instance_valid(session.selector):
 		state.selected = session.selector.selected
 		state.spitfire_button = _center(session.selector.buttons[0])
 		state.gladiator_button = _center(session.selector.buttons[1])
 		state.fly_button = _center(session.selector.fly_button)
+		state.malta_button = _center(session.selector.malta_button)
+	if is_instance_valid(session.malta_menu):
+		state.home_airfield = session.malta_menu.selected_field
+		state.depart_button = _center(session.malta_menu.depart_button)
+		state.ta_qali_button = _center(session.malta_menu.chart.buttons.ta_qali)
+		state.luqa_button = _center(session.malta_menu.chart.buttons.luqa)
+		state.hal_far_button = _center(session.malta_menu.chart.buttons.hal_far)
+	if is_instance_valid(session.malta_mission):
+		state.world_id = session.malta_mission.world.get_instance_id()
+		state.fleet_count = session.malta_mission.fleet.size()
+		state.map_open = session.malta_mission.chart_panel.visible
+		state.engine_running = session.aircraft.engine_running
+		state.home_airfield = session.malta_mission.home
 	if is_instance_valid(session.aircraft):
 		var aircraft: FlightAircraft = session.aircraft
-		state.merge({"throttle": aircraft.pilot.throttle, "hp": aircraft.health.hp, "shots": aircraft.guns.pool.statistics.shots, "speed": aircraft.airspeed, "altitude": aircraft.altitude, "gear": aircraft.gear.extended, "fixed_gear": not aircraft.gear.retractable, "destroyed": aircraft.is_destroyed, "crashed": aircraft.is_crashed, "debug_visible": session.component_debug.enabled, "fire_guide": session.hud.fire_key_label, "smoke": aircraft.damage_effects.emitting})
+		state.merge({"throttle": aircraft.pilot.throttle, "hp": aircraft.health.hp, "shots": aircraft.guns.pool.statistics.shots, "speed": aircraft.airspeed, "altitude": aircraft.altitude, "gear": aircraft.gear.extended, "fixed_gear": not aircraft.gear.retractable, "destroyed": aircraft.is_destroyed, "crashed": aircraft.is_crashed, "debug_visible": session.component_debug.enabled if is_instance_valid(session.component_debug) else false, "fire_guide": session.hud.fire_key_label if is_instance_valid(session.hud) else "F", "smoke": aircraft.damage_effects.emitting})
 		state.enemy_count = 1 if is_instance_valid(session.enemy) else 0
 		state.enemy_hp = session.enemy.health.hp if is_instance_valid(session.enemy) else 0
-		state.change_button = _center(session.hud.change_aircraft_button)
-		state.change_visible = session.hud.change_aircraft_button.is_visible_in_tree()
+		if is_instance_valid(session.hud):
+			state.change_button = _center(session.hud.change_aircraft_button)
+			state.change_visible = session.hud.change_aircraft_button.is_visible_in_tree()
 	bridge.eval("window.firstSortieState = " + JSON.stringify(state) + ";")
 
 func _center(control: Control) -> Array:

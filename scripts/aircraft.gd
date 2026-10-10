@@ -31,6 +31,11 @@ signal destroyed
 @export var reset_position: Vector3 = Vector3(0.0, 1.18, 650.0)
 @export var collision_wing_span: float = 9.8
 
+## Mission routing; defaults preserve immediate-engine countryside gameplay.
+@export var engine_running: bool = true
+@export var input_enabled: bool = true
+@export var fuel_consumption_rate: float = 0.0
+
 var pilot: PilotInput
 var gear: LandingGear
 var model: SpitfireModel
@@ -119,6 +124,8 @@ func create_model() -> SpitfireModel:
 	return SpitfireModel.new()
 
 func _input(event: InputEvent) -> void:
+	if not input_enabled:
+		return
 	# HUD owns reset/pause. Discrete commands ignore OS key-repeat.
 	if event.is_action_pressed("gear") and not event.is_echo() and not is_crashed and not is_destroyed:
 		gear.toggle()
@@ -173,6 +180,8 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	var dt := state.step
 	components.advance(dt)
 	pilot.sample(dt)
+	if engine_running and not is_destroyed and not is_crashed:
+		components.fuel_remaining = maxf(components.fuel_remaining - fuel_consumption_rate * pilot.throttle * dt, 0)
 	if is_destroyed:
 		pilot.reset_commands()
 	var basis := state.transform.basis.orthonormalized()
@@ -221,7 +230,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	state.apply_central_force(-direction * 0.5 * air_density * airspeed * airspeed * wing_area * drag_coefficient)
 	# Propeller thrust loses effectiveness with speed; no velocity cap or
 	# direct transform movement is used in normal flight.
-	var thrust := engine_thrust * components.power_factor() * pilot.throttle / (1.0 + forward_speed / 130.0) if not is_destroyed else 0.0
+	var thrust := engine_thrust * components.power_factor() * pilot.throttle / (1.0 + forward_speed / 130.0) if engine_running and not is_destroyed else 0.0
 	state.apply_central_force(-basis.z * thrust)
 	# Vertical fin resists sideslip. Forces change the actual travel direction.
 	state.apply_central_force(-basis.x * local_velocity.x * (180.0 + forward_speed * 22.0) * components.rudder_factor())
@@ -263,4 +272,4 @@ func _crash(reason: String) -> void:
 	crashed.emit(reason)
 
 func _process(delta: float) -> void:
-	model.animate(delta, pilot.throttle * components.power_factor(), gear, is_crashed or is_destroyed)
+	model.animate(delta, pilot.throttle * components.power_factor() if engine_running else 0.0, gear, is_crashed or is_destroyed)

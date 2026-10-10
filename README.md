@@ -1,7 +1,7 @@
 # First Sortie
 
 A single-player 3D **Godot 4 / GDScript** flight prototype set at a fictional RAF
-countryside airfield in 1940. Choose a **Spitfire Mk I** or **Gloster Sea
+countryside airfield in 1940, or a continuous 1:1 Malta island world. Choose a **Spitfire Mk I** or **Gloster Sea
 Gladiator**, take off, bank over the fields, return, land and brake. Both have
 guns, component damage, health/damage effects, and a flying Ju 87-inspired opponent that shoots
 back. All aircraft are original procedural mesh placeholders. No paid assets.
@@ -13,23 +13,35 @@ The browser guide uses **F to fire** so W + firing cannot close the tab via
 Ctrl+W. Desktop Ctrl firing and all existing flight/landing controls are preserved.
 A bundled free font supplies arrows and aiming-marker glyphs in browsers.
 
-To activate the public website:
-
-1. Open [repository Settings → Pages](https://github.com/zelenski3398/codexproj1/settings/pages).
-2. Under **Build and deployment → Source**, choose **GitHub Actions**.
-3. Open [Publish browser game](https://github.com/zelenski3398/codexproj1/actions/workflows/web.yml)
-   and select **Run workflow → main**. Later pushes to main rebuild/deploy automatically.
-
-After a successful deployment the normal Pages URL is
-[zelenski3398.github.io/codexproj1/](https://zelenski3398.github.io/codexproj1/).
-Public activation and that URL could not be verified from this cloud task:
-its proxy blocks the GitHub API and Pages domains. The actual browser export
-was tested locally: **22/22 Chromium checks passed**, plus **91/91 desktop
-input/weapon/aircraft-choice regressions**. No JavaScript/Godot runtime errors
-or failed game-asset requests occurred.
+Play at [zelenski3398.github.io/codexproj1/](https://zelenski3398.github.io/codexproj1/).
+GitHub Pages deployment is enabled; pushes to `main` automatically rebuild it.
+The cloud proxy blocks direct access to the public Pages domain, so browser
+checks run against the actual release WebAssembly/WebGL build locally.
 
 See [web build, deployment and validation details](docs/web-hosting.md).
 The workflow also saves a downloadable **first-sortie-web** artifact.
+
+## Select a map and depart in Malta
+
+The startup screen keeps **Countryside** and adds **Choose Malta**. Malta
+opens a chart to choose **Ta' Qali, Luqa or Ħal Far**, a Spitfire or Sea Gladiator,
+and **Depart**. You spawn on foot beside the selected parked aircraft.
+
+**E** boards/leaves; **I** starts/stops the engine; **M** opens the live map.
+On foot, **WASD** walks and **Left/Right arrows** turn. Taxi from the apron onto
+the runway before full power. To leave, stop, idle throttle and stop the engine.
+All islands/airfields occupy one world; switching aircraft retains damage,
+fuel, parked planes, installations and the enemy. **R** is an explicit full
+mission restart. The original countryside controls and start remain intact.
+
+See [Malta geography, controls, tuning and acceptance flight](docs/malta-world.md).
+The source terrain uses measured modern elevations/coastline; airfield sites
+are approximate and runway layouts are playable prototypes, pending the
+historical 2D reference. Terrain attribution is included in-game and in the web build.
+
+Validation: **559/559 existing native checks**, **35/35 Malta integration checks**
+**18/18 uninterrupted journey checks**, and **41/41 browser checks** passed. Full browser flight feel and
+other browsers remain unverified.
 
 ## Open and play
 
@@ -127,6 +139,7 @@ name, gun count and fixed/retractable gear state follow your selection.
 | F3 | **TEMPORARY DEBUG**: toggle component hitboxes/health inspector; choose player/enemy and inject/repair component damage |
 | H | **TEMPORARY DEBUG**: remove 10 player HP per press (key repeat ignored) |
 | R | Reset at runway start: 100 HP, gear down, zero throttle, clean effects/bullets; spawn exactly one fresh enemy and restart its airborne patrol |
+| E / I / M | Malta: board/leave a stopped plane; start/stop engine; navigation chart |
 | Escape | Pause / resume and display full controls |
 
 The pause/crash panel has clickable resume, reset and aircraft-choice buttons. The HUD

@@ -22,10 +22,10 @@ workflow. There are no personal token/secrets to enter for this workflow; the
 repository's scoped Actions token handles the deployment. Pages and Actions
 must be allowed by the repository's organization/account policies.
 
-GitHub's first **build job succeeded**, including its native checks and release
-export, and produced the **first-sortie-web** and **github-pages** artifacts
-(about 9.74 MB each). Its first deployment reported Pages was disabled; the owner
-has since enabled the required Pages setting. A main push reruns deployment.
+GitHub Pages was activated by the repository owner and the previous deployment
+succeeded. Each subsequent main push rebuilds the game and reports its result
+and published URL in the Actions summary. The zipped Malta build is approximately
+14 MB (terrain/source notices included; raw GIS datasets stay in the repository).
 
 The cloud proxy returns a 403
 CONNECT denial for `api.github.com` and `zelenski3398.github.io`. Git read/push
@@ -79,6 +79,7 @@ takes keyboard focus. Click the game again if focus was moved to browser chrome.
 - **F held: guns.** The original Ctrl binding still exists, but use F in a browser;
   Ctrl+W and other Ctrl combinations can be reserved by the browser.
 - G: gear (Spitfire); Space: brakes; R: full session restart; Escape: pause.
+- Malta: E board/leave, I engine, M navigation; WASD walks on foot.
 - H: existing temporary −10 HP debug key; F3: component/gunnery inspector.
 
 Touch/mobile flight controls are not implemented. Start the page again after a
@@ -88,7 +89,7 @@ WebGL 2 and hardware acceleration. The loading indicator covers download/startup
 ## Validation
 
 The exported **release** build ran in Chromium using actual mouse and keyboard
-events, WebAssembly and WebGL 2 through SwiftShader. **22/22 checks passed**:
+events, WebAssembly and WebGL 2 through SwiftShader. **31/31 checks passed**:
 
 - Start page, feature detection, initialization without cross-origin isolation.
 - Keyboard plane selection, mouse Fly, live fixed gear and visible health.
@@ -98,10 +99,18 @@ events, WebAssembly and WebGL 2 through SwiftShader. **22/22 checks passed**:
 - Escape pause, F3 inspector, mouse aircraft switch and clean Spitfire startup.
 - Spitfire firing, asset loading and absence of JS/Godot runtime errors.
 
-The website changes also passed **91/91 native checks** (keyboard 24,
-weapons/health 36, aircraft selection 31). The previous nine flight/combat suites
-passed 559/559 before this web addition; they were not all rerun for platform-only
-input/font/UI integration.
+Malta checks additionally cover map/airfield selection, loading the real GLB,
+six stationed aircraft, on-foot departure, boarding, engine start, live chart,
+persistent leave/reboard and a clean full mission restart. Both map screens
+were visually inspected, including the moving heading marker and home ring.
+
+The Malta change also passed **559/559 existing native regressions** (all nine
+flight/combat/damage/AI suites), plus **35/35 Malta integration checks**.
+The uninterrupted journey additionally passed **18/18 checks**. The focused
+current-release Malta browser suite passed **10/10**, including on-foot pause.
+The integration check has disclosed physics-position fixtures for isolated
+landing/boarding scenarios; a separate continuous-flight test exercises the
+full route using pilot commands. See [Malta validation](malta-world.md).
 
 Reproduce browser checks after building:
 

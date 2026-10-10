@@ -1,0 +1,315 @@
+{
+  "origin_lon_lat": [
+    14.4,
+    35.93
+  ],
+  "export_crs": "EPSG:32633",
+  "DTM_crs": "EPSG:25833",
+  "axes": {
+    "x": "east",
+    "y": "up",
+    "z": "south"
+  },
+  "units": "metres",
+  "interior_mesh_spacing_m": 80,
+  "vertical_exaggeration": 1,
+  "dtm_pixel_spacing_m": [
+    31.99184043517679,
+    32.00874635568513
+  ],
+  "height_method": "bilinear on DTM raster; nodata filled from nearest valid pixel",
+  "coastline_vertices": "all retained; no simplification",
+  "source_dtm": "Planning Authority Digital Terrain Model 2012; 32x overview of 1m source",
+  "source_url": "https://malta.coverage.wetransform.eu/dtm_1m_2012/ows",
+  "triangles": 152000,
+  "islands": [
+    {
+      "name": "Malta",
+      "triangles": 107714,
+      "min_height_m": -8.950311660766602,
+      "max_height_m": 250.8652801513672,
+      "max_distance_to_valid_dtm_sample_m": 247.23845977369143,
+      "vertices_over_100m_from_valid_sample": 2993
+    },
+    {
+      "name": "Gozo",
+      "triangles": 35050,
+      "min_height_m": 0.061000000685453415,
+      "max_height_m": 186.03225708007812,
+      "max_distance_to_valid_dtm_sample_m": 254.1362359645198,
+      "vertices_over_100m_from_valid_sample": 1427
+    },
+    {
+      "name": "Comino",
+      "triangles": 4472,
+      "min_height_m": 0.035999998450279236,
+      "max_height_m": 74.31519317626953,
+      "max_distance_to_valid_dtm_sample_m": 235.82262243380575,
+      "vertices_over_100m_from_valid_sample": 266
+    },
+    {
+      "name": "Manoel_Island",
+      "triangles": 420,
+      "min_height_m": 0.5871897339820862,
+      "max_height_m": 24.542749404907227,
+      "max_distance_to_valid_dtm_sample_m": 182.9064738064402,
+      "vertices_over_100m_from_valid_sample": 21
+    },
+    {
+      "name": "St_Pauls_Islands",
+      "triangles": 758,
+      "min_height_m": 1.2350000143051147,
+      "max_height_m": 20.561479568481445,
+      "max_distance_to_valid_dtm_sample_m": 209.65224500547959,
+      "vertices_over_100m_from_valid_sample": 87
+    },
+    {
+      "name": "Cominotto",
+      "triangles": 1108,
+      "min_height_m": 0.20999999344348907,
+      "max_height_m": 26.52606773376465,
+      "max_distance_to_valid_dtm_sample_m": 219.9507739216685,
+      "vertices_over_100m_from_valid_sample": 189
+    },
+    {
+      "name": "Filfla",
+      "triangles": 246,
+      "min_height_m": 0.574999988079071,
+      "max_height_m": 20.70404624938965,
+      "max_distance_to_valid_dtm_sample_m": 185.70594838376945,
+      "vertices_over_100m_from_valid_sample": 42
+    },
+    {
+      "name": "Coastal_islet_08",
+      "triangles": 294,
+      "min_height_m": 15.84000015258789,
+      "max_height_m": 17.706924438476562,
+      "max_distance_to_valid_dtm_sample_m": 222.58158301084939,
+      "vertices_over_100m_from_valid_sample": 75
+    },
+    {
+      "name": "Coastal_islet_09",
+      "triangles": 114,
+      "min_height_m": 35.772151947021484,
+      "max_height_m": 79.54972839355469,
+      "max_distance_to_valid_dtm_sample_m": 178.86866719366589,
+      "vertices_over_100m_from_valid_sample": 20
+    },
+    {
+      "name": "Coastal_islet_10",
+      "triangles": 26,
+      "min_height_m": 0.3190000057220459,
+      "max_height_m": 2.6619999408721924,
+      "max_distance_to_valid_dtm_sample_m": 191.2087725590151,
+      "vertices_over_100m_from_valid_sample": 8
+    },
+    {
+      "name": "Coastal_islet_11",
+      "triangles": 176,
+      "min_height_m": 0.29899999499320984,
+      "max_height_m": 0.3632105588912964,
+      "max_distance_to_valid_dtm_sample_m": 161.99163224114605,
+      "vertices_over_100m_from_valid_sample": 36
+    },
+    {
+      "name": "Coastal_islet_12",
+      "triangles": 204,
+      "min_height_m": 0.35600000619888306,
+      "max_height_m": 3.556079626083374,
+      "max_distance_to_valid_dtm_sample_m": 215.24898013665293,
+      "vertices_over_100m_from_valid_sample": 52
+    },
+    {
+      "name": "Coastal_islet_13",
+      "triangles": 64,
+      "min_height_m": 0.29899999499320984,
+      "max_height_m": 0.6566445231437683,
+      "max_distance_to_valid_dtm_sample_m": 65.15930345174627,
+      "vertices_over_100m_from_valid_sample": 0
+    },
+    {
+      "name": "Coastal_islet_14",
+      "triangles": 144,
+      "min_height_m": 12.939000129699707,
+      "max_height_m": 15.84000015258789,
+      "max_distance_to_valid_dtm_sample_m": 219.70063577088473,
+      "vertices_over_100m_from_valid_sample": 37
+    },
+    {
+      "name": "Coastal_islet_15",
+      "triangles": 96,
+      "min_height_m": 0.9419999718666077,
+      "max_height_m": 1.173702359199524,
+      "max_distance_to_valid_dtm_sample_m": 183.8220471713972,
+      "vertices_over_100m_from_valid_sample": 25
+    },
+    {
+      "name": "Coastal_islet_16",
+      "triangles": 176,
+      "min_height_m": 2.0940001010894775,
+      "max_height_m": 2.0940001010894775,
+      "max_distance_to_valid_dtm_sample_m": 218.3147574821932,
+      "vertices_over_100m_from_valid_sample": 45
+    },
+    {
+      "name": "Coastal_islet_17",
+      "triangles": 208,
+      "min_height_m": 1.0010000467300415,
+      "max_height_m": 1.0010000467300415,
+      "max_distance_to_valid_dtm_sample_m": 196.17942675401258,
+      "vertices_over_100m_from_valid_sample": 53
+    },
+    {
+      "name": "Coastal_islet_18",
+      "triangles": 60,
+      "min_height_m": 0.33000001311302185,
+      "max_height_m": 34.694000244140625,
+      "max_distance_to_valid_dtm_sample_m": 50.006635980645676,
+      "vertices_over_100m_from_valid_sample": 0
+    },
+    {
+      "name": "Coastal_islet_19",
+      "triangles": 84,
+      "min_height_m": 0.2370000034570694,
+      "max_height_m": 0.39972376823425293,
+      "max_distance_to_valid_dtm_sample_m": 174.30043501746195,
+      "vertices_over_100m_from_valid_sample": 22
+    },
+    {
+      "name": "Coastal_islet_20",
+      "triangles": 44,
+      "min_height_m": 0.9996346235275269,
+      "max_height_m": 2.8081531524658203,
+      "max_distance_to_valid_dtm_sample_m": 247.80262971870144,
+      "vertices_over_100m_from_valid_sample": 12
+    },
+    {
+      "name": "Coastal_islet_21",
+      "triangles": 32,
+      "min_height_m": 7.339345932006836,
+      "max_height_m": 12.812580108642578,
+      "max_distance_to_valid_dtm_sample_m": 332.63706374645284,
+      "vertices_over_100m_from_valid_sample": 9
+    },
+    {
+      "name": "Coastal_islet_22",
+      "triangles": 30,
+      "min_height_m": 2.753689765930176,
+      "max_height_m": 4.117143630981445,
+      "max_distance_to_valid_dtm_sample_m": 124.63288737821593,
+      "vertices_over_100m_from_valid_sample": 9
+    },
+    {
+      "name": "Coastal_islet_23",
+      "triangles": 40,
+      "min_height_m": 13.727904319763184,
+      "max_height_m": 19.382532119750977,
+      "max_distance_to_valid_dtm_sample_m": 19.501691055171012,
+      "vertices_over_100m_from_valid_sample": 0
+    },
+    {
+      "name": "Coastal_islet_24",
+      "triangles": 48,
+      "min_height_m": 12.939000129699707,
+      "max_height_m": 12.939000129699707,
+      "max_distance_to_valid_dtm_sample_m": 174.7417176362074,
+      "vertices_over_100m_from_valid_sample": 13
+    },
+    {
+      "name": "Coastal_islet_25",
+      "triangles": 28,
+      "min_height_m": 8.782430648803711,
+      "max_height_m": 10.077068328857422,
+      "max_distance_to_valid_dtm_sample_m": 17.800074771300036,
+      "vertices_over_100m_from_valid_sample": 0
+    },
+    {
+      "name": "Coastal_islet_26",
+      "triangles": 32,
+      "min_height_m": 8.688122749328613,
+      "max_height_m": 10.521294593811035,
+      "max_distance_to_valid_dtm_sample_m": 19.00426855546885,
+      "vertices_over_100m_from_valid_sample": 0
+    },
+    {
+      "name": "Coastal_islet_27",
+      "triangles": 76,
+      "min_height_m": 12.939000129699707,
+      "max_height_m": 12.939000129699707,
+      "max_distance_to_valid_dtm_sample_m": 136.37693798733778,
+      "vertices_over_100m_from_valid_sample": 20
+    },
+    {
+      "name": "Coastal_islet_28",
+      "triangles": 48,
+      "min_height_m": 10.759413719177246,
+      "max_height_m": 12.698347091674805,
+      "max_distance_to_valid_dtm_sample_m": 27.587630357268395,
+      "vertices_over_100m_from_valid_sample": 0
+    },
+    {
+      "name": "Coastal_islet_29",
+      "triangles": 24,
+      "min_height_m": 15.083090782165527,
+      "max_height_m": 23.62700080871582,
+      "max_distance_to_valid_dtm_sample_m": 252.64802900466483,
+      "vertices_over_100m_from_valid_sample": 7
+    },
+    {
+      "name": "Coastal_islet_30",
+      "triangles": 12,
+      "min_height_m": 6.257164001464844,
+      "max_height_m": 11.246536254882812,
+      "max_distance_to_valid_dtm_sample_m": 26.961269876463074,
+      "vertices_over_100m_from_valid_sample": 0
+    },
+    {
+      "name": "Coastal_islet_31",
+      "triangles": 36,
+      "min_height_m": 12.939000129699707,
+      "max_height_m": 12.939000129699707,
+      "max_distance_to_valid_dtm_sample_m": 149.43098609076245,
+      "vertices_over_100m_from_valid_sample": 10
+    },
+    {
+      "name": "Coastal_islet_32",
+      "triangles": 24,
+      "min_height_m": 5.904689788818359,
+      "max_height_m": 6.269348621368408,
+      "max_distance_to_valid_dtm_sample_m": 21.50689179475831,
+      "vertices_over_100m_from_valid_sample": 0
+    },
+    {
+      "name": "Coastal_islet_33",
+      "triangles": 28,
+      "min_height_m": 3.5026488304138184,
+      "max_height_m": 5.329733371734619,
+      "max_distance_to_valid_dtm_sample_m": 18.885223119726263,
+      "vertices_over_100m_from_valid_sample": 0
+    },
+    {
+      "name": "Coastal_islet_34",
+      "triangles": 24,
+      "min_height_m": 5.822052478790283,
+      "max_height_m": 6.272395610809326,
+      "max_distance_to_valid_dtm_sample_m": 66.4375207056412,
+      "vertices_over_100m_from_valid_sample": 0
+    },
+    {
+      "name": "Coastal_islet_35",
+      "triangles": 28,
+      "min_height_m": 2.36299991607666,
+      "max_height_m": 2.36299991607666,
+      "max_distance_to_valid_dtm_sample_m": 149.60248424061248,
+      "vertices_over_100m_from_valid_sample": 8
+    },
+    {
+      "name": "Coastal_islet_36",
+      "triangles": 32,
+      "min_height_m": 5.936221599578857,
+      "max_height_m": 6.120720386505127,
+      "max_distance_to_valid_dtm_sample_m": 28.343894309564714,
+      "vertices_over_100m_from_valid_sample": 0
+    }
+  ]
+}

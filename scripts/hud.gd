@@ -1,6 +1,8 @@
 class_name FlightHUD
 extends CanvasLayer
 signal change_aircraft_requested
+var mission: MaltaMission
+var flight_input_enabled: bool = true
 const INK := Color("e9e8d7")
 const MUTED := Color("abb8ad")
 const GOLD := Color("e4bf75")
@@ -72,7 +74,7 @@ func _ready() -> void:
 	root.add_child(masthead)
 	var header := VBoxContainer.new()
 	masthead.add_child(header)
-	header.add_child(_label("R A F   /   S O U T H E R N   E N G L A N D   /   1 9 4 0", 12, MUTED))
+	header.add_child(_label("RAF / MALTA / 1940–42" if mission != null else "R A F   /   S O U T H E R N   E N G L A N D   /   1 9 4 0", 12, MUTED))
 	header.add_child(_label("FIRST SORTIE", 34, INK))
 	header.add_child(_label(aircraft.display_name.to_upper() + " · AIRFIELD ENCOUNTER", 13, GOLD))
 	var status_panel := PanelContainer.new()
@@ -135,6 +137,8 @@ func _ready() -> void:
 	strip.add_child(list)
 	list.add_child(_label("PILOT NOTES", 12, GOLD))
 	list.add_child(_label("ARROWS  Pitch / bank     A / D  Rudder\nW / S  Throttle     G  Gear     SPACE  Brakes\n%s (hold)  %s\nH  DEBUG: −10 HP     R  Reset     ESC  Pause" % [fire_key_label, aircraft.gun_description], 13, INK))
+	if mission != null:
+		list.add_child(_label("E Board / leave · I Engine · M Navigation", 13, GOLD))
 	list.add_child(_label("APPROACH  %s km/h · %s\nFlare gently · aim for less than 3 m/s sink" % [aircraft.approach_speed_hint, "gear down" if aircraft.gear.retractable else "fixed gear"], 12, MUTED))
 	notice_label = _label("", 16, GOLD)
 	notice_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
@@ -168,12 +172,12 @@ func _ready() -> void:
 	resume_button.pressed.connect(_resume)
 	menu.add_child(resume_button)
 	var reset_button := Button.new()
-	reset_button.text = "RESET AT RUNWAY START  /  R"
+	reset_button.text = "FULL MISSION RESTART  /  R" if mission != null else "RESET AT RUNWAY START  /  R"
 	reset_button.focus_mode = Control.FOCUS_NONE
 	reset_button.pressed.connect(_reset)
 	menu.add_child(reset_button)
 	change_aircraft_button = Button.new()
-	change_aircraft_button.text = "CHOOSE ANOTHER AIRCRAFT"
+	change_aircraft_button.text = "END MISSION / CHOOSE MAP" if mission != null else "CHOOSE ANOTHER AIRCRAFT"
 	change_aircraft_button.focus_mode = Control.FOCUS_NONE
 	change_aircraft_button.pressed.connect(func(): change_aircraft_requested.emit())
 	menu.add_child(change_aircraft_button)
@@ -223,6 +227,8 @@ func _instrument(parent: HBoxContainer, title: String, value: String, unit: Stri
 func _input(event: InputEvent) -> void:
 	# Handle flight shortcuts before GUI navigation can consume them. This
 	# CanvasLayer processes while paused, so Escape and R always remain usable.
+	if not flight_input_enabled:
+		return
 	if event.is_echo():
 		return
 	if event.is_action_pressed("pause"):
@@ -236,14 +242,17 @@ func _input(event: InputEvent) -> void:
 func _reset() -> void:
 	get_tree().paused = false
 	get_viewport().gui_release_focus()
-	aircraft.request_reset()
+	if mission != null:
+		mission.session.call_deferred("restart_malta")
+	else:
+		aircraft.request_reset()
 
 func _resume() -> void:
 	get_tree().paused = false
 	get_viewport().gui_release_focus()
 
 func _process(delta: float) -> void:
-	if not is_instance_valid(aircraft):
+	if not flight_input_enabled or not is_instance_valid(aircraft):
 		return
 	if not get_tree().paused:
 		elapsed += delta
@@ -262,7 +271,7 @@ func _process(delta: float) -> void:
 	_update_enemy(camera)
 	gear_label.modulate = GOLD if not aircraft.gear.extended else Color.WHITE
 	var heading := fposmod(rad_to_deg(atan2(-aircraft.global_basis.z.x, aircraft.global_basis.z.z)), 360.0)
-	heading_label.text = "HDG %03d°    ·    RUNWAY 18 / 36" % roundi(heading)
+	heading_label.text = "HDG %03d°    ·    %s" % [roundi(heading), "MALTA" if mission != null else "RUNWAY 18 / 36"]
 	if aircraft.is_destroyed:
 		state_label.text = "DESTROYED · R TO RESET"
 	elif aircraft.is_crashed:

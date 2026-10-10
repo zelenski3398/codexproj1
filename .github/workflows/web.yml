@@ -22,6 +22,7 @@ jobs:
           godot --headless --path . --editor --import --quit
           godot --headless --path . --fixed-fps 120 --script res://tests/keyboard_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/weapons_checks.gd
+          godot --headless --path . --fixed-fps 120 --script res://tests/malta_checks.gd
       - name: Export browser game
         run: bash tools/build_web.sh
       - name: Save downloadable browser build

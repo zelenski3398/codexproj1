@@ -38,6 +38,8 @@ extends Node
 @export var maximum_roll_rate: float = 0.7
 @export var maximum_yaw_rate: float = 0.3
 @export var boundary_margin: float = 500.0
+@export var world_extent: float = Airfield.EXTENT
+@export var measured_terrain: bool = false
 @export_group("Damage compensation through pilot commands")
 @export var damage_trim_gain: float = 0.45
 @export_range(0, 1, 0.01) var maximum_damage_trim: float = 0.55
@@ -216,7 +218,7 @@ func _scan_terrain() -> void:
 	var flat_forward: Vector3 = (-aircraft.global_basis.z * Vector3(1, 0, 1)).normalized()
 	var right: Vector3 = flat_forward.cross(Vector3.UP)
 	var horizon: float = clampf(aircraft.airspeed * terrain_lookahead_seconds, 120, 450)
-	var highest: float = Airfield.height_at(position.x, position.z)
+	var highest: float = _terrain_height(position)
 	var space: PhysicsDirectSpaceState3D = aircraft.get_world_3d().direct_space_state
 	# Downward rays sample actual terrain/buildings in a corridor ahead, including
 	# wing tips. Forecast clearance using velocity, not only current altitude.
@@ -225,7 +227,7 @@ func _scan_terrain() -> void:
 			var point: Vector3 = position + flat_forward * horizon * fraction + right * lane
 			var ray: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(point + Vector3.UP * 500, point + Vector3.DOWN * 1500, 1)
 			var hit: Dictionary = space.intersect_ray(ray)
-			var ground: float = float(hit.position.y) if not hit.is_empty() else Airfield.height_at(point.x, point.z)
+			var ground: float = float(hit.position.y) if not hit.is_empty() else _terrain_height(point)
 			highest = maxf(highest, ground)
 			var predicted_y: float = position.y + minf(aircraft.linear_velocity.y, 0) * terrain_lookahead_seconds * fraction
 			if predicted_y < ground + minimum_agl:
@@ -244,7 +246,7 @@ func _scan_terrain() -> void:
 		var right_clearance: float = position.distance_to(right_hit.position) if not right_hit.is_empty() else INF
 		avoidance_point = left_goal if left_clearance >= right_clearance else right_goal
 		avoidance_point.y = maxf(position.y + terrain_margin, highest + minimum_agl + terrain_margin)
-	if maxf(absf(position.x), absf(position.z)) > Airfield.EXTENT - boundary_margin:
+	if maxf(absf(position.x), absf(position.z)) > world_extent - boundary_margin:
 		terrain_avoiding = true
 		avoidance_point = patrol_center
 		avoidance_point.y = maxf(patrol_center.y, highest + minimum_agl + terrain_margin)
@@ -278,7 +280,7 @@ func _fly_toward(point: Vector3, delta: float) -> void:
 	else:
 		roll_trim = move_toward(roll_trim, 0, delta)
 	var roll: float = clampf(((desired_bank - bank) * 4.0 - omega.z * 0.6 + roll_trim) / maxf(damage.cockpit_factor(), compensation_authority_floor), -1, 1)
-	var height: float = maxf(point.y, Airfield.height_at(aircraft.global_position.x, aircraft.global_position.z) + minimum_agl)
+	var height: float = maxf(point.y, _terrain_height(aircraft.global_position) + minimum_agl)
 	if impaired:
 		pitch_trim = clampf(pitch_trim + (height - aircraft.global_position.y) * damage_trim_gain * delta * 0.002, -0.07, 0.07)
 	else:
@@ -342,3 +344,10 @@ func _clear_line_of_sight() -> bool:
 		if not hit.is_empty() and hit.collider != target:
 			return false
 	return true
+
+func _terrain_height(point: Vector3) -> float:
+	if not measured_terrain:
+		return Airfield.height_at(point.x, point.z)
+	var ray: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(Vector3(point.x, 2000, point.z), Vector3(point.x, -100, point.z), 1)
+	var hit: Dictionary = aircraft.get_world_3d().direct_space_state.intersect_ray(ray)
+	return float(hit.position.y) if not hit.is_empty() else 0.0

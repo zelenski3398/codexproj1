@@ -1,0 +1,13 @@
+Malta terrain supplied by the user, imported at its original 1 metre scale.
+Elevation: Planning Authority, Digital Terrain Model 2012, CC BY 4.0.
+https://portal.data.gov.mt/dataset/digital-terrain-model-2012
+https://creativecommons.org/licenses/by/4.0/
+Coastline: © 2026 OpenStreetMap contributors, ODbL.
+https://www.openstreetmap.org/copyright
+https://opendatacommons.org/licenses/odbl/1-0/
+Source datasets, metadata and terrain generator are provided in the repository:
+https://github.com/zelenski3398/codexproj1/tree/main/assets/malta/source
+Changes by this game: north-up navigation chart; imported mesh LOD/collision;
+approximate historical airfield markers, independent playable runway/apron decks.
+The GLB coastline, vertex elevations, axes and scale have not been changed.
+The elevation is a coarse 2012 measured-terrain foundation, not surveyed WWII terrain.
