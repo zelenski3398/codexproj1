@@ -141,7 +141,7 @@ func _destroy() -> void:
 		return
 	is_destroyed = true
 	pilot.reset_commands()
-	guns.reset()
+	guns.reset(false) # Clear rounds/flashes, retain this life's combat telemetry.
 	destroyed.emit()
 
 func request_reset() -> void:

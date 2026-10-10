@@ -161,9 +161,12 @@ shot down by the other's swept-collision bullets. The enemy has two forward
 wing guns with orange tracers, 6 rounds/sec per gun, 650 m/s bullet speed and
 2 damage/round. It fires 0.75-second bursts separated by 1.25-second rests.
 A separate rear-cockpit MG 15-style gunner tracks a pursuer and fires short
-bursts within a **configurable 500 m** rear sector. This is a provisional
-practical game cutoff, not a verified historical maximum range. See
-[rear gunner and tactics](docs/stuka-tactics.md) for tuning and research limitations.
+bursts with human reaction, delayed observations, uncertain lead and finite
+traverse. **Pilot** is the default; Cadet and Ace have separate configurable
+skill profiles. There is no 500 m firing cutoff: accuracy falls with range,
+angular movement and Stuka manoeuvres. Bullet damage/speed/lifetime are unchanged.
+See [gunner balance and measurements](docs/gunner-balance.md) and
+[rear gunner and tactics](docs/stuka-tactics.md).
 
 Take off and stay above **12 m AGL for eight seconds**. The grace now unlocks
 for that aircraft life, without an airspeed requirement; a brief altitude or
@@ -182,10 +185,16 @@ bullet excludes its shooter's collision body. Terrain and friendly bodies stop
 rounds instead of letting them pass through.
 
 Rear tracking is limited to **±70° astern**, **−12° to +60° elevation** and
-75°/s traverse. The gunner leads motion, checks tail/fuselage and terrain
-obstruction, and fires 0.45 s bursts with 1.4 s rests. Follow slightly higher
-or off the centreline within 500 m to clear its tail. Complete cockpit failure
+75°/s mechanical traverse (Pilot human tracking is 42°/s). It aims at the whole
+aircraft using noisy delayed positions, not an engine hitbox or exact velocity.
+Pilot bursts last 0.45 s with 1.4 s rests; it corrects between bursts.
+Every dispersed round checks the Stuka's own fuselage, tail and wing hitboxes.
+A close, steady tail approach remains dangerous. Complete cockpit failure
 disables the gunner. The HUD warns **REAR GUNNER FIRING · BREAK AWAY**.
+**F3** also shows player/front/rear shots, damaging aircraft hits, percentage,
+latest firing range and components struck; use its skill selector to compare
+Cadet/Pilot/Ace. Counter reset leaves aircraft damage unchanged. R restores a
+fresh encounter and clears statistics while keeping selected difficulty.
 
 Navigation predicts a flight intercept at long range, switches to ballistic
 alignment nearby and adjusts throttle to close without endless overshoots.
@@ -372,7 +381,9 @@ The main scripts are deliberately small separate components:
 | `scripts/damage_effects.gd` | 128 pooled CPU mesh particles; procedurally generated soft billboard smoke, flame spheres, intensity-driven emission, world-space lifetime; Compatibility/ANGLE-friendly, no GPU particles |
 | `scripts/enemy_aircraft.gd` | Enemy configuration using shared flight, health, effects and weapons; 26 m² wing area, 11,500 N thrust, separate collision layer, airborne spawn, physical falling wreck, single impact event and exported 4 s wreck cleanup delay |
 | `scripts/enemy_pilot.gd` | Patrol/engage/evade/destroyed states, predictive terrain/obstacle avoidance, intercept prediction, per-wing line of sight and short bursts; exports speed 58 m/s (up to +18 engage), patrol radius 450 m, minimum height 65 m, terrain horizon 5 s / margin 20 m, command slew 2.5/s, bank 46° patrol / 55° tactical, pitch/roll/yaw rate limits 0.45/0.7/0.3 rad/s, detection 3,200 m / retention 7,500 m, firing 650 m, cone 6°, grace 8 s, burst/rest 0.75/1.25 s, aim error 0.18°, evade 3 s |
-| `scripts/rear_gunner.gd` | Independent rear-cockpit MG 15-style controller using shared WingGuns: provisional range 500 m, traverse ±70°, elevation −12°/+60°, tracking 75°/s, burst/rest 0.45/1.4 s, 16.67 rounds/s, 765 m/s, 1.5 damage, 128 fixed slots; own-tail/terrain checks, shared grace and cockpit failure |
+| `scripts/rear_gunner.gd` | Human rear-cockpit aiming, delayed noisy observations, uncertain lead, finite traverse, burst correction and per-round own-geometry checks; unchanged MG 15-style ballistics and 128 slots; shared grace/cockpit failure |
+| `gunner_profiles/*.tres` | Cadet/Pilot/Ace Resource profiles: reaction/delay, measurement/lead error, tracking, visibility, vibration, bank/motion error and burst/rest scales; optional Inspector override |
+| `scripts/weapon_statistics.gd` / `scripts/gunner_debug_panel.gd` | Shared projectile counters, range buckets and component hit counts; F3 skill switch/reset and retained statistics after wreck removal |
 | `scripts/combat_teams.gd` | Shared neutral/player/enemy team IDs and friendly-fire policy |
 | `scripts/destruction_burst.gd` | Single session-owned cosmetic impact burst; 32 CPU mesh/sprite particles, 2.5 s lifetime, no area damage or GPU particles |
 | `scripts/stuka_model.gd` | Original reference-inspired gull-wing/canopy/fixed-gear model and two leading-edge gun ports |
@@ -409,6 +420,7 @@ godot --headless --path . --fixed-fps 120 --script res://tests/aircraft_choice_c
 godot --headless --path . --fixed-fps 120 --script res://tests/encounter_checks.gd
 godot --headless --path . --fixed-fps 120 --script res://tests/component_damage_checks.gd
 godot --headless --path . --fixed-fps 120 --script res://tests/rear_gunner_checks.gd
+godot --headless --path . --fixed-fps 120 --script res://tests/gunner_balance_checks.gd -- /path/to/gunner-results.json
 ```
 
 `flight_checks.gd` runs the real scene, rigid body, collision terrain, suspension
@@ -508,13 +520,29 @@ fuselage side, rather than a coarse centreline capsule that can hit tail parts.
 **Rear gunner / tactics result: 46/46 passed; all eight suites total 397/397.**
 The new suite checks separate rear/forward stations, parked and airborne grace,
 real rear hits on static/moving aircraft, localized damage, self/friendly safety,
-inside/outside/inclusive range, arcs, banked tracking, own-tail/terrain cover,
+firing beyond 500 m, physical lifetime reach, arcs, banked tracking, own-tail/terrain cover,
 a 30,000 m/s swept cover hit, traverse limits, bursts/rests, cockpit failure/repair,
 destruction, pause, clean restart and retained gunner tuning. It also checks slow
 player acquisition, pursuit retention and release, tail-threat breaks, alternating
 break direction, real turning/altitude protection, slewed commands and high/low
 yo-yo goals. The existing 75-second pursuit retains actual forward-gun hits;
 its rear-approach assertion now expects the intentional defensive break.
+The geometry/lifecycle suite uses a clearly documented, test-only precise profile
+to isolate those checks; gameplay and the balance suite use the production skills.
+
+**Human gunner balance: 162/162; all nine suites: 559/559 on Godot 4.6.3.**
+The added suite samples both fighters, all three skills and 100/300/500/700 m,
+three seeds per case and 20 simulated seconds per seed. It verifies delayed
+reaction, burst corrections, actual shot dispersion and flight time, own-wing/
+tail/fuselage obstruction, counters, live weaving and physical attacks.
+Pilot Spitfire hit rates are 56.7% / 18.7% / 8.3% / 1.6% at those distances.
+These are intact stationary silhouettes, not a claim about every dogfight.
+Moving, normally controlled attacks defeated the Stuka with both fighters while
+its rear gun fired. See [method, data and manual procedure](docs/gunner-balance.md).
+Rendered native mouse/keyboard checks passed 16/16, including selecting Cadet
+in the F3 dropdown and W/Ctrl afterwards. Windows 4.7/ANGLE and subjective
+encounter balance remain unverified.
+
 Rendered Compatibility close-ups were inspected for crew, swivel, muzzle flash,
 tracers and the existing cockpit hitbox:
 

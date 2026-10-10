@@ -13,6 +13,7 @@ var damage_button: Button
 var repair_button: Button
 var enabled: bool = false
 var refresh_clock: float = 0
+var gunner_panel: GunnerDebugPanel
 
 func _ready() -> void:
 	layer = 3
@@ -62,6 +63,10 @@ func _ready() -> void:
 	repair_button.pressed.connect(repair_selected)
 	column.add_child(repair_button)
 	panel.visible = false
+	gunner_panel = GunnerDebugPanel.new()
+	gunner_panel.session = session
+	add_child(gunner_panel)
+	gunner_panel.visible = false
 
 func _label(text: String, font_size: int) -> Label:
 	var label: Label = Label.new()
@@ -78,6 +83,7 @@ func _input(event: InputEvent) -> void:
 func set_enabled(value: bool) -> void:
 	enabled = value
 	panel.visible = enabled
+	gunner_panel.visible = enabled
 	toggled.emit(enabled)
 	_update_hitboxes()
 	get_viewport().gui_release_focus()

@@ -7,6 +7,7 @@ extends Node3D
 @export var convergence_distance: float = 250.0 # <= 0 means parallel guns
 @export var tracer_every: int = 4
 @export_range(0, 3, 0.01) var spread_degrees: float = 0.0
+@export var spread_seed: int = 1942
 @export var pool_capacity: int = 384
 ## Alternative mount reuses the same fire timing, flashes and swept projectiles.
 ## Empty ports retain the aircraft's forward guns and existing player input.
@@ -14,6 +15,8 @@ var firing_ports: Array[Marker3D] = []
 var externally_controlled: bool = false
 var external_fire: bool = false
 var forward_from_port: bool = false
+var shot_clearance: Callable
+var telemetry_target: FlightAircraft
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var aircraft: FlightAircraft
 var pool: ProjectilePool
@@ -28,7 +31,7 @@ var assisted_aim: Vector3 = Vector3.ZERO
 @export var max_assist_degrees: float = 6.0
 
 func _ready() -> void:
-	rng.seed = 1942
+	rng.seed = spread_seed
 	pool = ProjectilePool.new()
 	pool.capacity = pool_capacity
 	pool.name = "WorldSpaceBullets"
@@ -81,17 +84,26 @@ func _fire_salvo() -> void:
 		var port: Marker3D = firing_ports[i]
 		var direction: Vector3 = shot_direction(port)
 		if spread_degrees > 0:
-			direction = direction.rotated(aircraft.global_basis.x, deg_to_rad(rng.randf_range(-spread_degrees, spread_degrees)))
-			direction = direction.rotated(aircraft.global_basis.y, deg_to_rad(rng.randf_range(-spread_degrees, spread_degrees)))
+			var shot_right: Vector3 = direction.cross(aircraft.global_basis.y).normalized()
+			if shot_right.length_squared() < 0.01:
+				shot_right = aircraft.global_basis.x
+			var shot_up: Vector3 = shot_right.cross(direction).normalized()
+			direction = direction.rotated(shot_right, deg_to_rad(rng.randf_range(-spread_degrees, spread_degrees)))
+			direction = direction.rotated(shot_up, deg_to_rad(rng.randf_range(-spread_degrees, spread_degrees)))
+		# Flexible mounts validate the actual dispersed shot, not just the
+		# centreline. Owner exclusion must not let a round pass through the tail.
+		if shot_clearance.is_valid() and not shot_clearance.call(port.global_position, direction):
+			continue
 		var velocity: Vector3 = direction * bullet_speed + aircraft.linear_velocity
-		pool.spawn(port.global_position, velocity, bullet_lifetime, bullet_damage, aircraft.get_rid(), (salvo_count + i) % maxi(tracer_every, 1) == 0, aircraft.team_id)
+		var distance: float = port.global_position.distance_to(telemetry_target.global_position) if is_instance_valid(telemetry_target) else -1
+		pool.spawn(port.global_position, velocity, bullet_lifetime, bullet_damage, aircraft.get_rid(), (salvo_count + i) % maxi(tracer_every, 1) == 0, aircraft.team_id, distance)
 		flash_times[i] = 0.035
 		flashes[i].visible = true
 	salvo_count += 1
 
-func reset() -> void:
-	pool.clear()
-	rng.seed = 1942
+func reset(reset_statistics: bool = true) -> void:
+	pool.clear(reset_statistics)
+	rng.seed = spread_seed
 	use_assisted_aim = false
 	external_fire = false
 	cooldown = 0.0

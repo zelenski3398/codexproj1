@@ -21,7 +21,7 @@ func _run() -> void:
 	_check(enemy.model.gun_ports.size() == 2 and enemy.rear_gunner.guns.firing_ports.size() == 1, "Rear mount is independent of the two forward wing guns")
 	var model: StukaModel = enemy.model as StukaModel
 	_check(model.rear_mount.position.z > 1 and model.rear_mount.position.z < 3 and model.rear_muzzle.position.z > 0, "Rear gun and crew occupy the back cockpit, not the nose or tail tip")
-	_check(enemy.rear_gunner.engagement_range == 500 and enemy.rear_gunner.guns.pool.capacity == 128, "Provisional 500 m cutoff and fixed shared projectile pool are configurable")
+	_check(enemy.rear_gunner.skill_profile().skill_name == "Pilot" and enemy.rear_gunner.guns.pool.capacity == 128, "Default human Pilot profile and shared fixed projectile pool are configurable")
 	await _frames(240)
 	_check(enemy.rear_gunner.guns.pool.total_spawned == 0 and player.health.hp == 100, "Parked player is protected from both gun stations")
 	await _fixture(Vector3(50, 35, 250))
@@ -49,10 +49,11 @@ func _run() -> void:
 	await _fixture(Vector3(60, 50, 500))
 	gunner = enemy.rear_gunner
 	await _frames(180)
-	_check(gunner.guns.pool.total_spawned == 0 and gunner.status == "OUT OF RANGE", "Rear gun stays silent just outside 500 m")
-	gunner.engagement_range = enemy.global_position.distance_to(player.global_position)
+	_check(gunner.guns.pool.total_spawned > 0, "Rear gun has no arbitrary 500 m firing cutoff")
+	await _fixture(Vector3(180, 100, 1600))
+	gunner = enemy.rear_gunner
 	await _frames(180)
-	_check(gunner.guns.pool.total_spawned > 0, "The configured engagement boundary is inclusive")
+	_check(gunner.guns.pool.total_spawned == 0 and gunner.status == "FLIGHT TIME TOO LONG", "Unreachable shots stop at physical projectile lifetime, not a special range cap")
 
 	await _fixture(Vector3(50, 35, -250))
 	await _frames(180)
@@ -152,13 +153,13 @@ func _run() -> void:
 		await process_frame
 	_check(gunner.burst_clock == clock and gunner.guns.pool.total_spawned == rounds, "Pause freezes gunner traversal, burst timing and projectiles")
 	paused = false
-	gunner.engagement_range = 625
+	gunner.tracking_rate_degrees = 65
 	var old_enemy: EnemyAircraft = enemy
 	player.freeze = false
 	player.request_reset()
 	await _frames(12)
 	enemy = world.enemy
-	_check(enemy != old_enemy and enemy.rear_gunner.guns.pool.active.is_empty() and enemy.rear_gunner.engagement_range == 625, "Full R creates one fresh rear gunner, clears rounds and preserves tuning")
+	_check(enemy != old_enemy and enemy.rear_gunner.guns.pool.active.is_empty() and enemy.rear_gunner.tracking_rate_degrees == 65, "Full R creates one fresh rear gunner, clears rounds and preserves tuning")
 	_check(not enemy.ai.combat_unlocked and not enemy.ai.tracking_target and enemy.rear_gunner.status == "WAITING FOR TAKEOFF", "Full R restores the takeoff grace and clears combat memory")
 
 	# Acquisition regressions that previously excluded slow/low climbing players.
@@ -261,8 +262,25 @@ func _fixture(local_target: Vector3, static_fixture: bool = true, basis: Basis =
 	enemy.ai.grace_period = 0
 	enemy.ai.combat_unlocked = true
 	enemy.rear_gunner.enabled = true
-	enemy.rear_gunner.engagement_range = 500
-	enemy.rear_gunner.aim_error_degrees = 0
+	# Deterministic mount/obstruction fixtures isolate geometry from perception;
+	# gunner_balance_checks exercises unmodified Cadet/Pilot/Ace profiles.
+	var precise: GunnerSkillProfile = GunnerSkillProfile.new()
+	precise.reaction_seconds = 0
+	precise.observation_delay = 0
+	precise.observation_interval = 0.02
+	precise.tracking_error_degrees = 0
+	precise.measurement_error_degrees = 0
+	precise.range_error_fraction = 0
+	precise.lead_error_fraction = 0
+	precise.velocity_learning = 1
+	precise.tracking_rate_degrees = 75
+	precise.burst_correction = 1
+	precise.silhouette_aim_spread_metres = 0
+	precise.angular_motion_error = 0
+	precise.vibration_degrees = 0
+	precise.bank_error_degrees = 0
+	precise.manoeuvre_error_degrees = 0
+	enemy.rear_gunner.skill_override = precise
 	enemy.rear_gunner.spread_degrees = 0
 	enemy.rear_gunner.reset()
 	player.freeze = static_fixture

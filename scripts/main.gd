@@ -15,6 +15,8 @@ var _enemy_restart_queued: bool = false
 var _ai_settings: Dictionary = {}
 var _gun_settings: Dictionary = {}
 var _rear_gunner_settings: Dictionary = {}
+var enemy_front_statistics: WeaponStatistics
+var enemy_rear_statistics: WeaponStatistics
 
 func _ready() -> void:
 	var field := Airfield.new()
@@ -43,6 +45,8 @@ func show_selection() -> void:
 	chase = null
 	hud = null
 	component_debug = null
+	enemy_front_statistics = null
+	enemy_rear_statistics = null
 	selector = AircraftSelector.new()
 	selector.name = "AircraftSelection"
 	selector.chosen.connect(start_flight, CONNECT_DEFERRED)
@@ -118,6 +122,10 @@ func _spawn_enemy() -> void:
 		enemy.rear_gunner.set(key, _rear_gunner_settings[key])
 	enemy.ai.reset()
 	enemy.rear_gunner.reset()
+	aircraft.guns.telemetry_target = enemy
+	enemy.guns.telemetry_target = aircraft
+	enemy_front_statistics = enemy.guns.pool.statistics
+	enemy_rear_statistics = enemy.rear_gunner.guns.pool.statistics
 	enemy.destroyed.connect(_on_enemy_destroyed.bind(enemy))
 	enemy.ground_impact.connect(_on_enemy_ground_impact.bind(enemy))
 	enemy.wreck_removed.connect(_on_wreck_removed.bind(enemy))

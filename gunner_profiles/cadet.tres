@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="GunnerSkillProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/gunner_skill_profile.gd" id="1"]
+[resource]
+script = ExtResource("1")
+skill_name = "Cadet"
+reaction_seconds = 0.95
+observation_delay = 0.35
+observation_interval = 0.20
+tracking_error_degrees = 0.65
+measurement_error_degrees = 0.12
+range_error_fraction = 0.20
+lead_error_fraction = 0.25
+velocity_learning = 0.25
+tracking_rate_degrees = 30.0
+burst_correction = 0.35
+silhouette_aim_spread_metres = 1.8
+recognition_angle_degrees = 1.2
+angular_motion_error = 1.5
+vibration_degrees = 0.12
+bank_error_degrees = 0.30
+manoeuvre_error_degrees = 0.45
+reacquisition_seconds = 0.7
+burst_duration_scale = 0.8
+burst_rest_scale = 1.3

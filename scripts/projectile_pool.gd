@@ -13,6 +13,9 @@ var lifetimes: Array[float] = []
 var damage: Array[float] = []
 var excluded: Array[RID] = []
 var excluded_hitboxes: Array[Array] = []
+var shot_distances: Array[float] = []
+var statistic_generations: Array[int] = []
+var statistics: WeaponStatistics = WeaponStatistics.new()
 var teams: Array[int] = []
 var tracers: Array[MeshInstance3D] = []
 var sparks: Array[MeshInstance3D] = []
@@ -40,6 +43,8 @@ func _ready() -> void:
 		damage.append(0.0)
 		excluded.append(RID())
 		excluded_hitboxes.append([])
+		shot_distances.append(-1)
+		statistic_generations.append(0)
 		teams.append(CombatTeams.NEUTRAL)
 		var visual := MeshKit.mesh(self, tracer_mesh, tracer_mat)
 		visual.visible = false
@@ -52,7 +57,7 @@ func _ready() -> void:
 		sparks.append(spark)
 		spark_times.append(0.0)
 
-func spawn(origin: Vector3, velocity: Vector3, life: float, hit_damage: float, shooter: RID, visible_tracer: bool, shooter_team: int = CombatTeams.NEUTRAL) -> bool:
+func spawn(origin: Vector3, velocity: Vector3, life: float, hit_damage: float, shooter: RID, visible_tracer: bool, shooter_team: int = CombatTeams.NEUTRAL, target_distance: float = -1) -> bool:
 	if free.is_empty():
 		dropped_rounds += 1
 		return false
@@ -71,11 +76,14 @@ func spawn(origin: Vector3, velocity: Vector3, life: float, hit_damage: float, s
 		if body is FlightAircraft:
 			excluded_hitboxes[index] = body.components.hitbox_rids
 	teams[index] = shooter_team
+	shot_distances[index] = target_distance
+	statistic_generations[index] = statistics.generation
 	tracers[index].position = origin
 	tracers[index].visible = visible_tracer
 	if velocity.length_squared() > 0.01:
 		tracers[index].look_at(origin + velocity)
 	total_spawned += 1
+	statistics.record_shot(target_distance)
 	return true
 
 func _physics_process(delta: float) -> void:
@@ -100,12 +108,19 @@ func _physics_process(delta: float) -> void:
 		ages[index] += step
 		if not hit.is_empty():
 			total_hits += 1
+			if statistic_generations[index] == statistics.generation:
+				statistics.impacts += 1
 			var collider: Object = hit.collider
+			var hit_aircraft: FlightAircraft = collider.damage_system.aircraft if collider is AircraftHitbox else (collider if collider is FlightAircraft else null)
+			var hp_before: float = hit_aircraft.health.hp if hit_aircraft != null else 0
 			if is_instance_valid(collider) and collider.has_method("take_damage") and CombatTeams.can_damage(teams[index], collider):
 				if collider.has_method("receive_projectile_hit"):
 					collider.call("receive_projectile_hit", damage[index], hit.position)
 				else:
 					collider.call("take_damage", damage[index])
+			if hit_aircraft != null and hit_aircraft.health.hp < hp_before and statistic_generations[index] == statistics.generation:
+				var component: StringName = collider.definition.id if collider is AircraftHitbox else &"fuselage"
+				statistics.record_aircraft_hit(component, hp_before - hit_aircraft.health.hp, shot_distances[index], ages[index])
 			_impact(hit.position)
 			_release(slot)
 		elif ages[index] >= lifetimes[index]:
@@ -131,7 +146,9 @@ func _impact(point: Vector3) -> void:
 	sparks[impact_cursor].visible = true
 	impact_cursor = (impact_cursor + 1) % sparks.size()
 
-func clear() -> void:
+func clear(reset_statistics: bool = true) -> void:
+	if reset_statistics:
+		statistics.reset()
 	for index in active:
 		tracers[index].visible = false
 		free.append(index)

@@ -1,0 +1,403 @@
+{
+  "method": {
+    "engine": "Godot 4.6.3",
+    "physics_ticks_per_second": 120,
+    "static_trial_seconds": 20,
+    "moving_trial_seconds": 12,
+    "seeds": [
+      1943,
+      7,
+      29
+    ],
+    "static_pose": "rear quarter x/range=0.2, y/range=0.12; enemy altitude 200 m",
+    "static_targets": "frozen; hull and component integrity restored each tick",
+    "hits": "accepted projectiles that reduce hostile aircraft hull HP; actual swept collisions",
+    "skill_indices": {
+      "0": "Cadet",
+      "1": "Pilot",
+      "2": "Ace"
+    }
+  },
+  "results": {
+    "moving": [
+      {
+        "aircraft": "sea_gladiator",
+        "hits": 18,
+        "mean_angular_motion": 0.00439754170361084,
+        "mean_distance": 317.298114034865,
+        "percentage": 12.0,
+        "shots": 150,
+        "weaving": false
+      },
+      {
+        "aircraft": "sea_gladiator",
+        "hits": 6,
+        "mean_angular_motion": 0.0567850189454223,
+        "mean_distance": 345.250364840472,
+        "percentage": 7.2289156626506,
+        "shots": 83,
+        "weaving": true
+      }
+    ],
+    "static": [
+      {
+        "aircraft": "spitfire",
+        "components": {
+          "elevator": 8,
+          "engine": 23,
+          "fuel_tank": 5,
+          "fuselage": 2,
+          "left_wing": 14
+        },
+        "distance": 100.0,
+        "hits": 52,
+        "percentage": 34.4370860927152,
+        "shots": 151,
+        "skill": 0
+      },
+      {
+        "aircraft": "spitfire",
+        "components": {
+          "cockpit": 1,
+          "elevator": 1,
+          "engine": 2,
+          "fuselage": 1,
+          "left_wing": 3,
+          "right_wing": 2
+        },
+        "distance": 300.0,
+        "hits": 10,
+        "percentage": 6.57894736842105,
+        "shots": 152,
+        "skill": 0
+      },
+      {
+        "aircraft": "spitfire",
+        "components": {
+          "left_wing": 1,
+          "right_wing": 1
+        },
+        "distance": 500.0,
+        "hits": 2,
+        "percentage": 1.31578947368421,
+        "shots": 152,
+        "skill": 0
+      },
+      {
+        "aircraft": "spitfire",
+        "components": {},
+        "distance": 700.0,
+        "hits": 0,
+        "percentage": 0.0,
+        "shots": 133,
+        "skill": 0
+      },
+      {
+        "aircraft": "spitfire",
+        "components": {
+          "cockpit": 6,
+          "elevator": 8,
+          "engine": 69,
+          "fuel_tank": 4,
+          "fuselage": 18,
+          "left_wing": 23,
+          "right_wing": 14,
+          "rudder": 1
+        },
+        "distance": 100.0,
+        "hits": 143,
+        "percentage": 56.7460317460317,
+        "shots": 252,
+        "skill": 1
+      },
+      {
+        "aircraft": "spitfire",
+        "components": {
+          "cockpit": 4,
+          "elevator": 5,
+          "engine": 21,
+          "fuselage": 3,
+          "left_wing": 5,
+          "right_wing": 8,
+          "rudder": 1
+        },
+        "distance": 300.0,
+        "hits": 47,
+        "percentage": 18.6507936507937,
+        "shots": 252,
+        "skill": 1
+      },
+      {
+        "aircraft": "spitfire",
+        "components": {
+          "cockpit": 2,
+          "elevator": 2,
+          "engine": 6,
+          "left_wing": 2,
+          "right_wing": 9
+        },
+        "distance": 500.0,
+        "hits": 21,
+        "percentage": 8.33333333333333,
+        "shots": 252,
+        "skill": 1
+      },
+      {
+        "aircraft": "spitfire",
+        "components": {
+          "left_wing": 2,
+          "right_wing": 2
+        },
+        "distance": 700.0,
+        "hits": 4,
+        "percentage": 1.63934426229508,
+        "shots": 244,
+        "skill": 1
+      },
+      {
+        "aircraft": "spitfire",
+        "components": {
+          "cockpit": 8,
+          "elevator": 14,
+          "engine": 176,
+          "fuel_tank": 12,
+          "fuselage": 12,
+          "left_wing": 9,
+          "right_wing": 4,
+          "rudder": 5
+        },
+        "distance": 100.0,
+        "hits": 240,
+        "percentage": 64.343163538874,
+        "shots": 373,
+        "skill": 2
+      },
+      {
+        "aircraft": "spitfire",
+        "components": {
+          "cockpit": 6,
+          "elevator": 2,
+          "engine": 35,
+          "fuel_tank": 2,
+          "fuselage": 5,
+          "left_wing": 5,
+          "right_wing": 9,
+          "rudder": 2
+        },
+        "distance": 300.0,
+        "hits": 66,
+        "percentage": 17.6,
+        "shots": 375,
+        "skill": 2
+      },
+      {
+        "aircraft": "spitfire",
+        "components": {
+          "cockpit": 1,
+          "elevator": 1,
+          "engine": 11,
+          "fuel_tank": 1,
+          "fuselage": 1,
+          "left_wing": 6
+        },
+        "distance": 500.0,
+        "hits": 21,
+        "percentage": 5.6,
+        "shots": 375,
+        "skill": 2
+      },
+      {
+        "aircraft": "spitfire",
+        "components": {
+          "cockpit": 1,
+          "engine": 4,
+          "fuselage": 2,
+          "rudder": 2
+        },
+        "distance": 700.0,
+        "hits": 9,
+        "percentage": 2.4,
+        "shots": 375,
+        "skill": 2
+      },
+      {
+        "aircraft": "sea_gladiator",
+        "components": {
+          "elevator": 6,
+          "engine": 32,
+          "fuel_tank": 2,
+          "fuselage": 3,
+          "left_wing": 14,
+          "right_wing": 8
+        },
+        "distance": 100.0,
+        "hits": 65,
+        "percentage": 43.046357615894,
+        "shots": 151,
+        "skill": 0
+      },
+      {
+        "aircraft": "sea_gladiator",
+        "components": {
+          "elevator": 1,
+          "engine": 3,
+          "fuselage": 1,
+          "left_wing": 5,
+          "right_wing": 6
+        },
+        "distance": 300.0,
+        "hits": 16,
+        "percentage": 10.5263157894737,
+        "shots": 152,
+        "skill": 0
+      },
+      {
+        "aircraft": "sea_gladiator",
+        "components": {
+          "left_wing": 2
+        },
+        "distance": 500.0,
+        "hits": 2,
+        "percentage": 1.31578947368421,
+        "shots": 152,
+        "skill": 0
+      },
+      {
+        "aircraft": "sea_gladiator",
+        "components": {},
+        "distance": 700.0,
+        "hits": 0,
+        "percentage": 0.0,
+        "shots": 133,
+        "skill": 0
+      },
+      {
+        "aircraft": "sea_gladiator",
+        "components": {
+          "cockpit": 5,
+          "elevator": 7,
+          "engine": 81,
+          "fuel_tank": 12,
+          "fuselage": 12,
+          "left_wing": 18,
+          "right_wing": 10
+        },
+        "distance": 100.0,
+        "hits": 145,
+        "percentage": 57.5396825396825,
+        "shots": 252,
+        "skill": 1
+      },
+      {
+        "aircraft": "sea_gladiator",
+        "components": {
+          "cockpit": 1,
+          "elevator": 2,
+          "engine": 33,
+          "fuselage": 3,
+          "left_wing": 11,
+          "right_wing": 14,
+          "rudder": 1
+        },
+        "distance": 300.0,
+        "hits": 65,
+        "percentage": 25.7936507936508,
+        "shots": 252,
+        "skill": 1
+      },
+      {
+        "aircraft": "sea_gladiator",
+        "components": {
+          "cockpit": 2,
+          "elevator": 2,
+          "engine": 9,
+          "left_wing": 4,
+          "right_wing": 7,
+          "rudder": 1
+        },
+        "distance": 500.0,
+        "hits": 25,
+        "percentage": 9.92063492063492,
+        "shots": 252,
+        "skill": 1
+      },
+      {
+        "aircraft": "sea_gladiator",
+        "components": {
+          "left_wing": 6
+        },
+        "distance": 700.0,
+        "hits": 6,
+        "percentage": 2.45901639344262,
+        "shots": 244,
+        "skill": 1
+      },
+      {
+        "aircraft": "sea_gladiator",
+        "components": {
+          "cockpit": 7,
+          "elevator": 8,
+          "engine": 208,
+          "fuel_tank": 6,
+          "fuselage": 14,
+          "left_wing": 7,
+          "right_wing": 1,
+          "rudder": 5
+        },
+        "distance": 100.0,
+        "hits": 256,
+        "percentage": 68.6327077747989,
+        "shots": 373,
+        "skill": 2
+      },
+      {
+        "aircraft": "sea_gladiator",
+        "components": {
+          "cockpit": 2,
+          "elevator": 2,
+          "engine": 44,
+          "fuel_tank": 3,
+          "fuselage": 2,
+          "left_wing": 14,
+          "right_wing": 29,
+          "rudder": 2
+        },
+        "distance": 300.0,
+        "hits": 98,
+        "percentage": 26.1333333333333,
+        "shots": 375,
+        "skill": 2
+      },
+      {
+        "aircraft": "sea_gladiator",
+        "components": {
+          "engine": 13,
+          "fuel_tank": 1,
+          "fuselage": 1,
+          "left_wing": 10,
+          "right_wing": 6
+        },
+        "distance": 500.0,
+        "hits": 31,
+        "percentage": 8.26666666666667,
+        "shots": 375,
+        "skill": 2
+      },
+      {
+        "aircraft": "sea_gladiator",
+        "components": {
+          "engine": 6,
+          "fuel_tank": 1,
+          "left_wing": 1,
+          "right_wing": 3,
+          "rudder": 2
+        },
+        "distance": 700.0,
+        "hits": 13,
+        "percentage": 3.46666666666667,
+        "shots": 375,
+        "skill": 2
+      }
+    ]
+  }
+}

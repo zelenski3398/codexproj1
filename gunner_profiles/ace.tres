@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="GunnerSkillProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/gunner_skill_profile.gd" id="1"]
+[resource]
+script = ExtResource("1")
+skill_name = "Ace"
+reaction_seconds = 0.35
+observation_delay = 0.12
+observation_interval = 0.09
+tracking_error_degrees = 0.23
+measurement_error_degrees = 0.04
+range_error_fraction = 0.06
+lead_error_fraction = 0.07
+velocity_learning = 0.5
+tracking_rate_degrees = 60.0
+burst_correction = 0.7
+silhouette_aim_spread_metres = 0.7
+recognition_angle_degrees = 0.65
+angular_motion_error = 0.65
+vibration_degrees = 0.05
+bank_error_degrees = 0.12
+manoeuvre_error_degrees = 0.2
+reacquisition_seconds = 0.25
+burst_duration_scale = 1.2
+burst_rest_scale = 0.75
