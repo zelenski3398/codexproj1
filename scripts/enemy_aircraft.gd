@@ -13,6 +13,9 @@ var impact_count: int = 0
 func _init() -> void:
 	reset_position = Vector3(-450, 160, 0)
 
+func default_damage_profile() -> AircraftDamageProfile:
+	return preload("res://damage_profiles/stuka.tres")
+
 func create_model() -> SpitfireModel:
 	return StukaModel.new()
 

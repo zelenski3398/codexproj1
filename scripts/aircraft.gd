@@ -36,6 +36,8 @@ var gear: LandingGear
 var model: SpitfireModel
 var health: AircraftHealth
 var guns: WingGuns
+@export var damage_profile: AircraftDamageProfile
+var components: AircraftDamage
 var damage_effects: DamageEffects
 var is_destroyed: bool = false
 var airspeed: float = 0.0
@@ -81,6 +83,12 @@ func _ready() -> void:
 	add_child(damage_effects)
 	health.changed.connect(damage_effects.set_health)
 	health.depleted.connect(_destroy)
+	components = AircraftDamage.new()
+	components.name = "ComponentDamage"
+	components.aircraft = self
+	components.profile = damage_profile if damage_profile != null else default_damage_profile()
+	add_child(components)
+	components.fuel_fire_changed.connect(damage_effects.set_fuel_fire)
 	guns = WingGuns.new()
 	guns.aircraft = self
 	guns.name = "EightWingGuns"
@@ -103,6 +111,9 @@ func _ready() -> void:
 	physics_material_override.friction = 0.55
 	physics_material_override.bounce = 0.0
 	global_transform = Transform3D(Basis(Vector3.RIGHT, 0.117), reset_position)
+
+func default_damage_profile() -> AircraftDamageProfile:
+	return preload("res://damage_profiles/spitfire.tres")
 
 func create_model() -> SpitfireModel:
 	return SpitfireModel.new()
@@ -149,6 +160,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		gear.last_notice = ""
 		is_crashed = false
 		is_destroyed = false
+		components.reset()
 		health.reset()
 		guns.reset()
 		damage_effects.clear()
@@ -159,6 +171,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		reset_completed.emit()
 		return
 	var dt := state.step
+	components.advance(dt)
 	pilot.sample(dt)
 	if is_destroyed:
 		pilot.reset_commands()
@@ -195,39 +208,42 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	# This forgiving stall fades lift rather than imposing a scripted fall.
 	# Residual lift and pitch authority allow recovery by lowering the nose.
 	cl *= lerpf(1.0, 0.22, stall_blend)
-	stalled = gear.contact_count == 0 and (airspeed < stall_speed or alpha_abs > alpha_limit)
+	stalled = gear.contact_count == 0 and (airspeed < stall_speed / sqrt(maxf(components.lift_factor(), 0.1)) or alpha_abs > alpha_limit)
 	var direction := velocity.normalized() if airspeed > 0.1 else -basis.z
 	var lift_direction := basis.y.slide(direction).normalized()
-	state.apply_central_force(lift_direction * q * wing_area * cl)
-	var drag_coefficient := parasite_drag + induced_drag * cl * cl + stall_blend * 0.28
+	# Healthy factors are exactly 1/0, preserving the original flight tuning.
+	var original_lift: float = q * wing_area * cl
+	state.apply_central_force(lift_direction * original_lift * components.lift_factor())
+	state.apply_torque(components.balance_torque(original_lift, q, lift_direction, direction, basis.x))
+	var drag_coefficient := parasite_drag + induced_drag * cl * cl + stall_blend * 0.28 + components.additional_drag()
 	if gear.extended:
 		drag_coefficient += 0.026
 	state.apply_central_force(-direction * 0.5 * air_density * airspeed * airspeed * wing_area * drag_coefficient)
 	# Propeller thrust loses effectiveness with speed; no velocity cap or
 	# direct transform movement is used in normal flight.
-	var thrust := engine_thrust * pilot.throttle / (1.0 + forward_speed / 130.0) if not is_destroyed else 0.0
+	var thrust := engine_thrust * components.power_factor() * pilot.throttle / (1.0 + forward_speed / 130.0) if not is_destroyed else 0.0
 	state.apply_central_force(-basis.z * thrust)
 	# Vertical fin resists sideslip. Forces change the actual travel direction.
-	state.apply_central_force(-basis.x * local_velocity.x * (180.0 + forward_speed * 22.0))
+	state.apply_central_force(-basis.x * local_velocity.x * (180.0 + forward_speed * 22.0) * components.rudder_factor())
 	var authority := clampf(forward_speed / 45.0, 0.12, 1.5)
 	var local_omega := basis.transposed() * state.angular_velocity
-	var torque := Vector3(pilot.pitch * pitch_torque, pilot.rudder * rudder_torque, pilot.roll * roll_torque) * authority
+	var torque := Vector3(pilot.pitch * pitch_torque * components.elevator_factor(), pilot.rudder * rudder_torque * components.rudder_factor(), pilot.roll * roll_torque) * authority * components.cockpit_factor()
 	if is_destroyed:
 		# Dead engine/controls, but passive lift, drag, gravity and angular
 		# stability still act. Do not freeze or scripted-translate the wreck.
 		torque = Vector3.ZERO
 	# Mild weathercock stability and nose-down stall tendency, not an autopilot.
 	if gear.contact_count == 0:
-		torque.x += -angle_of_attack * 5500.0 * authority - stall_blend * 8000.0
-		torque.y -= local_velocity.x * 650.0
+		torque.x += -angle_of_attack * 5500.0 * authority * components.elevator_factor() - stall_blend * 8000.0
+		torque.y -= local_velocity.x * 650.0 * components.rudder_factor()
 		# Banking requests the yaw rate of an approximate coordinated turn.
 		# Lift remains tilted with the wings and supplies the turning force.
 		var bank_sine := clampf(basis.x.y, -0.85, 0.85)
 		var turn_rate := 9.81 * bank_sine / maxf(airspeed, 25.0) * coordinated_turn
-		torque.y += (turn_rate - state.angular_velocity.y) * 48000.0
+		torque.y += (turn_rate - state.angular_velocity.y) * 48000.0 * components.rudder_factor()
 	else:
 		# Rudder and differential steering share A/D for manageable taxiing.
-		torque.y += pilot.rudder * 14000.0 * clampf(airspeed / 8.0, 0.0, 1.0)
+		torque.y += pilot.rudder * 14000.0 * clampf(airspeed / 8.0, 0.0, 1.0) * components.rudder_factor() * components.cockpit_factor()
 		torque.z *= 0.15
 	var damping := Vector3(inertia.x, inertia.y, inertia.z) * angular_response
 	torque -= local_omega * damping
@@ -247,4 +263,4 @@ func _crash(reason: String) -> void:
 	crashed.emit(reason)
 
 func _process(delta: float) -> void:
-	model.animate(delta, pilot.throttle, gear, is_crashed or is_destroyed)
+	model.animate(delta, pilot.throttle * components.power_factor(), gear, is_crashed or is_destroyed)

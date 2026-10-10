@@ -16,6 +16,11 @@ window/stretch/mode="canvas_items"
 
 [input]
 
+debug_components={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":4194334), Object(InputEventKey,"keycode":4194334)]
+}
+
 fire={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"physical_keycode":4194326), Object(InputEventKey,"keycode":4194326)]
@@ -79,6 +84,12 @@ renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 environment/defaults/default_clear_color=Color(0.56, 0.7, 0.78, 1)
 textures/default_filters/use_nearest_mipmap_filter=false
+
+[layer_names]
+3d_physics/layer_1="Terrain"
+3d_physics/layer_2="Player aircraft"
+3d_physics/layer_3="Enemy aircraft"
+3d_physics/layer_4="Aircraft component sensors"
 
 [physics]
 common/physics_ticks_per_second=120

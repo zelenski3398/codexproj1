@@ -27,6 +27,10 @@ extends Node
 @export var maximum_roll_rate: float = 0.7
 @export var maximum_yaw_rate: float = 0.3
 @export var boundary_margin: float = 500.0
+@export_group("Damage compensation through pilot commands")
+@export var damage_trim_gain: float = 0.45
+@export_range(0, 1, 0.01) var maximum_damage_trim: float = 0.55
+@export_range(0.05, 1, 0.01) var compensation_authority_floor: float = 0.25
 var aircraft: FlightAircraft
 var target: FlightAircraft
 var mode: String = "PATROL"
@@ -42,6 +46,8 @@ var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var burst_index: int = -1
 var aim_bias: Vector2 = Vector2.ZERO
 var previous_hp: float = 100.0
+var roll_trim: float = 0.0
+var pitch_trim: float = 0.0
 
 func _ready() -> void:
 	aircraft.health.changed.connect(_health_changed)
@@ -49,6 +55,8 @@ func _ready() -> void:
 
 func reset() -> void:
 	mode = "PATROL"
+	roll_trim = 0
+	pitch_trim = 0
 	airborne_timer = 0.0
 	burst_clock = 0.0
 	break_timer = 0.0
@@ -177,15 +185,29 @@ func _fly_toward(point: Vector3, delta: float) -> void:
 	var heading_error: float = wrapf(desired_heading - heading, -PI, PI)
 	var bank: float = asin(clampf(aircraft.global_basis.x.y, -1.0, 1.0))
 	var desired_bank: float = clampf(heading_error * 1.4, -deg_to_rad(maximum_bank_degrees), deg_to_rad(maximum_bank_degrees))
+	var damage: AircraftDamage = aircraft.components
+	var impaired: bool = damage.lift_factor() < 0.999 or damage.cockpit_factor() < 0.999 or damage.elevator_factor() < 0.999
 	var omega: Vector3 = aircraft.global_basis.transposed() * aircraft.angular_velocity
-	var roll: float = clampf((desired_bank - bank) * 4.0 - omega.z * 0.6, -1, 1)
+	if impaired:
+		# Integrate the measured bank error to counter a persistent asymmetric
+		# wing moment. Trim remains a normal, bounded and slewed roll command.
+		roll_trim = clampf(roll_trim + (desired_bank - bank) * damage_trim_gain * delta, -maximum_damage_trim, maximum_damage_trim)
+	else:
+		roll_trim = move_toward(roll_trim, 0, delta)
+	var roll: float = clampf(((desired_bank - bank) * 4.0 - omega.z * 0.6 + roll_trim) / maxf(damage.cockpit_factor(), compensation_authority_floor), -1, 1)
 	var height: float = maxf(point.y, Airfield.height_at(aircraft.global_position.x, aircraft.global_position.z) + minimum_agl)
-	var desired_pitch: float = clampf(0.02 + (height - aircraft.global_position.y) * 0.008, -0.22, 0.3)
-	if aircraft.airspeed < 36.0 and aircraft.altitude > minimum_agl + terrain_margin:
+	if impaired:
+		pitch_trim = clampf(pitch_trim + (height - aircraft.global_position.y) * damage_trim_gain * delta * 0.002, -0.07, 0.07)
+	else:
+		pitch_trim = move_toward(pitch_trim, 0, delta)
+	var desired_pitch: float = clampf(0.02 + pitch_trim + (height - aircraft.global_position.y) * 0.008, -0.22, 0.3)
+	if damage.power_factor() < 0.25 and aircraft.altitude > minimum_agl + terrain_margin:
+		desired_pitch = -0.10 # powerless/weak-engine glide; cannot maintain height forever
+	if aircraft.airspeed < 36.0 / sqrt(maxf(damage.lift_factor(), 0.1)) and aircraft.altitude > minimum_agl + terrain_margin:
 		desired_pitch = -0.17 # simplified, recoverable stall response
 	var pitch: float = asin(clampf(forward.y, -1.0, 1.0))
-	var pitch_command: float = clampf((desired_pitch - pitch) * 5.0 - omega.x * 0.7, -1, 1)
-	var rudder: float = clampf(heading_error * 0.15, -0.3, 0.3)
+	var pitch_command: float = clampf(((desired_pitch - pitch) * 5.0 - omega.x * 0.7) / maxf(damage.elevator_factor() * damage.cockpit_factor(), compensation_authority_floor), -1, 1)
+	var rudder: float = clampf(heading_error * 0.15 / maxf(damage.rudder_factor() * damage.cockpit_factor(), compensation_authority_floor), -0.6 if damage.rudder_factor() < 0.999 else -0.3, 0.6 if damage.rudder_factor() < 0.999 else 0.3)
 	# Soft rate limits oppose excessive angular motion through control torque.
 	# No transform or velocity is assigned by the AI.
 	if absf(omega.z) > maximum_roll_rate:
@@ -199,7 +221,7 @@ func _fly_toward(point: Vector3, delta: float) -> void:
 	aircraft.pilot.pitch = move_toward(aircraft.pilot.pitch, pitch_command, step)
 	aircraft.pilot.rudder = move_toward(aircraft.pilot.rudder, rudder, step)
 	var wanted_speed: float = cruise_speed + (engage_speed_bonus if mode == "ENGAGE" else 0.0)
-	aircraft.pilot.throttle = 1.0 if terrain_avoiding else clampf(0.6 + (wanted_speed - aircraft.airspeed) * 0.025, 0.2, 1.0)
+	aircraft.pilot.throttle = 1.0 if terrain_avoiding else clampf((0.6 + (wanted_speed - aircraft.airspeed) * 0.025) / maxf(damage.power_factor(), compensation_authority_floor), 0.2, 1.0)
 	aircraft.pilot.brakes = false
 
 func _lead_point() -> Vector3:

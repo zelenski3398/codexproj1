@@ -41,25 +41,28 @@ func _run() -> void:
 	friendly.collision_layer = 4
 	friendly.collision_mask = 0
 	await _frames(3)
-	var shot: Vector3 = friendly.global_position + Vector3(0, 0, 20)
-	enemy.guns.pool.spawn(shot, Vector3(0, 0, -30000), 0.03, 10, enemy.get_rid(), true, enemy.team_id)
+	# Aim at the exposed fuselage side, whose configured hull multiplier is 1.
+	# The old centreline capsule ray may now correctly strike a tail component.
+	var shot: Vector3 = friendly.to_global(Vector3(20, 0, 2.2))
+	var shot_velocity: Vector3 = -friendly.global_basis.x * 30000
+	enemy.guns.pool.spawn(shot, shot_velocity, 0.03, 10, enemy.get_rid(), true, enemy.team_id)
 	await _frames(4)
 	_check(friendly.health.hp == 100 and enemy.guns.pool.total_hits > 0, "Enemy-team bullets stop at friendly aircraft without damaging them")
 	friendly.team_id = CombatTeams.PLAYER
-	player.guns.pool.spawn(shot, Vector3(0, 0, -30000), 0.03, 10, player.get_rid(), true, player.team_id)
+	player.guns.pool.spawn(shot, shot_velocity, 0.03, 10, player.get_rid(), true, player.team_id)
 	await _frames(4)
 	_check(friendly.health.hp == 100, "Player-team bullets also prevent friendly fire")
-	enemy.guns.pool.spawn(shot, Vector3(0, 0, -30000), 0.03, 10, enemy.get_rid(), true, enemy.team_id)
+	enemy.guns.pool.spawn(shot, shot_velocity, 0.03, 10, enemy.get_rid(), true, enemy.team_id)
 	await _frames(4)
 	_check(friendly.health.hp == 90, "A fast opposing-team bullet sweeps through and damages an aircraft")
 	friendly.team_id = CombatTeams.ENEMY
-	var blocker: StaticBody3D = _blocker(Vector3(60, 60, 1), friendly.global_position + Vector3(0, 0, 10))
+	var blocker: StaticBody3D = _blocker(Vector3(1, 60, 60), friendly.to_global(Vector3(10, 0, 2.2)))
 	await _frames(3) # Let the physics server register the new collider/transform.
-	player.guns.pool.spawn(shot, Vector3(0, 0, -30000), 0.03, 20, player.get_rid(), true, player.team_id)
+	player.guns.pool.spawn(shot, shot_velocity, 0.03, 20, player.get_rid(), true, player.team_id)
 	await _frames(4)
 	_check(friendly.health.hp == 90 and player.guns.pool.active.is_empty(), "Terrain-layer cover intercepts fast player gunfire before the target")
 	friendly.team_id = CombatTeams.PLAYER
-	enemy.guns.pool.spawn(shot, Vector3(0, 0, -30000), 0.03, 20, enemy.get_rid(), true, enemy.team_id)
+	enemy.guns.pool.spawn(shot, shot_velocity, 0.03, 20, enemy.get_rid(), true, enemy.team_id)
 	await _frames(4)
 	_check(friendly.health.hp == 90 and enemy.guns.pool.active.is_empty(), "Terrain-layer cover also intercepts enemy gunfire")
 	blocker.queue_free()
@@ -193,7 +196,7 @@ func _run() -> void:
 	enemy.ai.combat_enabled = false
 	await _enemy_fixture(Vector3(0, 30, 0), Vector3(0, -8, -40))
 	enemy.health.changed.connect(func(_hp: float, _maximum: float): health_changes += 1)
-	player.guns.pool.spawn(enemy.global_position + Vector3(0, 0, 20), Vector3(0, 0, -30000), 0.03, 100, player.get_rid(), true, player.team_id)
+	player.guns.pool.spawn(enemy.to_global(Vector3(20, 0, 2.6)), -enemy.global_basis.x * 30000, 0.03, 100, player.get_rid(), true, player.team_id)
 	await _frames(4)
 	_check(enemy.is_destroyed and enemy.health.hp == 0 and enemy.ai.mode == "DESTROYED" and not enemy.ai.is_physics_processing() and not enemy.pilot.fire and enemy.pilot.throttle == 0, "Fatal player hit stops enemy AI, guns and thrust once")
 	enemy.take_damage(10)

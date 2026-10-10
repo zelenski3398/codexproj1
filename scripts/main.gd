@@ -3,6 +3,7 @@ var aircraft: FlightAircraft
 var chase: ChaseCamera
 var hud: FlightHUD
 var enemy: EnemyAircraft
+var component_debug: ComponentDamageDebug
 var selector: AircraftSelector
 var selected_aircraft: String = "spitfire"
 @export var enemy_spawn_position: Vector3 = Vector3(-450, 160, 0)
@@ -32,7 +33,7 @@ func show_selection() -> void:
 	get_viewport().gui_release_focus()
 	# Removing nodes before queue_free prevents old pilots/HUD consuming input
 	# and old world-space rounds persisting when returning from the pause menu.
-	for node in [hud, enemy, aircraft, chase, selector]:
+	for node in [hud, component_debug, enemy, aircraft, chase, selector]:
 		if is_instance_valid(node):
 			remove_child(node)
 			node.queue_free()
@@ -40,6 +41,7 @@ func show_selection() -> void:
 	enemy = null
 	chase = null
 	hud = null
+	component_debug = null
 	selector = AircraftSelector.new()
 	selector.name = "AircraftSelection"
 	selector.chosen.connect(start_flight, CONNECT_DEFERRED)
@@ -71,6 +73,11 @@ func start_flight(kind: String) -> void:
 	hud.enemy = enemy
 	add_child(hud)
 	hud.change_aircraft_requested.connect(show_selection, CONNECT_DEFERRED)
+	component_debug = ComponentDamageDebug.new()
+	component_debug.name = "ComponentDebug"
+	component_debug.session = self
+	add_child(component_debug)
+	component_debug.toggled.connect(func(enabled: bool): hud.component_debugging = enabled)
 
 
 func _exported_settings(component: Node) -> Dictionary:

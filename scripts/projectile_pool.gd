@@ -3,7 +3,7 @@ extends Node3D
 ## Fixed-size world-space pool. No per-shot nodes, rigid bodies, or timers.
 ## Every round (including invisible ones) sweeps its ENTIRE travelled segment.
 @export var capacity: int = 384
-@export_flags_3d_physics var hit_mask: int = 7
+@export_flags_3d_physics var hit_mask: int = 15
 var active: Array[int] = []
 var free: Array[int] = []
 var positions: Array[Vector3] = []
@@ -12,6 +12,7 @@ var ages: Array[float] = []
 var lifetimes: Array[float] = []
 var damage: Array[float] = []
 var excluded: Array[RID] = []
+var excluded_hitboxes: Array[Array] = []
 var teams: Array[int] = []
 var tracers: Array[MeshInstance3D] = []
 var sparks: Array[MeshInstance3D] = []
@@ -38,6 +39,7 @@ func _ready() -> void:
 		lifetimes.append(0.0)
 		damage.append(0.0)
 		excluded.append(RID())
+		excluded_hitboxes.append([])
 		teams.append(CombatTeams.NEUTRAL)
 		var visual := MeshKit.mesh(self, tracer_mesh, tracer_mat)
 		visual.visible = false
@@ -62,6 +64,12 @@ func spawn(origin: Vector3, velocity: Vector3, life: float, hit_damage: float, s
 	lifetimes[index] = maxf(life, 0.001)
 	damage[index] = hit_damage
 	excluded[index] = shooter
+	excluded_hitboxes[index] = []
+	if shooter.is_valid():
+		var owner_id: int = PhysicsServer3D.body_get_object_instance_id(shooter)
+		var body: Object = instance_from_id(owner_id) if owner_id != 0 else null
+		if body is FlightAircraft:
+			excluded_hitboxes[index] = body.components.hitbox_rids
 	teams[index] = shooter_team
 	tracers[index].position = origin
 	tracers[index].visible = visible_tracer
@@ -76,14 +84,28 @@ func _physics_process(delta: float) -> void:
 		var index := active[slot]
 		var step := minf(delta, lifetimes[index] - ages[index])
 		var next := positions[index] + velocities[index] * step
-		var query := PhysicsRayQueryParameters3D.create(positions[index], next, hit_mask, [excluded[index]])
-		var hit := space.intersect_ray(query) if next.distance_squared_to(positions[index]) > 0.000001 else {}
+		var exclusions: Array[RID] = [excluded[index]]
+		exclusions.append_array(excluded_hitboxes[index])
+		var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(positions[index], next, hit_mask, exclusions)
+		query.collide_with_areas = true
+		query.hit_from_inside = true
+		var hit: Dictionary = space.intersect_ray(query) if next.distance_squared_to(positions[index]) > 0.000001 else {}
+		# Coarse rigid-body shapes are for landing/contact, not bullet locations.
+		# Skip only these bodies, keeping the same segment and closest terrain,
+		# hitbox or ordinary target. Owner body AND all owner areas are excluded.
+		while not hit.is_empty() and hit.collider is FlightAircraft and (hit_mask & AircraftHitbox.LAYER) != 0:
+			exclusions.append(hit.collider.get_rid())
+			query.exclude = exclusions
+			hit = space.intersect_ray(query)
 		ages[index] += step
 		if not hit.is_empty():
 			total_hits += 1
 			var collider: Object = hit.collider
 			if is_instance_valid(collider) and collider.has_method("take_damage") and CombatTeams.can_damage(teams[index], collider):
-				collider.call("take_damage", damage[index])
+				if collider.has_method("receive_projectile_hit"):
+					collider.call("receive_projectile_hit", damage[index], hit.position)
+				else:
+					collider.call("take_damage", damage[index])
 			_impact(hit.position)
 			_release(slot)
 		elif ages[index] >= lifetimes[index]:

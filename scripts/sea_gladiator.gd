@@ -3,6 +3,9 @@ extends FlightAircraft
 ## Smaller engine and greater biplane/gear drag produce lower performance
 ## through the shared forces, not by clamping speed or moving the transform.
 
+func default_damage_profile() -> AircraftDamageProfile:
+	return preload("res://damage_profiles/sea_gladiator.tres")
+
 func create_model() -> SpitfireModel:
 	return SeaGladiatorModel.new()
 

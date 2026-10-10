@@ -8,6 +8,11 @@ extends Node3D
 var aircraft: FlightAircraft
 var intensity: float = 0.0
 var emitting: bool = false
+var fuel_emitting: bool = false
+var fuel_source: Vector3 = Vector3.ZERO
+var fuel_smoke_clock: float = 0
+var fuel_flame_clock: float = 0
+@export var fuel_fire_intensity: float = 0.75
 var particles: Array[MeshInstance3D] = []
 var velocities: Array[Vector3] = []
 var ages: Array[float] = []
@@ -68,6 +73,15 @@ func set_health(hp: float, _maximum: float) -> void:
 		emission_clock = 0.0
 		fire_clock = 0.0
 
+func set_fuel_fire(burning: bool, source: Vector3) -> void:
+	# Fuel ignition is an independent hazard, including above 50 hull HP.
+	# The existing HP-driven engine emission keeps its strict <50 rule.
+	fuel_emitting = burning
+	fuel_source = source
+	if not burning:
+		fuel_smoke_clock = 0
+		fuel_flame_clock = 0
+
 func _physics_process(delta: float) -> void:
 	for i in range(particles.size()):
 		if not particles[i].visible:
@@ -85,23 +99,31 @@ func _physics_process(delta: float) -> void:
 		var color := Color(0.11, 0.12, 0.13) if is_smoke[i] else Color(1.0, lerpf(0.75, 0.18, progress), 0.03)
 		color.a = (1.0 - progress) * (0.55 if is_smoke[i] else 0.95)
 		materials[i].albedo_color = color
-	if not emitting:
-		return
-	var strength := 0.12 + intensity
-	emission_clock += delta * smoke_rate * strength
-	fire_clock += delta * flame_rate * strength
-	while emission_clock >= 1.0:
-		emission_clock -= 1.0
-		_emit(true)
-	while fire_clock >= 1.0:
-		fire_clock -= 1.0
-		_emit(false)
+	if emitting:
+		var strength: float = 0.12 + intensity
+		emission_clock += delta * smoke_rate * strength
+		fire_clock += delta * flame_rate * strength
+		while emission_clock >= 1.0:
+			emission_clock -= 1.0
+			_emit(true)
+		while fire_clock >= 1.0:
+			fire_clock -= 1.0
+			_emit(false)
+	if fuel_emitting:
+		fuel_smoke_clock += delta * smoke_rate * fuel_fire_intensity
+		fuel_flame_clock += delta * flame_rate * fuel_fire_intensity
+		while fuel_smoke_clock >= 1:
+			fuel_smoke_clock -= 1
+			_emit(true, fuel_source)
+		while fuel_flame_clock >= 1:
+			fuel_flame_clock -= 1
+			_emit(false, fuel_source)
 
-func _emit(smoke: bool) -> void:
+func _emit(smoke: bool, source: Vector3 = Vector3(0, 0.32, -2.7)) -> void:
 	var i := cursor
 	cursor = (cursor + 1) % particles.size()
 	var jitter := Vector3(rng.randf_range(-0.25, 0.25), rng.randf_range(-0.05, 0.35), rng.randf_range(-0.35, 0.35))
-	particles[i].position = aircraft.to_global(Vector3(0, 0.32, -2.7) + jitter)
+	particles[i].position = aircraft.to_global(source + jitter)
 	# Partial inherited velocity lets smoke fall behind, then slow and linger.
 	velocities[i] = aircraft.linear_velocity * (0.2 if smoke else 0.8) + Vector3.UP * 1.5
 	ages[i] = 0.0
@@ -117,6 +139,9 @@ func _emit(smoke: bool) -> void:
 	particles[i].visible = true
 
 func clear() -> void:
+	fuel_emitting = false
+	fuel_smoke_clock = 0
+	fuel_flame_clock = 0
 	emitting = false
 	intensity = 0.0
 	emission_clock = 0.0

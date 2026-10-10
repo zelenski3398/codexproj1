@@ -3,7 +3,7 @@
 A single-player 3D **Godot 4 / GDScript** flight prototype set at a fictional RAF
 countryside airfield in 1940. Choose a **Spitfire Mk I** or **Gloster Sea
 Gladiator**, take off, bank over the fields, return, land and brake. Both have
-guns, health/damage effects, and a flying Ju 87-inspired opponent that shoots
+guns, component damage, health/damage effects, and a flying Ju 87-inspired opponent that shoots
 back. All aircraft are original procedural mesh placeholders. No paid assets.
 
 ## Open and play
@@ -99,6 +99,7 @@ name, gun count and fixed/retractable gear state follow your selection.
 | Ctrl (hold) | Fire the selected aircraft's guns (eight Spitfire / four Gladiator); release to stop |
 | G | Spitfire: toggle gear, blocked with weight on wheels; Gladiator: fixed-gear notice |
 | Space (hold) | Wheel brakes on the ground |
+| F3 | **TEMPORARY DEBUG**: toggle component hitboxes/health inspector; choose player/enemy and inject/repair component damage |
 | H | **TEMPORARY DEBUG**: remove 10 player HP per press (key repeat ignored) |
 | R | Reset at runway start: 100 HP, gear down, zero throttle, clean effects/bullets; spawn exactly one fresh enemy and restart its airborne patrol |
 | Escape | Pause / resume and display full controls |
@@ -223,6 +224,99 @@ There is no weapon audio, recoil, ammunition limit or reload in this milestone. 
 velocity), without bullet gravity or wind; convergence is a visual/prototype
 approximation rather than a historical ballistic model.
 
+## Component damage and testing
+
+All three aircraft use the same `AircraftDamage` runtime component and eight
+independent integrity values, alongside the existing **100-HP hull**. Projectile
+rays hit model-local **Area3D sensors on layer 8** and apply the first component
+hit. The existing rigid-body collision shapes still handle landing/crashes;
+they are skipped by bullet rays so a coarse wing or fuselage collider cannot
+mask a more specific component. Sweeps retain terrain obstruction, impact
+sparks, owner-body/owner-sensor exclusion, teams and fixed projectile pooling.
+The Gladiator's upper/lower wings share left/right integrity; the Stuka's boxes
+follow its gull-wing angles. Boxes approximate the meshes rather than providing
+triangle-level detection or armour penetration.
+
+| Component | Maximum integrity | Local damage multiplier | Hull damage multiplier | Mechanical effect |
+| --- | ---: | ---: | ---: | --- |
+| Fuselage | 140 | 1.00 | 1.00 | Up to +0.035 parasite drag |
+| Left wing | 80 | 1.25 | 0.65 | Lower left lift, extra drag, roll/yaw imbalance |
+| Right wing | 80 | 1.25 | 0.65 | Lower right lift, extra drag, opposite imbalance |
+| Engine | 80 | 1.60 | 1.00 | Available thrust scales with integrity ratio to power 1.3; zero integrity means zero thrust |
+| Cockpit | 60 | 1.50 | 1.50 | Simplified pilot impairment: pitch/roll/rudder authority falls toward 45% |
+| Rudder | 45 | 1.25 | 0.50 | Rudder, fin/sideslip damping and coordinated yaw fall toward 10% authority |
+| Elevator | 55 | 1.25 | 0.60 | Pitch control/passive elevator stability fall toward 10% authority |
+| Fuel tank | 60 | 1.20 | 0.80 | Per hit: 40% leak probability, 12% ignition probability; leakage/fire drain fuel |
+
+Raw projectile damage is multiplied separately for local integrity and hull HP.
+Mechanical failure can therefore occur while hull HP remains positive. Wing
+integrity scales the existing central lift force, adds drag and computes the
+moment of unequal half-wing lift/drag at fixed spanwise arms. The stall warning
+speed rises as usable lift decreases. Healthy factors are exactly 1/0, retaining
+undamaged flight tuning. No damage component changes body transforms or velocities.
+
+Fuel leak rate defaults to **0.02 tank fraction/s at full tank damage**, scaled
+by tank damage. Burning consumes another **0.03/s**, removes **2 hull HP/s** and
+**4 tank integrity/s**. Empty fuel cuts engine power and ends fuel emission.
+Normal undamaged flying has no added fuel consumption in this prototype.
+Fuel ignition is independent of hull HP and can emit above 50 HP at the tank;
+the existing **engine** smoke/fire still uses its strict **below 50 HP** rule.
+Both sources reuse the same Compatibility-compatible, world-space CPU pool.
+Hull healing stops HP-driven emission but does not repair components or stop
+an active fuel fire. R restores all integrity, fuel and hazards and clears both
+aircraft's effects; destruction still uses the existing one-shot hull lifecycle.
+
+The Stuka integrates measured bank/height errors into bounded trim, increases
+normal pitch/rudder commands for reduced authority and requests more throttle
+for reduced engine power. Inputs retain their rate limits and go through the
+same forces/torques as before. A failed engine requests a glide when altitude
+allows; severe damage may remain unrecoverable. The AI cannot restore lost
+power or lift, teleport, or override angular/linear velocity.
+
+### Configure damage
+
+Open `damage_profiles/spitfire.tres`, `sea_gladiator.tres` or `stuka.tres` in
+Godot's Inspector. Expand **Components** to edit integrity, local/hull multipliers
+and hitbox position/size/rotation. Keep the eight component IDs intact. The
+profile also exposes lift loss (65% per fully damaged half-wing), drag gains,
+spanwise arms, engine power curve, minimum control authority, fuel probabilities,
+rates, fire damage and random seed. Each aircraft can override its exported
+`damage_profile` with another profile. Restart the session after changing tuning.
+Resources contain configuration only; per-aircraft health/fuel state is separate.
+
+### Short manual test procedure
+
+1. Start either fighter, take off, and reach a safe altitude. Press **F3** to
+   show the hitboxes and inspection panel; **Esc** pauses without covering the
+   aircraft while the inspector is open. Select **Player** or **Stuka** and a
+   component. The selected component's boxes turn white. The list displays all
+   eight integrity values, hull HP, flight modifiers, fuel, hazards and last hit.
+2. Use **Apply 10 raw damage** one or more times, then resume and compare:
+
+   | Select | Check |
+   | --- | --- |
+   | Left wing, then right wing | Neutral controls develop a roll toward the damaged side; lift declines and drag rises. Repeat on the opposite side after repair. |
+   | Engine | The power percentage and acceleration/climb fall despite the same throttle; five clicks disable its thrust while hull HP remains positive. |
+   | Rudder | A/D produces weaker yaw; banking/coordinated yaw and fin stability weaken too. |
+   | Elevator | Up/Down produces weaker pitch response. |
+   | Fuel tank | Fuel falls if leakage occurs. Enable **Force leak + fire for debug tank hits** for a deterministic visual test; flames/smoke and ongoing hull loss should appear, even above 50 HP. |
+   | Fuselage | Extra drag rises and the same power produces slower flight. |
+   | Cockpit | All three pilot rotation controls become less effective. |
+
+3. Use **Repair this live aircraft** between trials, or **R** for a full session
+   restart after destruction. Check that integrity, fuel, power and effects reset.
+   Select **Stuka**, damage a wing/engine/control surface, resume, and observe its
+   bounded compensating turns and throttle. Fire at its different visible
+   regions and use **Last hit** to verify actual projectile classification.
+   Repeat after choosing the Gladiator; hits on either wing level affect that
+   side. F3 hides all visualization without disabling the sensors.
+
+The debug override only affects that debug button, never real projectile hazard
+probabilities. To verify probabilities themselves, set leak/fire to 0 or 1 in a
+profile and restart, then shoot/damage the tank. The seeded RNG makes the same
+hit sequence repeatable. Debug tools do not resurrect a destroyed aircraft;
+use R. H retains its old hull-only 10-HP diagnostic behavior.
+
 ## How it works and tuning
 
 Normal flight uses a `RigidBody3D`, engine force, aerodynamic forces, gravity
@@ -251,7 +345,7 @@ The main scripts are deliberately small separate components:
 | `scripts/sea_gladiator.gd` | Biplane flight variant: 2,200 kg, wing area 30 m², thrust 8,500 N, parasite drag 0.044, zero-alpha lift 0.60, stall speed 24 m/s; pitch/roll/rudder torque 13,000/14,000/10,000; fixed gear and upper-wing collider |
 | `scripts/sea_gladiator_model.gd` | Original reference-inspired biplane, radial engine, bracing, canopy, RAF markings, fixed suspension-linked wheels and four gun ports |
 | `scripts/wing_guns.gd` | Salvos from the selected model's gun ports: 12 rounds/sec **per gun**, 850 m/s bullet speed, 2 s lifetime, 4 damage/round, 250 m convergence, every fourth round a tracer, exported spread 0° for player / 0.08° enemy |
-| `scripts/projectile_pool.gd` | 384 fixed bullet slots, swept ray collision from previous to next position, shooter RID exclusion and team filtering, 32 recycled impact flashes; mask 7 includes terrain/player/enemy layers |
+| `scripts/projectile_pool.gd` | 384 fixed bullet slots, swept ray collision from previous to next position, shooter body/sensor exclusion and team filtering, 32 recycled impact flashes; mask 15 includes terrain/player/enemy bodies and component sensors |
 | `scripts/health.gd` | Reusable HP, clamping, damage/heal/reset and one-shot depleted signal; both aircraft maximum 100 |
 | `scripts/damage_effects.gd` | 128 pooled CPU mesh particles; procedurally generated soft billboard smoke, flame spheres, intensity-driven emission, world-space lifetime; Compatibility/ANGLE-friendly, no GPU particles |
 | `scripts/enemy_aircraft.gd` | Enemy configuration using shared flight, health, effects and weapons; 26 m² wing area, 11,500 N thrust, separate collision layer, airborne spawn, physical falling wreck, single impact event and exported 4 s wreck cleanup delay |
@@ -259,6 +353,10 @@ The main scripts are deliberately small separate components:
 | `scripts/combat_teams.gd` | Shared neutral/player/enemy team IDs and friendly-fire policy |
 | `scripts/destruction_burst.gd` | Single session-owned cosmetic impact burst; 32 CPU mesh/sprite particles, 2.5 s lifetime, no area damage or GPU particles |
 | `scripts/stuka_model.gd` | Original reference-inspired gull-wing/canopy/fixed-gear model and two leading-edge gun ports |
+| `scripts/aircraft_damage.gd` | Shared component integrity, hull transfer, wing moments, power/control factors and fuel hazards |
+| `scripts/aircraft_hitbox.gd` | Projectile-only component areas and optional colored/selected wire visualization; no terrain contact forces |
+| `scripts/aircraft_damage_profile.gd`, `aircraft_component_definition.gd`, `damage_hitbox_spec.gd` | Inspector-editable per-aircraft resources in `damage_profiles/`: tuning and geometry, no runtime health |
+| `scripts/component_damage_debug.gd` | F3 inspector, player/enemy/part selectors, raw damage, deterministic fuel override and live-aircraft repair |
 | `scripts/practice_target.gd` | Thin stationary test fixture retained only for swept-collision regression checks |
 
 Defaults and `@export` properties can be adjusted in the scripts. To expose
@@ -286,6 +384,7 @@ godot --headless --path . --fixed-fps 120 --script res://tests/weapons_checks.gd
 godot --headless --path . --fixed-fps 120 --script res://tests/enemy_checks.gd
 godot --headless --path . --fixed-fps 120 --script res://tests/aircraft_choice_checks.gd
 godot --headless --path . --fixed-fps 120 --script res://tests/encounter_checks.gd
+godot --headless --path . --fixed-fps 120 --script res://tests/component_damage_checks.gd
 ```
 
 `flight_checks.gd` runs the real scene, rigid body, collision terrain, suspension
@@ -365,12 +464,39 @@ engine-off physical falling; effect/wreck delay cleanup; continued player
 control; actual R spawning a new instance, clearing active effects/rounds,
 preserving difficulty, and avoiding duplicates on repeated reset input.
 
+**Component damage result: 148/148 passed; all seven suites total 351/351.**
+`component_damage_checks.gd` fires actual 30,000 m/s projectiles into every
+component of all three models, checks exact local/hull multipliers, unrelated
+component isolation, retained sparks, rotated sensor alignment, both Gladiator
+wing levels, sensor-level self/friendly exclusion, and separate landing shapes.
+Matched live flight trials verify opposite left/right wing roll, lift/drag loss,
+engine acceleration/power failure, fuselage drag, actual reduced yaw/pitch/roll
+responses and hull healing without mechanical repair. Fuel trials check 0/1
+probabilities, leakage/burning above 50 hull HP, both effect types, depletion and
+power cutoff, reset and rejection of post-destruction hits. A Stuka with wing,
+engine, elevator and rudder damage flies for 30 s (minimum measured altitude
+289 m from a 300 m fixture) with nonzero trim and increased throttle through
+slewed controls. Physical/keycode-only F3, enemy/player inspection and damage,
+paused hazards, debug repair, full R and aircraft-switch cleanup are verified.
+The encounter regression now aims its exact-damage/fatal-hit fixtures at the
+fuselage side, rather than a coarse centreline capsule that can hit tail parts.
+
 **Native mouse/keyboard result: 10/10 passed in a rendered X11 window.** These
 use OS mouse/key events to select each plane, click Fly, start with Enter,
 verify W and Ctrl after leaving the menu, check fixed-gear G behavior, H/R
 damage/reset preserving the Gladiator, and click the paused aircraft-change
 button before selecting/starting the Spitfire. These window-level checks are
-separate from the 203 reproducible Godot integration assertions.
+separate from the 351 reproducible Godot integration assertions.
+
+**Extended native result: 14/14 passed.** The same window-level mouse/keyboard
+trial also verifies F3, paused mouse damage/repair, restoration of the normal
+pause panel when the inspector closes, and Escape resuming flight. New rendered
+component captures were inspected for the Spitfire, Gladiator and Stuka, including
+selected hitboxes, integrity/modifiers, tank fire above 50 HP and reset:
+
+```sh
+godot --path . --audio-driver Dummy --fixed-fps 120 --script res://tests/component_visual_capture.gd -- /path/to/component-captures sea_gladiator
+```
 
 A rendered check saves both selection screens, runway, airborne, enemy encounter,
 player/enemy model close-ups, both 50-HP/no-effects thresholds, firing/damaged,
@@ -388,7 +514,7 @@ display using Mesa software rendering. Rendered frames were captured and inspect
 selected-aircraft controls and gear state, enemy marker/overhead HP/state, impact
 burst, cleanup notification, gun flashes/tracers, engine smoke/fire, the HP threshold,
 player health bar, destroyed/reset UI and flight instruments.
-Automated physics checks do not replace interactive playtesting. Keyboard
+Automated physics checks do not replace interactive playtesting. Windows embedded keyboard
 handling and dogfight difficulty, a player-flown full circuit, Windows hardware/performance and
 exported-executable behavior remain unverified. Windows ANGLE and Godot 4.7
 were not available for verification; the effects use only Compatibility-supported
@@ -402,15 +528,19 @@ worktree is required.
 
 ## Known limitations and next steps
 
-* One simple AI opponent; no multiplayer, campaign, per-part damage, AI landing,
+* One simple AI opponent; no multiplayer, campaign, AI landing,
   rear gunner, ammunition management or complex menus.
 * Meshes, buildings and camouflage are simple original placeholders. The
   Spitfire uses its familiar elliptical-wing silhouette; the Stuka follows
   the supplied photograph with approximate proportions and detail. The Sea
   Gladiator follows the supplied biplane references; rigging, cockpit and
   engine detail remain simplified. The naval hook has no carrier interaction.
+* Component boxes/wing force arms and cockpit impairment are approximations;
+  no detached wings, armour penetration, spreading fire or pilot characters.
+  Fuel leakage is modeled as a remaining tank fraction rather than a fuel-fluid
+  system, and only damage consumes fuel.
 * No wind, engine audio, tyre audio, propwash, ground effect, flap controls,
-  fuel, historical engine dynamics, wheel rotation, or gradual gear animation.
+  routine fuel consumption, historical engine dynamics, wheel rotation, or gradual gear animation.
 * Terrain is a finite 10 × 10 km patch with coarse rolling hills. Stay within
   the countryside; the enemy turns back near the edge, but there is no world
   streaming or player boundary recovery.

@@ -5,7 +5,8 @@ const INK := Color("e9e8d7")
 const MUTED := Color("abb8ad")
 const GOLD := Color("e4bf75")
 const PANEL := Color(0.055, 0.09, 0.085, 0.90)
-const CONTROLS := "↑ / ↓   Nose down / up\n← / →   Bank left / right\nA / D   Rudder left / right\nW / S   Increase / decrease throttle\nCTRL (hold)   %s\nG   %s\nSPACE   Hold wheel brakes\nH   DEBUG: remove 10 HP\nR   Restart encounter\nESC   Pause / controls"
+const CONTROLS := "↑ / ↓   Nose down / up\n← / →   Bank left / right\nA / D   Rudder left / right\nW / S   Increase / decrease throttle\nCTRL (hold)   %s\nG   %s\nSPACE   Hold wheel brakes\nH   DEBUG: remove 10 HP   ·   F3 components\nR   Restart encounter\nESC   Pause / controls"
+var component_debugging: bool = false
 var aircraft: FlightAircraft
 var enemy: EnemyAircraft
 var enemy_label: Label
@@ -290,7 +291,9 @@ func _process(delta: float) -> void:
 		help_label.text = "CTRL  FIRE · FOLLOW THE STUKA MARKER · KEEP AIRSPEED ABOVE %d KM/H" % aircraft.safe_speed_hint
 	if not get_window().has_focus() and not aircraft.is_crashed and not aircraft.is_destroyed and not get_tree().paused:
 		help_label.text = "CLICK INSIDE THE GAME VIEW TO FOCUS IT · THEN HOLD W TO SET POWER"
-	overlay.visible = get_tree().paused or aircraft.is_crashed or aircraft.is_destroyed
+	overlay.visible = (get_tree().paused and not component_debugging) or aircraft.is_crashed or aircraft.is_destroyed
+	if get_tree().paused and component_debugging and not aircraft.is_crashed and not aircraft.is_destroyed:
+		state_label.text = "PAUSED · DAMAGE INSPECTION"
 	resume_button.disabled = aircraft.is_crashed or aircraft.is_destroyed
 	if overlay.visible:
 		overlay_title.text = "DESTROYED" if aircraft.is_destroyed else ("AIRCRAFT LOST" if aircraft.is_crashed else "PAUSED")
