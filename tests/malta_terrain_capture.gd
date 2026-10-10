@@ -39,6 +39,16 @@ func _run() -> void:
 	game.field.terrain_appearance.set_debug_heatmap(true)
 	await _capture("native-overview-heatmap")
 	game.field.terrain_appearance.set_debug_heatmap(false)
+	camera.near = 1.0
+	var luqa: Vector3 = MaltaGeography.vector(MaltaGeography.field("luqa").position)
+	camera.position = luqa + Vector3(600, 950, 1600)
+	camera.look_at(luqa + Vector3(-600, 0, -2100))
+	await _capture("native-fields-normal")
+	var valletta: Vector3 = MaltaGeography.vector(MaltaGeography.data().landmarks[0].position)
+	camera.position = valletta + Vector3(1700, 850, 1900)
+	camera.look_at(valletta)
+	await _capture("native-harbour-normal")
+	print("NATIVE LANDSCAPE DETAIL: batches=", game.field.landscape_details.batch_count, " instances=", game.field.landscape_details.instance_count, " town=", game.field.landscape_details.town_instance_count)
 	game.queue_free()
 	paused = false
 	for frame in range(8):

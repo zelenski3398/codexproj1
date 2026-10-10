@@ -11,3 +11,12 @@ Changes by this game: north-up navigation chart; imported mesh LOD/collision;
 approximate historical airfield markers, independent playable runway/apron decks.
 The GLB coastline, vertex elevations, axes and scale have not been changed.
 The elevation is a coarse 2012 measured-terrain foundation, not surveyed WWII terrain.
+
+Landscape additions: original algorithmically generated soil/limestone/scrub
+detail textures, illustrative agricultural parcel patterns and decorative silhouettes.
+Original surface_detail.png and cliff_detail.png artwork: CC0 1.0.
+https://creativecommons.org/publicdomain/zero/1.0/
+Landcover/coastal masks derive land coverage from the supplied terrain and retain
+the above DTM/coastline attribution and licenses. The complete derivation script
+and source data are included in the repository. These are not 1940 cadastral data,
+photographic textures or a verified reconstruction of Valletta's building layout.

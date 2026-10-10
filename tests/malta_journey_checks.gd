@@ -14,21 +14,29 @@ func _initialize() -> void:
 func _run() -> void:
 	session = preload("res://main.tscn").instantiate()
 	root.add_child(session)
-	session.show_malta_selection()
-	session.malta_menu.depart()
+	var args: PackedStringArray = OS.get_cmdline_user_args()
+	var home: String = args[0] if not args.is_empty() else "ta_qali"
+	session.start_malta(home, "spitfire")
 	await _frames(150)
 	mission = session.malta_mission
-	_check(mission.board_nearest(), "Spawn beside and enter the selected Ta' Qali Spitfire")
+	_check(mission.board_nearest(), "Spawn beside and enter the selected " + home + " Spitfire")
 	player = mission.occupied
-	player.engine_running = true
+	var engine_key: InputEventKey = InputEventKey.new()
+	engine_key.physical_keycode = KEY_I
+	engine_key.pressed = true
+	Input.parse_input_event(engine_key)
+	await _frames(3)
+	_check(player.engine_running, "Start the boarded Spitfire through normal engine input")
+	engine_key.pressed = false
+	Input.parse_input_event(engine_key)
 	player.pilot.automated = true
 	session.enemy.ai.combat_enabled = false # isolate route safety from combat luck
-	var field: MaltaAirfield = mission.world.fields.ta_qali
+	var field: MaltaAirfield = mission.world.fields[home]
 	var world_id: int = mission.world.get_instance_id()
 	var started: Vector3 = player.global_position
 	var taxi: bool = await _taxi(field.to_global(Vector3(0, 1.18, field.runway_length * 0.31 - 30)), 7, 10000)
-	_check(taxi and not player.is_crashed, "Taxi from dispersal onto Ta' Qali runway with normal steering and thrust")
-	_check(await _taxi(field.to_global(Vector3(0, 1.18, 220)), 5, 10000), "Straighten on the runway before applying takeoff power")
+	_check(taxi and not player.is_crashed, "Taxi from dispersal onto " + String(field.record.name) + " runway with normal steering and thrust")
+	_check(await _taxi(field.to_global(Vector3(0, 1.18, 220)), 5, 16000), "Straighten on the runway before applying takeoff power")
 	# Follow the runway; straightening happens through rudder torque during roll.
 	for tick in range(5000):
 		var goal: Vector3 = field.to_global(Vector3(0, 1.18, -field.runway_length * 0.5 - 500))
@@ -51,6 +59,10 @@ func _run() -> void:
 	steering.minimum_agl = 35
 	steering.cruise_speed = 70
 	steering.mode = "PATROL"
+	if home == "luqa":
+		var ta_qali: Vector3 = MaltaGeography.vector(MaltaGeography.field("ta_qali").position)
+		ta_qali.y += 600
+		_check(await _fly(ta_qali, 700, 26000), "Fly from Luqa toward Ta' Qali using ordinary aerodynamic controls")
 	var valletta: Vector3 = MaltaGeography.vector(MaltaGeography.data().landmarks[0].position)
 	valletta.y = 600
 	_check(await _fly(valletta, 600, 25000), "Fly continuously over Valletta with physical pitch, bank and rudder controls")
@@ -124,7 +136,9 @@ func _run() -> void:
 		await physics_frame
 	Input.action_release("throttle_up")
 	_check(mission.board_nearest() and mission.occupied == parked, "Walk to and board the stationed Sea Gladiator")
-	_check(mission.world.get_instance_id() == world_id and player.global_position.distance_to(started) > 8000, "Entire journey keeps the identical terrain/world instance")
+	# Luqa is closer to Hal Far than Ta' Qali; compare the actual departure/destination.
+	var departure_span: float = field.global_position.distance_to(destination.global_position)
+	_check(mission.world.get_instance_id() == world_id and player.global_position.distance_to(started) > departure_span * 0.75, "Entire journey keeps the identical terrain/world instance")
 	if mission.occupied == parked:
 		player = parked
 		player.engine_running = true

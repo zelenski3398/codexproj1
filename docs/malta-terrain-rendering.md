@@ -1,5 +1,11 @@
 # Malta terrain rendering
 
+**Commit 1 record.** The investigation and results below describe the original
+neutral-material fix. Commit 2 keeps its explicit material assignment, default-off
+heatmap and protected geometry, and adds a bundled landscape shader as normal mode.
+The neutral `limestone.tres` remains available for troubleshooting. Current material
+paths, tuning and validation are in [Malta landscape](malta-landscape.md).
+
 ## Diagnosis
 
 The runtime world instantiates `assets/malta/terrain.glb`, then builds static
@@ -93,7 +99,7 @@ The overview uses a review-only camera with a 10 m near plane to avoid depth
 precision artefacts at a 100 km far plane. It does not change game cameras.
 Native and browser capture fixtures are excluded from the release export.
 
-Results for this change:
+Recorded results for Commit 1, before the landscape addition:
 
 - **20/20 terrain checks:** all 36 active materials, beige default, explicit
   heatmap, physical/keycode F4, key repeat, paused toggling, clean new-world

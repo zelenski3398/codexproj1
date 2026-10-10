@@ -44,10 +44,11 @@ fuel, parked planes, installations and the enemy. **R** is an explicit full
 mission restart. The original countryside controls and start remain intact.
 
 See [Malta geography, controls, tuning and acceptance flight](docs/malta-world.md).
-Malta terrain defaults to matte limestone beige locally and in web exports.
+Malta terrain uses bundled limestone/soil detail, irregular dry and cultivated
+fields, muted scrub, rocky slopes and Mediterranean water locally and in web exports.
 **F4** deliberately toggles the original elevation heatmap and displays a debug
 notice; every new mission starts in normal mode. See the
-[terrain rendering diagnosis and checks](docs/malta-terrain-rendering.md).
+[landscape materials, provenance, tuning and checks](docs/malta-landscape.md).
 The source terrain uses measured modern elevations/coastline; airfield sites
 are approximate and runway layouts are playable prototypes, pending the
 historical 2D reference. Terrain attribution is included in-game and in the web build.

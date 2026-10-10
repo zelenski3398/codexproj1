@@ -41,11 +41,13 @@ All 36 imported meshes, including Malta, Gozo, Comino and smaller islands,
 retain their coordinates. X is east, Y up and -Z north; the origin is
 longitude 14.4°, latitude 35.93° in EPSG:32633.
 
-Terrain appearance uses an explicit, texture-free limestone material on every
-imported mesh, in both native and web builds. Embedded elevation colours are
+Terrain appearance uses an explicit shared Mediterranean landscape material on every
+imported mesh, in both native and web builds, with all texture data bundled.
+Embedded elevation colours are
 retained as a deliberate **F4 debug mode**, labelled on screen and off at every
 mission start. Material switching leaves vertices, elevation, transforms,
-automatic LODs and collision intact. See the [rendering diagnosis](malta-terrain-rendering.md).
+automatic LODs and collision intact. See the [landscape notes](malta-landscape.md)
+and the [Commit 1 rendering diagnosis](malta-terrain-rendering.md).
 
 The attachments contain a relief preview, not a historical airfield reference
 map. The interactive chart is generated from the supplied OSM coastline with

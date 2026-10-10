@@ -7,6 +7,7 @@ var terrain_appearance: MaltaTerrainAppearance
 var mesh_count: int = 0
 var bounds: AABB
 var sea: MeshInstance3D
+var landscape_details: MaltaLandscapeDetails
 
 func _ready() -> void:
 	name = "ContinuousMalta"
@@ -20,7 +21,7 @@ func _ready() -> void:
 	# build per-island BVHs once; they never rebuild or unload during flight.
 	var raw: Array = MaltaGeography.data().terrain_bounds
 	bounds = AABB(MaltaGeography.vector(raw[0]), MaltaGeography.vector(raw[1]) - MaltaGeography.vector(raw[0]))
-	var sea_material: StandardMaterial3D = MeshKit.material(Color("195877"), 0.35)
+	var sea_material: Material = preload("res://assets/malta/materials/sea.tres")
 	sea = MeshKit.box(self, Vector3(240000, 1, 240000), Vector3(0, -0.5, 0), sea_material)
 	sea.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	# Infinite collision plane supports rays/impacts beyond the visible horizon;
@@ -46,6 +47,10 @@ func _ready() -> void:
 		label.pixel_size = 0.25
 		label.visibility_range_end = 7000
 		add_child(label)
+	landscape_details = MaltaLandscapeDetails.new()
+	landscape_details.world = self
+	add_child(landscape_details)
+	terrain_appearance.debug_mode_changed.connect(func(enabled: bool): landscape_details.visible = not enabled)
 
 func _prepare_terrain(node: Node) -> void:
 	if node is MeshInstance3D:

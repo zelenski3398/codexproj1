@@ -15,7 +15,8 @@ func _ready() -> void:
 	var heading: float = deg_to_rad(float(record.heading))
 	var grade: float = atan(float(record.slope))
 	transform = Transform3D(Basis(Vector3.UP, -heading) * Basis(Vector3.RIGHT, grade), origin)
-	var runway: Material = MeshKit.material(Color("777667"))
+	# Colour/texture only; retain the exact graded strips, markings and collision.
+	var runway: Material = preload("res://assets/malta/materials/airfield.tres")
 	var paint: Material = MeshKit.material(Color("eee0b2"))
 	_box(Vector3(54, 2, runway_length), Vector3(0, -1, 0), runway)
 	# Apron and taxi lane join the strip physically. Spawn/exit points stay on it.
