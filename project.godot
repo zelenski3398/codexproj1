@@ -7,6 +7,9 @@ run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/description="Choose a Spitfire Mk I or Gloster Sea Gladiator, fly from a WWII airfield, and fight an airborne opponent."
 
+[autoload]
+GameAudio="*res://scripts/game_audio.gd"
+
 [display]
 window/size/viewport_width=1440
 window/size/viewport_height=900

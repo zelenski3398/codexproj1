@@ -38,6 +38,7 @@ func _ready() -> void:
 	show_selection()
 
 func show_selection() -> void:
+	GameAudioMixer.instance.set_menu_active(true)
 	_remember_difficulty()
 	_clear_malta()
 	_clear_encounter_effects()
@@ -68,6 +69,7 @@ func show_selection() -> void:
 func start_flight(kind: String) -> void:
 	if is_instance_valid(aircraft) or kind not in ["spitfire", "sea_gladiator"]:
 		return
+	GameAudioMixer.instance.set_menu_active(false)
 	selected_aircraft = kind
 	if is_instance_valid(selector):
 		remove_child(selector)
@@ -221,6 +223,7 @@ func _clear_encounter_effects() -> void:
 func show_malta_selection() -> void:
 	if is_instance_valid(malta_menu) or is_instance_valid(malta_mission):
 		return
+	GameAudioMixer.instance.set_menu_active(true)
 	if is_instance_valid(selector):
 		remove_child(selector)
 		selector.queue_free()
@@ -256,6 +259,7 @@ func start_malta(field_id: String, kind: String) -> void:
 		return
 	if is_instance_valid(malta_mission):
 		return
+	GameAudioMixer.instance.set_menu_active(false)
 	if is_instance_valid(malta_menu):
 		remove_child(malta_menu)
 		malta_menu.queue_free()

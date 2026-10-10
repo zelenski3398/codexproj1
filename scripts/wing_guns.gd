@@ -1,5 +1,7 @@
 class_name WingGuns
 extends Node3D
+signal salvo_fired(rounds: int)
+signal cleared
 @export_range(0, 60, 0.5) var rounds_per_second: float = 12.0 # per gun
 @export var bullet_speed: float = 850.0 # metres / second, plus aircraft velocity
 @export var bullet_lifetime: float = 2.0
@@ -20,6 +22,7 @@ var telemetry_target: FlightAircraft
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var aircraft: FlightAircraft
 var pool: ProjectilePool
+var weapon_audio: WeaponAudio
 var cooldown: float = 0.0
 var flash_times: Array[float] = []
 var flashes: Array[MeshInstance3D] = []
@@ -46,6 +49,10 @@ func _ready() -> void:
 		flash.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		flashes.append(flash)
 		flash_times.append(0.0)
+	weapon_audio = WeaponAudio.new()
+	weapon_audio.name = "WeaponAudio"
+	weapon_audio.guns = self
+	add_child(weapon_audio)
 
 func _physics_process(delta: float) -> void:
 	for i in range(flashes.size()):
@@ -80,6 +87,7 @@ func shot_direction(port: Marker3D) -> Vector3:
 	return (aim - port.global_position).normalized()
 
 func _fire_salvo() -> void:
+	var emitted: int = 0
 	for i in range(firing_ports.size()):
 		var port: Marker3D = firing_ports[i]
 		var direction: Vector3 = shot_direction(port)
@@ -96,12 +104,17 @@ func _fire_salvo() -> void:
 			continue
 		var velocity: Vector3 = direction * bullet_speed + aircraft.linear_velocity
 		var distance: float = port.global_position.distance_to(telemetry_target.global_position) if is_instance_valid(telemetry_target) else -1
-		pool.spawn(port.global_position, velocity, bullet_lifetime, bullet_damage, aircraft.get_rid(), (salvo_count + i) % maxi(tracer_every, 1) == 0, aircraft.team_id, distance)
+		var spawned: bool = pool.spawn(port.global_position, velocity, bullet_lifetime, bullet_damage, aircraft.get_rid(), (salvo_count + i) % maxi(tracer_every, 1) == 0, aircraft.team_id, distance)
+		if spawned:
+			emitted += 1
 		flash_times[i] = 0.035
 		flashes[i].visible = true
 	salvo_count += 1
+	if emitted > 0:
+		salvo_fired.emit(emitted)
 
 func reset(reset_statistics: bool = true) -> void:
+	cleared.emit()
 	pool.clear(reset_statistics)
 	rng.seed = spread_seed
 	use_assisted_aim = false

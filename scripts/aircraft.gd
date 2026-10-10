@@ -44,6 +44,7 @@ var guns: WingGuns
 @export var damage_profile: AircraftDamageProfile
 var components: AircraftDamage
 var damage_effects: DamageEffects
+var aircraft_audio: AircraftAudio
 var is_destroyed: bool = false
 var airspeed: float = 0.0
 var altitude: float = 0.0
@@ -98,6 +99,10 @@ func _ready() -> void:
 	guns.aircraft = self
 	guns.name = "EightWingGuns"
 	add_child(guns)
+	aircraft_audio = AircraftAudio.new()
+	aircraft_audio.name = "AircraftAudio"
+	aircraft_audio.aircraft = self
+	add_child(aircraft_audio)
 	var collider := CollisionShape3D.new()
 	var shape := CapsuleShape3D.new()
 	shape.radius = 0.46

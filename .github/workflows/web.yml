@@ -17,12 +17,13 @@ jobs:
         run: |
           bash tools/install_godot_web.sh
           echo /tmp/first-sortie-godot >> "$GITHUB_PATH"
-      - name: Check desktop controls and shared weapons
+      - name: Check controls, weapons, Malta and audio
         run: |
           godot --headless --path . --editor --import --quit
           godot --headless --path . --fixed-fps 120 --script res://tests/keyboard_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/weapons_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/malta_checks.gd
+          godot --headless --path . --fixed-fps 120 --script res://tests/audio_checks.gd
       - name: Export browser game
         run: bash tools/build_web.sh
       - name: Save downloadable browser build

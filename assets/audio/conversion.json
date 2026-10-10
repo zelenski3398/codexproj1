@@ -1,0 +1,71 @@
+{
+  "spitfire_engine_idle_loop.ogg": {
+    "source": "spitfire_engine_idle_loop.wav",
+    "sha256": "b4fc534d274442bdcecc8f3f22ca548ef2baaaae0a75c220aacaedcd175f7a89",
+    "seconds": 6.92,
+    "mono": true,
+    "trim_seconds": null,
+    "crossfade_seconds": 0.08,
+    "gain": 1.0
+  },
+  "spitfire_engine_flight_loop.ogg": {
+    "source": "spitfire_engine_flight_loop.wav",
+    "sha256": "6c76f19e856ab68b2c834541dec1d5fa7f3ce5b7e61bc52ccb0a1e2e488245cd",
+    "seconds": 6.92,
+    "mono": true,
+    "trim_seconds": null,
+    "crossfade_seconds": 0.08,
+    "gain": 1.0
+  },
+  "spitfire_303_guns_burst.ogg": {
+    "source": "spitfire_303_guns_burst.wav",
+    "sha256": "e41c3987b31df2f451b215b70c904b47c15ab2da09217213be24f44becd2963d",
+    "seconds": 2.705,
+    "mono": true,
+    "trim_seconds": [
+      0.13,
+      2.86
+    ],
+    "crossfade_seconds": 0.025,
+    "gain": 1.0
+  },
+  "gladiator_engine_idle_loop.ogg": {
+    "source": "gladiator_engine_idle_loop.wav",
+    "sha256": "339bcdd7c6207ceb9ead5a1f3d392c4dbaf8bc1c6e6752d87c6d1a7fb7ec8c0a",
+    "seconds": 6.92,
+    "mono": true,
+    "trim_seconds": null,
+    "crossfade_seconds": 0.08,
+    "gain": 1.0
+  },
+  "gladiator_engine_flight_loop.ogg": {
+    "source": "gladiator_engine_flight_loop.wav",
+    "sha256": "c077d13be9d95c1710a7f1222f943588974bab0ca656035b668c2589f121944d",
+    "seconds": 6.92,
+    "mono": true,
+    "trim_seconds": null,
+    "crossfade_seconds": 0.08,
+    "gain": 1.0
+  },
+  "gladiator_303_guns_burst.ogg": {
+    "source": "gladiator_303_guns_burst.wav",
+    "sha256": "b26b5f88f78d83aa248a668be7b491957a1cd0fe4091fb6d5f46dd95772b61ee",
+    "seconds": 2.705,
+    "mono": true,
+    "trim_seconds": [
+      0.13,
+      2.86
+    ],
+    "crossfade_seconds": 0.025,
+    "gain": 1.0
+  },
+  "main_menu.ogg": {
+    "source": "Wings_Over_Malta_Main_Menu.wav",
+    "sha256": "734a0985a5b47c656a8b4157d5d1ab1549589d9710b77290c43db0dc9ade2a14",
+    "seconds": 83.0,
+    "mono": false,
+    "trim_seconds": null,
+    "crossfade_seconds": 0,
+    "gain": 2.2
+  }
+}

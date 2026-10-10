@@ -21,6 +21,15 @@ checks run against the actual release WebAssembly/WebGL build locally.
 See [web build, deployment and validation details](docs/web-hosting.md).
 The workflow also saves a downloadable **first-sortie-web** artifact.
 
+## Music and aircraft audio
+
+The supplied **Wings Over Malta** theme plays through both selection menus and
+fades out on departure. Spitfire and Sea Gladiator use their supplied engine
+and gun sounds, with throttle/damage-driven engine mixing and spatial playback.
+Click **AUDIO** for saved music/engine/gun volumes and mute. In a browser, the
+**Play in Browser** click enables sound. The Stuka temporarily uses the supplied
+Spitfire audio. See [audio controls, tuning and checks](docs/audio.md).
+
 ## Select a map and depart in Malta
 
 The startup screen keeps **Countryside** and adds **Choose Malta**. Malta
@@ -289,7 +298,7 @@ crash state; the new HP state is independent of that crash detection.
 
 R immediately clears bullets, muzzle flashes, impact sparks and damage effects.
 If Ctrl is still held, release it and press again to resume firing safely.
-There is no weapon audio, recoil, ammunition limit or reload in this milestone. Bullets use constant velocity (including inherited aircraft
+Weapon audio follows successful salvos; there is no recoil, ammunition limit or reload in this milestone. Bullets use constant velocity (including inherited aircraft
 velocity), without bullet gravity or wind; convergence is a visual/prototype
 approximation rather than a historical ballistic model.
 
@@ -646,7 +655,7 @@ worktree is required.
   no detached wings, armour penetration, spreading fire or pilot characters.
   Fuel leakage is modeled as a remaining tank fraction rather than a fuel-fluid
   system, and only damage consumes fuel.
-* No wind, engine audio, tyre audio, propwash, ground effect, flap controls,
+* No wind, tyre audio, propwash, ground effect, flap controls,
   routine fuel consumption, historical engine dynamics, wheel rotation, or gradual gear animation.
 * Terrain is a finite 10 × 10 km patch with coarse rolling hills. Stay within
   the countryside; the enemy turns back near the edge, but there is no world

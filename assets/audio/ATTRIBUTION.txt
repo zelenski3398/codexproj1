@@ -1,0 +1,17 @@
+Wings Over Malta audio supplied by the project owner on 10 October 2026:
+- Wings_Over_Malta_Aircraft_SFX.zip (six Spitfire / Gladiator WAV recordings)
+- Wings_Over_Malta_Main_Menu.wav (83-second stereo theme)
+
+No separate license or author credit was included in the uploaded files.
+These are user-provided project assets; this notice does not grant a new
+license for third-party reuse or claim historical authenticity of recordings.
+
+Runtime Ogg Vorbis copies were derived from the supplied WAV files. Engine
+and gun recordings are mono for spatial playback and crossfaded at their loop
+boundaries. Gun recordings are trimmed to their active firing section. Music
+retains stereo and its complete duration, with a 2.2x gain below clipping.
+Original-file SHA-256 hashes and exact conversion settings: conversion.json.
+Reproduce conversions with tools/prepare_audio.py and the original uploads.
+
+No Ju 87 / Jumo or MG 15 recording was supplied. The Stuka uses the supplied
+Spitfire inline-engine and machine-gun sounds as temporary audio placeholders.

@@ -30,6 +30,9 @@ func _process(delta: float) -> void:
 		return
 	sample_clock = 0.2
 	var state: Dictionary = {"selecting": session.selector != null, "selected": session.selected_aircraft, "paused": get_tree().paused, "environment": session.environment_id, "airfield_selecting": is_instance_valid(session.malta_menu), "on_foot": is_instance_valid(session.malta_mission) and session.malta_mission.occupied == null}
+	state.audio = {"menu_active": GameAudioMixer.instance.menu_active, "music_playing": GameAudioMixer.instance.music.playing, "music_gain": GameAudioMixer.instance.music_gain, "music_db": GameAudioMixer.instance.music.volume_db, "music_paused": GameAudioMixer.instance.music.stream_paused, "music_position": GameAudioMixer.instance.music.get_playback_position(), "muted": GameAudioMixer.instance.muted, "master_muted": AudioServer.is_bus_mute(0), "volumes": GameAudioMixer.instance.volumes, "panel_open": GameAudioMixer.instance.panel.visible, "gameplay_muted": AudioServer.is_bus_mute(AudioServer.get_bus_index("Aircraft"))}
+	state.audio_button = _center(GameAudioMixer.instance.audio_button)
+	state.audio_mute_button = _center(GameAudioMixer.instance.mute_button)
 	if is_instance_valid(session.selector):
 		state.selected = session.selector.selected
 		state.spitfire_button = _center(session.selector.buttons[0])
@@ -50,6 +53,13 @@ func _process(delta: float) -> void:
 		state.home_airfield = session.malta_mission.home
 	if is_instance_valid(session.aircraft):
 		var aircraft: FlightAircraft = session.aircraft
+		state.audio.engine_playing = aircraft.aircraft_audio.idle.playing
+		state.audio.engine_gain = aircraft.aircraft_audio.engine_gain
+		state.audio.engine_rpm = aircraft.aircraft_audio.rpm
+		state.audio.flight_mix = aircraft.aircraft_audio.flight_mix
+		state.audio.gun_playing = aircraft.guns.weapon_audio.player.playing
+		state.audio.gun_gain = aircraft.guns.weapon_audio.gain
+		state.audio.audible_salvos = aircraft.guns.weapon_audio.audible_salvos
 		state.merge({"throttle": aircraft.pilot.throttle, "hp": aircraft.health.hp, "shots": aircraft.guns.pool.statistics.shots, "speed": aircraft.airspeed, "altitude": aircraft.altitude, "gear": aircraft.gear.extended, "fixed_gear": not aircraft.gear.retractable, "destroyed": aircraft.is_destroyed, "crashed": aircraft.is_crashed, "debug_visible": session.component_debug.enabled if is_instance_valid(session.component_debug) else false, "fire_guide": session.hud.fire_key_label if is_instance_valid(session.hud) else "F", "smoke": aircraft.damage_effects.emitting})
 		state.enemy_count = 1 if is_instance_valid(session.enemy) else 0
 		state.enemy_hp = session.enemy.health.hp if is_instance_valid(session.enemy) else 0
