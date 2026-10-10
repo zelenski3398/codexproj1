@@ -46,6 +46,7 @@ func _process(delta: float) -> void:
 		state.luqa_button = _center(session.malta_menu.chart.buttons.luqa)
 		state.hal_far_button = _center(session.malta_menu.chart.buttons.hal_far)
 	if is_instance_valid(session.malta_mission):
+		state.terrain = session.malta_mission.world.terrain_appearance.diagnostic_state()
 		state.world_id = session.malta_mission.world.get_instance_id()
 		state.fleet_count = session.malta_mission.fleet.size()
 		state.map_open = session.malta_mission.chart_panel.visible

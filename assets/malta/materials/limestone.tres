@@ -1,0 +1,9 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "Malta Limestone - Default"
+vertex_color_use_as_albedo = false
+albedo_color = Color(0.45, 0.38, 0.27, 1)
+metallic = 0.0
+metallic_specular = 0.1
+roughness = 1.0

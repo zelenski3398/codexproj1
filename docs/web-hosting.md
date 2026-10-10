@@ -81,6 +81,7 @@ takes keyboard focus. Click the game again if focus was moved to browser chrome.
 - G: gear (Spitfire); Space: brakes; R: full session restart; Escape: pause.
 - Malta: E board/leave, I engine, M navigation; WASD walks on foot.
 - H: existing temporary −10 HP debug key; F3: component/gunnery inspector.
+- F4: Malta elevation heatmap debug; terrain defaults to limestone beige.
 
 Touch/mobile flight controls are not implemented. Start the page again after a
 reload; there is no campaign/save system. Use a recent desktop browser with

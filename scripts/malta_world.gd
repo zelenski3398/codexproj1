@@ -3,6 +3,7 @@ extends Node3D
 ## A single 1:1 environment. Only built on mission start; no travel triggers.
 var fields: Dictionary = {}
 var terrain: Node3D
+var terrain_appearance: MaltaTerrainAppearance
 var mesh_count: int = 0
 var bounds: AABB
 var sea: MeshInstance3D
@@ -11,6 +12,9 @@ func _ready() -> void:
 	name = "ContinuousMalta"
 	terrain = preload("res://assets/malta/terrain.glb").instantiate()
 	add_child(terrain)
+	terrain_appearance = MaltaTerrainAppearance.new()
+	terrain_appearance.name = "TerrainAppearance"
+	add_child(terrain_appearance)
 	_prepare_terrain(terrain)
 	# Original island instances retain imported mesh LODs. Static concave shapes
 	# build per-island BVHs once; they never rebuild or unload during flight.
@@ -47,6 +51,7 @@ func _prepare_terrain(node: Node) -> void:
 	if node is MeshInstance3D:
 		var mesh: MeshInstance3D = node
 		mesh_count += 1
+		terrain_appearance.register_mesh(mesh)
 		mesh.lod_bias = 0.6
 		mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		mesh.create_trimesh_collision()

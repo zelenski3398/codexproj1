@@ -44,6 +44,10 @@ fuel, parked planes, installations and the enemy. **R** is an explicit full
 mission restart. The original countryside controls and start remain intact.
 
 See [Malta geography, controls, tuning and acceptance flight](docs/malta-world.md).
+Malta terrain defaults to matte limestone beige locally and in web exports.
+**F4** deliberately toggles the original elevation heatmap and displays a debug
+notice; every new mission starts in normal mode. See the
+[terrain rendering diagnosis and checks](docs/malta-terrain-rendering.md).
 The source terrain uses measured modern elevations/coastline; airfield sites
 are approximate and runway layouts are playable prototypes, pending the
 historical 2D reference. Terrain attribution is included in-game and in the web build.
@@ -146,6 +150,7 @@ name, gun count and fixed/retractable gear state follow your selection.
 | G | Spitfire: toggle gear, blocked with weight on wheels; Gladiator: fixed-gear notice |
 | Space (hold) | Wheel brakes on the ground |
 | F3 | **TEMPORARY DEBUG**: toggle component hitboxes/health inspector; choose player/enemy and inject/repair component damage |
+| F4 | Malta only: toggle elevation heatmap debug (off by default, also works paused) |
 | H | **TEMPORARY DEBUG**: remove 10 player HP per press (key repeat ignored) |
 | R | Reset at runway start: 100 HP, gear down, zero throttle, clean effects/bullets; spawn exactly one fresh enemy and restart its airborne patrol |
 | E / I / M | Malta: board/leave a stopped plane; start/stop engine; navigation chart |
