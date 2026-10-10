@@ -1,5 +1,8 @@
 class_name StukaModel
 extends SpitfireModel
+var rear_mount: Node3D
+var rear_cradle: Node3D
+var rear_muzzle: Marker3D
 ## Original Ju 87-inspired placeholder from the reference: inverted gull wings,
 ## long framed canopy, fixed spatted wheels, yellow cowling and red spinner.
 ## This is a mesh approximation, not a imported/authentic historical model.
@@ -27,6 +30,7 @@ func _ready() -> void:
 		MeshKit.rod(self, Vector3(0.27, 0.9, z), Vector3(0.43, 0.55, z), 0.033, green)
 	MeshKit.rod(self, Vector3(0, 0.97, -0.75), Vector3(0, 0.97, 1.7), 0.03, green)
 	MeshKit.rod(self, Vector3(0, 0.92, 0.9), Vector3(0, 2.0, 0.65), 0.02, metal)
+	_rear_gunner()
 	# Angular tail and broad tailplane rather than the Spitfire's rounded fin.
 	MeshKit.box(self, Vector3(0.16, 1.4, 1.25), Vector3(0, 0.58, 3.95), green).rotation.x = -0.13
 	MeshKit.box(self, Vector3(0.18, 1.4, 0.24), Vector3(0, 0.59, 4.48), yellow)
@@ -62,6 +66,34 @@ func _ready() -> void:
 		propeller.add_child(blade)
 		MeshKit.box(blade, Vector3(0.18, 1.4, 0.065), Vector3(0, 0.9, 0), rubber)
 		MeshKit.box(blade, Vector3(0.19, 0.13, 0.07), Vector3(0, 1.55, 0), yellow)
+
+func _rear_gunner() -> void:
+	# The flexible defensive gun belongs to the rear cockpit, not the tail tip.
+	var uniform: StandardMaterial3D = MeshKit.material(Color("655d43"))
+	var helmet: StandardMaterial3D = MeshKit.material(Color("39382e"))
+	MeshKit.sphere(self, Vector3(0.34, 0.45, 0.32), Vector3(0, 0.76, 1.35), uniform)
+	MeshKit.sphere(self, Vector3(0.26, 0.28, 0.26), Vector3(0, 1.02, 1.35), helmet)
+	rear_mount = Node3D.new()
+	rear_mount.name = "RearGunSwivel"
+	rear_mount.position = Vector3(0, 1.18, 1.75)
+	add_child(rear_mount)
+	MeshKit.rod(rear_mount, Vector3(0, -0.30, 0), Vector3.ZERO, 0.045, metal)
+	rear_cradle = Node3D.new()
+	rear_cradle.name = "RearGunElevation"
+	rear_mount.add_child(rear_cradle)
+	MeshKit.box(rear_cradle, Vector3(0.12, 0.13, 0.4), Vector3(0, 0, 0.05), rubber)
+	MeshKit.rod(rear_cradle, Vector3(0, 0, 0.15), Vector3(0, 0, 0.93), 0.028, rubber)
+	MeshKit.cylinder(rear_cradle, 0.12, 0.18, Vector3(0, 0.11, 0.06), metal)
+	rear_muzzle = Marker3D.new()
+	rear_muzzle.name = "RearGunMuzzle"
+	rear_muzzle.position = Vector3(0, 0, 0.95)
+	rear_muzzle.rotation.y = PI # Shared weapon convention: marker -Z is firing forward.
+	rear_cradle.add_child(rear_muzzle)
+	set_rear_gun_angles(0, deg_to_rad(12))
+
+func set_rear_gun_angles(yaw: float, elevation: float) -> void:
+	rear_mount.rotation.y = yaw
+	rear_cradle.rotation.x = -elevation
 
 func _gull_wings() -> void:
 	# Stations encode the inner downward kink and rising outer tapered panels.

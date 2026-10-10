@@ -160,22 +160,44 @@ Both planes have **100 HP**, use the same damage/health effects, and can be
 shot down by the other's swept-collision bullets. The enemy has two forward
 wing guns with orange tracers, 6 rounds/sec per gun, 650 m/s bullet speed and
 2 damage/round. It fires 0.75-second bursts separated by 1.25-second rests.
+A separate rear-cockpit MG 15-style gunner tracks a pursuer and fires short
+bursts within a **configurable 500 m** rear sector. This is a provisional
+practical game cutoff, not a verified historical maximum range. See
+[rear gunner and tactics](docs/stuka-tactics.md) for tuning and research limitations.
 
-Take off, climb above 25 m and stay above 126 km/h. After eight seconds in this
-state, the enemy pursues within 1,800 m and fires within 650 m when its nose is
+Take off and stay above **12 m AGL for eight seconds**. The grace now unlocks
+for that aircraft life, without an airspeed requirement; a brief altitude or
+speed dip does not restart it. The enemy acquires within **3,200 m** and retains
+an acquired airborne player out to **7,500 m**, instead of returning to patrol
+at the old detection boundary. Its speed remains limited by real thrust/drag;
+a healthy Spitfire can still outrun it. Front guns fire within 650 m when its nose is
 within 6° of its predicted aim point. It does not attack while you are on the
 ground or after your aircraft is lost. Follow the marker, bank behind it and
 hold Ctrl with your aiming marker over the enemy. Bank to evade its return
 fire. Terrain/buildings obstruct both bullets and the enemy's sight line. The
-AI breaks away on close passes and after taking damage, holding fire during
-these evasive manoeuvres. You can outpace this slower aircraft or return to
+AI breaks away on close passes, damage and aimed tail threats. It holds forward
+fire during evasions, while the rear gunner can still defend. You can outpace this slower aircraft or return to
 land; it resumes patrol when you land. Teams prevent friendly damage, and each
 bullet excludes its shooter's collision body. Terrain and friendly bodies stop
 rounds instead of letting them pass through.
 
+Rear tracking is limited to **±70° astern**, **−12° to +60° elevation** and
+75°/s traverse. The gunner leads motion, checks tail/fuselage and terrain
+obstruction, and fires 0.45 s bursts with 1.4 s rests. Follow slightly higher
+or off the centreline within 500 m to clear its tail. Complete cockpit failure
+disables the gunner. The HUD warns **REAR GUNNER FIRING · BREAK AWAY**.
+
+Navigation predicts a flight intercept at long range, switches to ballistic
+alignment nearby and adjusts throttle to close without endless overshoots.
+Defensive breaks turn toward the attacking side; centred repeat threats
+alternate direction. Shallow descending breaks and low/high yo-yos trade
+height for speed or reduce excessive closure. These simplified tactics request
+ordinary slewed pilot inputs and never directly move the airframe. The HUD
+shows the current tactic; terrain/stall protection still takes priority.
+
 The four AI states are **PATROL**, **ENGAGE**, **EVADE** and **DESTROYED**.
 Pitch/roll/rudder commands ramp smoothly, with soft angular-rate limits and a
-46° desired bank limit. Every 0.15 s, downward probes sample actual terrain and
+46° patrol/avoidance bank limit and 55° tactical bank limit. Every 0.15 s, downward probes sample actual terrain and
 buildings along a corridor up to 450 m ahead, including the wings. Predicted
 descent below 65 m clearance requests a climb; forward obstruction probes
 choose a sideways route. The enemy also turns toward the airfield before
@@ -188,7 +210,7 @@ flying. Its first ground contact creates a short CPU-rendered flame/smoke burst,
 stops engine effects and settles the wreck; the burst fades within 2.5 s and
 the wreck is removed after 4 s. Further damage cannot repeat the explosion or
 defeat message. **R** restores the chosen player aircraft and replaces the old
-enemy with exactly one fresh airborne instance, clearing both bullet pools,
+enemy with exactly one fresh airborne instance, clearing all bullet pools,
 smoke/fire, wrecks, impact bursts and the defeat state. Difficulty settings carry
 across resets; changing aircraft also clears the old encounter.
 
@@ -197,10 +219,10 @@ it never translates or rotates the aircraft directly during flight. It predicts
 interception using relative velocity (bullets inherit shooter velocity), with
 small aiming assistance limited to the 6° nose cone. Each burst receives up to
 ±0.18° error on each aiming axis, and each enemy round has ±0.08° spread, so its
-aim is imperfect. Engagement raises its desired speed by 8 m/s to close the
-range. Player guns retain their fixed aircraft-relative convergence and have
+aim is imperfect. Engagement requests up to 18 m/s extra desired speed at long
+range, matching speed near the firing pass. Player guns retain their fixed aircraft-relative convergence and have
 zero spread by default. This is a simple forgiving opponent, not authentic
-Stuka tactics; there is no rear gunner, bombing, AI takeoff or AI landing.
+Stuka tactics; there is no bombing, AI takeoff or AI landing.
 
 Press H five times: the aircraft reaches **exactly 50 HP with no smoke/fire**.
 One more press reaches 40 HP and starts cowling smoke and fire. Emission density
@@ -349,7 +371,8 @@ The main scripts are deliberately small separate components:
 | `scripts/health.gd` | Reusable HP, clamping, damage/heal/reset and one-shot depleted signal; both aircraft maximum 100 |
 | `scripts/damage_effects.gd` | 128 pooled CPU mesh particles; procedurally generated soft billboard smoke, flame spheres, intensity-driven emission, world-space lifetime; Compatibility/ANGLE-friendly, no GPU particles |
 | `scripts/enemy_aircraft.gd` | Enemy configuration using shared flight, health, effects and weapons; 26 m² wing area, 11,500 N thrust, separate collision layer, airborne spawn, physical falling wreck, single impact event and exported 4 s wreck cleanup delay |
-| `scripts/enemy_pilot.gd` | Patrol/engage/evade/destroyed states, predictive terrain/obstacle avoidance, intercept prediction, per-wing line of sight and short bursts; exports speed 58 m/s (+8 engage), patrol radius 450 m, minimum height 65 m, terrain horizon 5 s / margin 20 m, command slew 2.5/s, bank 46°, pitch/roll/yaw rate limits 0.45/0.7/0.3 rad/s, detection 1,800 m, firing 650 m, cone 6°, grace 8 s, burst/rest 0.75/1.25 s, aim error 0.18°, evade 3 s |
+| `scripts/enemy_pilot.gd` | Patrol/engage/evade/destroyed states, predictive terrain/obstacle avoidance, intercept prediction, per-wing line of sight and short bursts; exports speed 58 m/s (up to +18 engage), patrol radius 450 m, minimum height 65 m, terrain horizon 5 s / margin 20 m, command slew 2.5/s, bank 46° patrol / 55° tactical, pitch/roll/yaw rate limits 0.45/0.7/0.3 rad/s, detection 3,200 m / retention 7,500 m, firing 650 m, cone 6°, grace 8 s, burst/rest 0.75/1.25 s, aim error 0.18°, evade 3 s |
+| `scripts/rear_gunner.gd` | Independent rear-cockpit MG 15-style controller using shared WingGuns: provisional range 500 m, traverse ±70°, elevation −12°/+60°, tracking 75°/s, burst/rest 0.45/1.4 s, 16.67 rounds/s, 765 m/s, 1.5 damage, 128 fixed slots; own-tail/terrain checks, shared grace and cockpit failure |
 | `scripts/combat_teams.gd` | Shared neutral/player/enemy team IDs and friendly-fire policy |
 | `scripts/destruction_burst.gd` | Single session-owned cosmetic impact burst; 32 CPU mesh/sprite particles, 2.5 s lifetime, no area damage or GPU particles |
 | `scripts/stuka_model.gd` | Original reference-inspired gull-wing/canopy/fixed-gear model and two leading-edge gun ports |
@@ -385,6 +408,7 @@ godot --headless --path . --fixed-fps 120 --script res://tests/enemy_checks.gd
 godot --headless --path . --fixed-fps 120 --script res://tests/aircraft_choice_checks.gd
 godot --headless --path . --fixed-fps 120 --script res://tests/encounter_checks.gd
 godot --headless --path . --fixed-fps 120 --script res://tests/component_damage_checks.gd
+godot --headless --path . --fixed-fps 120 --script res://tests/rear_gunner_checks.gd
 ```
 
 `flight_checks.gd` runs the real scene, rigid body, collision terrain, suspension
@@ -481,12 +505,29 @@ paused hazards, debug repair, full R and aircraft-switch cleanup are verified.
 The encounter regression now aims its exact-damage/fatal-hit fixtures at the
 fuselage side, rather than a coarse centreline capsule that can hit tail parts.
 
+**Rear gunner / tactics result: 46/46 passed; all eight suites total 397/397.**
+The new suite checks separate rear/forward stations, parked and airborne grace,
+real rear hits on static/moving aircraft, localized damage, self/friendly safety,
+inside/outside/inclusive range, arcs, banked tracking, own-tail/terrain cover,
+a 30,000 m/s swept cover hit, traverse limits, bursts/rests, cockpit failure/repair,
+destruction, pause, clean restart and retained gunner tuning. It also checks slow
+player acquisition, pursuit retention and release, tail-threat breaks, alternating
+break direction, real turning/altitude protection, slewed commands and high/low
+yo-yo goals. The existing 75-second pursuit retains actual forward-gun hits;
+its rear-approach assertion now expects the intentional defensive break.
+Rendered Compatibility close-ups were inspected for crew, swivel, muzzle flash,
+tracers and the existing cockpit hitbox:
+
+```sh
+godot --path . --audio-driver Dummy --fixed-fps 120 --script res://tests/rear_gunner_visual_capture.gd -- /path/to/rear-captures
+```
+
 **Native mouse/keyboard result: 10/10 passed in a rendered X11 window.** These
 use OS mouse/key events to select each plane, click Fly, start with Enter,
 verify W and Ctrl after leaving the menu, check fixed-gear G behavior, H/R
 damage/reset preserving the Gladiator, and click the paused aircraft-change
 button before selecting/starting the Spitfire. These window-level checks are
-separate from the 351 reproducible Godot integration assertions.
+separate from the reproducible Godot integration assertions.
 
 **Extended native result: 14/14 passed.** The same window-level mouse/keyboard
 trial also verifies F3, paused mouse damage/repair, restoration of the normal
@@ -529,7 +570,7 @@ worktree is required.
 ## Known limitations and next steps
 
 * One simple AI opponent; no multiplayer, campaign, AI landing,
-  rear gunner, ammunition management or complex menus.
+  ammunition management, rear-gunner reloads or complex menus.
 * Meshes, buildings and camouflage are simple original placeholders. The
   Spitfire uses its familiar elliptical-wing silhouette; the Stuka follows
   the supplied photograph with approximate proportions and detail. The Sea

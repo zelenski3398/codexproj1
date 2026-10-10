@@ -4,9 +4,11 @@ extends Node
 @export_group("Encounter difficulty")
 @export var combat_enabled: bool = true
 @export var cruise_speed: float = 58.0
-@export var engage_speed_bonus: float = 8.0
+@export var engage_speed_bonus: float = 18.0
 @export var patrol_radius: float = 450.0
-@export var detection_range: float = 1800.0
+@export var detection_range: float = 3200.0
+@export var pursuit_release_range: float = 7500.0
+@export var minimum_player_agl: float = 12.0
 @export var firing_range: float = 650.0
 @export var firing_cone_degrees: float = 6.0
 @export var grace_period: float = 8.0
@@ -17,6 +19,15 @@ extends Node
 @export var evade_on_damage: bool = true
 @export var evade_duration: float = 3.0
 @export var close_pass_distance: float = 115.0
+@export_group("Energy and defensive tactics (simplified)")
+@export var rear_threat_range: float = 650.0
+@export var rear_threat_cone_degrees: float = 55.0
+@export var evade_on_rear_threat: bool = true
+@export var defensive_cooldown: float = 6.0
+@export var tactical_height_change: float = 35.0
+@export var pursuit_prediction_seconds: float = 4.0
+@export var overshoot_closing_speed: float = 18.0
+@export var maximum_tactical_bank_degrees: float = 55.0
 @export_group("Flight and avoidance")
 @export var minimum_agl: float = 65.0
 @export var terrain_lookahead_seconds: float = 5.0
@@ -48,6 +59,12 @@ var aim_bias: Vector2 = Vector2.ZERO
 var previous_hp: float = 100.0
 var roll_trim: float = 0.0
 var pitch_trim: float = 0.0
+var combat_unlocked: bool = false
+var tracking_target: bool = false
+var defensive_clock: float = 0
+var tactic: String = "PATROL"
+var break_tactic: String = "BREAK"
+var last_break_side: float = 1
 
 func _ready() -> void:
 	aircraft.health.changed.connect(_health_changed)
@@ -55,6 +72,13 @@ func _ready() -> void:
 
 func reset() -> void:
 	mode = "PATROL"
+	tactic = "PATROL"
+	combat_unlocked = false
+	tracking_target = false
+	defensive_clock = 0
+	last_break_side = 1
+	break_tactic = "BREAK"
+	break_point = Vector3.ZERO
 	roll_trim = 0
 	pitch_trim = 0
 	airborne_timer = 0.0
@@ -74,10 +98,27 @@ func _health_changed(hp: float, _maximum: float) -> void:
 		_begin_evade()
 	previous_hp = hp
 
-func _begin_evade() -> void:
+func _begin_evade(defensive: bool = false) -> void:
 	break_timer = evade_duration
 	var side: float = -1.0 if rng.randf() < 0.5 else 1.0
-	break_point = aircraft.global_position - aircraft.global_basis.z * 450.0 + aircraft.global_basis.x * 300.0 * side + Vector3.UP * 35.0
+	if defensive and is_instance_valid(target):
+		# Break toward the attacking side, forcing it to turn across our path.
+		# A centred pursuer gets alternating breaks, a shallow scissors pattern.
+		var attacker_side: float = aircraft.to_local(target.global_position).x
+		side = signf(attacker_side) if absf(attacker_side) > 8 else -last_break_side
+	last_break_side = side
+	var height_change: float = tactical_height_change
+	if defensive and aircraft.altitude > minimum_agl + terrain_margin + tactical_height_change:
+		height_change = -tactical_height_change # shallow energy-preserving descending break
+	break_point = aircraft.global_position - aircraft.global_basis.z * 350.0 + aircraft.global_basis.x * 450.0 * side + Vector3.UP * height_change
+	break_tactic = "BREAK LEFT" if side < 0 else "BREAK RIGHT"
+	defensive_clock = defensive_cooldown
+
+func _player_airborne() -> bool:
+	return combat_enabled and is_instance_valid(target) and not target.is_destroyed and not target.is_crashed and target.gear.contact_count == 0 and target.altitude > minimum_player_agl
+
+func engagement_ready() -> bool:
+	return _player_airborne() and (combat_unlocked or airborne_timer >= grace_period)
 
 func _physics_process(delta: float) -> void:
 	aircraft.pilot.fire = false
@@ -88,22 +129,33 @@ func _physics_process(delta: float) -> void:
 		mode = "DESTROYED"
 		aircraft.pilot.reset_commands()
 		return
-	# Grace counts continuous safe airborne time, never time sitting on the runway.
-	var can_engage: bool = combat_enabled and is_instance_valid(target) and not target.is_destroyed and not target.is_crashed and target.gear.contact_count == 0 and target.altitude > 25.0 and target.airspeed > 35.0
+	# Speed is no longer an acquisition gate: slow climbs and damaged fighters
+	# should not make the AI forget them. The grace unlock stays for this life.
+	var can_engage: bool = _player_airborne()
 	airborne_timer = airborne_timer + delta if can_engage else 0.0
+	combat_unlocked = combat_unlocked or (can_engage and airborne_timer >= grace_period)
 	burst_clock += delta
 	break_timer = maxf(break_timer - delta, 0.0)
+	defensive_clock = maxf(defensive_clock - delta, 0.0)
 	var aim: Vector3 = _patrol_point()
 	var distance: float = aircraft.global_position.distance_to(target.global_position) if is_instance_valid(target) else INF
-	var pursuing: bool = can_engage and airborne_timer >= grace_period and distance < detection_range
+	if not can_engage or distance > maxf(pursuit_release_range, detection_range):
+		tracking_target = false
+	elif engagement_ready() and distance <= detection_range:
+		tracking_target = true
+	var pursuing: bool = engagement_ready() and tracking_target
 	mode = "PATROL"
+	tactic = "TAKEOFF GRACE" if can_engage and not engagement_ready() else "PATROL"
 	if pursuing:
 		mode = "ENGAGE"
-		aim = _lead_point()
+		aim = _pursuit_point()
 		if distance < close_pass_distance and break_timer <= 0.0:
 			_begin_evade()
+		elif evade_on_rear_threat and break_timer <= 0 and defensive_clock <= 0 and _rear_threat():
+			_begin_evade(true)
 	if break_timer > 0:
 		mode = "EVADE"
+		tactic = break_tactic
 		aim = break_point
 	scan_clock -= delta
 	if scan_clock <= 0:
@@ -111,9 +163,13 @@ func _physics_process(delta: float) -> void:
 		scan_clock = 0.15
 	if terrain_avoiding:
 		mode = "EVADE"
+		tactic = "TERRAIN AVOIDANCE"
 		aim = avoidance_point
 	elif pursuing and break_timer <= 0:
-		var angle: float = (-aircraft.global_basis.z).angle_to((aim - aircraft.global_position).normalized())
+		# Navigation predicts a flight intercept; gun lead remains a separate,
+		# shorter ballistic prediction. Never bend forward rounds toward a yo-yo.
+		var gun_aim: Vector3 = _lead_point()
+		var angle: float = (-aircraft.global_basis.z).angle_to((gun_aim - aircraft.global_position).normalized())
 		var cycle: float = maxf(burst_duration + burst_rest, 0.1)
 		var index: int = floori(burst_clock / cycle)
 		if index != burst_index:
@@ -123,10 +179,36 @@ func _physics_process(delta: float) -> void:
 		if distance < firing_range and angle < deg_to_rad(firing_cone_degrees) and _clear_line_of_sight():
 			aircraft.pilot.fire = in_burst
 			aircraft.guns.use_assisted_aim = in_burst
-			var biased: Vector3 = (aim - aircraft.global_position).rotated(aircraft.global_basis.x, deg_to_rad(aim_bias.x)).rotated(aircraft.global_basis.y, deg_to_rad(aim_bias.y))
+			var biased: Vector3 = (gun_aim - aircraft.global_position).rotated(aircraft.global_basis.x, deg_to_rad(aim_bias.x)).rotated(aircraft.global_basis.y, deg_to_rad(aim_bias.y))
 			aircraft.guns.assisted_aim = aircraft.global_position + biased
 			aircraft.guns.max_assist_degrees = firing_cone_degrees
 	_fly_toward(aim, delta)
+
+func _rear_threat() -> bool:
+	var offset: Vector3 = target.global_position - aircraft.global_position
+	if offset.length() > rear_threat_range or aircraft.global_basis.z.angle_to(offset) > deg_to_rad(rear_threat_cone_degrees):
+		return false
+	# A plane behind us but flying away is not an attacker.
+	return (-target.global_basis.z).angle_to(-offset) < deg_to_rad(25)
+
+func _pursuit_point() -> Vector3:
+	var offset: Vector3 = target.global_position - aircraft.global_position
+	var prediction: float = clampf(offset.length() / maxf(aircraft.airspeed, 30) * 0.35, 0.15, pursuit_prediction_seconds)
+	var point: Vector3 = target.global_position + target.linear_velocity * prediction
+	if offset.length() < 900:
+		point = _lead_point() # transition to nose alignment for the firing pass
+	tactic = "INTERCEPT"
+	var alignment: float = (-aircraft.global_basis.z).angle_to(offset)
+	var closing: float = (aircraft.linear_velocity - target.linear_velocity).dot(offset.normalized())
+	# Simplified yo-yos: climb to reduce excess closure, descend to trade height
+	# for speed in a turning pursuit. These are goals, not scripted manoeuvres.
+	if offset.length() < 300 and alignment < deg_to_rad(55) and closing > overshoot_closing_speed and aircraft.airspeed > 50:
+		point.y += tactical_height_change
+		tactic = "HIGH YO-YO"
+	elif offset.length() < 1000 and alignment > deg_to_rad(15) and alignment < deg_to_rad(75) and target.airspeed > aircraft.airspeed + 4 and aircraft.altitude > minimum_agl + terrain_margin + tactical_height_change:
+		point.y -= tactical_height_change
+		tactic = "LOW YO-YO"
+	return point
 
 func _scan_terrain() -> void:
 	terrain_avoiding = false
@@ -184,7 +266,8 @@ func _fly_toward(point: Vector3, delta: float) -> void:
 	var desired_heading: float = atan2(-direction.x, -direction.z)
 	var heading_error: float = wrapf(desired_heading - heading, -PI, PI)
 	var bank: float = asin(clampf(aircraft.global_basis.x.y, -1.0, 1.0))
-	var desired_bank: float = clampf(heading_error * 1.4, -deg_to_rad(maximum_bank_degrees), deg_to_rad(maximum_bank_degrees))
+	var bank_limit: float = maximum_tactical_bank_degrees if mode in ["ENGAGE", "EVADE"] and not terrain_avoiding else maximum_bank_degrees
+	var desired_bank: float = clampf(heading_error * 1.4, -deg_to_rad(bank_limit), deg_to_rad(bank_limit))
 	var damage: AircraftDamage = aircraft.components
 	var impaired: bool = damage.lift_factor() < 0.999 or damage.cockpit_factor() < 0.999 or damage.elevator_factor() < 0.999
 	var omega: Vector3 = aircraft.global_basis.transposed() * aircraft.angular_velocity
@@ -221,6 +304,11 @@ func _fly_toward(point: Vector3, delta: float) -> void:
 	aircraft.pilot.pitch = move_toward(aircraft.pilot.pitch, pitch_command, step)
 	aircraft.pilot.rudder = move_toward(aircraft.pilot.rudder, rudder, step)
 	var wanted_speed: float = cruise_speed + (engage_speed_bonus if mode == "ENGAGE" else 0.0)
+	if mode == "ENGAGE" and is_instance_valid(target):
+		var spacing: float = aircraft.global_position.distance_to(target.global_position)
+		# Close faster at long range, match speed near the firing pass instead
+		# of charging past at full power and circling without a shot.
+		wanted_speed = clampf(target.airspeed + clampf((spacing - 180) * 0.025, 0, engage_speed_bonus), cruise_speed, 85)
 	aircraft.pilot.throttle = 1.0 if terrain_avoiding else clampf((0.6 + (wanted_speed - aircraft.airspeed) * 0.025) / maxf(damage.power_factor(), compensation_authority_floor), 0.2, 1.0)
 	aircraft.pilot.brakes = false
 

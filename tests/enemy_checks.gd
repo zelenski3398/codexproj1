@@ -162,7 +162,7 @@ func _run() -> void:
 	_check(enemy.ai.mode == "EVADE" and not enemy.pilot.fire, "Close passes trigger a break-away turn instead of point-blank firing")
 	await _fixture(Vector3(0, 150, 500), Vector3(0, 150, 200), 58)
 	await _frames(10)
-	_check(enemy.ai.mode == "ENGAGE" and not enemy.pilot.fire, "Enemy must turn toward the player and cannot fire backwards")
+	_check(enemy.ai.mode == "EVADE" and enemy.ai.tactic.begins_with("BREAK") and not enemy.pilot.fire, "A rear attacker triggers a physical defensive break; forward guns cannot fire backwards")
 	# Destruction of the player ends attacks and leaves a falling wreck.
 	await _fixture(Vector3(0, 150, 200), Vector3(0, 150, 500), 55)
 	for tick in range(2400):

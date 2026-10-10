@@ -5,6 +5,7 @@ signal ground_impact(point: Vector3)
 signal wreck_removed
 @export var wreck_remove_delay: float = 4.0
 var ai: EnemyPilot
+var rear_gunner: RearGunner
 var target: FlightAircraft
 var impact_started: bool = false
 var wreck_age: float = 0
@@ -42,6 +43,10 @@ func _ready() -> void:
 	ai.patrol_center.y = reset_position.y
 	ai.name = "EnemyPilot"
 	add_child(ai)
+	rear_gunner = RearGunner.new()
+	rear_gunner.name = "RearGunner"
+	rear_gunner.aircraft = self
+	add_child(rear_gunner)
 	reset_completed.connect(_reset_life)
 	request_reset()
 	pending_reset_pose = Transform3D(Basis.IDENTITY, reset_position)
@@ -55,12 +60,16 @@ func _reset_life() -> void:
 	wreck_age = 0
 	ai.set_physics_process(true)
 	ai.reset()
+	rear_gunner.reset()
+	rear_gunner.set_physics_process(true)
 
 func _destroy() -> void:
 	if is_destroyed:
 		return
 	ai.mode = "DESTROYED"
 	ai.set_physics_process(false)
+	rear_gunner.cease_fire()
+	rear_gunner.set_physics_process(false)
 	super._destroy()
 
 func _crash(_reason: String) -> void:

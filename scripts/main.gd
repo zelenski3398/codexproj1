@@ -14,6 +14,7 @@ var session_number: int = 0
 var _enemy_restart_queued: bool = false
 var _ai_settings: Dictionary = {}
 var _gun_settings: Dictionary = {}
+var _rear_gunner_settings: Dictionary = {}
 
 func _ready() -> void:
 	var field := Airfield.new()
@@ -91,6 +92,7 @@ func _remember_difficulty() -> void:
 	if is_instance_valid(enemy):
 		_ai_settings = _exported_settings(enemy.ai)
 		_gun_settings = _exported_settings(enemy.guns)
+		_rear_gunner_settings = _exported_settings(enemy.rear_gunner)
 
 func _spawn_enemy() -> void:
 	_remember_difficulty()
@@ -112,7 +114,10 @@ func _spawn_enemy() -> void:
 		enemy.ai.set(key, _ai_settings[key])
 	for key in _gun_settings:
 		enemy.guns.set(key, _gun_settings[key])
+	for key in _rear_gunner_settings:
+		enemy.rear_gunner.set(key, _rear_gunner_settings[key])
 	enemy.ai.reset()
+	enemy.rear_gunner.reset()
 	enemy.destroyed.connect(_on_enemy_destroyed.bind(enemy))
 	enemy.ground_impact.connect(_on_enemy_ground_impact.bind(enemy))
 	enemy.wreck_removed.connect(_on_wreck_removed.bind(enemy))
@@ -133,6 +138,11 @@ func _on_player_reset() -> void:
 		enemy.guns.set_physics_process(false)
 		enemy.guns.pool.set_physics_process(false)
 		enemy.guns.reset()
+		enemy.rear_gunner.cease_fire()
+		enemy.rear_gunner.set_physics_process(false)
+		enemy.rear_gunner.guns.set_physics_process(false)
+		enemy.rear_gunner.guns.pool.set_physics_process(false)
+		enemy.rear_gunner.guns.reset()
 	# Removing physics bodies is deferred until the physics server is unlocked.
 	call_deferred("_restart_enemy")
 

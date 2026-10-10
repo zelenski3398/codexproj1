@@ -7,6 +7,13 @@ extends Node3D
 @export var convergence_distance: float = 250.0 # <= 0 means parallel guns
 @export var tracer_every: int = 4
 @export_range(0, 3, 0.01) var spread_degrees: float = 0.0
+@export var pool_capacity: int = 384
+## Alternative mount reuses the same fire timing, flashes and swept projectiles.
+## Empty ports retain the aircraft's forward guns and existing player input.
+var firing_ports: Array[Marker3D] = []
+var externally_controlled: bool = false
+var external_fire: bool = false
+var forward_from_port: bool = false
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var aircraft: FlightAircraft
 var pool: ProjectilePool
@@ -23,11 +30,14 @@ var assisted_aim: Vector3 = Vector3.ZERO
 func _ready() -> void:
 	rng.seed = 1942
 	pool = ProjectilePool.new()
+	pool.capacity = pool_capacity
 	pool.name = "WorldSpaceBullets"
 	add_child(pool)
+	if firing_ports.is_empty():
+		firing_ports.assign(aircraft.model.gun_ports)
 	var mat: StandardMaterial3D = MeshKit.material(Color("ffe0a0"))
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	for port in aircraft.model.gun_ports:
+	for port in firing_ports:
 		var flash: MeshInstance3D = MeshKit.sphere(port, Vector3(0.14, 0.14, 0.45), Vector3(0, 0, -0.12), mat)
 		flash.visible = false
 		flash.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -38,7 +48,7 @@ func _physics_process(delta: float) -> void:
 	for i in range(flashes.size()):
 		flash_times[i] = maxf(flash_times[i] - delta, 0.0)
 		flashes[i].visible = flash_times[i] > 0.0
-	var held: bool = aircraft.pilot.fire if aircraft.pilot.automated else Input.is_action_pressed("fire")
+	var held: bool = external_fire if externally_controlled else (aircraft.pilot.fire if aircraft.pilot.automated else Input.is_action_pressed("fire"))
 	if not held:
 		trigger_ready = true
 	if not held or not trigger_ready or aircraft.is_crashed or aircraft.is_destroyed or aircraft.reset_pending or rounds_per_second <= 0.0:
@@ -56,7 +66,7 @@ func _physics_process(delta: float) -> void:
 		cooldown = maxf(cooldown, 0.0)
 
 func shot_direction(port: Marker3D) -> Vector3:
-	var forward: Vector3 = -aircraft.global_basis.z.normalized()
+	var forward: Vector3 = -port.global_basis.z.normalized() if forward_from_port else -aircraft.global_basis.z.normalized()
 	if use_assisted_aim:
 		var aim_direction: Vector3 = (assisted_aim - aircraft.global_position).normalized()
 		if forward.angle_to(aim_direction) <= deg_to_rad(max_assist_degrees):
@@ -67,8 +77,8 @@ func shot_direction(port: Marker3D) -> Vector3:
 	return (aim - port.global_position).normalized()
 
 func _fire_salvo() -> void:
-	for i in range(aircraft.model.gun_ports.size()):
-		var port: Marker3D = aircraft.model.gun_ports[i]
+	for i in range(firing_ports.size()):
+		var port: Marker3D = firing_ports[i]
 		var direction: Vector3 = shot_direction(port)
 		if spread_degrees > 0:
 			direction = direction.rotated(aircraft.global_basis.x, deg_to_rad(rng.randf_range(-spread_degrees, spread_degrees)))
@@ -83,6 +93,7 @@ func reset() -> void:
 	pool.clear()
 	rng.seed = 1942
 	use_assisted_aim = false
+	external_fire = false
 	cooldown = 0.0
 	# Avoid a held Ctrl immediately spawning new rounds in the reset frame.
 	trigger_ready = false

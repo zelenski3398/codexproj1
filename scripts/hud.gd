@@ -279,8 +279,8 @@ func _process(delta: float) -> void:
 		notice_label.text = aircraft.gear.last_notice
 	elif enemy_defeated:
 		notice_label.text = "Enemy destroyed · R to restart the encounter"
-	elif is_instance_valid(enemy) and enemy.pilot.fire and not aircraft.is_destroyed and not aircraft.is_crashed:
-		notice_label.text = "INCOMING FIRE · BANK TO EVADE"
+	elif is_instance_valid(enemy) and (enemy.pilot.fire or enemy.rear_gunner.firing) and not aircraft.is_destroyed and not aircraft.is_crashed:
+		notice_label.text = "REAR GUNNER FIRING · BREAK AWAY" if enemy.rear_gunner.firing else "INCOMING FIRE · BANK TO EVADE"
 	if aircraft.is_destroyed:
 		help_label.text = "AIRCRAFT DESTROYED · ENGINE AND GUNS OFF · PRESS R TO RESET"
 	elif aircraft.is_crashed:
@@ -309,7 +309,7 @@ func _update_enemy(camera: Camera3D) -> void:
 		return
 	var delta: Vector3 = enemy.global_position - aircraft.global_position
 	var bearing: float = fposmod(rad_to_deg(atan2(delta.x, -delta.z)), 360.0)
-	enemy_label.text = "STUKA %d HP · %03d° · %d m\n%s" % [ceili(enemy.health.hp), roundi(bearing), roundi(delta.length()), enemy.ai.mode]
+	enemy_label.text = "STUKA %d HP · %03d° · %d m\n%s · %s" % [ceili(enemy.health.hp), roundi(bearing), roundi(delta.length()), enemy.ai.mode, enemy.ai.tactic]
 	if enemy.is_destroyed or enemy.is_crashed:
 		enemy_label.text = "STUKA DOWN · R FOR A NEW ENCOUNTER"
 		return
