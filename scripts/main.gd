@@ -19,6 +19,10 @@ var enemy_front_statistics: WeaponStatistics
 var enemy_rear_statistics: WeaponStatistics
 
 func _ready() -> void:
+	if OS.has_feature("web"):
+		var web: WebSupport = WebSupport.new()
+		web.session = self
+		add_child(web)
 	var field := Airfield.new()
 	field.name = "CountrysideAirfield"
 	add_child(field)

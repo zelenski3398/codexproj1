@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="First Sortie: fly a Spitfire or Sea Gladiator and face a Stuka over a WWII countryside airfield. Free browser flight prototype.">
+<title>First Sortie · Fly in your browser</title>
+$GODOT_HEAD_INCLUDE
+<style>
+:root{color-scheme:dark;--ink:#e9e8d7;--muted:#abb8ad;--gold:#e4bf75;--panel:#14211d}
+*{box-sizing:border-box}body{margin:0;background:#101b17;color:var(--ink);font:16px/1.55 system-ui,sans-serif;overflow:hidden}
+canvas{display:block;width:100%;height:100%;outline:none}
+#game{position:fixed;inset:0;visibility:hidden;background:#101b17}
+#landing{position:fixed;inset:0;display:grid;place-items:center;padding:30px;overflow:auto;background:radial-gradient(ellipse at 75% 25%,#354637 0,transparent 60%),#101b17}
+.briefing{width:min(780px,100%)}.eyebrow{font-size:12px;letter-spacing:.26em;color:var(--gold)}
+h1{font-size:clamp(48px,8vw,86px);line-height:1;letter-spacing:-.03em;margin:22px 0}
+.summary{max-width:580px;font-size:20px;color:var(--muted)}.rule{height:1px;background:#52614e;margin:28px 0}
+.planes{display:flex;gap:24px;flex-wrap:wrap}.planes strong{display:block;font-size:20px}.planes span{color:var(--muted)}
+button{border:1px solid var(--gold);border-radius:3px;background:var(--gold);color:#17211a;font:700 15px system-ui;padding:15px 25px;cursor:pointer}
+button:focus-visible{outline:3px solid white;outline-offset:4px}button:disabled{opacity:.65;cursor:wait}
+#start{margin:24px 0 8px}#status{min-height:28px;color:var(--muted);overflow-wrap:anywhere}
+progress{display:none;width:min(420px,100%);height:8px;accent-color:var(--gold);margin:10px 0 18px}
+.controls{font-size:14px;color:var(--muted);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 24px;margin:20px 0}
+kbd{display:inline-block;color:var(--ink);font:700 13px system-ui;min-width:64px}footer{font-size:12px;color:var(--muted);margin-top:20px}a{color:var(--gold)}
+@media(max-width:600px){.controls{grid-template-columns:1fr}.summary{font-size:17px}}
+</style>
+</head>
+<body>
+<main id="landing">
+<section class="briefing" aria-labelledby="title">
+<div class="eyebrow">RAF / SOUTHERN ENGLAND / 1940</div>
+<h1 id="title">FIRST SORTIE</h1>
+<p class="summary">Take off over the countryside. Fly a Spitfire or Sea Gladiator. Make your pass against a Stuka, then bring your aircraft home.</p>
+<div class="rule"></div>
+<div class="planes"><div><strong>Spitfire Mk I</strong><span>Fast monoplane · eight wing guns</span></div><div><strong>Sea Gladiator</strong><span>Agile biplane · four guns · fixed gear</span></div></div>
+<button id="start" type="button">PLAY IN BROWSER</button>
+<div id="status" role="status" aria-live="polite">Desktop keyboard required · Chrome, Edge or Firefox with WebGL 2</div>
+<progress id="progress" aria-label="Loading game"></progress>
+<div class="controls" aria-label="Flight controls">
+<div><kbd>↑ ↓</kbd> Pitch nose down / up</div><div><kbd>← →</kbd> Bank left / right</div>
+<div><kbd>W / S</kbd> Set throttle</div><div><kbd>A / D</kbd> Rudder</div>
+<div><kbd>F (hold)</kbd> Fire guns</div><div><kbd>G</kbd> Landing gear</div>
+<div><kbd>Space</kbd> Wheel brakes</div><div><kbd>R / Esc</kbd> Restart / pause</div>
+</div>
+<footer>Playable prototype · Choose your aircraft after loading.<br>
+Built with <a href="https://godotengine.org/license/" target="_blank" rel="noopener">Godot</a> · <a href="./GODOT-LICENSE.txt" target="_blank" rel="noopener">License</a> · <a href="./GODOT-COPYRIGHT.txt" target="_blank" rel="noopener">Third-party notices</a> · <a href="./DejaVu-LICENSE.txt" target="_blank" rel="noopener">Font license</a> · <a href="https://github.com/zelenski3398/codexproj1" target="_blank" rel="noopener">Project</a></footer>
+<noscript><p>JavaScript is required to run the game.</p></noscript>
+</section>
+</main>
+<div id="game"><canvas id="canvas" tabindex="0" aria-label="First Sortie flight game">Your browser needs canvas and WebGL 2 support.</canvas></div>
+<script src="$GODOT_URL"></script>
+<script>
+'use strict';
+const config = $GODOT_CONFIG;
+const engine = new Engine(config);
+const start = document.getElementById('start');
+const status = document.getElementById('status');
+const progress = document.getElementById('progress');
+const game = document.getElementById('game');
+const canvas = document.getElementById('canvas');
+let loading = false;
+const missing = Engine.getMissingFeatures({threads: $GODOT_THREADS_ENABLED});
+if(missing.length){
+  start.disabled = true;
+  status.textContent = 'This browser cannot run the game: ' + missing.join(', ') + '. Try an up-to-date desktop browser with hardware acceleration enabled.';
+}
+canvas.addEventListener('pointerdown',()=>canvas.focus());
+start.addEventListener('click', async ()=>{
+  if(loading || missing.length) return;
+  loading = true;start.disabled = true;start.textContent = 'LOADING…';
+  status.textContent = 'Loading aircraft and airfield…';progress.style.display = 'block';
+  game.style.visibility = 'visible';
+  try{
+    await engine.startGame({canvas:canvas,onProgress:(current,total)=>{
+      if(total>0){progress.max=total;progress.value=current}
+      else{progress.removeAttribute('value')}
+    }});
+    document.getElementById('landing').remove();
+    canvas.focus();
+    window.firstSortieReady = true;
+  }catch(error){
+    console.error(error);game.style.visibility='hidden';
+    status.textContent = 'The game could not start. '+String(error.message||error);
+    start.textContent='TRY AGAIN';start.disabled=false;loading=false;progress.style.display='none';
+  }
+});
+</script>
+</body>
+</html>

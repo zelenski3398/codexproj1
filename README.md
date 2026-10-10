@@ -6,6 +6,31 @@ Gladiator**, take off, bank over the fields, return, land and brake. Both have
 guns, component damage, health/damage effects, and a flying Ju 87-inspired opponent that shoots
 back. All aircraft are original procedural mesh placeholders. No paid assets.
 
+## Browser version and free hosting
+
+A single-threaded Godot web export and branded Play page are now included.
+The browser guide uses **F to fire** so W + firing cannot close the tab via
+Ctrl+W. Desktop Ctrl firing and all existing flight/landing controls are preserved.
+A bundled free font supplies arrows and aiming-marker glyphs in browsers.
+
+To activate the public website:
+
+1. Open [repository Settings → Pages](https://github.com/zelenski3398/codexproj1/settings/pages).
+2. Under **Build and deployment → Source**, choose **GitHub Actions**.
+3. Open [Publish browser game](https://github.com/zelenski3398/codexproj1/actions/workflows/web.yml)
+   and select **Run workflow → main**. Later pushes to main rebuild/deploy automatically.
+
+After a successful deployment the normal Pages URL is
+[zelenski3398.github.io/codexproj1/](https://zelenski3398.github.io/codexproj1/).
+Public activation and that URL could not be verified from this cloud task:
+its proxy blocks the GitHub API and Pages domains. The actual browser export
+was tested locally: **22/22 Chromium checks passed**, plus **91/91 desktop
+input/weapon/aircraft-choice regressions**. No JavaScript/Godot runtime errors
+or failed game-asset requests occurred.
+
+See [web build, deployment and validation details](docs/web-hosting.md).
+The workflow also saves a downloadable **first-sortie-web** artifact.
+
 ## Open and play
 
 1. Install the standard **Godot 4.3 or newer** editor (not the .NET edition;

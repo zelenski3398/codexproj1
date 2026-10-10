@@ -1,0 +1,49 @@
+name: Publish browser game
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install matching Godot and web templates
+        run: |
+          bash tools/install_godot_web.sh
+          echo /tmp/first-sortie-godot >> "$GITHUB_PATH"
+      - name: Check desktop controls and shared weapons
+        run: |
+          godot --headless --path . --editor --import --quit
+          godot --headless --path . --fixed-fps 120 --script res://tests/keyboard_checks.gd
+          godot --headless --path . --fixed-fps 120 --script res://tests/weapons_checks.gd
+      - name: Export browser game
+        run: bash tools/build_web.sh
+      - name: Save downloadable browser build
+        uses: actions/upload-artifact@v4
+        with:
+          name: first-sortie-web
+          path: builds/web/
+          include-hidden-files: true
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: builds/web/
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Publish to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

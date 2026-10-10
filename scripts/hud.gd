@@ -5,7 +5,8 @@ const INK := Color("e9e8d7")
 const MUTED := Color("abb8ad")
 const GOLD := Color("e4bf75")
 const PANEL := Color(0.055, 0.09, 0.085, 0.90)
-const CONTROLS := "↑ / ↓   Nose down / up\n← / →   Bank left / right\nA / D   Rudder left / right\nW / S   Increase / decrease throttle\nCTRL (hold)   %s\nG   %s\nSPACE   Hold wheel brakes\nH   DEBUG: remove 10 HP   ·   F3 components\nR   Restart encounter\nESC   Pause / controls"
+const CONTROLS := "↑ / ↓   Nose down / up\n← / →   Bank left / right\nA / D   Rudder left / right\nW / S   Increase / decrease throttle\n%s (hold)   %s\nG   %s\nSPACE   Hold wheel brakes\nH   DEBUG: remove 10 HP   ·   F3 components\nR   Restart encounter\nESC   Pause / controls"
+var fire_key_label: String = "F" if OS.has_feature("web") else "CTRL"
 var component_debugging: bool = false
 var aircraft: FlightAircraft
 var enemy: EnemyAircraft
@@ -133,7 +134,7 @@ func _ready() -> void:
 	var list := VBoxContainer.new()
 	strip.add_child(list)
 	list.add_child(_label("PILOT NOTES", 12, GOLD))
-	list.add_child(_label("ARROWS  Pitch / bank     A / D  Rudder\nW / S  Throttle     G  Gear     SPACE  Brakes\nCTRL (hold)  %s\nH  DEBUG: −10 HP     R  Reset     ESC  Pause" % aircraft.gun_description, 13, INK))
+	list.add_child(_label("ARROWS  Pitch / bank     A / D  Rudder\nW / S  Throttle     G  Gear     SPACE  Brakes\n%s (hold)  %s\nH  DEBUG: −10 HP     R  Reset     ESC  Pause" % [fire_key_label, aircraft.gun_description], 13, INK))
 	list.add_child(_label("APPROACH  %s km/h · %s\nFlare gently · aim for less than 3 m/s sink" % [aircraft.approach_speed_hint, "gear down" if aircraft.gear.retractable else "fixed gear"], 12, MUTED))
 	notice_label = _label("", 16, GOLD)
 	notice_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
@@ -160,7 +161,7 @@ func _ready() -> void:
 	overlay_detail = _label("Take your time. The aircraft is waiting.", 14, MUTED)
 	menu.add_child(overlay_detail)
 	menu.add_child(HSeparator.new())
-	menu.add_child(_label(CONTROLS % [aircraft.gun_description, "Toggle landing gear" if aircraft.gear.retractable else "Fixed landing gear (cannot retract)"], 17, INK))
+	menu.add_child(_label(CONTROLS % [fire_key_label, aircraft.gun_description, "Toggle landing gear" if aircraft.gear.retractable else "Fixed landing gear (cannot retract)"], 17, INK))
 	resume_button = Button.new()
 	resume_button.text = "RESUME FLIGHT  /  ESC"
 	resume_button.focus_mode = Control.FOCUS_NONE
@@ -288,7 +289,7 @@ func _process(delta: float) -> void:
 	elif aircraft.gear.contact_count > 0:
 		help_label.text = "HOLD W TO SET POWER  ·  AT %s KM/H, GENTLY HOLD ↓ TO LIFT OFF" % aircraft.takeoff_speed_hint
 	else:
-		help_label.text = "CTRL  FIRE · FOLLOW THE STUKA MARKER · KEEP AIRSPEED ABOVE %d KM/H" % aircraft.safe_speed_hint
+		help_label.text = "%s  FIRE · FOLLOW THE STUKA MARKER · KEEP AIRSPEED ABOVE %d KM/H" % [fire_key_label, aircraft.safe_speed_hint]
 	if not get_window().has_focus() and not aircraft.is_crashed and not aircraft.is_destroyed and not get_tree().paused:
 		help_label.text = "CLICK INSIDE THE GAME VIEW TO FOCUS IT · THEN HOLD W TO SET POWER"
 	overlay.visible = (get_tree().paused and not component_debugging) or aircraft.is_crashed or aircraft.is_destroyed
