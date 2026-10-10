@@ -12,6 +12,7 @@ var ages: Array[float] = []
 var lifetimes: Array[float] = []
 var damage: Array[float] = []
 var excluded: Array[RID] = []
+var teams: Array[int] = []
 var tracers: Array[MeshInstance3D] = []
 var sparks: Array[MeshInstance3D] = []
 var spark_times: Array[float] = []
@@ -37,6 +38,7 @@ func _ready() -> void:
 		lifetimes.append(0.0)
 		damage.append(0.0)
 		excluded.append(RID())
+		teams.append(CombatTeams.NEUTRAL)
 		var visual := MeshKit.mesh(self, tracer_mesh, tracer_mat)
 		visual.visible = false
 		visual.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -48,7 +50,7 @@ func _ready() -> void:
 		sparks.append(spark)
 		spark_times.append(0.0)
 
-func spawn(origin: Vector3, velocity: Vector3, life: float, hit_damage: float, shooter: RID, visible_tracer: bool) -> bool:
+func spawn(origin: Vector3, velocity: Vector3, life: float, hit_damage: float, shooter: RID, visible_tracer: bool, shooter_team: int = CombatTeams.NEUTRAL) -> bool:
 	if free.is_empty():
 		dropped_rounds += 1
 		return false
@@ -60,6 +62,7 @@ func spawn(origin: Vector3, velocity: Vector3, life: float, hit_damage: float, s
 	lifetimes[index] = maxf(life, 0.001)
 	damage[index] = hit_damage
 	excluded[index] = shooter
+	teams[index] = shooter_team
 	tracers[index].position = origin
 	tracers[index].visible = visible_tracer
 	if velocity.length_squared() > 0.01:
@@ -79,7 +82,7 @@ func _physics_process(delta: float) -> void:
 		if not hit.is_empty():
 			total_hits += 1
 			var collider: Object = hit.collider
-			if is_instance_valid(collider) and collider.has_method("take_damage"):
+			if is_instance_valid(collider) and collider.has_method("take_damage") and CombatTeams.can_damage(teams[index], collider):
 				collider.call("take_damage", damage[index])
 			_impact(hit.position)
 			_release(slot)

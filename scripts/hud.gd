@@ -5,11 +5,17 @@ const INK := Color("e9e8d7")
 const MUTED := Color("abb8ad")
 const GOLD := Color("e4bf75")
 const PANEL := Color(0.055, 0.09, 0.085, 0.90)
-const CONTROLS := "↑ / ↓   Nose down / up\n← / →   Bank left / right\nA / D   Rudder left / right\nW / S   Increase / decrease throttle\nCTRL (hold)   %s\nG   %s\nSPACE   Hold wheel brakes\nH   DEBUG: remove 10 HP\nR   Reset both aircraft\nESC   Pause / controls"
+const CONTROLS := "↑ / ↓   Nose down / up\n← / →   Bank left / right\nA / D   Rudder left / right\nW / S   Increase / decrease throttle\nCTRL (hold)   %s\nG   %s\nSPACE   Hold wheel brakes\nH   DEBUG: remove 10 HP\nR   Restart encounter\nESC   Pause / controls"
 var aircraft: FlightAircraft
 var enemy: EnemyAircraft
 var enemy_label: Label
 var enemy_marker: Label
+@export var enemy_health_range: float = 800.0
+var enemy_defeated: bool = false
+var enemy_health_widget: VBoxContainer
+var enemy_hp_label: Label
+var enemy_hp_bar: ProgressBar
+var enemy_hp_fill: StyleBoxFlat
 var speed_label: Label
 var altitude_label: Label
 var throttle_label: Label
@@ -41,6 +47,23 @@ func _ready() -> void:
 	enemy_marker = _label("◇ STUKA", 16, Color("ff946a"))
 	enemy_marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(enemy_marker)
+	enemy_health_widget = VBoxContainer.new()
+	enemy_health_widget.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	enemy_health_widget.add_theme_constant_override("separation", 2)
+	root.add_child(enemy_health_widget)
+	enemy_hp_label = _label("STUKA · HP: 100/100", 14, INK)
+	enemy_hp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	enemy_health_widget.add_child(enemy_hp_label)
+	enemy_hp_bar = ProgressBar.new()
+	enemy_hp_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	enemy_hp_bar.max_value = 100
+	enemy_hp_bar.show_percentage = false
+	enemy_hp_bar.custom_minimum_size = Vector2(150, 10)
+	enemy_hp_bar.add_theme_stylebox_override("background", _style(Color("28332d"), 0))
+	enemy_hp_fill = _style(Color("ff946a"), 0)
+	enemy_hp_bar.add_theme_stylebox_override("fill", enemy_hp_fill)
+	enemy_health_widget.add_child(enemy_hp_bar)
+	enemy_health_widget.visible = false
 	var masthead := PanelContainer.new()
 	masthead.position = Vector2(26, 18)
 	masthead.add_theme_stylebox_override("panel", _style(Color(0.055, 0.09, 0.085, 0.76), 12))
@@ -253,11 +276,10 @@ func _process(delta: float) -> void:
 		notice_label.text = "STALL WARNING   /   NOSE DOWN · ADD POWER"
 	elif not aircraft.gear.last_notice.is_empty():
 		notice_label.text = aircraft.gear.last_notice
-	elif is_instance_valid(enemy) and not aircraft.is_destroyed and not aircraft.is_crashed:
-		if enemy.is_destroyed or enemy.is_crashed:
-			notice_label.text = "ENEMY DOWN · R TO RESTART THE ENCOUNTER"
-		elif enemy.pilot.fire:
-			notice_label.text = "INCOMING FIRE · BANK TO EVADE"
+	elif enemy_defeated:
+		notice_label.text = "Enemy destroyed · R to restart the encounter"
+	elif is_instance_valid(enemy) and enemy.pilot.fire and not aircraft.is_destroyed and not aircraft.is_crashed:
+		notice_label.text = "INCOMING FIRE · BANK TO EVADE"
 	if aircraft.is_destroyed:
 		help_label.text = "AIRCRAFT DESTROYED · ENGINE AND GUNS OFF · PRESS R TO RESET"
 	elif aircraft.is_crashed:
@@ -276,6 +298,10 @@ func _process(delta: float) -> void:
 
 func _update_enemy(camera: Camera3D) -> void:
 	enemy_marker.visible = false
+	enemy_health_widget.visible = false
+	if enemy_defeated:
+		enemy_label.text = "ENEMY DESTROYED\nR FOR A NEW ENCOUNTER"
+		return
 	if not is_instance_valid(enemy):
 		return
 	var delta: Vector3 = enemy.global_position - aircraft.global_position
@@ -288,6 +314,15 @@ func _update_enemy(camera: Camera3D) -> void:
 		return
 	# Keep a directional cue at screen edges even when the enemy is behind us.
 	var screen: Vector2 = get_viewport().get_visible_rect().size
+	var overhead: Vector3 = enemy.global_position + Vector3.UP * 4.5
+	if delta.length() <= enemy_health_range and not camera.is_position_behind(enemy.global_position) and not camera.is_position_behind(overhead):
+		var bar_position: Vector2 = camera.unproject_position(overhead)
+		if Rect2(Vector2.ZERO, screen).has_point(bar_position):
+			enemy_health_widget.visible = true
+			enemy_health_widget.position = bar_position - Vector2(enemy_health_widget.size.x * 0.5, enemy_health_widget.size.y)
+			enemy_hp_label.text = "STUKA · HP: %d/100" % ceili(enemy.health.hp)
+			enemy_hp_bar.value = enemy.health.hp
+			enemy_hp_fill.bg_color = Color("db5347") if enemy.health.hp < 50 else Color("ff946a")
 	var local: Vector3 = camera.to_local(enemy.global_position)
 	var projected: Vector2 = screen * 0.5
 	if local.z > -0.1:

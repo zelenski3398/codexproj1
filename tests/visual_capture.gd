@@ -85,6 +85,58 @@ func _run() -> void:
 	for i in range(3):
 		await physics_frame
 	await _capture("reset")
+	# Extended encounter: overhead bar, exact enemy threshold, engine trail,
+	# one ground-impact burst, cleanup notification and a fresh session.
+	aircraft.request_reset()
+	aircraft.pending_reset_pose = Transform3D(Basis.IDENTITY, Vector3(0, 100, 500))
+	aircraft.pending_reset_velocity = Vector3(0, 0, -55)
+	for i in range(6):
+		await physics_frame
+	aircraft.pilot.throttle = 0.7
+	world.enemy.request_reset()
+	world.enemy.pending_reset_pose = Transform3D(Basis.IDENTITY, Vector3(7, 103, 435))
+	world.enemy.pending_reset_velocity = Vector3(0, 0, -55)
+	for i in range(6):
+		await physics_frame
+	await _capture("enemy_overhead_health")
+	world.enemy.take_damage(50)
+	await _capture("enemy_hp50_no_effects")
+	world.enemy.take_damage(1)
+	for i in range(120):
+		await physics_frame
+	await _capture("enemy_hp49_smoke_fire")
+	world.enemy.take_damage(29)
+	for i in range(120):
+		await physics_frame
+	await _capture("enemy_intense_damage_trail")
+	world.enemy.request_reset()
+	world.enemy.pending_reset_pose = Transform3D(Basis.IDENTITY, Vector3(0, 4, 350))
+	world.enemy.pending_reset_velocity = Vector3(0, -10, -35)
+	for i in range(6):
+		await physics_frame
+	world.enemy.take_damage(100)
+	for i in range(240):
+		await physics_frame
+		if world.enemy.impact_started:
+			break
+	for i in range(12):
+		await physics_frame
+	# Close camera makes the short cosmetic impact readable in a still image.
+	var impact_camera: Camera3D = Camera3D.new()
+	world.add_child(impact_camera)
+	impact_camera.global_position = world.enemy.global_position + Vector3(14, 9, 18)
+	impact_camera.look_at(world.enemy.global_position + Vector3.UP * 2)
+	impact_camera.make_current()
+	await _capture("enemy_ground_destruction")
+	for i in range(510):
+		await physics_frame
+	await _capture("enemy_removed_continue_flight")
+	impact_camera.queue_free()
+	world.chase.make_current()
+	aircraft.request_reset()
+	for i in range(6):
+		await physics_frame
+	await _capture("fresh_session_one_enemy")
 	print("Rendered captures saved to ", output)
 	quit()
 

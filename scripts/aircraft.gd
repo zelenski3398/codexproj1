@@ -10,6 +10,7 @@ signal destroyed
 @export var takeoff_speed_hint: String = "160–180"
 @export var approach_speed_hint: String = "155–180"
 @export var safe_speed_hint: int = 140
+@export_enum("Neutral", "Player", "Enemy") var team_id: int = CombatTeams.PLAYER
 
 @export_group("Aerodynamics")
 @export var wing_area: float = 22.5
@@ -117,7 +118,12 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func take_damage(amount: float) -> void:
+	if is_destroyed:
+		return
 	health.take_damage(amount)
+
+func get_team_id() -> int:
+	return team_id
 
 func _destroy() -> void:
 	if is_destroyed:

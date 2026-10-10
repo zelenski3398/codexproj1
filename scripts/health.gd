@@ -12,7 +12,7 @@ func _ready() -> void:
 	reset()
 
 func take_damage(amount: float) -> void:
-	if not is_finite(amount) or amount <= 0.0:
+	if _depleted or not is_finite(amount) or amount <= 0.0:
 		return
 	set_hp(hp - amount)
 

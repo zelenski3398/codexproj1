@@ -100,7 +100,7 @@ name, gun count and fixed/retractable gear state follow your selection.
 | G | Spitfire: toggle gear, blocked with weight on wheels; Gladiator: fixed-gear notice |
 | Space (hold) | Wheel brakes on the ground |
 | H | **TEMPORARY DEBUG**: remove 10 player HP per press (key repeat ignored) |
-| R | Reset at runway start: 100 HP, gear down, zero throttle, clean effects/bullets; also restore the enemy and restart its airborne patrol |
+| R | Reset at runway start: 100 HP, gear down, zero throttle, clean effects/bullets; spawn exactly one fresh enemy and restart its airborne patrol |
 | Escape | Pause / resume and display full controls |
 
 The pause/crash panel has clickable resume, reset and aircraft-choice buttons. The HUD
@@ -108,7 +108,9 @@ shows airspeed in km/h, fuselage-centre altitude above the collision surface in
 metres, throttle, gear, heading, flight state, stall warning, a gun-convergence
 aim marker and a numeric **HP: 100/100** health bar. An orange Stuka marker
 locates the enemy, with an edge cue when it is out of view; its HP, bearing,
-distance and AI state appear below your health bar. At rest, altitude
+distance and AI state appear below your health bar. A second health bar floats
+above the enemy within 800 m, only while it is in front of the camera and on
+screen; it disappears during pause or after destruction. At rest, altitude
 is about 1 m because it measures the aircraft centre rather than wheel clearance.
 
 ## First circuit
@@ -164,15 +166,39 @@ within 6° of its predicted aim point. It does not attack while you are on the
 ground or after your aircraft is lost. Follow the marker, bank behind it and
 hold Ctrl with your aiming marker over the enemy. Bank to evade its return
 fire. Terrain/buildings obstruct both bullets and the enemy's sight line. The
-AI breaks away on very close passes to reduce head-on collisions. You can
-outpace this slower aircraft or return to land; it resumes patrol when you
-land. R restarts both aircraft and clears both sets of bullets/effects.
+AI breaks away on close passes and after taking damage, holding fire during
+these evasive manoeuvres. You can outpace this slower aircraft or return to
+land; it resumes patrol when you land. Teams prevent friendly damage, and each
+bullet excludes its shooter's collision body. Terrain and friendly bodies stop
+rounds instead of letting them pass through.
+
+The four AI states are **PATROL**, **ENGAGE**, **EVADE** and **DESTROYED**.
+Pitch/roll/rudder commands ramp smoothly, with soft angular-rate limits and a
+46° desired bank limit. Every 0.15 s, downward probes sample actual terrain and
+buildings along a corridor up to 450 m ahead, including the wings. Predicted
+descent below 65 m clearance requests a climb; forward obstruction probes
+choose a sideways route. The enemy also turns toward the airfield before
+reaching the edge of the finite terrain. These are simple local avoidance
+rules rather than a general path planner.
+
+At 0 HP the Stuka stops AI control, thrust and firing once and falls under the
+shared flight physics. The HUD displays **Enemy destroyed** and lets you keep
+flying. Its first ground contact creates a short CPU-rendered flame/smoke burst,
+stops engine effects and settles the wreck; the burst fades within 2.5 s and
+the wreck is removed after 4 s. Further damage cannot repeat the explosion or
+defeat message. **R** restores the chosen player aircraft and replaces the old
+enemy with exactly one fresh airborne instance, clearing both bullet pools,
+smoke/fire, wrecks, impact bursts and the defeat state. Difficulty settings carry
+across resets; changing aircraft also clears the old encounter.
 
 The AI flies using **pilot commands and the same real rigid-body flight forces**;
 it never translates or rotates the aircraft directly during flight. It predicts
 interception using relative velocity (bullets inherit shooter velocity), with
-small aiming assistance limited to the 6° nose cone. Player guns retain their
-fixed aircraft-relative convergence. This is a simple forgiving opponent, not authentic
+small aiming assistance limited to the 6° nose cone. Each burst receives up to
+±0.18° error on each aiming axis, and each enemy round has ±0.08° spread, so its
+aim is imperfect. Engagement raises its desired speed by 8 m/s to close the
+range. Player guns retain their fixed aircraft-relative convergence and have
+zero spread by default. This is a simple forgiving opponent, not authentic
 Stuka tactics; there is no rear gunner, bombing, AI takeoff or AI landing.
 
 Press H five times: the aircraft reaches **exactly 50 HP with no smoke/fire**.
@@ -217,19 +243,21 @@ The main scripts are deliberately small separate components:
 | `scripts/pilot_input.gd` | Keyboard commands; throttle ramps 30 percentage points/second |
 | `scripts/landing_gear.gd` | Two main wheels and a tailwheel; raycast springs/dampers, tyre friction, brakes and ground retraction lock; all handling parameters exported |
 | `scripts/chase_camera.gd` | Smooth, horizon-level follow at 19 m distance / 6 m height; terrain/building raycasts keep the camera clear |
-| `scripts/hud.gd` | Instrument cards, controls, pause and crash overlays |
+| `scripts/hud.gd` | Instruments, controls, pause/crash overlays, overhead enemy HP and persistent defeat message; exported enemy health range 800 m |
 | `scripts/spitfire_model.gd` | Original procedural silhouette, camouflage, canopy, RAF roundels, propeller and suspension-linked wheels |
 | `scripts/airfield.gd` | Runway, terrain collision, rolling countryside, hangars, control tower, fields, trees and daylight |
-| `scripts/main.gd` | Startup/aircraft-switch lifecycle and selected player/enemy/camera/HUD connections |
+| `scripts/main.gd` | Startup/aircraft-switch lifecycle, fresh-enemy restart, one-shot defeat notification and session-owned impact cleanup; configurable enemy spawn position |
 | `scripts/aircraft_selector.gd` | Mouse/keyboard aircraft choice and live mesh preview, with no gameplay simulation until Fly |
 | `scripts/sea_gladiator.gd` | Biplane flight variant: 2,200 kg, wing area 30 m², thrust 8,500 N, parasite drag 0.044, zero-alpha lift 0.60, stall speed 24 m/s; pitch/roll/rudder torque 13,000/14,000/10,000; fixed gear and upper-wing collider |
 | `scripts/sea_gladiator_model.gd` | Original reference-inspired biplane, radial engine, bracing, canopy, RAF markings, fixed suspension-linked wheels and four gun ports |
-| `scripts/wing_guns.gd` | Salvos from the selected model's gun ports: 12 rounds/sec **per gun**, 850 m/s bullet speed, 2 s lifetime, 4 damage/round, 250 m convergence, every fourth round a tracer; exported tuning values |
-| `scripts/projectile_pool.gd` | 384 fixed bullet slots, swept ray collision from previous to next position, shooter RID exclusion, 32 recycled impact flashes; mask 7 includes terrain/player/enemy layers |
+| `scripts/wing_guns.gd` | Salvos from the selected model's gun ports: 12 rounds/sec **per gun**, 850 m/s bullet speed, 2 s lifetime, 4 damage/round, 250 m convergence, every fourth round a tracer, exported spread 0° for player / 0.08° enemy |
+| `scripts/projectile_pool.gd` | 384 fixed bullet slots, swept ray collision from previous to next position, shooter RID exclusion and team filtering, 32 recycled impact flashes; mask 7 includes terrain/player/enemy layers |
 | `scripts/health.gd` | Reusable HP, clamping, damage/heal/reset and one-shot depleted signal; both aircraft maximum 100 |
 | `scripts/damage_effects.gd` | 128 pooled CPU mesh particles; procedurally generated soft billboard smoke, flame spheres, intensity-driven emission, world-space lifetime; Compatibility/ANGLE-friendly, no GPU particles |
-| `scripts/enemy_aircraft.gd` | Enemy configuration using shared flight, health, effects and weapons; 26 m² wing area, 11,500 N thrust, separate collision layer and airborne reset |
-| `scripts/enemy_pilot.gd` | Force-driven patrol/pursuit/break-away pilot, speed/altitude control, intercept prediction, line of sight and firing bursts; exported speed 58 m/s, patrol radius 450 m, minimum desired height 65 m, detection 1,800 m, firing 650 m, cone 6°, grace 8 s |
+| `scripts/enemy_aircraft.gd` | Enemy configuration using shared flight, health, effects and weapons; 26 m² wing area, 11,500 N thrust, separate collision layer, airborne spawn, physical falling wreck, single impact event and exported 4 s wreck cleanup delay |
+| `scripts/enemy_pilot.gd` | Patrol/engage/evade/destroyed states, predictive terrain/obstacle avoidance, intercept prediction, per-wing line of sight and short bursts; exports speed 58 m/s (+8 engage), patrol radius 450 m, minimum height 65 m, terrain horizon 5 s / margin 20 m, command slew 2.5/s, bank 46°, pitch/roll/yaw rate limits 0.45/0.7/0.3 rad/s, detection 1,800 m, firing 650 m, cone 6°, grace 8 s, burst/rest 0.75/1.25 s, aim error 0.18°, evade 3 s |
+| `scripts/combat_teams.gd` | Shared neutral/player/enemy team IDs and friendly-fire policy |
+| `scripts/destruction_burst.gd` | Single session-owned cosmetic impact burst; 32 CPU mesh/sprite particles, 2.5 s lifetime, no area damage or GPU particles |
 | `scripts/stuka_model.gd` | Original reference-inspired gull-wing/canopy/fixed-gear model and two leading-edge gun ports |
 | `scripts/practice_target.gd` | Thin stationary test fixture retained only for swept-collision regression checks |
 
@@ -257,6 +285,7 @@ godot --headless --path . --fixed-fps 120 --script res://tests/keyboard_checks.g
 godot --headless --path . --fixed-fps 120 --script res://tests/weapons_checks.gd
 godot --headless --path . --fixed-fps 120 --script res://tests/enemy_checks.gd
 godot --headless --path . --fixed-fps 120 --script res://tests/aircraft_choice_checks.gd
+godot --headless --path . --fixed-fps 120 --script res://tests/encounter_checks.gd
 ```
 
 `flight_checks.gd` runs the real scene, rigid body, collision terrain, suspension
@@ -265,7 +294,10 @@ flight thereafter is integrated entirely by the live simulation. A failing
 assertion exits with code 1. The player autopilot used for takeoff/approach checks is only in the test
 script; gameplay automation belongs solely to the enemy. Original regression
 suites disable enemy combat to isolate flight/input/weapon behavior. The enemy
-suite runs the live armed AI and both aircraft in the complete scene.
+suite runs the live armed AI and both aircraft in the complete scene. Its
+precision fixtures set aim error/spread to zero and disable damage evasion to
+isolate damage/rate assertions; the new encounter suite exercises production
+aim error, spread and damage evasion.
 
 **Current result: 35/35 integration checks passed on Godot 4.6.3.** These cover
 stable three-wheel parking, ground gear lock, takeoff/climb, held and adjusted
@@ -301,7 +333,7 @@ practice board is spawned only by the weapon test.
 **Enemy result: 31/31 passed; the original four suites total 126/126 on Godot 4.6.3.**
 The additional `enemy_checks.gd` suite verifies the reference-inspired model,
 separate input/collision ownership, stable 90-second physics patrol, ground
-protection, a 75-second pursuit from patrol, live projectile damage in both directions,
+protection, a 75-second engagement from patrol, live projectile damage in both directions,
 airborne grace/rest/burst timing, owner exclusion, pause, shooting down either
 plane, falling wrecks, enemy defeat HUD, reset of both lives/bullet pools/trails,
 H/G/Ctrl isolation, obstacle line of sight, close-pass break-away and the actual
@@ -320,16 +352,30 @@ full throttle with the same altitude controller for 45 simulated seconds, then
 holds the same nose-up attitude for a 20-second climb. The Spitfire retracts its
 gear; the Gladiator's gear stays fixed. Controllers exist only in tests.
 
+**Extended encounter result: 46/46 passed; all six suites total 203/203.**
+`encounter_checks.gd` verifies one safe airborne spawn; team damage and owner
+exclusion with 30,000 m/s swept rounds; cover stopping both teams' bullets;
+production imperfect aiming hitting a moving target; damage-triggered evade;
+physical recovery from predicted hill impact (minimum measured clearance 74 m);
+limited rotation/movement and slewed commands; physical avoidance of a tall
+obstacle; countryside boundary protection; enemy 50/49-HP smoke/fire, intensity,
+world-space trail and healing; nearby numeric overhead HP, behind-camera/range
+hiding; a fatal actual player projectile; single depletion/notification/impact;
+engine-off physical falling; effect/wreck delay cleanup; continued player
+control; actual R spawning a new instance, clearing active effects/rounds,
+preserving difficulty, and avoiding duplicates on repeated reset input.
+
 **Native mouse/keyboard result: 10/10 passed in a rendered X11 window.** These
 use OS mouse/key events to select each plane, click Fly, start with Enter,
 verify W and Ctrl after leaving the menu, check fixed-gear G behavior, H/R
 damage/reset preserving the Gladiator, and click the paused aircraft-change
 button before selecting/starting the Spitfire. These window-level checks are
-separate from the 157 reproducible Godot integration assertions.
+separate from the 203 reproducible Godot integration assertions.
 
 A rendered check saves both selection screens, runway, airborne, enemy encounter,
-player/enemy model close-ups, 50-HP/no-effects, firing/damaged, pause, destruction
-and reset screenshots:
+player/enemy model close-ups, both 50-HP/no-effects thresholds, firing/damaged,
+pause, enemy overhead HP, engine smoke/fire, ground impact, wreck cleanup and
+fresh-session reset screenshots:
 
 ```sh
 godot --path . --audio-driver Dummy --fixed-fps 120 --script res://tests/visual_capture.gd -- /path/to/captures sea_gladiator
@@ -339,7 +385,8 @@ The final argument selects the captured aircraft (omit it for Spitfire).
 It requires a graphical display; `--headless` cannot validate rendering.
 The prototype was also launched with OpenGL Compatibility on a virtual X11
 display using Mesa software rendering. Rendered frames were captured and inspected, including both selection screens, the Gladiator/Spitfire/Stuka models,
-selected-aircraft controls and gear state, enemy marker/HP/state, gun flashes/tracers, engine smoke/fire, the HP threshold,
+selected-aircraft controls and gear state, enemy marker/overhead HP/state, impact
+burst, cleanup notification, gun flashes/tracers, engine smoke/fire, the HP threshold,
 player health bar, destroyed/reset UI and flight instruments.
 Automated physics checks do not replace interactive playtesting. Keyboard
 handling and dogfight difficulty, a player-flown full circuit, Windows hardware/performance and
@@ -365,7 +412,8 @@ worktree is required.
 * No wind, engine audio, tyre audio, propwash, ground effect, flap controls,
   fuel, historical engine dynamics, wheel rotation, or gradual gear animation.
 * Terrain is a finite 10 × 10 km patch with coarse rolling hills. Stay within
-  the countryside; there is no world streaming or boundary recovery.
+  the countryside; the enemy turns back near the edge, but there is no world
+  streaming or player boundary recovery.
 * Camera raycasts handle terrain/buildings, but crowded obstacle situations and
   extreme aerobatics still need interactive review.
 * The suspension makes grass operations forgiving; the runway has the most

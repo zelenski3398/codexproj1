@@ -37,6 +37,7 @@ func _run() -> void:
 	player.pending_reset_pose = Transform3D(Basis.IDENTITY, Vector3(0, 160, 300))
 	player.pending_reset_velocity = Vector3(0, 0, -58)
 	await _frames(6)
+	enemy = world.enemy
 	player.gear.extended = false
 	player.pilot.throttle = 0.6
 	var acquired: bool = false
@@ -48,14 +49,19 @@ func _run() -> void:
 		player.pilot.throttle = clampf(0.33 + (58 - player.airspeed) * 0.03, 0, 1)
 		player.pilot.pitch = clampf((0.02 + (160 - player.global_position.y) * 0.008 - player.rotation.x) * 4, -0.7, 0.7)
 		await physics_frame
-		acquired = acquired or enemy.ai.mode == "PURSUIT"
-		attacked = attacked or enemy.ai.mode == "ATTACK"
+		acquired = acquired or enemy.ai.mode == "ENGAGE"
+		attacked = attacked or enemy.pilot.fire
 		pursuit_altitude = minf(pursuit_altitude, enemy.altitude)
 		if tick % 1200 == 0:
 			print("Pursuit t=", tick / 120.0, " mode=", enemy.ai.mode, " distance=", enemy.global_position.distance_to(player.global_position), " aimAngle=", rad_to_deg((-enemy.global_basis.z).angle_to((enemy.ai._lead_point() - enemy.global_position).normalized())), " playerSpeed=", player.airspeed, " enemySpeed=", enemy.airspeed, " hits=", enemy.guns.pool.total_hits)
 	print("Acquire=", acquired, " attack=", attacked, " hits=", enemy.guns.pool.total_hits)
 	_check(acquired and attacked and enemy.guns.pool.total_hits > 0, "Enemy acquires and attacks the player starting from its ordinary patrol")
 	_check(not enemy.is_crashed and pursuit_altitude > 40 and enemy.airspeed > 35, "Pursuit controller survives a 75-second live airborne encounter")
+	# Deterministic precision fixtures isolate rate/damage/reset from aim randomness
+	# and evasive response. encounter_checks separately exercises production tuning.
+	enemy.ai.aim_error_degrees = 0
+	enemy.guns.spread_degrees = 0
+	enemy.ai.evade_on_damage = false
 	# Both aircraft fly forward at equal speed: the AI must really lead and hit.
 	await _fixture(Vector3(0, 150, 200), Vector3(0, 150, 500), 55)
 	enemy.ai.grace_period = 0
@@ -78,7 +84,7 @@ func _run() -> void:
 	shots = enemy.guns.pool.total_spawned
 	enemy.ai.burst_clock = enemy.ai.burst_duration + 0.1
 	await _frames(30)
-	_check(enemy.ai.mode == "ATTACK" and not enemy.pilot.fire and enemy.guns.pool.total_spawned == shots, "Aligned enemy rests between bursts instead of firing continuously")
+	_check(enemy.ai.mode == "ENGAGE" and not enemy.pilot.fire and enemy.guns.pool.total_spawned == shots, "Aligned enemy rests between bursts instead of firing continuously")
 	enemy.ai.burst_clock = 0
 	await _frames(45)
 	_check(enemy.pilot.fire and enemy.guns.pool.total_spawned > shots, "Enemy resumes a bounded two-gun burst")
@@ -104,18 +110,20 @@ func _run() -> void:
 		player.pilot.fire = true
 		await physics_frame
 	player.pilot.fire = false
-	_check(enemy.is_destroyed and enemy.health.hp == 0 and enemy.ai.mode == "DOWNED", "Actual player gunfire shoots the enemy down")
+	_check(enemy.is_destroyed and enemy.health.hp == 0 and enemy.ai.mode == "DESTROYED", "Actual player gunfire shoots the enemy down")
+	enemy.wreck_remove_delay = 30.0 # Dedicated lifecycle suite tests default cleanup.
 	var downed_y: float = enemy.global_position.y
 	var enemy_rounds: int = enemy.guns.pool.total_spawned
 	await _frames(1440)
 	print("Wreck initialY=", downed_y, " currentY=", enemy.global_position.y, " velocity=", enemy.linear_velocity)
 	_check(not enemy.freeze and enemy.global_position.y < downed_y - 1 and enemy.pilot.throttle == 0 and enemy.guns.pool.total_spawned == enemy_rounds, "Shot-down enemy falls using physics with engine and guns off")
-	_check(world.hud.enemy_label.text.contains("STUKA DOWN") and world.hud.notice_label.text.contains("ENEMY DOWN"), "HUD reports a shot-down enemy without ending the player's flight")
+	_check(world.hud.enemy_label.text.contains("ENEMY DESTROYED") and world.hud.notice_label.text.contains("Enemy destroyed"), "HUD reports a shot-down enemy without ending the player's flight")
 	# Player reset is authoritative for both lives and all world-space effects.
 	player.take_damage(70)
 	await _frames(30)
 	player.request_reset()
 	await _frames(6)
+	enemy = world.enemy
 	_check(player.health.hp == 100 and enemy.health.hp == 100 and not player.is_destroyed and not enemy.is_destroyed and not enemy.is_crashed, "R-equivalent reset restores both aircraft and enemy AI")
 	_check(player.guns.pool.active.is_empty() and enemy.guns.pool.active.is_empty() and player.damage_effects.active_count() == 0 and enemy.damage_effects.active_count() == 0, "Encounter reset clears both bullet pools and damage trails")
 	_check(player.global_position.distance_to(player.reset_position) < 0.1 and player.pilot.throttle == 0 and enemy.global_position.y > 150 and enemy.linear_velocity.length() > 50, "Reset parks the player safely and restarts the enemy airborne")
@@ -151,10 +159,10 @@ func _run() -> void:
 	enemy.ai.grace_period = 0
 	await _fixture(Vector3(0, 150, 200), Vector3(0, 150, 260), 58)
 	await _frames(10)
-	_check(enemy.ai.mode == "BREAK" and not enemy.pilot.fire, "Close passes trigger a break-away turn instead of point-blank firing")
+	_check(enemy.ai.mode == "EVADE" and not enemy.pilot.fire, "Close passes trigger a break-away turn instead of point-blank firing")
 	await _fixture(Vector3(0, 150, 500), Vector3(0, 150, 200), 58)
 	await _frames(10)
-	_check(enemy.ai.mode == "PURSUIT" and not enemy.pilot.fire, "Enemy must turn toward the player and cannot fire backwards")
+	_check(enemy.ai.mode == "ENGAGE" and not enemy.pilot.fire, "Enemy must turn toward the player and cannot fire backwards")
 	# Destruction of the player ends attacks and leaves a falling wreck.
 	await _fixture(Vector3(0, 150, 200), Vector3(0, 150, 500), 55)
 	for tick in range(2400):
@@ -168,6 +176,7 @@ func _run() -> void:
 	_key(KEY_R, true)
 	_key(KEY_R, false)
 	await _frames(6)
+	enemy = world.enemy
 	_check(player.health.hp == 100 and enemy.health.hp == 100 and not player.is_destroyed and enemy.ai.airborne_timer == 0 and enemy.guns.pool.active.is_empty(), "Actual R key restores the encounter after hostile destruction")
 	print("ENEMY RESULT: ", checks - failures, "/", checks, " passed; ", failures, " failed")
 	quit(1 if failures else 0)
@@ -179,6 +188,7 @@ func _fixture(player_position: Vector3, enemy_position: Vector3, speed: float) -
 	player.pending_reset_pose = Transform3D(Basis.IDENTITY, player_position)
 	player.pending_reset_velocity = Vector3(0, 0, -speed)
 	await _frames(5)
+	enemy = world.enemy
 	player.gear.extended = false
 	player.pilot.throttle = 0.7
 	enemy.request_reset()

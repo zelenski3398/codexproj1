@@ -6,6 +6,8 @@ extends Node3D
 @export var bullet_damage: float = 4.0
 @export var convergence_distance: float = 250.0 # <= 0 means parallel guns
 @export var tracer_every: int = 4
+@export_range(0, 3, 0.01) var spread_degrees: float = 0.0
+var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var aircraft: FlightAircraft
 var pool: ProjectilePool
 var cooldown: float = 0.0
@@ -19,6 +21,7 @@ var assisted_aim: Vector3 = Vector3.ZERO
 @export var max_assist_degrees: float = 6.0
 
 func _ready() -> void:
+	rng.seed = 1942
 	pool = ProjectilePool.new()
 	pool.name = "WorldSpaceBullets"
 	add_child(pool)
@@ -66,14 +69,19 @@ func shot_direction(port: Marker3D) -> Vector3:
 func _fire_salvo() -> void:
 	for i in range(aircraft.model.gun_ports.size()):
 		var port: Marker3D = aircraft.model.gun_ports[i]
-		var velocity: Vector3 = shot_direction(port) * bullet_speed + aircraft.linear_velocity
-		pool.spawn(port.global_position, velocity, bullet_lifetime, bullet_damage, aircraft.get_rid(), (salvo_count + i) % maxi(tracer_every, 1) == 0)
+		var direction: Vector3 = shot_direction(port)
+		if spread_degrees > 0:
+			direction = direction.rotated(aircraft.global_basis.x, deg_to_rad(rng.randf_range(-spread_degrees, spread_degrees)))
+			direction = direction.rotated(aircraft.global_basis.y, deg_to_rad(rng.randf_range(-spread_degrees, spread_degrees)))
+		var velocity: Vector3 = direction * bullet_speed + aircraft.linear_velocity
+		pool.spawn(port.global_position, velocity, bullet_lifetime, bullet_damage, aircraft.get_rid(), (salvo_count + i) % maxi(tracer_every, 1) == 0, aircraft.team_id)
 		flash_times[i] = 0.035
 		flashes[i].visible = true
 	salvo_count += 1
 
 func reset() -> void:
 	pool.clear()
+	rng.seed = 1942
 	use_assisted_aim = false
 	cooldown = 0.0
 	# Avoid a held Ctrl immediately spawning new rounds in the reset frame.
