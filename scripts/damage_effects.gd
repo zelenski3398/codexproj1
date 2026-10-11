@@ -2,6 +2,7 @@ class_name DamageEffects
 extends Node3D
 ## CPU-updated, pooled mesh particles work in Compatibility/OpenGL/ANGLE.
 ## The pool is top-level: emitted smoke stays in world space as the plane moves.
+@export var engine_source: Vector3 = Vector3(0, 0.32, -2.7)
 @export var smoke_lifetime: float = 2.5
 @export var smoke_rate: float = 32.0
 @export var flame_rate: float = 35.0
@@ -105,10 +106,10 @@ func _physics_process(delta: float) -> void:
 		fire_clock += delta * flame_rate * strength
 		while emission_clock >= 1.0:
 			emission_clock -= 1.0
-			_emit(true)
+			_emit(true, engine_source)
 		while fire_clock >= 1.0:
 			fire_clock -= 1.0
-			_emit(false)
+			_emit(false, engine_source)
 	if fuel_emitting:
 		fuel_smoke_clock += delta * smoke_rate * fuel_fire_intensity
 		fuel_flame_clock += delta * flame_rate * fuel_fire_intensity

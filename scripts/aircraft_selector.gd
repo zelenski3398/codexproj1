@@ -3,7 +3,9 @@ extends Node3D
 ## Startup selection owns only a display model; no aircraft physics or combat
 ## exist until Fly is chosen. Keyboard navigation works in embedded game views.
 signal chosen(kind: String)
+signal missions_requested
 signal malta_requested
+var missions_button: Button
 var malta_button: Button
 const GOLD: Color = Color("e4bf75")
 const INK: Color = Color("e9e8d7")
@@ -47,6 +49,13 @@ func _build_ui() -> void:
 	title.add_child(heading)
 	heading.add_child(_label("FIRST SORTIE", 32, INK))
 	heading.add_child(_label("CHOOSE YOUR AIRCRAFT", 15, GOLD))
+	missions_button = Button.new()
+	missions_button.text = "MISSIONS →"
+	missions_button.position = Vector2(550, 40)
+	missions_button.custom_minimum_size = Vector2(250, 52)
+	missions_button.add_theme_font_size_override("font_size", 23)
+	missions_button.pressed.connect(func(): missions_requested.emit())
+	root.add_child(missions_button)
 	var panel: PanelContainer = PanelContainer.new()
 	panel.position = Vector2(38, 145)
 	panel.custom_minimum_size.x = 470

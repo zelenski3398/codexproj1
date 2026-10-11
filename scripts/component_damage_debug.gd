@@ -34,7 +34,7 @@ func _ready() -> void:
 	column.add_child(_label("White boxes mark the selected component.\nPause with Esc to inspect; R restarts the encounter.", 13))
 	target_picker = OptionButton.new()
 	target_picker.add_item("Inspect / damage PLAYER")
-	target_picker.add_item("Inspect / damage STUKA")
+	target_picker.add_item("Inspect / damage ENEMY")
 	target_picker.focus_mode = Control.FOCUS_NONE
 	column.add_child(target_picker)
 	target_picker.item_selected.connect(_on_selection_changed)
@@ -138,5 +138,5 @@ func _refresh() -> void:
 	for id in AircraftDamage.IDS:
 		var definition: AircraftComponentDefinition = damage.definitions[id]
 		rows.append("%-12s %6.1f / %3d" % [definition.display_name, float(damage.integrity[id]), roundi(definition.max_integrity)])
-	health_text.text = target.display_name + " · Hull HP %d/100\n" % floori(target.health.hp) + "\n".join(rows)
+	health_text.text = target.display_name + " · Hull HP %d/%d\n" % [floori(target.health.hp), roundi(target.health.max_hp)] + "\n".join(rows)
 	effects_text.text = "Lift L/R %d/%d%% · Extra drag %.3f\nPower %d%% · Rudder %d%% · Elevator %d%%\nPilot authority %d%% · Fuel %d%%\nLeak: %s · Fire: %s · Last hit: %s" % [roundi(damage.wing_efficiency(&"left_wing") * 100), roundi(damage.wing_efficiency(&"right_wing") * 100), damage.additional_drag(), roundi(damage.power_factor() * 100), roundi(damage.rudder_factor() * 100), roundi(damage.elevator_factor() * 100), roundi(damage.cockpit_factor() * 100), roundi(damage.fuel_remaining * 100), "YES" if damage.fuel_leaking else "no", "YES" if damage.fuel_burning else "no", String(damage.last_hit).capitalize() if damage.last_hit != &"" else "none"]

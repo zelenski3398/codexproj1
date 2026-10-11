@@ -30,6 +30,24 @@ Click **AUDIO** for saved music/engine/gun volumes and mute. In a browser, the
 first click or key press in the game menu enables sound. The Stuka temporarily
 uses the supplied Spitfire audio. See [audio controls, tuning and checks](docs/audio.md).
 
+## Italian aircraft and the Valletta interception
+
+Choose **Missions → Defend Valletta — Ta’ Qali Interception** from the first
+menu. Start on foot beside a Spitfire or Sea Gladiator at Ta’ Qali, board with
+**E**, start the engine with **I**, taxi and take off. Reach the gold airborne
+checkpoint shown on **M**'s navigation map to spawn an **SM.79 bomber** and
+**C.200 escort** and start a five-minute interception. Destroy both before time
+expires; results offer **Retry Mission** and **Return to Missions**.
+
+The new **Fiat CR.42**, **Macchi C.200** and **Savoia-Marchetti SM.79** share
+existing physics, components, projectiles, effects and wrecks. Each has its own
+editable configuration and procedural silhouette. The bomber follows a real
+flight route and fires defensively; its arrival begins a falling-bomb sequence.
+The CR.42 is available to the spawning roster and as a configurable escort
+variation. Existing modes still default to Stukas with unchanged stage counts.
+
+See [mission controls, definitions, timing, tests and approximations](docs/valletta-interception.md).
+
 ## Continuous encounters and Malta Survival
 
 Destroy the Stuka, then click **Confirm / Spawn Next Enemy** or press **C**.

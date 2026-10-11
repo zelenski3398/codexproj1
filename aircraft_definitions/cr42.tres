@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="EnemyAircraftDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy_aircraft_definition.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/italian_aircraft_model.gd" id="2"]
+[ext_resource type="Resource" path="res://damage_profiles/cr42.tres" id="3"]
+
+[resource]
+script = ExtResource("1")
+id = "cr42"
+model_script = ExtResource("2")
+damage = ExtResource("3")
+title = "Fiat CR.42 Falco"
+marker = "CR.42"
+mass_kg = 2400
+wingspan = 9.7
+body_size = Vector3(1.0, 1.15, 8.0)
+wing_area = 22.4
+thrust = 9800
+drag = 0.055
+cruise_speed = 55
+stall_speed = 25
+maximum_bank = 62
+fixed_gear = true
+body_inertia = Vector3(7000, 10000, 5700)
+control_torque = Vector3(18500, 11000, 23000)
+lower_wing_span = 6.5
+wing_chord = 1.5

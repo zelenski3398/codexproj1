@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="EnemyAircraftDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy_aircraft_definition.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/italian_aircraft_model.gd" id="2"]
+[ext_resource type="Resource" path="res://damage_profiles/sm79.tres" id="3"]
+
+[resource]
+script = ExtResource("1")
+id = "sm79"
+model_script = ExtResource("2")
+damage = ExtResource("3")
+title = "Savoia-Marchetti SM.79 Sparviero"
+marker = "SM.79"
+mass_kg = 10000
+wingspan = 21.2
+body_size = Vector3(1.75, 1.8, 16.2)
+wing_chord = 3.1
+wing_area = 61
+thrust = 35000
+drag = 0.04
+cruise_speed = 65
+stall_speed = 34
+maximum_bank = 25
+bomber = true
+body_inertia = Vector3(85000, 150000, 90000)
+control_torque = Vector3(125000, 78000, 130000)

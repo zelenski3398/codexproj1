@@ -1,0 +1,77 @@
+class_name MissionsMenu
+extends CanvasLayer
+signal launch_requested(kind: String)
+signal back_requested
+var aircraft_picker: OptionButton
+var launch_button: Button
+var back_button: Button
+const DEFINITION: InterceptionDefinition = preload("res://mission_definitions/valletta.tres")
+
+func _ready() -> void:
+	layer = 25
+	var root: ColorRect = ColorRect.new()
+	root.color = Color("111f25")
+	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(root)
+	var margin: MarginContainer = MarginContainer.new()
+	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	for side in ["left", "right", "top", "bottom"]:
+		margin.add_theme_constant_override("margin_" + side, 40)
+	root.add_child(margin)
+	var row: HBoxContainer = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 28)
+	margin.add_child(row)
+	var column: VBoxContainer = VBoxContainer.new()
+	column.custom_minimum_size.x = 480
+	column.add_theme_constant_override("separation", 18)
+	row.add_child(column)
+	_label(column, "WINGS OVER MALTA · MISSIONS", 25)
+	var title: Label = _label(column, DEFINITION.title, 24)
+	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	var briefing: Label = _label(column, DEFINITION.briefing, 20)
+	briefing.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	briefing.custom_minimum_size = Vector2(480, 200)
+	_label(column, "CONTINUOUS MALTA · RAF TA’ QALI\nStart on foot · E board · I start engine\nW power · arrows fly · reach the gold checkpoint", 17)
+	aircraft_picker = OptionButton.new()
+	aircraft_picker.add_item("Spitfire Mk I · faster interception")
+	aircraft_picker.add_item("Sea Gladiator · slower, more challenging")
+	aircraft_picker.custom_minimum_size.y = 44
+	column.add_child(aircraft_picker)
+	launch_button = Button.new()
+	launch_button.text = "DEPART FROM TA’ QALI"
+	launch_button.custom_minimum_size.y = 56
+	launch_button.pressed.connect(_launch)
+	column.add_child(launch_button)
+	_label(column, "Small fictional interception · one bomber and one escort", 14)
+	back_button = Button.new()
+	back_button.text = "BACK TO MAIN MENU"
+	back_button.pressed.connect(func(): back_requested.emit())
+	column.add_child(back_button)
+	var chart: MaltaChart = MaltaChart.new()
+	chart.custom_minimum_size = Vector2(650, 600)
+	chart.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	chart.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	row.add_child(chart)
+
+func _label(parent: Node, content: String, size: int) -> Label:
+	var label: Label = Label.new()
+	label.text = content
+	label.add_theme_font_size_override("font_size", size)
+	label.add_theme_color_override("font_color", Color("eee7ce"))
+	parent.add_child(label)
+	return label
+
+func _launch() -> void:
+	if launch_button.disabled:
+		return
+	launch_button.disabled = true
+	launch_requested.emit("sea_gladiator" if aircraft_picker.selected == 1 else "spitfire")
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.is_echo() and not aircraft_picker.get_popup().visible:
+		if event.keycode in [KEY_ENTER, KEY_KP_ENTER]:
+			_launch()
+			get_viewport().set_input_as_handled()
+		elif event.keycode == KEY_ESCAPE:
+			back_requested.emit()
+			get_viewport().set_input_as_handled()

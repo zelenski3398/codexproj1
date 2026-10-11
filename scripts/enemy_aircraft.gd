@@ -4,6 +4,8 @@ extends FlightAircraft
 signal ground_impact(point: Vector3)
 signal wreck_removed
 @export var wreck_remove_delay: float = 4.0
+var aircraft_kind: String = "stuka"
+var marker_name: String = "STUKA"
 var encounter_ace: bool = false
 var ai: EnemyPilot
 var rear_gunner: RearGunner
@@ -21,12 +23,21 @@ func default_damage_profile() -> AircraftDamageProfile:
 func create_model() -> SpitfireModel:
 	return StukaModel.new()
 
-func _ready() -> void:
+func configure_airframe() -> void:
 	display_name = "Ju 87 Stuka"
 	team_id = CombatTeams.ENEMY
 	collision_wing_span = 13.6
 	wing_area = 26.0
 	engine_thrust = 11500.0
+
+func create_pilot() -> EnemyPilot:
+	return EnemyPilot.new()
+
+func create_gunner() -> RearGunner:
+	return RearGunner.new()
+
+func _ready() -> void:
+	configure_airframe()
 	super._ready()
 	collision_layer = 4
 	collision_mask = 3
@@ -38,13 +49,13 @@ func _ready() -> void:
 	guns.bullet_damage = 2.0
 	guns.spread_degrees = 0.08
 	guns.pool.tracer_material.albedo_color = Color("ff946a")
-	ai = EnemyPilot.new()
+	ai = create_pilot()
 	ai.aircraft = self
 	ai.target = target
 	ai.patrol_center.y = reset_position.y
 	ai.name = "EnemyPilot"
 	add_child(ai)
-	rear_gunner = RearGunner.new()
+	rear_gunner = create_gunner()
 	rear_gunner.name = "RearGunner"
 	rear_gunner.aircraft = self
 	add_child(rear_gunner)

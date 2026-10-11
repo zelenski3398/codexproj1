@@ -23,6 +23,7 @@ extends Node
 @export var bullet_damage: float = 1.5
 @export var bullet_lifetime: float = 1.15
 @export var spread_degrees: float = 0.15
+var mount_model: Node3D
 var aircraft: EnemyAircraft
 var guns: WingGuns
 var yaw: float = 0
@@ -81,12 +82,14 @@ func set_skill(level: int) -> void:
 	status = "REACQUIRING"
 
 func _ready() -> void:
+	if mount_model == null:
+		mount_model = aircraft.model
 	guns = WingGuns.new()
 	guns.name = "RearMG15"
 	guns.aircraft = aircraft
 	guns.externally_controlled = true
 	guns.forward_from_port = true
-	guns.firing_ports = [(aircraft.model as StukaModel).rear_muzzle]
+	guns.firing_ports = [mount_model.get("rear_muzzle")]
 	guns.convergence_distance = 0
 	guns.pool_capacity = 128
 	guns.shot_clearance = Callable(self, "shot_has_clearance")
@@ -113,7 +116,7 @@ func reset() -> void:
 	_clear_observation()
 	_profile = skill_profile()
 	_previous_velocity = aircraft.linear_velocity
-	(aircraft.model as StukaModel).set_rear_gun_angles(yaw, elevation)
+	mount_model.call("set_rear_gun_angles", yaw, elevation)
 	guns.reset()
 	guns.rng.seed = aim_seed + 17
 
@@ -135,7 +138,7 @@ func cease_fire() -> void:
 	guns.external_fire = false
 
 func muzzle() -> Marker3D:
-	return (aircraft.model as StukaModel).rear_muzzle
+	return mount_model.get("rear_muzzle")
 
 func _lose_sight(delta: float, reason: String) -> void:
 	status = reason
@@ -214,7 +217,7 @@ func _physics_process(delta: float) -> void:
 	if estimated_flight_time >= bullet_lifetime:
 		status = "FLIGHT TIME TOO LONG"
 		return
-	var local_aim: Vector3 = aircraft.global_basis.transposed() * (aim_point - (aircraft.model as StukaModel).rear_mount.global_position)
+	var local_aim: Vector3 = aircraft.global_basis.transposed() * (aim_point - (mount_model.get("rear_mount") as Node3D).global_position)
 	if not inside_arc(local_aim):
 		status = "LEAD OUTSIDE ARC"
 		return
@@ -224,7 +227,7 @@ func _physics_process(delta: float) -> void:
 	var step: float = deg_to_rad(minf(tracking_rate_degrees, _profile.tracking_rate_degrees)) * aircraft.components.cockpit_factor() * delta
 	yaw = move_toward(yaw, clampf(desired_yaw, -deg_to_rad(horizontal_arc_degrees), deg_to_rad(horizontal_arc_degrees)), step)
 	elevation = move_toward(elevation, clampf(desired_elevation, deg_to_rad(minimum_elevation_degrees), deg_to_rad(maximum_elevation_degrees)), step)
-	(aircraft.model as StukaModel).set_rear_gun_angles(yaw, elevation)
+	mount_model.call("set_rear_gun_angles", yaw, elevation)
 	# Alignment tests the gunner's perceived aim, never the true target direction.
 	if absf(yaw - desired_yaw) > deg_to_rad(firing_alignment_degrees) or absf(elevation - desired_elevation) > deg_to_rad(firing_alignment_degrees):
 		status = "TRACKING"

@@ -30,6 +30,12 @@ func _process(delta: float) -> void:
 		return
 	sample_clock = 0.2
 	var state: Dictionary = {"selecting": session.selector != null, "selected": session.selected_aircraft, "paused": get_tree().paused, "environment": session.environment_id, "airfield_selecting": is_instance_valid(session.malta_menu), "on_foot": is_instance_valid(session.malta_mission) and session.malta_mission.occupied == null}
+	state.missions_selecting = is_instance_valid(session.missions_menu)
+	if is_instance_valid(session.missions_menu):
+		state.mission_depart_button = _center(session.missions_menu.launch_button)
+		state.mission_back_button = _center(session.missions_menu.back_button)
+	if is_instance_valid(session.interception):
+		state.interception = {"phase": session.interception.phase, "elapsed": session.interception.elapsed, "activated": session.interception.activated, "result": session.interception.final_reason, "marker": session.interception.checkpoint_marker.visible, "nav_checkpoint": session.malta_mission.chart.show_objective, "retry": _center(session.interception.retry_button), "return": _center(session.interception.return_button)}
 	state.audio = {"menu_active": GameAudioMixer.instance.menu_active, "music_playing": GameAudioMixer.instance.music.playing, "music_gain": GameAudioMixer.instance.music_gain, "music_db": GameAudioMixer.instance.music.volume_db, "music_paused": GameAudioMixer.instance.music.stream_paused, "music_position": GameAudioMixer.instance.music.get_playback_position(), "muted": GameAudioMixer.instance.muted, "master_muted": AudioServer.is_bus_mute(0), "volumes": GameAudioMixer.instance.volumes, "panel_open": GameAudioMixer.instance.panel.visible, "gameplay_muted": AudioServer.is_bus_mute(AudioServer.get_bus_index("Aircraft"))}
 	state.encounter = {"mode": session.game_mode, "stage": session.encounters.stage, "remaining": session.encounters.active.size(), "awaiting": session.encounters.awaiting_confirmation, "ended": session.encounters.ended, "complete": session.encounters.complete}
 	state.encounter.enemies = []
@@ -49,6 +55,7 @@ func _process(delta: float) -> void:
 		state.gladiator_button = _center(session.selector.buttons[1])
 		state.fly_button = _center(session.selector.fly_button)
 		state.malta_button = _center(session.selector.malta_button)
+		state.missions_button = _center(session.selector.missions_button)
 	if is_instance_valid(session.malta_menu):
 		state.mode_popup = session.malta_menu.mode_picker.get_popup().visible
 		state.mode_focus = session.malta_menu.mode_picker.get_popup().get_focused_item()

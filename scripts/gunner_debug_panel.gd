@@ -66,7 +66,8 @@ func _process(delta: float) -> void:
 	if refresh_clock > 0:
 		return
 	refresh_clock = 0.2
-	counters.text = _station("PLAYER", session.aircraft.guns.pool.statistics) + "\n" + _station("STUKA FRONT", session.enemy_front_statistics) + "\n" + _station("REAR", session.enemy_rear_statistics)
+	var front_label: String = (session.enemy.marker_name if is_instance_valid(session.enemy) else "ENEMY") + " FRONT"
+	counters.text = _station("PLAYER", session.aircraft.guns.pool.statistics) + "\n" + _station(front_label, session.enemy_front_statistics) + "\n" + _station("REAR", session.enemy_rear_statistics)
 	if is_instance_valid(session.enemy):
 		var gunner: RearGunner = session.enemy.rear_gunner
 		skill_picker.select(gunner.skill_level)

@@ -2,6 +2,8 @@ class_name MaltaChart
 extends Control
 ## Selection and flight navigation use the exact same texture/coordinate transform.
 signal field_selected(id: String)
+var objective_position: Vector3
+var show_objective: bool = false
 var home: String = "ta_qali"
 var selectable: bool = false
 var player_position: Vector3 = Vector3.ZERO
@@ -55,6 +57,10 @@ func _draw() -> void:
 		draw_string(ThemeDB.fallback_font, point, landmark.name, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("e7ddbc"))
 	draw_string(ThemeDB.fallback_font, Vector2(20, 30), "N ↑    MALTA / GOZO / COMINO", HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color("eee7ce"))
 	draw_string(ThemeDB.fallback_font, Vector2(20, size.y - 20), "Planning Authority DTM 2012 · © OpenStreetMap contributors", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("c6d1c8"))
+	if show_objective:
+		var marker: Vector2 = MaltaGeography.chart_uv(objective_position) * size
+		draw_arc(marker, 10, 0, TAU, 24, Color("e4bf75"), 3)
+		draw_string(ThemeDB.fallback_font, marker + Vector2(13, 0), "CHECKPOINT", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("e4bf75"))
 	if show_player:
 		var point: Vector2 = MaltaGeography.chart_uv(player_position) * size
 		var direction: Vector2 = Vector2(player_heading.x, player_heading.z).normalized()

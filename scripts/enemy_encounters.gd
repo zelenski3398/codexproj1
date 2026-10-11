@@ -3,6 +3,7 @@ extends Node
 ## Session progression only: never resets the world, player or projectile pools.
 ## Destruction signals remove active enemies immediately; falling wrecks persist.
 const STAGE_COUNTS: Array[int] = [1, 2, 2, 3, 3]
+@export var enemy_types: Array[String] = ["stuka"]
 @export var minimum_spawn_distance: float = 650.0
 @export var spawn_distance: float = 1400.0
 @export var spawn_clearance: float = 160.0
@@ -58,6 +59,7 @@ func begin(selected_mode: String) -> void:
 	ended = false
 	complete = false
 	canvas.visible = true
+	status.visible = true
 	_spawn_batch()
 
 func clear() -> void:
@@ -125,11 +127,8 @@ func _spawn_batch() -> void:
 		positions.append(point)
 	for index in range(count):
 		var ace: bool = mode == "survival" and stage == 5 and index == 2
-		var foe: EnemyAircraft = session.create_encounter_enemy(positions[index], ace)
-		active.append(foe)
-		foe.destroyed.connect(_destroyed.bind(foe))
-		foe.wreck_removed.connect(_wreck_removed.bind(foe))
-		_add_widget(foe)
+		var foe: EnemyAircraft = session.create_encounter_enemy(positions[index], ace, enemy_types[(stage - 1 + index) % enemy_types.size()] if not enemy_types.is_empty() else "stuka")
+		track_enemy(foe)
 	spawning = false
 	session.encounter_tracking_changed()
 	set_target(session.malta_mission.occupied if is_instance_valid(session.malta_mission) else session.aircraft)
@@ -183,7 +182,7 @@ func _destroyed(foe: EnemyAircraft) -> void:
 		enemy_widgets.erase(id)
 	session.defeat_notifications += 1
 	session.encounter_tracking_changed()
-	if active.is_empty() and not ended:
+	if active.is_empty() and not ended and mode != "interception":
 		if mode == "survival" and stage == STAGE_COUNTS.size():
 			complete = true
 		else:
@@ -225,6 +224,7 @@ func _process(_delta: float) -> void:
 	if not _player_live():
 		player_destroyed(session.aircraft)
 	var prefix: String = "SURVIVAL · STAGE %d/5 · %d ENEMIES REMAINING" % [stage, active.size()] if mode == "survival" else "ENCOUNTER %d · %d ENEMY REMAINING" % [stage, active.size()]
+	status.visible = mode != "interception"
 	status.text = prefix
 	if ended:
 		status.text += "\nSURVIVAL ENDED · R to restart" if mode == "survival" else "\nAIRCRAFT LOST · R to restart"
@@ -250,6 +250,25 @@ func _process(_delta: float) -> void:
 		nearby = nearby and get_viewport().get_visible_rect().has_point(point)
 		widget.visible = true
 		widget.position = Vector2(clampf(point.x - 75, 10, screen.x - 160), clampf(point.y - 35, 190, screen.y - 185))
-		widget.get_child(0).text = "%s · %d m%s" % ["ACE STUKA" if foe.encounter_ace else "STUKA", roundi(foe.global_position.distance_to(session.aircraft.global_position)), " · HP %d/100" % ceili(foe.health.hp) if nearby else ""]
+		widget.get_child(0).text = "%s · %d m%s" % [("ACE " if foe.encounter_ace else "") + foe.marker_name, roundi(foe.global_position.distance_to(session.aircraft.global_position)), " · HP %d/%d" % [ceili(foe.health.hp), roundi(foe.health.max_hp)] if nearby else ""]
 		widget.get_child(1).visible = nearby
+		widget.get_child(1).max_value = foe.health.max_hp
 		widget.get_child(1).value = foe.health.hp
+
+func begin_external() -> void:
+	clear()
+	mode = "interception"
+	stage = 1
+	ended = false
+	complete = false
+	canvas.visible = true
+	status.visible = false
+	confirm_button.visible = false
+
+func track_enemy(foe: EnemyAircraft) -> void:
+	if active.has(foe):
+		return
+	active.append(foe)
+	foe.destroyed.connect(_destroyed.bind(foe))
+	foe.wreck_removed.connect(_wreck_removed.bind(foe))
+	_add_widget(foe)

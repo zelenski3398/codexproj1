@@ -3,6 +3,8 @@ var game_mode: String = "encounter"
 var encounters: EnemyEncounters
 var environment_id: String = "countryside"
 var field: Node3D
+var missions_menu: MissionsMenu
+var interception: VallettaInterception
 var malta_menu: MaltaDepartureMenu
 var malta_mission: MaltaMission
 var home_airfield: String = "ta_qali"
@@ -45,6 +47,11 @@ func _ready() -> void:
 func show_selection() -> void:
 	GameAudioMixer.instance.set_menu_active(true)
 	_remember_difficulty()
+	if is_instance_valid(interception):
+		interception.cancel()
+		remove_child(interception)
+		interception.queue_free()
+	interception = null
 	encounters.clear()
 	enemy = null
 	_clear_malta()
@@ -72,6 +79,7 @@ func show_selection() -> void:
 	add_child(selector)
 	selector.select(selected_aircraft)
 	selector.malta_requested.connect(show_malta_selection, CONNECT_DEFERRED)
+	selector.missions_requested.connect(show_missions, CONNECT_DEFERRED)
 
 func start_flight(kind: String) -> void:
 	if is_instance_valid(aircraft) or kind not in ["spitfire", "sea_gladiator"]:
@@ -118,7 +126,7 @@ func _exported_settings(component: Node) -> Dictionary:
 
 func _remember_difficulty() -> void:
 	# Never copy ace aiming overrides back into normal pilots.
-	if is_instance_valid(enemy) and not enemy.encounter_ace:
+	if is_instance_valid(enemy) and not enemy.encounter_ace and enemy.aircraft_kind == "stuka":
 		var settings: Dictionary = _exported_settings(enemy.ai)
 		for key in ["world_extent", "measured_terrain"]:
 			settings.erase(key)
@@ -139,21 +147,24 @@ func _spawn_enemy() -> void:
 	session_number += 1
 	encounters.begin(game_mode)
 
-func create_encounter_enemy(spawn: Vector3, ace: bool) -> EnemyAircraft:
-	var foe: EnemyAircraft = EnemyAircraft.new()
-	foe.name = "AceStuka" if ace else "EnemyStuka"
+func create_encounter_enemy(spawn: Vector3, ace: bool, kind: String = "stuka") -> EnemyAircraft:
+	var definition: EnemyAircraftDefinition = EnemyAircraftDefinition.find(kind)
+	var foe: EnemyAircraft = EnemyAircraft.new() if definition == null else ItalianEnemy.new()
+	if definition != null:
+		(foe as ItalianEnemy).definition = definition
+	foe.name = ("Ace" if ace else "Enemy") + ("Stuka" if definition == null else definition.marker.replace(".", ""))
 	foe.encounter_ace = ace
 	foe.target = aircraft
 	foe.reset_position = spawn
 	add_child(foe)
-	for key in _ai_settings:
+	for key in _ai_settings if definition == null else {}:
 		foe.ai.set(key, _ai_settings[key])
-	for key in _gun_settings:
+	for key in _gun_settings if definition == null else {}:
 		foe.guns.set(key, _gun_settings[key])
-	for key in _rear_gunner_settings:
+	for key in _rear_gunner_settings if definition == null else {}:
 		foe.rear_gunner.set(key, _rear_gunner_settings[key])
 	if ace:
-		foe.display_name = "ACE · Ju 87 Stuka"
+		foe.display_name = "ACE · " + foe.display_name
 		foe.ai.aim_error_degrees *= encounters.ace_aim_error_scale
 		foe.guns.spread_degrees *= encounters.ace_dispersion_scale
 	if environment_id == "malta":
@@ -239,12 +250,13 @@ func show_malta_selection() -> void:
 	add_child(malta_menu)
 
 func _clear_malta() -> void:
-	for node in [malta_menu, malta_mission]:
+	for node in [malta_menu, malta_mission, missions_menu]:
 		if is_instance_valid(node):
 			remove_child(node)
 			node.queue_free()
 	malta_menu = null
 	malta_mission = null
+	missions_menu = null
 	if environment_id == "malta":
 		# Fleet lives under the mission and is already queued, not a direct child.
 		aircraft = null
@@ -257,13 +269,17 @@ func _clear_malta() -> void:
 	environment_id = "countryside"
 
 func start_malta(field_id: String, kind: String, selected_mode: String = "encounter") -> void:
-	if selected_mode not in ["encounter", "survival"]:
+	if selected_mode not in ["encounter", "survival", "interception"]:
 		return
 	if MaltaGeography.field(field_id).is_empty() or kind not in ["spitfire", "sea_gladiator"]:
 		return
 	if is_instance_valid(malta_mission):
 		return
 	GameAudioMixer.instance.set_menu_active(false)
+	if is_instance_valid(missions_menu):
+		remove_child(missions_menu)
+		missions_menu.queue_free()
+	missions_menu = null
 	if is_instance_valid(malta_menu):
 		remove_child(malta_menu)
 		malta_menu.queue_free()
@@ -289,7 +305,16 @@ func start_malta(field_id: String, kind: String, selected_mode: String = "encoun
 	malta_mission.initial_kind = kind
 	add_child(malta_mission)
 	aircraft = malta_mission.initial_aircraft
-	_spawn_enemy()
+	if game_mode == "interception":
+		session_number += 1
+		defeat_notifications = 0
+		enemy_defeated = false
+		encounters.begin_external()
+		interception = VallettaInterception.new()
+		interception.session = self
+		add_child(interception)
+	else:
+		_spawn_enemy()
 	encounters.set_target(null)
 	get_viewport().gui_release_focus()
 
@@ -325,3 +350,22 @@ func restart_malta() -> void:
 	var saved_mode: String = game_mode
 	show_selection()
 	start_malta(saved_home, saved_kind, saved_mode)
+
+func show_missions() -> void:
+	if is_instance_valid(missions_menu) or is_instance_valid(malta_mission):
+		return
+	if is_instance_valid(selector):
+		remove_child(selector)
+		selector.queue_free()
+	selector = null
+	missions_menu = MissionsMenu.new()
+	missions_menu.launch_requested.connect(start_interception, CONNECT_DEFERRED)
+	missions_menu.back_requested.connect(show_selection, CONNECT_DEFERRED)
+	add_child(missions_menu)
+
+func start_interception(kind: String) -> void:
+	start_malta("ta_qali", kind, "interception")
+
+func return_to_missions() -> void:
+	show_selection()
+	show_missions()
