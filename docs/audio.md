@@ -35,7 +35,8 @@ and Guns** volumes or mute everything. Settings persist in `user://audio.cfg`
 paused and do not capture the flight keyboard. Pause silences both gameplay
 buses while retaining their settings.
 
-In a browser, click **Play in Browser** to activate audio through a user gesture.
+The browser opens directly to the game menu. Click or press a key inside the
+menu to activate audio through a user gesture.
 If the browser/site or tab is muted, unmute it as well as the in-game mixer.
 Desktop uses Ogg streaming; web uses browser-native sample playback so audio
 continues smoothly even when a software-rendered frame is slow. Live pitch,

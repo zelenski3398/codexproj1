@@ -19,7 +19,6 @@ const delay = ms => new Promise(resolve => setTimeout(resolve,ms));
   const wait=p=>page.waitForFunction(p,null,{timeout:120000});
   const click=async id=>{const [x,y]=(await state())[id];await page.mouse.click(x,y);};
   await page.goto('http://127.0.0.1:8766/index.html?smoke=1');
-  await page.getByRole('button',{name:'PLAY IN BROWSER'}).click();
   await wait(()=>window.firstSortieState?.selecting);
   await click('malta_button');
   await wait(()=>window.firstSortieState.airfield_selecting);

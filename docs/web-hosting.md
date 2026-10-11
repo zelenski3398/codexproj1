@@ -72,8 +72,11 @@ cannot supply custom isolation headers. No service worker hides old versions.
 
 ## Browser controls
 
-Click **Play in browser**, then select a plane and Fly (or Enter). The canvas
-takes keyboard focus. Click the game again if focus was moved to browser chrome.
+The page automatically loads directly into the game’s main menu. Select a plane
+and Fly (or Enter), or choose Malta and an airfield. The canvas takes keyboard
+focus automatically. Browser autoplay rules may keep sound silent until your
+first click or key press inside the menu. Click the game again if focus was moved
+to browser chrome. There is no separate HTML Play screen or repository link.
 
 - Arrows: pitch/bank; A/D: rudder; W/S: persistent throttle.
 - **F held: guns.** The original Ctrl binding still exists, but use F in a browser;
@@ -83,7 +86,7 @@ takes keyboard focus. Click the game again if focus was moved to browser chrome.
 - H: existing temporary −10 HP debug key; F3: component/gunnery inspector.
 - F4: Malta elevation heatmap debug; terrain defaults to the Mediterranean landscape.
 
-Touch/mobile flight controls are not implemented. Start the page again after a
+Touch/mobile flight controls are not implemented. The game loads automatically after a
 reload; there is no campaign/save system. Use a recent desktop browser with
 WebGL 2 and hardware acceleration. The loading indicator covers download/startup.
 
@@ -92,7 +95,7 @@ WebGL 2 and hardware acceleration. The loading indicator covers download/startup
 The exported **release** build ran in Chromium using actual mouse and keyboard
 events, WebAssembly and WebGL 2 through SwiftShader. **31/31 checks passed**:
 
-- Start page, feature detection, initialization without cross-origin isolation.
+- Automatic main-menu startup, feature detection, initialization without cross-origin isolation.
 - Keyboard plane selection, mouse Fly, live fixed gear and visible health.
 - W + F together, throttle hold, firing release and runway acceleration.
 - Exact 50 HP threshold, smoke/fire below it, destruction and blocked firing.

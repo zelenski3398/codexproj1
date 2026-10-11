@@ -8,7 +8,7 @@ back. All aircraft are original procedural mesh placeholders. No paid assets.
 
 ## Browser version and free hosting
 
-A single-threaded Godot web export and branded Play page are now included.
+A single-threaded Godot web export opens directly to the game’s main menu.
 The browser guide uses **F to fire** so W + firing cannot close the tab via
 Ctrl+W. Desktop Ctrl firing and all existing flight/landing controls are preserved.
 A bundled free font supplies arrows and aiming-marker glyphs in browsers.
@@ -27,8 +27,8 @@ The supplied **Wings Over Malta** theme plays through both selection menus and
 fades out on departure. Spitfire and Sea Gladiator use their supplied engine
 and gun sounds, with throttle/damage-driven engine mixing and spatial playback.
 Click **AUDIO** for saved music/engine/gun volumes and mute. In a browser, the
-**Play in Browser** click enables sound. The Stuka temporarily uses the supplied
-Spitfire audio. See [audio controls, tuning and checks](docs/audio.md).
+first click or key press in the game menu enables sound. The Stuka temporarily
+uses the supplied Spitfire audio. See [audio controls, tuning and checks](docs/audio.md).
 
 ## Select a map and depart in Malta
 

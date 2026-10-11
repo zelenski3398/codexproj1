@@ -44,12 +44,10 @@ function check(condition, message) {
       await page.mouse.click(point[0], point[1]);
     };
     await page.goto('http://127.0.0.1:' + port + '/index.html?smoke=1');
-    check(await page.getByRole('button', {name:'PLAY IN BROWSER'}).isVisible(), 'Branded start page and Play button');
+    check(await page.locator('#landing, #start, a[href*="github.com"]').count() === 0, 'No HTML launch screen or repository link');
     check(await page.evaluate(() => Engine.getMissingFeatures({threads:false}).length === 0 && !crossOriginIsolated), 'Runs without cross-origin isolation / special server headers');
-    await page.screenshot({path:path.join(output,'landing.png')});
-    await page.getByRole('button', {name:'PLAY IN BROWSER'}).click();
     await wait(() => window.firstSortieState && window.firstSortieState.selecting);
-    check(await page.evaluate(() => window.firstSortieReady), 'Actual WebAssembly/WebGL game initializes');
+    check(await page.evaluate(() => window.firstSortieReady && document.getElementById('loading').hidden && document.activeElement === document.getElementById('canvas')), 'Game initializes automatically at the focused main menu');
     await page.screenshot({path:path.join(output,'selection.png')});
     await page.keyboard.press('2');
     await wait(() => window.firstSortieState.selected === 'sea_gladiator');

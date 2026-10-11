@@ -21,7 +21,6 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
   const wait = (predicate, argument = null) => page.waitForFunction(predicate, argument, {timeout:120000});
   const click = async key => {const [x,y] = (await state())[key]; await page.mouse.click(x,y);};
   await page.goto('http://127.0.0.1:8768/index.html?smoke=1');
-  await page.getByRole('button',{name:'PLAY IN BROWSER'}).click();
   await wait(() => window.firstSortieState?.selecting);
   const graphics = await page.evaluate(() => {
    const gl = document.getElementById('canvas').getContext('webgl2');
