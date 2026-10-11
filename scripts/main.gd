@@ -1,4 +1,6 @@
 extends Node3D
+var game_mode: String = "encounter"
+var encounters: EnemyEncounters
 var environment_id: String = "countryside"
 var field: Node3D
 var malta_menu: MaltaDepartureMenu
@@ -35,11 +37,16 @@ func _ready() -> void:
 	encounter_effects = Node3D.new()
 	encounter_effects.name = "SessionEffects"
 	add_child(encounter_effects)
+	encounters = EnemyEncounters.new()
+	encounters.session = self
+	add_child(encounters)
 	show_selection()
 
 func show_selection() -> void:
 	GameAudioMixer.instance.set_menu_active(true)
 	_remember_difficulty()
+	encounters.clear()
+	enemy = null
 	_clear_malta()
 	_clear_encounter_effects()
 	_enemy_restart_queued = false
@@ -48,7 +55,7 @@ func show_selection() -> void:
 	get_viewport().gui_release_focus()
 	# Removing nodes before queue_free prevents old pilots/HUD consuming input
 	# and old world-space rounds persisting when returning from the pause menu.
-	for node in [hud, component_debug, enemy, aircraft, chase, selector]:
+	for node in [hud, component_debug, aircraft, chase, selector]:
 		if is_instance_valid(node):
 			remove_child(node)
 			node.queue_free()
@@ -70,6 +77,7 @@ func start_flight(kind: String) -> void:
 	if is_instance_valid(aircraft) or kind not in ["spitfire", "sea_gladiator"]:
 		return
 	GameAudioMixer.instance.set_menu_active(false)
+	game_mode = "encounter"
 	selected_aircraft = kind
 	if is_instance_valid(selector):
 		remove_child(selector)
@@ -81,6 +89,7 @@ func start_flight(kind: String) -> void:
 	add_child(aircraft)
 	_spawn_enemy()
 	aircraft.collision_mask = 5 # terrain and enemy airframes
+	aircraft.destroyed.connect(encounters.player_destroyed.bind(aircraft))
 	aircraft.reset_completed.connect(_on_player_reset)
 	chase = ChaseCamera.new()
 	chase.name = "ChaseCamera"
@@ -88,6 +97,7 @@ func start_flight(kind: String) -> void:
 	add_child(chase)
 	aircraft.reset_completed.connect(chase.snap)
 	hud = FlightHUD.new()
+	hud.encounters = encounters
 	hud.aircraft = aircraft
 	hud.enemy = enemy
 	add_child(hud)
@@ -107,7 +117,8 @@ func _exported_settings(component: Node) -> Dictionary:
 	return settings
 
 func _remember_difficulty() -> void:
-	if is_instance_valid(enemy):
+	# Never copy ace aiming overrides back into normal pilots.
+	if is_instance_valid(enemy) and not enemy.encounter_ace:
 		var settings: Dictionary = _exported_settings(enemy.ai)
 		for key in ["world_extent", "measured_terrain"]:
 			settings.erase(key)
@@ -122,64 +133,71 @@ func _remember_difficulty() -> void:
 
 func _spawn_enemy() -> void:
 	_remember_difficulty()
-	if is_instance_valid(enemy):
-		remove_child(enemy)
-		enemy.queue_free()
-	enemy = EnemyAircraft.new()
-	enemy.name = "EnemyStuka"
-	enemy.target = aircraft
-	var spawn: Vector3 = enemy_spawn_position
-	if environment_id == "malta":
-		spawn = aircraft.global_position + Vector3(-950, 220, -1000)
-	# The normal runway start is >750 m away. Alternate player start positions
-	# still receive clearance and safe terrain height, rather than overlapping.
-	if spawn.distance_to(aircraft.global_position) < 400:
-		spawn = aircraft.global_position + Vector3(-550, 100, -300)
-	spawn.y = maxf(spawn.y, 500.0) if environment_id == "malta" else maxf(spawn.y, Airfield.height_at(spawn.x, spawn.z) + 120)
-	enemy.reset_position = spawn
-	add_child(enemy)
-	for key in _ai_settings:
-		enemy.ai.set(key, _ai_settings[key])
-	for key in _gun_settings:
-		enemy.guns.set(key, _gun_settings[key])
-	for key in _rear_gunner_settings:
-		enemy.rear_gunner.set(key, _rear_gunner_settings[key])
-	if environment_id == "malta":
-		enemy.ai.measured_terrain = true
-		enemy.ai.world_extent = INF # no countryside boundary or island travel gate
-		enemy.ai.patrol_center = spawn
-		enemy.ai.pursuit_release_range = 100000
-	enemy.ai.reset()
-	enemy.rear_gunner.reset()
-	aircraft.guns.telemetry_target = enemy
-	enemy.guns.telemetry_target = aircraft
-	enemy_front_statistics = enemy.guns.pool.statistics
-	enemy_rear_statistics = enemy.rear_gunner.guns.pool.statistics
-	enemy.destroyed.connect(_on_enemy_destroyed.bind(enemy))
-	enemy.ground_impact.connect(_on_enemy_ground_impact.bind(enemy))
-	enemy.wreck_removed.connect(_on_wreck_removed.bind(enemy))
+	enemy = null
 	enemy_defeated = false
 	defeat_notifications = 0
 	session_number += 1
+	encounters.begin(game_mode)
+
+func create_encounter_enemy(spawn: Vector3, ace: bool) -> EnemyAircraft:
+	var foe: EnemyAircraft = EnemyAircraft.new()
+	foe.name = "AceStuka" if ace else "EnemyStuka"
+	foe.encounter_ace = ace
+	foe.target = aircraft
+	foe.reset_position = spawn
+	add_child(foe)
+	for key in _ai_settings:
+		foe.ai.set(key, _ai_settings[key])
+	for key in _gun_settings:
+		foe.guns.set(key, _gun_settings[key])
+	for key in _rear_gunner_settings:
+		foe.rear_gunner.set(key, _rear_gunner_settings[key])
+	if ace:
+		foe.display_name = "ACE · Ju 87 Stuka"
+		foe.ai.aim_error_degrees *= encounters.ace_aim_error_scale
+		foe.guns.spread_degrees *= encounters.ace_dispersion_scale
+	if environment_id == "malta":
+		foe.ai.measured_terrain = true
+		foe.ai.world_extent = INF
+		foe.ai.patrol_center = spawn
+		foe.ai.pursuit_release_range = 100000
+	foe.ai.reset()
+	foe.rear_gunner.reset()
+	foe.ground_impact.connect(_on_enemy_ground_impact.bind(foe))
+	return foe
+
+func encounter_tracking_changed() -> void:
+	# Keep legacy HUD/debug's focused enemy reference; the director owns ALL lives.
+	if not encounters.active.is_empty():
+		enemy = encounters.active[0]
+	elif not encounters.wrecks.is_empty():
+		enemy = encounters.wrecks.back()
+	else:
+		enemy = null
+	enemy_defeated = encounters.active.is_empty()
+	if is_instance_valid(enemy):
+		enemy_front_statistics = enemy.guns.pool.statistics
+		enemy_rear_statistics = enemy.rear_gunner.guns.pool.statistics
+	if is_instance_valid(aircraft):
+		aircraft.guns.telemetry_target = enemy
 	if is_instance_valid(hud):
 		hud.enemy = enemy
-		hud.enemy_defeated = false
+		hud.enemy_defeated = enemy_defeated
 
 func _on_player_reset() -> void:
 	if _enemy_restart_queued:
 		return
 	_enemy_restart_queued = true
-	if is_instance_valid(enemy):
-		enemy.ai.set_physics_process(false)
-		enemy.pilot.fire = false
-		enemy.guns.set_physics_process(false)
-		enemy.guns.pool.set_physics_process(false)
-		enemy.guns.reset()
-		enemy.rear_gunner.cease_fire()
-		enemy.rear_gunner.set_physics_process(false)
-		enemy.rear_gunner.guns.set_physics_process(false)
-		enemy.rear_gunner.guns.pool.set_physics_process(false)
-		enemy.rear_gunner.guns.reset()
+	for foe in encounters.active + encounters.wrecks:
+		if not is_instance_valid(foe):
+			continue
+		foe.ai.set_physics_process(false)
+		foe.pilot.fire = false
+		foe.guns.set_physics_process(false)
+		foe.guns.reset()
+		foe.rear_gunner.cease_fire()
+		foe.rear_gunner.set_physics_process(false)
+		foe.rear_gunner.guns.reset()
 	# Removing physics bodies is deferred until the physics server is unlocked.
 	call_deferred("_restart_enemy")
 
@@ -190,28 +208,12 @@ func _restart_enemy() -> void:
 	_clear_encounter_effects()
 	_spawn_enemy()
 
-func _on_enemy_destroyed(source: EnemyAircraft) -> void:
-	if source != enemy or enemy_defeated:
-		return
-	enemy_defeated = true
-	defeat_notifications += 1
-	if is_instance_valid(hud):
-		hud.enemy_defeated = true
-
 func _on_enemy_ground_impact(point: Vector3, source: EnemyAircraft) -> void:
-	if source != enemy or _enemy_restart_queued:
+	if not encounters.wrecks.has(source) or _enemy_restart_queued:
 		return
 	var burst: DestructionBurst = DestructionBurst.new()
 	encounter_effects.add_child(burst)
 	burst.global_position = point
-
-func _on_wreck_removed(source: EnemyAircraft) -> void:
-	if source != enemy:
-		return
-	_remember_difficulty()
-	enemy = null
-	if is_instance_valid(hud):
-		hud.enemy = null
 
 func _clear_encounter_effects() -> void:
 	if not is_instance_valid(encounter_effects):
@@ -254,7 +256,9 @@ func _clear_malta() -> void:
 		add_child(field)
 	environment_id = "countryside"
 
-func start_malta(field_id: String, kind: String) -> void:
+func start_malta(field_id: String, kind: String, selected_mode: String = "encounter") -> void:
+	if selected_mode not in ["encounter", "survival"]:
+		return
 	if MaltaGeography.field(field_id).is_empty() or kind not in ["spitfire", "sea_gladiator"]:
 		return
 	if is_instance_valid(malta_mission):
@@ -272,6 +276,7 @@ func start_malta(field_id: String, kind: String) -> void:
 		remove_child(field)
 		field.queue_free()
 	environment_id = "malta"
+	game_mode = selected_mode
 	home_airfield = field_id
 	selected_aircraft = kind
 	departure_kind = kind
@@ -285,8 +290,7 @@ func start_malta(field_id: String, kind: String) -> void:
 	add_child(malta_mission)
 	aircraft = malta_mission.initial_aircraft
 	_spawn_enemy()
-	enemy.target = null
-	enemy.ai.target = null
+	encounters.set_target(null)
 	get_viewport().gui_release_focus()
 
 func attach_malta_player(player: FlightAircraft) -> void:
@@ -301,6 +305,7 @@ func attach_malta_player(player: FlightAircraft) -> void:
 	add_child(chase)
 	chase.far = 100000
 	hud = FlightHUD.new()
+	hud.encounters = encounters
 	hud.aircraft = player
 	hud.enemy = enemy
 	hud.enemy_defeated = enemy_defeated
@@ -317,5 +322,6 @@ func restart_malta() -> void:
 		return
 	var saved_home: String = home_airfield
 	var saved_kind: String = departure_kind
+	var saved_mode: String = game_mode
 	show_selection()
-	start_malta(saved_home, saved_kind)
+	start_malta(saved_home, saved_kind, saved_mode)

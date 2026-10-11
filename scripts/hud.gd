@@ -1,13 +1,14 @@
 class_name FlightHUD
 extends CanvasLayer
 signal change_aircraft_requested
+var encounters: EnemyEncounters
 var mission: MaltaMission
 var flight_input_enabled: bool = true
 const INK := Color("e9e8d7")
 const MUTED := Color("abb8ad")
 const GOLD := Color("e4bf75")
 const PANEL := Color(0.055, 0.09, 0.085, 0.90)
-const CONTROLS := "↑ / ↓   Nose down / up\n← / →   Bank left / right\nA / D   Rudder left / right\nW / S   Increase / decrease throttle\n%s (hold)   %s\nG   %s\nSPACE   Hold wheel brakes\nH   DEBUG: remove 10 HP   ·   F3 components\nR   Restart encounter\nESC   Pause / controls"
+const CONTROLS := "↑ / ↓   Nose down / up\n← / →   Bank left / right\nA / D   Rudder left / right\nW / S   Increase / decrease throttle\n%s (hold)   %s\nG   %s\nSPACE   Hold wheel brakes\nH   DEBUG: remove 10 HP   ·   F3 components\nC   Confirm next enemy / stage\nR   Restart encounter\nESC   Pause / controls"
 var fire_key_label: String = "F" if OS.has_feature("web") else "CTRL"
 var component_debugging: bool = false
 var aircraft: FlightAircraft
@@ -287,8 +288,8 @@ func _process(delta: float) -> void:
 		notice_label.text = "STALL WARNING   /   NOSE DOWN · ADD POWER"
 	elif not aircraft.gear.last_notice.is_empty():
 		notice_label.text = aircraft.gear.last_notice
-	elif enemy_defeated:
-		notice_label.text = "Enemy destroyed · R to restart the encounter"
+	elif enemy_defeated and (encounters == null or encounters.mode != "survival"):
+		notice_label.text = "Enemy destroyed · C / Confirm for the next encounter"
 	elif is_instance_valid(enemy) and (enemy.pilot.fire or enemy.rear_gunner.firing) and not aircraft.is_destroyed and not aircraft.is_crashed:
 		notice_label.text = "REAR GUNNER FIRING · BREAK AWAY" if enemy.rear_gunner.firing else "INCOMING FIRE · BANK TO EVADE"
 	if aircraft.is_destroyed:
@@ -313,15 +314,15 @@ func _update_enemy(camera: Camera3D) -> void:
 	enemy_marker.visible = false
 	enemy_health_widget.visible = false
 	if enemy_defeated:
-		enemy_label.text = "ENEMY DESTROYED\nR FOR A NEW ENCOUNTER"
+		enemy_label.text = "NO ACTIVE ENEMIES" if encounters != null and encounters.mode == "survival" else "ENEMY DESTROYED\nC / CONFIRM TO CONTINUE"
 		return
 	if not is_instance_valid(enemy):
 		return
 	var delta: Vector3 = enemy.global_position - aircraft.global_position
 	var bearing: float = fposmod(rad_to_deg(atan2(delta.x, -delta.z)), 360.0)
-	enemy_label.text = "STUKA %d HP · %03d° · %d m\n%s · %s" % [ceili(enemy.health.hp), roundi(bearing), roundi(delta.length()), enemy.ai.mode, enemy.ai.tactic]
+	enemy_label.text = "%s %d HP · %03d° · %d m\n%s · %s" % ["ACE STUKA" if enemy.encounter_ace else "STUKA", ceili(enemy.health.hp), roundi(bearing), roundi(delta.length()), enemy.ai.mode, enemy.ai.tactic]
 	if enemy.is_destroyed or enemy.is_crashed:
-		enemy_label.text = "STUKA DOWN · R FOR A NEW ENCOUNTER"
+		enemy_label.text = "STUKA DOWN · C / CONFIRM"
 		return
 	if camera == null or get_tree().paused or aircraft.is_destroyed or aircraft.is_crashed:
 		return
@@ -333,7 +334,7 @@ func _update_enemy(camera: Camera3D) -> void:
 		if Rect2(Vector2.ZERO, screen).has_point(bar_position):
 			enemy_health_widget.visible = true
 			enemy_health_widget.position = bar_position - Vector2(enemy_health_widget.size.x * 0.5, enemy_health_widget.size.y)
-			enemy_hp_label.text = "STUKA · HP: %d/100" % ceili(enemy.health.hp)
+			enemy_hp_label.text = "%s · HP: %d/100" % ["ACE STUKA" if enemy.encounter_ace else "STUKA", ceili(enemy.health.hp)]
 			enemy_hp_bar.value = enemy.health.hp
 			enemy_hp_fill.bg_color = Color("db5347") if enemy.health.hp < 50 else Color("ff946a")
 	var local: Vector3 = camera.to_local(enemy.global_position)
@@ -347,4 +348,6 @@ func _update_enemy(camera: Camera3D) -> void:
 	var in_view: bool = local.z < -0.1 and Rect2(Vector2(60, 180), screen - Vector2(180, 340)).has_point(projected)
 	enemy_marker.text = "◇ STUKA  %d m" % roundi(delta.length()) if in_view else "STUKA →" if projected.x > screen.x / 2 else "← STUKA"
 	enemy_marker.position = Vector2(clampf(projected.x - 50, 20, screen.x - 170), clampf(projected.y - 20, 190, screen.y - 170))
+	if enemy.encounter_ace:
+		enemy_marker.text = enemy_marker.text.replace("STUKA", "ACE STUKA")
 	enemy_marker.visible = true

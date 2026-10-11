@@ -30,6 +30,22 @@ Click **AUDIO** for saved music/engine/gun volumes and mute. In a browser, the
 first click or key press in the game menu enables sound. The Stuka temporarily
 uses the supplied Spitfire audio. See [audio controls, tuning and checks](docs/audio.md).
 
+## Continuous encounters and Malta Survival
+
+Destroy the Stuka, then click **Confirm / Spawn Next Enemy** or press **C**.
+This keeps the same running world and aircraft, including damage, fuel, engine,
+velocity and projectiles. Confirmation does not pause flight; hold your normal
+flight controls while pressing C. R remains an explicit full restart.
+
+For Malta, choose **Survival** in the departure chart at any of the three
+available airfields. Stages contain **1, 2, 2, 3, then 3 enemies**; the final
+stage has two normal pilots and one labelled **ACE STUKA**. The HUD shows the
+stage out of five, remaining enemies, and a non-pausing confirmation action.
+Every enemy must be destroyed before advancing. Damage persists between stages,
+and player destruction ends the run. Stage five finishes with **Survival Complete**.
+
+See [encounter implementation, tuning and verification](docs/survival.md).
+
 ## Select a map and depart in Malta
 
 The startup screen keeps **Countryside** and adds **Choose Malta**. Malta

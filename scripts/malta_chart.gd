@@ -7,6 +7,7 @@ var selectable: bool = false
 var player_position: Vector3 = Vector3.ZERO
 var player_heading: Vector3 = Vector3.FORWARD
 var show_player: bool = false
+var contacts: Array[Dictionary] = []
 var contact_position: Vector3
 var show_contact: bool = false
 var buttons: Dictionary = {}
@@ -62,5 +63,10 @@ func _draw() -> void:
 		var side: Vector2 = Vector2(-direction.y, direction.x)
 		draw_colored_polygon(PackedVector2Array([point + direction * 13, point - direction * 8 + side * 7, point - direction * 5, point - direction * 8 - side * 7]), Color("ffffff"))
 	if show_contact:
-		var point: Vector2 = MaltaGeography.chart_uv(contact_position) * size
-		draw_circle(point, 5, Color("ed7759"))
+		if contacts.is_empty():
+			draw_circle(MaltaGeography.chart_uv(contact_position) * size, 5, Color("ed7759"))
+		for contact in contacts:
+			var point: Vector2 = MaltaGeography.chart_uv(contact.position) * size
+			draw_circle(point, 5, Color("e4bf75") if contact.ace else Color("ed7759"))
+			if contact.ace:
+				draw_string(ThemeDB.fallback_font, point + Vector2(8, 0), "ACE", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("e4bf75"))

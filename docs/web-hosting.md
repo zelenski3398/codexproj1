@@ -83,6 +83,8 @@ to browser chrome. There is no separate HTML Play screen or repository link.
   Ctrl+W and other Ctrl combinations can be reserved by the browser.
 - G: gear (Spitfire); Space: brakes; R: full session restart; Escape: pause.
 - Malta: E board/leave, I engine, M navigation; WASD walks on foot.
+- C: confirm the next encounter/Survival stage without pausing flight.
+  Select Survival from the Malta departure chart; [details](survival.md).
 - H: existing temporary −10 HP debug key; F3: component/gunnery inspector.
 - F4: Malta elevation heatmap debug; terrain defaults to the Mediterranean landscape.
 

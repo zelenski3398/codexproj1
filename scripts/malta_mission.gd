@@ -40,6 +40,7 @@ func _ready() -> void:
 			aircraft.pilot.automated = true
 			aircraft.pilot.brakes = true
 			aircraft.collision_mask = 7
+			aircraft.destroyed.connect(session.encounters.player_destroyed.bind(aircraft))
 			fleet.append(aircraft)
 			if id == home and i == 0:
 				initial_aircraft = aircraft
@@ -84,7 +85,7 @@ func _build_ui() -> void:
 	chart.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	column.add_child(chart)
 	var legend: Label = Label.new()
-	legend.text = "WHITE: you / heading    GOLD: home    RED: detected enemy\nMap does not pause flight. North is up; grid spacing 5 km."
+	legend.text = "WHITE: you / heading    GOLD: home    RED: enemy / GOLD ACE: ace\nMap does not pause flight. North is up; grid spacing 5 km."
 	column.add_child(legend)
 	chart_panel.visible = false
 
@@ -140,11 +141,7 @@ func board_aircraft(aircraft: FlightAircraft) -> bool:
 	aircraft.pilot.reset_commands()
 	aircraft.pilot.automated = false
 	session.attach_malta_player(aircraft)
-	if is_instance_valid(session.enemy):
-		session.enemy.target = aircraft
-		session.enemy.ai.target = aircraft
-		aircraft.guns.telemetry_target = session.enemy
-		session.enemy.guns.telemetry_target = aircraft
+	session.encounters.set_target(aircraft)
 	_message("I starts engine · W sets throttle · taxi onto the runway")
 	return true
 
@@ -192,9 +189,7 @@ func leave_aircraft() -> bool:
 	if is_instance_valid(session.hud):
 		session.hud.visible = false
 		session.hud.flight_input_enabled = false
-	if is_instance_valid(session.enemy):
-		session.enemy.target = null
-		session.enemy.ai.target = null
+	session.encounters.set_target(null)
 	_message("Aircraft parked; damage and fuel retained. Walk to another aircraft and press E.")
 	return true
 
@@ -209,9 +204,13 @@ func _process(delta: float) -> void:
 	var heading: Vector3 = -occupied.global_basis.z if is_instance_valid(occupied) else -Basis(Vector3.UP, pilot.yaw).z
 	chart.player_position = position
 	chart.player_heading = heading
-	chart.show_contact = is_instance_valid(session.enemy) and not session.enemy.is_destroyed and position.distance_to(session.enemy.global_position) < session.enemy.ai.detection_range
+	chart.contacts.clear()
+	for foe in session.encounters.active:
+		if position.distance_to(foe.global_position) < foe.ai.detection_range:
+			chart.contacts.append({"position": foe.global_position, "ace": foe.encounter_ace})
+	chart.show_contact = not chart.contacts.is_empty()
 	if chart.show_contact:
-		chart.contact_position = session.enemy.global_position
+		chart.contact_position = chart.contacts[0].position
 	status.position = Vector2(32, 150) if is_instance_valid(occupied) else Vector2(32, 32)
 	if is_instance_valid(occupied):
 		status.text = "MALTA · %s    M Map    E Leave    I Engine %s\nFUEL %d%% · home %s" % [occupied.display_name, "ON" if occupied.engine_running else "OFF", roundi(occupied.components.fuel_remaining * 100), world.fields[home].record.name]

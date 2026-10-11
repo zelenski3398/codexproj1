@@ -4,6 +4,7 @@ extends FlightAircraft
 signal ground_impact(point: Vector3)
 signal wreck_removed
 @export var wreck_remove_delay: float = 4.0
+var encounter_ace: bool = false
 var ai: EnemyPilot
 var rear_gunner: RearGunner
 var target: FlightAircraft

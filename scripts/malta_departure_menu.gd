@@ -1,7 +1,9 @@
 class_name MaltaDepartureMenu
 extends CanvasLayer
-signal departed(field_id: String, kind: String)
+signal departed(field_id: String, kind: String, mode: String)
 signal back_requested
+var selected_mode: String = "encounter"
+var mode_picker: OptionButton
 var selected_field: String = "ta_qali"
 var selected_kind: String = "spitfire"
 var chart: MaltaChart
@@ -27,7 +29,7 @@ func _ready() -> void:
 	add_child(root)
 	var left: VBoxContainer = VBoxContainer.new()
 	left.custom_minimum_size.x = 405
-	left.add_theme_constant_override("separation", 20)
+	left.add_theme_constant_override("separation", 14)
 	root.add_child(left)
 	left.add_child(_label("WINGS OVER MALTA", 30))
 	left.add_child(_label("ONE CONTINUOUS WORLD\nChoose your departure airfield", 19))
@@ -37,17 +39,23 @@ func _ready() -> void:
 	field_picker.item_selected.connect(func(index: int): select_field(MaltaGeography.data().airfields[index].id))
 	left.add_child(field_picker)
 	info = _label("", 17)
-	info.custom_minimum_size = Vector2(405, 150)
+	info.custom_minimum_size = Vector2(405, 120)
 	left.add_child(info)
 	fighter_picker = OptionButton.new()
 	fighter_picker.item_selected.connect(_choose_kind)
 	left.add_child(fighter_picker)
+	mode_picker = OptionButton.new()
+	mode_picker.add_item("ENCOUNTERS · Confirm each next enemy")
+	mode_picker.add_item("SURVIVAL · Five stages, persistent damage")
+	mode_picker.select(1 if selected_mode == "survival" else 0)
+	mode_picker.item_selected.connect(func(index: int): selected_mode = "survival" if index == 1 else "encounter")
+	left.add_child(mode_picker)
 	depart_button = Button.new()
 	depart_button.text = "DEPART · SPAWN BESIDE AIRCRAFT"
 	depart_button.custom_minimum_size.y = 58
 	depart_button.pressed.connect(depart)
 	left.add_child(depart_button)
-	left.add_child(_label("E  Board / leave a stopped aircraft\nI  Start / stop engine\nWASD  Walk · Arrows  Turn on foot\nM  Navigation chart\nR  Full mission restart\n\nAll three airfields stay in the same world.\nDamage and fuel persist when switching.\n\nApproximate historical airfield positions;\nprototype runway layouts.", 16))
+	left.add_child(_label("E  Board / leave · I  Engine\nWASD  Walk · Arrows  Turn on foot\nM  Navigation · C  Confirm next fight\nR  Full mission restart\n\nAll airfields share one persistent world.\nAircraft damage and fuel persist.\n\nApproximate historical airfield positions;\nprototype runway layouts.", 16))
 	var back: Button = Button.new()
 	back.text = "BACK TO COUNTRYSIDE / AIRCRAFT"
 	back.pressed.connect(func(): back_requested.emit())
@@ -92,10 +100,13 @@ func depart() -> void:
 		return
 	active = false
 	get_viewport().gui_release_focus()
-	departed.emit(selected_field, selected_kind)
+	departed.emit(selected_field, selected_kind, selected_mode)
 
 func _input(event: InputEvent) -> void:
 	if not active or not event is InputEventKey or not event.pressed or event.is_echo():
+		return
+	# Let dropdowns consume Enter/arrows without accidentally departing.
+	if mode_picker.get_popup().visible or fighter_picker.get_popup().visible or field_picker.get_popup().visible:
 		return
 	var code: int = event.keycode if event.keycode != 0 else event.physical_keycode
 	match code:

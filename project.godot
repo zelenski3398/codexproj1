@@ -101,6 +101,11 @@ pause={
 "events": [Object(InputEventKey,"physical_keycode":4194305), Object(InputEventKey,"keycode":4194305)]
 }
 
+confirm_encounter={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":67), Object(InputEventKey,"keycode":67)]
+}
+
 [rendering]
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"

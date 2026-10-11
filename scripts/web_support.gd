@@ -31,6 +31,16 @@ func _process(delta: float) -> void:
 	sample_clock = 0.2
 	var state: Dictionary = {"selecting": session.selector != null, "selected": session.selected_aircraft, "paused": get_tree().paused, "environment": session.environment_id, "airfield_selecting": is_instance_valid(session.malta_menu), "on_foot": is_instance_valid(session.malta_mission) and session.malta_mission.occupied == null}
 	state.audio = {"menu_active": GameAudioMixer.instance.menu_active, "music_playing": GameAudioMixer.instance.music.playing, "music_gain": GameAudioMixer.instance.music_gain, "music_db": GameAudioMixer.instance.music.volume_db, "music_paused": GameAudioMixer.instance.music.stream_paused, "music_position": GameAudioMixer.instance.music.get_playback_position(), "muted": GameAudioMixer.instance.muted, "master_muted": AudioServer.is_bus_mute(0), "volumes": GameAudioMixer.instance.volumes, "panel_open": GameAudioMixer.instance.panel.visible, "gameplay_muted": AudioServer.is_bus_mute(AudioServer.get_bus_index("Aircraft"))}
+	state.encounter = {"mode": session.game_mode, "stage": session.encounters.stage, "remaining": session.encounters.active.size(), "awaiting": session.encounters.awaiting_confirmation, "ended": session.encounters.ended, "complete": session.encounters.complete}
+	state.encounter.enemies = []
+	for foe in session.encounters.active:
+		state.encounter.enemies.append({"id": foe.get_instance_id(), "hp": foe.health.hp, "ace": foe.encounter_ace})
+	if is_instance_valid(session.component_debug):
+		state.debug_target_popup = session.component_debug.target_picker.get_popup().visible
+		state.debug_target_focus = session.component_debug.target_picker.get_popup().get_focused_item()
+		state.debug_target_picker = _center(session.component_debug.target_picker)
+		state.debug_damage_button = _center(session.component_debug.damage_button)
+	state.confirm_button = _center(session.encounters.confirm_button)
 	state.audio_button = _center(GameAudioMixer.instance.audio_button)
 	state.audio_mute_button = _center(GameAudioMixer.instance.mute_button)
 	if is_instance_valid(session.selector):
@@ -40,6 +50,10 @@ func _process(delta: float) -> void:
 		state.fly_button = _center(session.selector.fly_button)
 		state.malta_button = _center(session.selector.malta_button)
 	if is_instance_valid(session.malta_menu):
+		state.mode_popup = session.malta_menu.mode_picker.get_popup().visible
+		state.mode_focus = session.malta_menu.mode_picker.get_popup().get_focused_item()
+		state.mode_picker = _center(session.malta_menu.mode_picker)
+		state.selected_mode = session.malta_menu.selected_mode
 		state.home_airfield = session.malta_menu.selected_field
 		state.depart_button = _center(session.malta_menu.depart_button)
 		state.ta_qali_button = _center(session.malta_menu.chart.buttons.ta_qali)
@@ -62,7 +76,7 @@ func _process(delta: float) -> void:
 		state.audio.gun_gain = aircraft.guns.weapon_audio.gain
 		state.audio.audible_salvos = aircraft.guns.weapon_audio.audible_salvos
 		state.merge({"throttle": aircraft.pilot.throttle, "hp": aircraft.health.hp, "shots": aircraft.guns.pool.statistics.shots, "speed": aircraft.airspeed, "altitude": aircraft.altitude, "gear": aircraft.gear.extended, "fixed_gear": not aircraft.gear.retractable, "destroyed": aircraft.is_destroyed, "crashed": aircraft.is_crashed, "debug_visible": session.component_debug.enabled if is_instance_valid(session.component_debug) else false, "fire_guide": session.hud.fire_key_label if is_instance_valid(session.hud) else "F", "smoke": aircraft.damage_effects.emitting})
-		state.enemy_count = 1 if is_instance_valid(session.enemy) else 0
+		state.enemy_count = session.encounters.active.size()
 		state.enemy_hp = session.enemy.health.hp if is_instance_valid(session.enemy) else 0
 		if is_instance_valid(session.hud):
 			state.change_button = _center(session.hud.change_aircraft_button)

@@ -130,7 +130,7 @@ func _refresh() -> void:
 	damage_button.disabled = not available or target.is_destroyed or target.is_crashed or target.reset_pending
 	repair_button.disabled = damage_button.disabled
 	if not available:
-		health_text.text = "Enemy removed · R to spawn a fresh encounter"
+		health_text.text = "Enemy removed · C / Confirm continues · R restarts"
 		effects_text.text = ""
 		return
 	var damage: AircraftDamage = target.components
