@@ -1,0 +1,14 @@
+{
+  "source": "ElevenLabs_2026-10-12T12_50_57_Walke Talkie Commander Dude_gen_sp100_s50_sb75_v4.mp3",
+  "source_sha256": "823f02c5d3d3c55b60b5b559702e162e53a79e21054af78c38dee5f30e4232cb",
+  "seconds": 3.8310204081632655,
+  "mono": true,
+  "bandpass_hz": [
+    180,
+    3800
+  ],
+  "voice_loudness_lufs": -16,
+  "static_relative_rms_db": -36,
+  "click_seconds": 0.018,
+  "speech_generated": false
+}

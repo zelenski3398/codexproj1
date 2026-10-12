@@ -36,7 +36,7 @@ Choose **Missions → Defend Valletta — Ta’ Qali Interception** from the fir
 menu. Start on foot beside a Spitfire or Sea Gladiator at Ta’ Qali, board with
 **E**, start the engine with **I**, taxi and take off. Follow five numbered airborne
 checkpoints shown on **M**'s navigation map. The last checkpoint spawns an
-**SM.79 bomber** and **C.200 escort** about **2,500 m ahead** and starts the
+**SM.79 bomber** and **C.200 escort** about **2,500 m away at one o’clock** and starts the
 five-minute interception; all navigation before it is untimed. Destroy both before time
 expires; results offer **Retry Mission** and **Return to Missions**.
 
@@ -48,6 +48,11 @@ The CR.42 is available to the spawning roster and as a configurable escort
 variation. Existing modes still default to Stukas with unchanged stage counts.
 
 See [mission controls, definitions, timing, tests and approximations](docs/valletta-interception.md).
+
+The final checkpoint plays the supplied commander recording once:
+**“Italian formation detected, one o’clock — intercept!”** Its subtitle lasts
+for playback, with a brief 4 dB engine/gun volume reduction. Retry resets the
+radio; returning to the menu stops it. See [radio audio and checks](docs/audio.md#commander-radio).
 
 ## Continuous encounters and Malta Survival
 

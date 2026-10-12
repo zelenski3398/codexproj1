@@ -11,6 +11,8 @@ var checkpoint_index: int = 0
 var activation_distance: float = 0
 var bomber_route_length: float = 0
 var activation_approach: Vector3 = Vector3.FORWARD
+var activation_bearing: float = 0
+var radio: MissionRadio
 var activated: bool = false
 var activation_queued: bool = false
 var elapsed: float = 0
@@ -40,6 +42,12 @@ var effects: Node3D
 var _resolution_queued: bool = false
 
 func _ready() -> void:
+	radio = MissionRadio.new()
+	radio.voice_clip = definition.commander_voice
+	radio.voice_volume_db = definition.commander_volume_db
+	radio.duck_db = definition.radio_duck_db
+	add_child(radio)
+	formation_detected.connect(radio.transmit_formation)
 	effects = Node3D.new()
 	add_child(effects)
 	var ring: TorusMesh = TorusMesh.new()
@@ -105,6 +113,7 @@ func _build_ui() -> void:
 func cancel() -> void:
 	# Deferred callbacks from the old physics tick must not finish a NEW run.
 	phase = "CANCELLED"
+	radio.stop()
 	set_physics_process(false)
 	set_process(false)
 
@@ -177,16 +186,21 @@ func _advance_checkpoint(expected_index: int) -> void:
 		_update_checkpoint_visual()
 
 func _approach_direction() -> Vector3:
-	var forward: Vector3 = session.aircraft.linear_velocity * Vector3(1, 0, 1)
-	if forward.length_squared() < 100:
-		forward = -session.aircraft.global_basis.z * Vector3(1, 0, 1)
+	# Clock bearings are relative to the aircraft's nose, not its velocity/slip.
+	var forward: Vector3 = -session.aircraft.global_basis.z * Vector3(1, 0, 1)
+	if forward.length_squared() < 0.0001:
+		forward = session.aircraft.linear_velocity * Vector3(1, 0, 1)
+	if forward.length_squared() < 0.0001:
+		forward = Vector3.FORWARD
 	return forward.normalized()
 
 func _formation_spawn() -> Vector3:
 	var player: FlightAircraft = session.aircraft
 	activation_approach = _approach_direction()
+	# Godot's positive yaw turns left; a clockwise/right bearing uses -angle.
+	var bearing_direction: Vector3 = activation_approach.rotated(Vector3.UP, -deg_to_rad(definition.formation_bearing_degrees))
 	var distance: float = definition.formation_spawn_distance
-	var candidate: Vector3 = player.global_position + activation_approach * distance
+	var candidate: Vector3 = player.global_position + bearing_direction * distance
 	var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(candidate + Vector3.UP * 5000, candidate + Vector3.DOWN * 5000, 1)
 	var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(query)
 	var ground: float = float(hit.position.y) if not hit.is_empty() else 0
@@ -196,8 +210,9 @@ func _formation_spawn() -> Vector3:
 		return Vector3(INF, INF, INF)
 	# Exact 3D separation, not a flat distance plus an unaccounted height offset.
 	var horizontal: float = sqrt(distance * distance - height_difference * height_difference)
-	candidate = player.global_position + activation_approach * horizontal
+	candidate = player.global_position + bearing_direction * horizontal
 	candidate.y = height
+	activation_bearing = rad_to_deg(atan2(bearing_direction.dot(activation_approach.cross(Vector3.UP)), bearing_direction.dot(activation_approach)))
 	return candidate
 
 func activate() -> void:
@@ -338,7 +353,7 @@ func _process(_delta: float) -> void:
 		var seconds: int = ceili(remaining_seconds())
 		var goal: String = "Bomber stopped — destroy the remaining escort" if bomber_destroyed else "Destroy the bomber and escort before they reach Valletta"
 		if elapsed < definition.detection_notice_seconds and not bomber_destroyed:
-			goal = "Italian formation detected — intercept!"
+			goal = MissionRadio.FORMATION_LINE
 		objective.text = "%02d:%02d · %s\nBomber: %s    Escort: %s" % [seconds / 60, seconds % 60, goal, "DESTROYED" if bomber_destroyed else "APPROACHING", "DESTROYED" if escort_destroyed else "ACTIVE"]
 		checkpoint_marker.visible = false
 	else:

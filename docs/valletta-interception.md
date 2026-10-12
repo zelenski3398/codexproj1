@@ -16,8 +16,9 @@ coordinates, parked aircraft or boarding/landing mechanics.
    and altitude. **M** shows the same current point on the navigation chart.
    Their generous **650 m radii** permit ordinary climbing/turning approaches.
 4. Passing checkpoint **5/5** spawns one SM.79 and one C.200 approximately
-   **2,500 m ahead of your actual flight path**, displays **Italian formation
-   detected — intercept!**, and starts **05:00**. All startup, taxi, takeoff and
+   **2,500 m away, 30° right of your aircraft’s forward heading (one o’clock)**,
+   displays and radios **Italian formation detected, one o’clock — intercept!**,
+   and starts **05:00**. All startup, taxi, takeoff and
    checkpoint-navigation time is excluded from the countdown.
 5. Destroy both before the deadline. Follow their labelled directional markers.
    Use **Ctrl** on desktop / **F** in browsers for the existing wing guns.
@@ -84,7 +85,9 @@ Edit `mission_definitions/valletta.tres` with `InterceptionDefinition`:
 | Setting | Default / purpose |
 | --- | --- |
 | `checkpoint_positions`, `checkpoint_radius` | Five ordered world positions in `valletta.tres`; 650 m capture radius |
-| `formation_spawn_distance` | 2,500 m measured in 3D world coordinates, ahead of player velocity |
+| `formation_spawn_distance` | 2,500 m measured in 3D world coordinates |
+| `formation_bearing_degrees` | 30° right of the player's horizontal forward heading |
+| `commander_voice`, `commander_volume_db`, `radio_duck_db` | Supplied commander clip, 0 dB radio gain and -4 dB temporary engine/gun attenuation |
 | `detection_notice_seconds` | Eight seconds of formation-detected guidance, followed by normal objectives |
 | `minimum_checkpoint_agl` | 80 m; ground movement cannot activate it |
 | `target_area` | Existing Valletta geographic landmark, ~42 m ground elevation |
@@ -100,14 +103,15 @@ The configurable navigation route starts near Ta’ Qali, crosses northeast Malt
 and finishes offshore at **(24700, 700, -8200)**. It is about **26.5 km** of untimed
 navigation. The player-to-bomber separation and bomber-to-Valletta route length
 are deliberately separate: a normal continuous departure measured **2,500.0 m**
-at activation and a **19,759.46 m** bomber route, followed by an actual
-**299.475-second** uninterrupted bomber journey. Positioning the final waypoint
+at activation and a **19,365.44 m** bomber route, followed by an actual
+**299.458-second** uninterrupted bomber journey. Positioning the final waypoint
 near Ta’ Qali instead would leave too little direct bomber travel for a realistic
 five-minute approach. The encounter is now immediately practical once the timer
 starts, rather than beginning roughly twenty kilometres from the player.
 
-The formation uses the player's horizontal velocity as its approach direction
-(with aircraft-forward fallback at very low speed). Vertical separation is
+The formation uses the player's horizontal nose heading and offsets its bearing
+30° to the right, matching the commander's one-o'clock call. Velocity is only a
+fallback if the aircraft is pointed vertically. Vertical separation is
 included when calculating the exact 2,500 m spawn distance. The bomber's initial
 orientation and velocity face the existing Valletta release waypoint; it does not
 turn instantly after spawning. The escort keeps its existing safe offset. Actual
@@ -141,6 +145,10 @@ HP, engine/throttle, fuel, component integrity and weapon state remain intact.
 The current prototype has unlimited ammunition; fired-round counters and active
 projectiles are preserved. Retry resets progress to **1/5** and clears old enemies,
 effects, timer and pending progression/resolution callbacks.
+`MissionRadio` subscribes to the same one-shot formation activation signal. It
+plays the supplied recording, displays its subtitle, and temporarily ducks
+engine/gun buses. Retry creates a fresh trigger; cancellation/exit stop playback
+and restore the user's mix. See [radio processing and lifecycle checks](audio.md#commander-radio).
 The existing encounter director tracks these external enemies and wrecks but
 does not offer automatic/confirmed encounter replacements in this mission.
 Destruction signals settle together before a deferred result resolution.
@@ -216,6 +224,18 @@ cover Survival, Malta, terrain, keyboard and weapons. Release export and its
 manual engine/boarding flow and retry resetting checkpoint progress.
 
 Measured in the normal taxi/takeoff/navigation run: **2,500.0 m** player-to-bomber
-separation, **19,759.46 m** bomber-to-release route, and **299.475 seconds** of
+separation, **19,365.44 m** bomber-to-release route, and **299.458 seconds** of
 uninterrupted bomber travel. The player continued flying under normal controls
 through this measurement. Full manual browser combat remains unverified.
+
+### Commander-call validation
+
+The supplied commander recording plays at final activation, with measured
+**30° right** bearing and **2,500 m** separation. Native radio checks passed
+**22/22** and the isolated Chromium radio export passed **15/15**, including
+actual decoded audio, exact subtitle text, one-shot/overlap guards, restoration
+of user volumes, retry and exit. The same normal-control departure measured
+a **19,365.44 m** bomber route and **299.458-second** arrival after the bearing
+change. Existing mission/departure/combat checks still passed **103/103**;
+the actual exported mission UI passed **16/16**. Native Compatibility rendering
+also displayed the warning and subtitle together during real playback.

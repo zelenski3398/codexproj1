@@ -66,6 +66,60 @@ The supplied gun recording is a sustained-firing texture, so its individual
 recorded reports are not synthesized to match every configured bullet's exact
 timestamp. The trigger/burst envelope follows real salvos and weapon state.
 
+## Commander radio
+
+The final interception checkpoint plays the project owner's exact supplied
+**ElevenLabs “Walke Talkie Commander Dude” MP3** once, with the subtitle
+**“Italian formation detected, one o’clock — intercept!”** The mission warning
+appears at the same activation event. There is no replacement generated speech.
+
+`tools/prepare_radio.py /path/to/supplied-voice.mp3` produces the 3.831-second
+mono Ogg in `assets/audio/commander_formation_detected.ogg`. It mildly filters
+speech to 180–3800 Hz, normalizes to -16 LUFS, and adds static 36 dB below voice
+RMS plus two 18 ms transmission clicks. Processing is baked into the asset;
+no unsupported web audio bus effects or runtime external files are required.
+The original upload is untouched. Its hash/settings are recorded alongside it.
+
+`mission_definitions/valletta.tres` assigns this clip through `commander_voice`.
+`commander_volume_db` defaults to 0 dB; `radio_duck_db` defaults to -4 dB.
+`MissionRadio` uses a non-spatial `AudioStreamPlayer` through Master, so enemy
+distance never affects radio volume. Master volume/mute still applies. Voice
+streams on desktop and uses browser-native sample playback on web.
+
+The radio acquires a single-channel mixer lease and attenuates Aircraft/Guns
+without modifying saved slider values. Completion, cancellation, retry and
+leaving the mission release that lease and hide the subtitle. User volume
+changes made during playback remain in effect afterwards. The trigger is
+latched even after playback completes; only a fresh mission resets it.
+Subtitles appear only during real playback. If a definition has no recording,
+the component warns once and stays silent: no beep, static-only substitute,
+false subtitle or temporary volume change.
+
+```sh
+godot --headless --path . --fixed-fps 120 --script res://tests/mission_radio_checks.gd
+python3 tools/build_radio_web_fixture.py
+node tools/radio_web_smoke.cjs
+```
+
+The dedicated native checks use the supplied recording and actual Dummy mixer
+output, covering final-checkpoint synchronization, duplication/overlap blocking,
+normal completion, live slider changes, retry, cancellation, exit and missing
+asset fallback. The browser fixture exports the **unchanged production radio
+and mixer** in an isolated test scene and verifies actual Chromium WebAudio
+output, sample duration, non-looping playback, subtitles and restored levels.
+It does not bypass checkpoints in the playable mission and is excluded from
+the production export. A full manually flown browser radio activation and
+perceptual listening on real speakers remain unverified.
+
+Radio validation passed **22/22 native checks** and **15/15 browser fixture
+checks**, including nonzero native/WebAudio samples from the supplied voice.
+A native Compatibility capture also checked the radio subtitle alongside the
+real mission warning, aircraft instruments and enemy markers. The existing
+audio suite passed **37/37**, and the mission, continuous departure, combat,
+keyboard and weapons checks passed **163/163**. The playable browser export
+passed **16/16 mission UI/lifecycle checks** and **18/18 existing audio checks**.
+Total for this change: **222 native** and **49 browser** checks passed.
+
 ## Verification
 
 ```sh

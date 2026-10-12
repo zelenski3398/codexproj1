@@ -15,3 +15,12 @@ Reproduce conversions with tools/prepare_audio.py and the original uploads.
 
 No Ju 87 / Jumo or MG 15 recording was supplied. The Stuka uses the supplied
 Spitfire inline-engine and machine-gun sounds as temporary audio placeholders.
+
+Commander transmission supplied by the project owner on 12 October 2026:
+ElevenLabs_2026-10-12T12_50_57_Walke Talkie Commander Dude_gen_sp100_s50_sb75_v4.mp3
+The user's exact recording is retained as the voice source; no replacement
+speech was generated. Runtime commander_formation_detected.ogg adds a mild
+180–3800 Hz speech filter, loudness normalization, very quiet static and short
+transmission clicks. This is a non-looping, non-spatial player-radio recording.
+Source hash/settings: commander_formation_detected.json.
+Reproduce with tools/prepare_radio.py and the original supplied MP3.

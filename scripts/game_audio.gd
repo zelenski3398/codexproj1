@@ -23,6 +23,9 @@ var audio_button: Button
 var panel: PanelContainer
 var mute_button: CheckButton
 var sliders: Dictionary = {}
+## Temporary mix overlay, never written into the user's saved volume settings.
+var radio_owner: int = 0
+var radio_duck_db: float = 0
 
 func _enter_tree() -> void:
 	instance = self
@@ -92,7 +95,26 @@ func set_volume(bus: String, value: float, persist: bool = true) -> void:
 		_save_settings()
 
 func _apply_volume(bus: String) -> void:
-	AudioServer.set_bus_volume_db(AudioServer.get_bus_index(bus), linear_to_db(maxf(float(volumes[bus]), 0.0001)))
+	var attenuation: float = radio_duck_db if bus in ["Aircraft", "Guns"] else 0.0
+	AudioServer.set_bus_volume_db(AudioServer.get_bus_index(bus), linear_to_db(maxf(float(volumes[bus]), 0.0001)) + attenuation)
+
+func begin_radio(owner: Node, attenuation_db: float) -> bool:
+	# A single radio channel prevents overlapping mission transmissions.
+	if radio_owner != 0:
+		return false
+	radio_owner = owner.get_instance_id()
+	radio_duck_db = clampf(attenuation_db, -12, 0)
+	for bus in ["Aircraft", "Guns"]:
+		_apply_volume(bus)
+	return true
+
+func end_radio(owner: Node) -> void:
+	if radio_owner != owner.get_instance_id():
+		return
+	radio_owner = 0
+	radio_duck_db = 0
+	for bus in ["Aircraft", "Guns"]:
+		_apply_volume(bus)
 
 func set_muted(value: bool, persist: bool = true) -> void:
 	muted = value

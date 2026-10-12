@@ -6,6 +6,11 @@ extends Resource
 @export var checkpoint_positions: PackedVector3Array = PackedVector3Array()
 @export var checkpoint_radius: float = 650
 @export var formation_spawn_distance: float = 2500
+@export_range(-90, 90, 1) var formation_bearing_degrees: float = 30
+## Assign the supplied, radio-processed commander recording here when available.
+@export var commander_voice: AudioStream
+@export_range(-24, 6, 0.5) var commander_volume_db: float = 0
+@export_range(-12, 0, 0.5) var radio_duck_db: float = -4
 @export var detection_notice_seconds: float = 8
 @export var minimum_checkpoint_agl: float = 80
 # Ground target uses the existing Valletta landmark. Release is ~753 m up-course
