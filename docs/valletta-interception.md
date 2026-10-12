@@ -212,7 +212,7 @@ opening the live Pages domain for visual testing.
 The updated mission passed **70 mission checks**, **26 continuous departure and
 bomber-journey checks**, and **7 combat checks**. An additional **208 checks**
 cover Survival, Malta, terrain, keyboard and weapons. Release export and its
-**15 browser UI/lifecycle checks** verify the new 1/5 guidance, navigation map,
+**16 browser UI/lifecycle checks** verify the new 1/5 guidance, navigation map,
 manual engine/boarding flow and retry resetting checkpoint progress.
 
 Measured in the normal taxi/takeoff/navigation run: **2,500.0 m** player-to-bomber

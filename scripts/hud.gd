@@ -105,7 +105,7 @@ func _ready() -> void:
 	hp_fill = _style(Color("88b279"), 0)
 	hp_bar.add_theme_stylebox_override("fill", hp_fill)
 	top_right.add_child(hp_bar)
-	enemy_label = _label("STUKA · PATROL", 13, Color("ff946a"))
+	enemy_label = _label("", 13, Color("ff946a"))
 	top_right.add_child(enemy_label)
 	var footer := MarginContainer.new()
 	footer.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
@@ -319,6 +319,7 @@ func _update_enemy(camera: Camera3D) -> void:
 		enemy_label.text = "NO ACTIVE ENEMIES" if encounters != null and encounters.mode != "encounter" else "ENEMY DESTROYED\nC / CONFIRM TO CONTINUE"
 		return
 	if not is_instance_valid(enemy):
+		enemy_label.text = "NO FORMATION DETECTED" if encounters != null and encounters.mode == "interception" else "NO ACTIVE ENEMIES"
 		return
 	var delta: Vector3 = enemy.global_position - aircraft.global_position
 	var bearing: float = fposmod(rad_to_deg(atan2(delta.x, -delta.z)), 360.0)

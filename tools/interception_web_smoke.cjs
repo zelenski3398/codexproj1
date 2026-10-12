@@ -42,6 +42,8 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
   await page.keyboard.press('e');
   await wait(()=>!window.firstSortieState.on_foot);
   check((await state()).world_id===original.world_id,'Boarding retains the existing world');
+  await wait(()=>window.firstSortieState.enemy_label==='NO FORMATION DETECTED');
+  check((await state()).enemy_label==='NO FORMATION DETECTED','Navigation HUD cannot show a fictitious Stuka patrol');
   await page.keyboard.down('Space');
   await page.keyboard.press('i');
   await wait(()=>window.firstSortieState.engine_running);

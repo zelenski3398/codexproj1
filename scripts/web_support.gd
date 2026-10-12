@@ -86,6 +86,7 @@ func _process(delta: float) -> void:
 		state.enemy_count = session.encounters.active.size()
 		state.enemy_hp = session.enemy.health.hp if is_instance_valid(session.enemy) else 0
 		if is_instance_valid(session.hud):
+			state.enemy_label = session.hud.enemy_label.text
 			state.change_button = _center(session.hud.change_aircraft_button)
 			state.change_visible = session.hud.change_aircraft_button.is_visible_in_tree()
 	bridge.eval("window.firstSortieState = " + JSON.stringify(state) + ";")
