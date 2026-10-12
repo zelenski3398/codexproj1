@@ -2,3 +2,4 @@
 [ext_resource type="Script" path="res://scripts/interception_definition.gd" id="1"]
 [resource]
 script = ExtResource("1")
+checkpoint_positions = PackedVector3Array(3957.155, 450, 3357.118, 8000, 650, 1500, 13000, 700, -1000, 18000, 700, -3700, 24700, 700, -8200)

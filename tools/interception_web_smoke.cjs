@@ -32,7 +32,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
   check(original.home_airfield==='ta_qali' && original.environment==='malta','Mission starts in continuous Malta at Ta’ Qali');
   check(original.enemy_count===0 && original.interception.elapsed===0 && !original.interception.activated,'No enemy/timer before checkpoint');
   check(!original.engine_running && original.hp===100,'Ground start preserves manual engine and healthy Spitfire');
-  check(original.interception.marker,'Checkpoint has a visible directional marker');
+  check(original.interception.marker && original.interception.checkpoint_index===0 && original.interception.checkpoint_count===5,'Only numbered checkpoint 1/5 is active at mission start');
   await page.keyboard.press('m');
   await wait(()=>window.firstSortieState.map_open);
   check((await state()).interception.nav_checkpoint,'Navigation map contains checkpoint');
@@ -63,7 +63,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
   const clickResult=async key=>{const [x,y]=(await state()).interception[key];await page.mouse.click(x,y);};
   await clickResult('retry');
   await wait(()=>window.firstSortieState.on_foot && window.firstSortieState.hp===100 && window.firstSortieState.interception.phase==='CHECKPOINT');
-  check((await state()).world_id!==original.world_id && (await state()).enemy_count===0 && (await state()).interception.elapsed===0,'Retry creates a clean new mission with no old enemies/timer');
+  check((await state()).world_id!==original.world_id && (await state()).enemy_count===0 && (await state()).interception.elapsed===0 && (await state()).interception.checkpoint_index===0,'Retry creates a clean new mission with no old enemies/timer');
   await page.keyboard.press('e');
   await wait(()=>!window.firstSortieState.on_foot);
   for(let hit=0;hit<10;hit++){

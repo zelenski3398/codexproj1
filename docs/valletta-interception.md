@@ -10,11 +10,15 @@ coordinates, parked aircraft or boarding/landing mechanics.
 1. At Ta’ Qali, press **E** to board the aircraft beside you.
 2. Press **I** to start its engine. Use **W/S** for throttle and **A/D** for
    rudder; taxi from the parking apron onto the runway before full power.
-3. Take off using the existing arrows. Fly toward the **gold checkpoint**,
-   about 3 km east of the airfield at 450 m above sea level. **M** shows it on
-   the navigation chart. Its generous 500 m radius permits a climbing approach.
-4. Entering the airborne checkpoint spawns one SM.79 and one C.200, and starts
-   **05:00**. Startup, taxi and takeoff time do not consume that countdown.
+3. Take off using the existing arrows. Follow **five gold navigation checkpoints**
+   from Ta’ Qali toward the northeast offshore interception area. Only the
+   current checkpoint is shown, numbered **1/5** through **5/5**, with its distance
+   and altitude. **M** shows the same current point on the navigation chart.
+   Their generous **650 m radii** permit ordinary climbing/turning approaches.
+4. Passing checkpoint **5/5** spawns one SM.79 and one C.200 approximately
+   **2,500 m ahead of your actual flight path**, displays **Italian formation
+   detected — intercept!**, and starts **05:00**. All startup, taxi, takeoff and
+   checkpoint-navigation time is excluded from the countdown.
 5. Destroy both before the deadline. Follow their labelled directional markers.
    Use **Ctrl** on desktop / **F** in browsers for the existing wing guns.
    Stopping the bomber first leaves the escort objective and original timer.
@@ -79,26 +83,48 @@ Edit `mission_definitions/valletta.tres` with `InterceptionDefinition`:
 
 | Setting | Default / purpose |
 | --- | --- |
-| `checkpoint`, `checkpoint_radius` | East of Ta’ Qali, 450 m MSL; 500 m capture radius |
+| `checkpoint_positions`, `checkpoint_radius` | Five ordered world positions in `valletta.tres`; 650 m capture radius |
+| `formation_spawn_distance` | 2,500 m measured in 3D world coordinates, ahead of player velocity |
+| `detection_notice_seconds` | Eight seconds of formation-detected guidance, followed by normal objectives |
 | `minimum_checkpoint_agl` | 80 m; ground movement cannot activate it |
 | `target_area` | Existing Valletta geographic landmark, ~42 m ground elevation |
 | `bombing_point` | 700 m MSL release waypoint ~753 m up-course of the target |
-| `approach_direction`, `approach_speed` | Southwest approach, 65 m/s |
+| Approach heading/speed | Derived from actual spawn → release waypoint and the 300-second duration |
 | `deadline_seconds` | 300 seconds of simulation time; pausing pauses the timer |
 | `arrival_radius` | 70 m; permits arrival approximately half a second before deadline |
 | `escort_type` | `c200`; `cr42` is an available future variation |
 | `escort_separation`, `spawn_clearance` | 230 m lateral separation; at least 300 m terrain clearance |
 | `bomb_count`, `bomb_interval` | Eight bombs, separated by 0.7 seconds |
 
-The spawn is a little over 19.5 km up-course of the release waypoint. Route
-pacing estimates remaining distance/time and adjusts **ordinary throttle**;
-normal pitch, bank, rudder, terrain avoidance and component-damage trim perform
-all aircraft movement. Lost engines or lift can prevent timely arrival; pacing
-cannot teleport, repair or impose velocity. The default uninterrupted approach
-has been measured at about **299.47 seconds**. The release waypoint allows for
-bombs inheriting aircraft velocity and falling under gravity, so the first
-impact lands near the actual Valletta target rather than hundreds of metres
-beyond it. Changing altitude/speed/route may require retuning that release lead.
+The configurable navigation route starts near Ta’ Qali, crosses northeast Malta,
+and finishes offshore at **(24700, 700, -8200)**. It is about **26.5 km** of untimed
+navigation. The player-to-bomber separation and bomber-to-Valletta route length
+are deliberately separate: a normal continuous departure measured **2,500.0 m**
+at activation and a **19,759.46 m** bomber route, followed by an actual
+**299.475-second** uninterrupted bomber journey. Positioning the final waypoint
+near Ta’ Qali instead would leave too little direct bomber travel for a realistic
+five-minute approach. The encounter is now immediately practical once the timer
+starts, rather than beginning roughly twenty kilometres from the player.
+
+The formation uses the player's horizontal velocity as its approach direction
+(with aircraft-forward fallback at very low speed). Vertical separation is
+included when calculating the exact 2,500 m spawn distance. The bomber's initial
+orientation and velocity face the existing Valletta release waypoint; it does not
+turn instantly after spawning. The escort keeps its existing safe offset. Actual
+terrain/body collision probes validate both spawn positions before insertion.
+
+Initial cruise speed is calculated from the actual remaining route and deadline.
+The existing bomber controller paces remaining distance/time through **ordinary
+throttle**; normal pitch, bank, rudder, terrain avoidance and component-damage
+trim perform all movement. Lost engines or lift can prevent timely arrival;
+pacing cannot teleport, repair or impose velocity. Checkpoint configuration must
+leave a bomber journey within its existing 48–80 m/s pacing envelope. The default
+final area tolerates capture at different sides of the 650 m checkpoint sphere.
+
+The release waypoint allows for bombs inheriting aircraft velocity and falling
+under gravity. Changing spawn heading or cruise speed changes the ballistic
+landing offset slightly; the standard approach still lands in the Valletta target
+area. Changing route/altitude substantially may require retuning release lead.
 
 After the level bombing sequence the bomber turns into a physical nearby orbit.
 The escort initially follows formation, uses the existing pursuit/lead/fire
@@ -107,7 +133,14 @@ is destroyed, it defends the last formation area instead of following an
 imaginary bomber indefinitely. Threat distance, leash and formation speed are
 configurable in `EscortPilot`; approach speed bounds/trim are in `BomberPilot`.
 
-`VallettaInterception` owns checkpoint, countdown, objectives, bombs and results.
+`VallettaInterception` owns ordered checkpoint progress, countdown, objectives,
+bombs and results. Deferred checkpoint callbacks carry their expected index, so
+old entries cannot advance a later point. The final activation is latched once.
+Only enemy references/markers change; player transform, velocity, angular motion,
+HP, engine/throttle, fuel, component integrity and weapon state remain intact.
+The current prototype has unlimited ammunition; fired-round counters and active
+projectiles are preserved. Retry resets progress to **1/5** and clears old enemies,
+effects, timer and pending progression/resolution callbacks.
 The existing encounter director tracks these external enemies and wrecks but
 does not offer automatic/confirmed encounter replacements in this mission.
 Destruction signals settle together before a deferred result resolution.
@@ -137,12 +170,15 @@ The airframe checks fly all three types for 60 simulated seconds and test
 actual swept rounds in both directions, fitted engine sensors, power loss,
 50/49 HP effects and latched destruction. The mission checks run the actual
 five-minute force-driven route, falling bombs/impacts and post-run turn, plus
-checkpoint gating, both destruction orders, simultaneous/exact-deadline events,
+ordered and out-of-order checkpoint entries, duplicate protection, measured
+terrain clearance, exact before/after activation state, 2,500 m spawn geometry, both destruction orders, simultaneous/exact-deadline events,
 player loss, clean retry and invalidation of old callbacks. Their isolated
 checkpoint/outcome fixtures are explicit; they do not pretend to be manual
 flights or dogfight kills. Separate departure checks use the existing test
-pilot's ordinary controls for engine start, taxi, takeoff and checkpoint entry
-with **no pose/velocity fixtures**. Combat checks use moving-aircraft fixtures
+pilot's ordinary controls for engine start, taxi, takeoff and **all five navigation
+checkpoints**, followed by the uninterrupted bomber journey, with **no pose/velocity
+fixtures**. Enemy combat is disabled only for that timing measurement so the
+player continues flying offshore and the bomber approach is undisturbed. Combat checks use moving-aircraft fixtures
 with production C.200 and human defensive gunner settings and record real hits.
 
 Graphical captures inspect the menu, ground start and all three placeholders
@@ -151,10 +187,9 @@ WebAssembly/WebGL game through normal menu, boarding, engine, throttle, map,
 health-debug, retry and return controls. They do not mutate gameplay through
 JavaScript. Existing flight, keyboard, weapons, aircraft-choice, component,
 Stuka AI/encounter/gunner, Survival, Malta terrain and audio checks also run.
-Validation passed **94 new native checks** plus **744 existing native checks**
-(including Survival). Release browser validation passed **74 checks**: 15 mission UI/lifecycle,
-31 general gameplay, 10 Survival and 18 real WebAudio checks. The publishing
-workflow includes all four new native suites.
+The original Italian-aircraft milestone passed 838 native and 74 browser checks.
+Checkpoint-route validation is recorded below; the publishing workflow continues
+to include mission, departure, combat, aircraft, Survival, Malta and input checks.
 
 No bomber reference image accompanied the text upload. This implementation is
 explicitly an **SM.79** placeholder, not a claimed reproduction of an unseen
@@ -170,3 +205,17 @@ A complete manually flown interception victory on Windows or the deployed public
 Pages site remains **unverified**. Automated native flight/combat tests and local
 release browser UI checks cover the implementation; the cloud proxy prevents
 opening the live Pages domain for visual testing.
+
+
+### Checkpoint-route validation
+
+The updated mission passed **70 mission checks**, **26 continuous departure and
+bomber-journey checks**, and **7 combat checks**. An additional **208 checks**
+cover Survival, Malta, terrain, keyboard and weapons. Release export and its
+**15 browser UI/lifecycle checks** verify the new 1/5 guidance, navigation map,
+manual engine/boarding flow and retry resetting checkpoint progress.
+
+Measured in the normal taxi/takeoff/navigation run: **2,500.0 m** player-to-bomber
+separation, **19,759.46 m** bomber-to-release route, and **299.475 seconds** of
+uninterrupted bomber travel. The player continued flying under normal controls
+through this measurement. Full manual browser combat remains unverified.

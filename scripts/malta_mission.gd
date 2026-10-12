@@ -200,7 +200,8 @@ func _message(value: String) -> void:
 func _process(delta: float) -> void:
 	chart.show_objective = is_instance_valid(session.interception) and session.interception.phase == "CHECKPOINT"
 	if chart.show_objective:
-		chart.objective_position = session.interception.definition.checkpoint
+		chart.objective_position = session.interception.current_checkpoint()
+		chart.objective_label = "CHECKPOINT %d/%d" % [session.interception.checkpoint_index + 1, session.interception.definition.checkpoint_positions.size()]
 	if not get_tree().paused:
 		notice_time = maxf(notice_time - delta, 0)
 	var position: Vector3 = occupied.global_position if is_instance_valid(occupied) else pilot.global_position

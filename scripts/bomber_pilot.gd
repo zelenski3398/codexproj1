@@ -3,8 +3,10 @@ extends EnemyPilot
 ## Level approach using the existing force-driven controller and its damage trim.
 ## Pace by remaining route distance/time; no transforms or velocities are set.
 @export var bombing_altitude: float = 700
-@export var pace_minimum_speed: float = 48
-@export var pace_maximum_speed: float = 80
+const DEFAULT_MINIMUM_SPEED: float = 48
+const DEFAULT_MAXIMUM_SPEED: float = 80
+@export var pace_minimum_speed: float = DEFAULT_MINIMUM_SPEED
+@export var pace_maximum_speed: float = DEFAULT_MAXIMUM_SPEED
 @export var speed_integral_gain: float = 0.007
 var assigned_route: bool = false
 var route_start: Vector3

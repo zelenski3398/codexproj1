@@ -11,12 +11,12 @@ func _run() -> void:
 	session.start_interception("spitfire")
 	await _frames(180)
 	session.malta_mission.board_nearest()
-	session.interception.activate()
+	preload("res://tests/interception_fixture.gd").prepare_final_entry(session)
 	await _frames(4)
 	var encounter: VallettaInterception = session.interception
 	var player: FlightAircraft = session.aircraft
 	var escort: EnemyAircraft = encounter.escort
-	var direction: Vector3 = encounter.definition.approach_direction.normalized()
+	var direction: Vector3 = (encounter.bomber.ai as BomberPilot).route_direction
 	var start: Vector3 = escort.global_position + direction * 490
 	player.request_reset()
 	player.pending_reset_pose = Transform3D(Basis.looking_at(direction, Vector3.UP), start)
@@ -51,7 +51,7 @@ func _run() -> void:
 	session.restart_malta()
 	await _frames(180)
 	session.malta_mission.board_nearest()
-	session.interception.activate()
+	preload("res://tests/interception_fixture.gd").prepare_final_entry(session)
 	await _frames(4)
 	encounter = session.interception
 	player = session.aircraft

@@ -25,11 +25,48 @@ func _run() -> void:
 	var player: FlightAircraft = session.aircraft
 	var world_id: int = session.field.get_instance_id()
 	var impacts: Array[Vector3] = []
-	player.request_reset()
-	player.pending_reset_pose = Transform3D(Basis.IDENTITY, mission.definition.checkpoint)
-	player.pending_reset_velocity = Vector3(0, 0, -65)
-	player.pilot.automated = true
-	await _frames(5)
+	var activation_state: Dictionary = {}
+	mission.checkpoint_reached.connect(func(number: int):
+		if number == mission.definition.checkpoint_positions.size():
+			# Disclosed damaged-aircraft fixture immediately before the transition.
+			player.take_damage(20)
+			player.components.fuel_remaining = 0.53
+			player.components.integrity[&"engine"] = 57
+			player.engine_running = false
+			player.pilot.throttle = 0.37
+			player.guns.pool.spawn(player.global_position + Vector3.UP * 1000, Vector3.FORWARD * 10, 60, 1, player.get_rid(), false, player.team_id)
+			activation_state.before = _player_snapshot(player)
+	)
+	mission.formation_detected.connect(func(_distance: float): activation_state.after = _player_snapshot(player))
+	# Pose fixtures visit the REAL ordered capture logic, including out-of-order
+	# entries and dwelling/re-entering a completed checkpoint.
+	mission.activate()
+	_check(not mission.activated, "Direct activation cannot skip navigation checkpoints")
+	await _checkpoint_pose(player, mission.definition.checkpoint_positions[-1], Vector3.FORWARD)
+	_check(mission.checkpoint_index == 0 and not mission.activated and mission.elapsed == 0, "Final checkpoint visited early cannot skip the sequence")
+	var positions: PackedVector3Array = mission.definition.checkpoint_positions
+	for point in positions:
+		var ray: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(point + Vector3.UP * 2000, point + Vector3.DOWN * 3000, 1)
+		var ground: Dictionary = player.get_world_3d().direct_space_state.intersect_ray(ray)
+		_check(not ground.is_empty() and point.y - float(ground.position.y) >= mission.definition.minimum_checkpoint_agl, "Configured navigation checkpoint is above measured terrain/sea")
+	for index in range(positions.size()):
+		var previous: Vector3 = positions[index - 1] if index > 0 else MaltaGeography.vector(MaltaGeography.field("ta_qali").position)
+		var approach: Vector3 = ((positions[index] - previous) * Vector3(1, 0, 1)).normalized()
+		await _checkpoint_pose(player, positions[index], approach)
+		_check(mission.checkpoint_index == index + 1, "Checkpoint %d advances once in order" % (index + 1))
+		if index < positions.size() - 1:
+			_check(mission.elapsed == 0 and not mission.countdown_started and session.encounters.active.is_empty(), "Checkpoint %d leaves countdown stopped and enemies absent" % (index + 1))
+			mission._advance_checkpoint(index) # stale duplicate callback for this entry
+			await _frames(3)
+			_check(mission.checkpoint_index == index + 1, "Dwelling/stale entry cannot count checkpoint %d twice" % (index + 1))
+	_check(activation_state.before == activation_state.after, "Activation preserves exact player transform, velocity, HP, engine, throttle, fuel, component and weapon state")
+	_check(mission.objective.text.contains("Italian formation detected — intercept!"), "Activation shows the formation detection message")
+	_check(absf(mission.activation_distance - 2500) < 1, "Actual activation separation is 2500 metres in the existing world scale")
+	var offset: Vector3 = (mission.bomber.global_position - player.global_position).normalized()
+	_check(offset.dot(mission.activation_approach) > 0.99, "Formation appears directly ahead of player's flight path")
+	_check((-mission.bomber.global_basis.z).dot((mission.definition.bombing_point - mission.bomber.global_position).normalized()) > 0.99, "Bomber initially faces Valletta while player closes head-on")
+	_check(mission.bomber.global_position.distance_to(mission.escort.global_position) > 200 and mission.bomber.altitude > 300 and mission.escort.altitude > 300, "Formation has safe mutual and terrain clearance")
+	print("ACTIVATION_DISTANCE_METRES=", mission.activation_distance, " BOMBER_ROUTE_METRES=", mission.bomber_route_length)
 	_check(mission.activated and session.encounters.active.size() == 2, "Entering airborne checkpoint creates exactly two aircraft")
 	_check(mission.bomber.aircraft_kind == "sm79" and mission.escort.aircraft_kind == "c200", "Formation contains the specified bomber and escort")
 	_check(mission.elapsed > 0 and mission.elapsed < 0.2 and not mission.checkpoint_mesh.visible, "Countdown starts only at activation and checkpoint disappears")
@@ -126,26 +163,37 @@ func _run() -> void:
 	session.restart_malta()
 	await _frames(180)
 	_check(not is_instance_id_valid(old_mission_id) and not is_instance_id_valid(old_enemy_ids[0]) and not is_instance_id_valid(old_enemy_ids[1]), "Retry frees prior mission, enemies, effects and their subscriptions")
-	_check(session.interception.phase == "CHECKPOINT" and session.interception.elapsed == 0 and session.encounters.active.is_empty() and session.encounters.wrecks.is_empty(), "Retry restores checkpoint gating with no old foes/timer/wrecks")
+	_check(session.interception.phase == "CHECKPOINT" and session.interception.elapsed == 0 and session.encounters.active.is_empty() and session.encounters.wrecks.is_empty() and session.interception.checkpoint_index == 0, "Retry restores checkpoint gating with no old foes/timer/wrecks")
 	session.return_to_missions()
 	await _frames(3)
 	_check(session.missions_menu != null and session.interception == null and session.malta_mission == null, "Return to Missions cleans mission and reopens briefing")
 	# Returning/retrying in the same tick as a last kill must invalidate old callbacks.
 	session.start_interception("spitfire")
 	await _frames(180)
-	session.interception.activate()
-	await _frames(3)
+	preload("res://tests/interception_fixture.gd").prepare_final_entry(session)
+	await _frames(6)
 	session.interception.bomber.take_damage(100)
 	session.interception.escort.take_damage(100)
 	session.restart_malta()
 	await _frames(180)
 	_check(session.interception.phase == "CHECKPOINT" and not session.encounters.ended and session.interception.result_count == 0, "Old deferred resolution cannot finish a fresh retry")
-	session.interception.activate()
-	await _frames(3)
+	preload("res://tests/interception_fixture.gd").prepare_final_entry(session)
+	await _frames(6)
 	session.interception.bomber.take_damage(100)
 	session.interception.escort.take_damage(100)
 	await _frames(2)
 	_check(session.interception.success and session.interception.result_count == 1, "Simultaneous pre-deadline kills produce one success")
+	session.return_to_missions()
+	await _frames(3)
+	# A late physics crash can occur after capture was queued but before its
+	# deferred advancement. No fresh enemies may appear for that lost aircraft.
+	session.start_interception("spitfire")
+	await _frames(180)
+	mission = session.interception
+	mission.checkpoint_index = mission.definition.checkpoint_positions.size() - 1
+	session.aircraft.is_crashed = true # explicit late-contact fixture
+	mission._advance_checkpoint(mission.checkpoint_index)
+	_check(mission.phase == "FAILED" and not mission.activated and mission.elapsed == 0 and session.encounters.active.is_empty(), "Late crash cancels final checkpoint capture before formation creation")
 	session.return_to_missions()
 	await _frames(3)
 	# CR.42 escort variation uses the same mission; no count or default-mode changes.
@@ -154,13 +202,23 @@ func _run() -> void:
 	_check(session.aircraft is SeaGladiator and not session.aircraft.engine_running, "Gladiator mission keeps its ground/manual-engine start")
 	session.interception.definition = session.interception.definition.duplicate()
 	session.interception.definition.escort_type = "cr42"
-	session.interception.activate()
-	await _frames(3)
+	preload("res://tests/interception_fixture.gd").prepare_final_entry(session)
+	await _frames(6)
 	_check(session.interception.escort.aircraft_kind == "cr42", "Escort definition supports a future CR.42 variant")
 	session.queue_free()
 	await _frames(3)
 	print("INTERCEPTION CHECKS: ", checks, " checks; ", failures, " failures")
 	quit(0 if failures == 0 else 1)
+
+func _player_snapshot(player: FlightAircraft) -> Dictionary:
+	return {"pose": player.global_transform, "velocity": player.linear_velocity, "angular": player.angular_velocity, "hp": player.health.hp, "engine": player.engine_running, "throttle": player.pilot.throttle, "fuel": player.components.fuel_remaining, "components": player.components.integrity.duplicate(), "gear": player.gear.extended, "bullets": player.guns.pool.active.duplicate(), "shots": player.guns.pool.statistics.shots, "salvos": player.guns.salvo_count, "cooldown": player.guns.cooldown}
+
+func _checkpoint_pose(player: FlightAircraft, point: Vector3, direction: Vector3) -> void:
+	player.request_reset()
+	player.pending_reset_pose = Transform3D(Basis.looking_at(direction, Vector3.UP), point)
+	player.pending_reset_velocity = direction * 70
+	player.pilot.automated = true
+	await _frames(5)
 
 func _record_impact(point: Vector3, positions: Array[Vector3]) -> void:
 	positions.append(point)
@@ -169,7 +227,7 @@ func _restart_activate() -> void:
 	session.restart_malta()
 	await _frames(180)
 	_check(session.malta_mission.board_nearest(), "Fresh retry boards serviceable aircraft")
-	session.interception.activate() # Explicit activation fixture for isolated result cases.
+	preload("res://tests/interception_fixture.gd").prepare_final_entry(session) # Explicit activation fixture for isolated result cases.
 	await _frames(3)
 
 func _frames(count: int) -> void:

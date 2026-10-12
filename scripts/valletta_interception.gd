@@ -1,10 +1,16 @@
 class_name VallettaInterception
 extends Node3D
 ## Mission progression only. Never repairs or moves the player on a transition.
+signal checkpoint_reached(number: int)
+signal formation_detected(distance: float)
 signal finished(success: bool, reason: String)
 @export var definition: InterceptionDefinition = preload("res://mission_definitions/valletta.tres")
 var session: Node3D
 var phase: String = "CHECKPOINT"
+var checkpoint_index: int = 0
+var activation_distance: float = 0
+var bomber_route_length: float = 0
+var activation_approach: Vector3 = Vector3.FORWARD
 var activated: bool = false
 var activation_queued: bool = false
 var elapsed: float = 0
@@ -44,12 +50,13 @@ func _ready() -> void:
 	var material: StandardMaterial3D = MeshKit.material(Color("e4bf75"))
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	checkpoint_mesh = MeshKit.mesh(self, ring, material)
-	checkpoint_mesh.position = definition.checkpoint
-	checkpoint_mesh.rotation.x = PI / 2
+	_update_checkpoint_visual()
 	checkpoint_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_build_ui()
 	for player in session.malta_mission.fleet:
 		player.destroyed.connect(_player_destroyed.bind(player))
+	if definition.checkpoint_positions.is_empty():
+		_finish(false, "No navigation checkpoints configured — retry mission")
 
 func _build_ui() -> void:
 	canvas = CanvasLayer.new()
@@ -133,9 +140,9 @@ func _physics_process(delta: float) -> void:
 	var player: FlightAircraft = session.aircraft
 	if phase in ["CHECKPOINT", "ACTIVE"] and is_instance_valid(player) and (player.is_destroyed or player.is_crashed):
 		_finish(false, "Player aircraft destroyed — interception failed")
-	if phase == "CHECKPOINT" and not activation_queued and is_instance_valid(session.malta_mission.occupied) and player.gear.contact_count == 0 and player.altitude >= definition.minimum_checkpoint_agl and player.global_position.distance_to(definition.checkpoint) <= definition.checkpoint_radius:
+	if phase == "CHECKPOINT" and not activation_queued and is_instance_valid(session.malta_mission.occupied) and player.gear.contact_count == 0 and player.altitude >= definition.minimum_checkpoint_agl and player.global_position.distance_to(current_checkpoint()) <= definition.checkpoint_radius:
 		activation_queued = true # latch before deferred physics-safe body insertion
-		call_deferred("activate")
+		call_deferred("_advance_checkpoint", checkpoint_index)
 	if phase == "ACTIVE" and countdown_started:
 		elapsed += delta
 		_queue_resolution()
@@ -145,16 +152,75 @@ func _physics_process(delta: float) -> void:
 			bomb_clock += definition.bomb_interval
 			_drop_bomb()
 
+func current_checkpoint() -> Vector3:
+	return definition.checkpoint_positions[clampi(checkpoint_index, 0, definition.checkpoint_positions.size() - 1)] if not definition.checkpoint_positions.is_empty() else Vector3.ZERO
+
+func _update_checkpoint_visual() -> void:
+	checkpoint_mesh.position = current_checkpoint()
+	checkpoint_mesh.rotation.x = PI / 2
+	var previous: Vector3 = definition.checkpoint_positions[checkpoint_index - 1] if checkpoint_index > 0 and checkpoint_index < definition.checkpoint_positions.size() else MaltaGeography.vector(MaltaGeography.field(definition.home_airfield).position)
+	var direction: Vector3 = current_checkpoint() - previous
+	checkpoint_mesh.rotation.y = atan2(direction.x, direction.z)
+
+func _advance_checkpoint(expected_index: int) -> void:
+	if phase != "CHECKPOINT" or expected_index != checkpoint_index:
+		return # old/deferred duplicate entry cannot advance a later checkpoint
+	if session.aircraft.is_destroyed or session.aircraft.is_crashed or session.encounters.ended:
+		_finish(false, "Player aircraft destroyed — interception failed")
+		return
+	checkpoint_index += 1
+	checkpoint_reached.emit(checkpoint_index)
+	activation_queued = false
+	if checkpoint_index == definition.checkpoint_positions.size():
+		activate()
+	else:
+		_update_checkpoint_visual()
+
+func _approach_direction() -> Vector3:
+	var forward: Vector3 = session.aircraft.linear_velocity * Vector3(1, 0, 1)
+	if forward.length_squared() < 100:
+		forward = -session.aircraft.global_basis.z * Vector3(1, 0, 1)
+	return forward.normalized()
+
+func _formation_spawn() -> Vector3:
+	var player: FlightAircraft = session.aircraft
+	activation_approach = _approach_direction()
+	var distance: float = definition.formation_spawn_distance
+	var candidate: Vector3 = player.global_position + activation_approach * distance
+	var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(candidate + Vector3.UP * 5000, candidate + Vector3.DOWN * 5000, 1)
+	var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(query)
+	var ground: float = float(hit.position.y) if not hit.is_empty() else 0
+	var height: float = maxf(maxf(definition.bombing_point.y, player.global_position.y), ground + definition.spawn_clearance)
+	var height_difference: float = height - player.global_position.y
+	if height_difference >= distance or distance <= 600:
+		return Vector3(INF, INF, INF)
+	# Exact 3D separation, not a flat distance plus an unaccounted height offset.
+	var horizontal: float = sqrt(distance * distance - height_difference * height_difference)
+	candidate = player.global_position + activation_approach * horizontal
+	candidate.y = height
+	return candidate
+
 func activate() -> void:
-	if activated or phase != "CHECKPOINT" or session.encounters.ended:
+	if activated or phase != "CHECKPOINT" or session.encounters.ended or definition.checkpoint_positions.is_empty() or checkpoint_index != definition.checkpoint_positions.size():
 		return
 	activated = true
 	activation_queued = false
 	checkpoint_mesh.visible = false
 	phase = "ACTIVE"
-	var direction: Vector3 = definition.approach_direction.normalized()
 	var point: Vector3 = definition.bombing_point
-	var start: Vector3 = point - direction * (definition.approach_speed * definition.deadline_seconds + definition.arrival_radius * 0.5)
+	var start: Vector3 = _formation_spawn()
+	if not start.is_finite():
+		_finish(false, "No safe formation spawn — retry mission")
+		return
+	# Spawn ahead of the approaching player; the bomber turns NO corner on
+	# insertion: its initial forward axis and velocity already face Valletta.
+	var direction: Vector3 = ((point - start) * Vector3(1, 0, 1)).normalized()
+	bomber_route_length = ((point - start) * Vector3(1, 0, 1)).length()
+	var approach_speed: float = (bomber_route_length - definition.arrival_radius * 0.5) / definition.deadline_seconds
+	# Existing throttle pacing can handle this route without artificial holds.
+	if approach_speed < BomberPilot.DEFAULT_MINIMUM_SPEED or approach_speed > BomberPilot.DEFAULT_MAXIMUM_SPEED:
+		_finish(false, "Interception area outside bomber pacing limits — check navigation route")
+		return
 	var wingman: Vector3 = start + direction.cross(Vector3.UP) * definition.escort_separation - direction * 120 + Vector3.UP * 40
 	if not _safe_spawn(start, 25) or not _safe_spawn(wingman, 16) or start.distance_to(wingman) < 80:
 		_finish(false, "No safe formation spawn — retry mission")
@@ -164,9 +230,10 @@ func activate() -> void:
 	var pose: Basis = Basis.looking_at(direction, Vector3.UP)
 	for foe in [bomber, escort]:
 		foe.pending_reset_pose = Transform3D(pose, start if foe == bomber else wingman)
-		foe.pending_reset_velocity = direction * definition.approach_speed
+		foe.pending_reset_velocity = direction * approach_speed
 		session.encounters.track_enemy(foe)
 		foe.destroyed.connect(_enemy_destroyed.bind(foe))
+	activation_distance = session.aircraft.global_position.distance_to(bomber.global_position)
 	var route: BomberPilot = bomber.ai as BomberPilot
 	route.assign_route(start, point, definition.deadline_seconds)
 	route.arrival_radius = definition.arrival_radius
@@ -175,13 +242,14 @@ func activate() -> void:
 	wingman_ai.mission_active = true
 	wingman_ai.route_anchor = start
 	wingman_ai.route_direction = direction
-	wingman_ai.route_speed = definition.approach_speed
+	wingman_ai.route_speed = approach_speed
 	session.encounter_tracking_changed()
 	session.encounters.set_target(session.malta_mission.occupied)
 	elapsed = 0
 	# First force integration applies airborne spawn. Count from that tick, not
 	# from loading/inserting resources in the preceding deferred callback.
 	countdown_started = true
+	formation_detected.emit(activation_distance)
 
 func _safe_spawn(point: Vector3, radius: float) -> bool:
 	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
@@ -256,19 +324,21 @@ func _process(_delta: float) -> void:
 	objective.position.x = 740 if not is_instance_valid(session.malta_mission.occupied) else 400
 	if phase == "CHECKPOINT":
 		var player_position: Vector3 = session.aircraft.global_position if is_instance_valid(session.malta_mission.occupied) else session.malta_mission.pilot.global_position
-		var distance: int = roundi(player_position.distance_to(definition.checkpoint))
-		objective.text = "TA’ QALI INTERCEPTION\nTake off and reach the interception checkpoint\n%d m · checkpoint altitude %d m · timer not started" % [distance, roundi(definition.checkpoint.y)]
+		var distance: int = roundi(player_position.distance_to(current_checkpoint()))
+		objective.text = "TA’ QALI INTERCEPTION · CHECKPOINT %d/%d\nFollow the navigation route · timer not started\n%d m · checkpoint altitude %d m" % [checkpoint_index + 1, definition.checkpoint_positions.size(), distance, roundi(current_checkpoint().y)]
 		var camera: Camera3D = get_viewport().get_camera_3d()
 		if camera != null:
 			var screen: Vector2 = get_viewport().get_visible_rect().size
-			var local: Vector3 = camera.to_local(definition.checkpoint)
-			var point: Vector2 = camera.unproject_position(definition.checkpoint) if local.z < -0.1 else screen * 0.5 + Vector2(local.x, -local.y).normalized() * screen.length()
+			var local: Vector3 = camera.to_local(current_checkpoint())
+			var point: Vector2 = camera.unproject_position(current_checkpoint()) if local.z < -0.1 else screen * 0.5 + Vector2(local.x, -local.y).normalized() * screen.length()
 			checkpoint_marker.position = Vector2(clampf(point.x - 90, 20, screen.x - 220), clampf(point.y - 20, 180, screen.y - 180))
-			checkpoint_marker.text = "◇ CHECKPOINT · %d m" % distance
+			checkpoint_marker.text = "◇ CHECKPOINT %d/%d · %d m" % [checkpoint_index + 1, definition.checkpoint_positions.size(), distance]
 			checkpoint_marker.visible = true
 	elif phase == "ACTIVE":
 		var seconds: int = ceili(remaining_seconds())
 		var goal: String = "Bomber stopped — destroy the remaining escort" if bomber_destroyed else "Destroy the bomber and escort before they reach Valletta"
+		if elapsed < definition.detection_notice_seconds and not bomber_destroyed:
+			goal = "Italian formation detected — intercept!"
 		objective.text = "%02d:%02d · %s\nBomber: %s    Escort: %s" % [seconds / 60, seconds % 60, goal, "DESTROYED" if bomber_destroyed else "APPROACHING", "DESTROYED" if escort_destroyed else "ACTIVE"]
 		checkpoint_marker.visible = false
 	else:
