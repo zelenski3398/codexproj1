@@ -111,6 +111,10 @@ It does not bypass checkpoints in the playable mission and is excluded from
 the production export. A full manually flown browser radio activation and
 perceptual listening on real speakers remain unverified.
 
+The native completion check waits for Godot's `finished` callback and mixer
+cleanup: the audio thread can clear `playing` one frame before that idle callback.
+This also passed three concurrent runs constrained to two CPU cores.
+
 Radio validation passed **22/22 native checks** and **15/15 browser fixture
 checks**, including nonzero native/WebAudio samples from the supplied voice.
 A native Compatibility capture also checked the radio subtitle alongside the

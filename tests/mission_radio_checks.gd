@@ -64,7 +64,9 @@ func _run() -> void:
 		energy += sample.length_squared()
 	_check(samples.size() > 0 and sqrt(energy / maxf(samples.size() * 2, 1)) > 0.001, "Supplied voice produces real nonzero native mixer samples")
 	for index in range(240):
-		if not radio.player.playing:
+		# The audio thread stops first; AudioStreamPlayer.finished is delivered
+		# on the next idle tick. Wait for the actual cleanup, not only playing.
+		if not radio.player.playing and not radio.subtitle.visible and mixer.radio_owner == 0:
 			break
 		OS.delay_msec(20)
 		await _frames(1)
