@@ -32,7 +32,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
   check(original.home_airfield==='ta_qali' && original.environment==='malta','Mission starts in continuous Malta at Ta’ Qali');
   check(original.enemy_count===0 && original.interception.elapsed===0 && !original.interception.activated,'No enemy/timer before checkpoint');
   check(!original.engine_running && original.hp===100,'Ground start preserves manual engine and healthy Spitfire');
-  check(original.interception.marker && original.interception.checkpoint_index===0 && original.interception.checkpoint_count===5,'Only numbered checkpoint 1/5 is active at mission start');
+  check(original.interception.marker && original.interception.checkpoint_index===0 && original.interception.checkpoint_count===2,'Only numbered checkpoint 1/2 is active at mission start');
   await page.keyboard.press('m');
   await wait(()=>window.firstSortieState.map_open);
   check((await state()).interception.nav_checkpoint,'Navigation map contains checkpoint');

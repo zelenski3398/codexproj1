@@ -31,7 +31,7 @@ func _ready() -> void:
 	var briefing: Label = _label(column, DEFINITION.briefing, 20)
 	briefing.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	briefing.custom_minimum_size = Vector2(480, 200)
-	_label(column, "CONTINUOUS MALTA · RAF TA’ QALI\nStart on foot · E board · I start engine\nW power · arrows fly · reach the gold checkpoint", 17)
+	_label(column, "CONTINUOUS MALTA · RAF TA’ QALI\nStart on foot · E board · I start engine\nW power · arrows fly · two nearby gold checkpoints", 17)
 	aircraft_picker = OptionButton.new()
 	aircraft_picker.add_item("Spitfire Mk I · faster interception")
 	aircraft_picker.add_item("Sea Gladiator · slower, more challenging")

@@ -1,6 +1,6 @@
 extends SceneTree
 ## Real flight/combat with explicit fixture resets for checkpoint/outcome branches.
-## The uninterrupted approach below uses only normal pilot commands for 300 s.
+## The uninterrupted approach below uses only normal pilot commands for 90 s.
 var session: Node3D
 var checks: int = 0
 var failures: int = 0
@@ -18,6 +18,7 @@ func _run() -> void:
 	session.missions_menu.launch_button.pressed.emit()
 	await _frames(180)
 	var mission: VallettaInterception = session.interception
+	_check(mission.definition.checkpoint_positions.size() == 2 and mission.definition.deadline_seconds == 90, "Short mission config uses two checkpoints and 90 seconds")
 	_check(session.game_mode == "interception" and session.malta_mission.home == "ta_qali", "Mission departs from geographic Ta' Qali")
 	_check(session.malta_mission.occupied == null and not session.aircraft.engine_running and session.aircraft.gear.contact_count > 0, "Player starts on foot beside a grounded aircraft with engine off")
 	_check(session.encounters.active.is_empty() and mission.elapsed == 0 and not mission.activated, "No enemy or timer before checkpoint")
@@ -44,6 +45,8 @@ func _run() -> void:
 	_check(not mission.activated, "Direct activation cannot skip navigation checkpoints")
 	await _checkpoint_pose(player, mission.definition.checkpoint_positions[-1], Vector3.FORWARD)
 	_check(mission.checkpoint_index == 0 and not mission.activated and mission.elapsed == 0, "Final checkpoint visited early cannot skip the sequence")
+	await _checkpoint_pose(player, mission.definition.checkpoint_positions[0] + Vector3.UP * 200, Vector3.FORWARD)
+	_check(mission.checkpoint_index == 0 and mission.elapsed == 0, "Checkpoint height gate rejects an impractically high sphere crossing")
 	var positions: PackedVector3Array = mission.definition.checkpoint_positions
 	for point in positions:
 		var ray: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(point + Vector3.UP * 2000, point + Vector3.DOWN * 3000, 1)
@@ -61,7 +64,7 @@ func _run() -> void:
 			_check(mission.checkpoint_index == index + 1, "Dwelling/stale entry cannot count checkpoint %d twice" % (index + 1))
 	_check(activation_state.before == activation_state.after, "Activation preserves exact player transform, velocity, HP, engine, throttle, fuel, component and weapon state")
 	_check(mission.objective.text.contains(MissionRadio.FORMATION_LINE), "Activation shows the formation detection message")
-	_check(absf(mission.activation_distance - 2500) < 1, "Actual activation separation is 2500 metres in the existing world scale")
+	_check(absf(mission.activation_distance - 1200) < 1, "Actual activation separation is 1200 metres in the existing world scale")
 	var offset: Vector3 = ((mission.bomber.global_position - player.global_position) * Vector3(1, 0, 1)).normalized()
 	var bearing: float = rad_to_deg(atan2(offset.dot(mission.activation_approach.cross(Vector3.UP)), offset.dot(mission.activation_approach)))
 	_check(absf(bearing - 30) < 0.1, "Formation appears one o'clock, 30 degrees right of player's heading")
@@ -71,6 +74,7 @@ func _run() -> void:
 	_check(mission.activated and session.encounters.active.size() == 2, "Entering airborne checkpoint creates exactly two aircraft")
 	_check(mission.bomber.aircraft_kind == "sm79" and mission.escort.aircraft_kind == "c200", "Formation contains the specified bomber and escort")
 	_check(mission.elapsed > 0 and mission.elapsed < 0.2 and not mission.checkpoint_mesh.visible, "Countdown starts only at activation and checkpoint disappears")
+	_check(mission.objective.text.begins_with("01:30") and mission.radio.triggered, "Second checkpoint starts 01:30 and the one-shot radio together")
 	_check(not mission.bomber.gear.extended and not mission.escort.gear.extended, "Bomber and C200 spawn with their retractable undercarriage raised")
 	var first_bomber: EnemyAircraft = mission.bomber
 	var first_escort: EnemyAircraft = mission.escort
@@ -88,12 +92,16 @@ func _run() -> void:
 	var minimum_altitude: float = INF
 	var maximum_bank: float = 0
 	var last_distance: float = INF
-	for tick in range(40500):
+	var arrival_observed: bool = false
+	for tick in range(19000):
 		await physics_frame
 		if not is_instance_valid(mission.bomber):
 			break
 		minimum_altitude = minf(minimum_altitude, mission.bomber.altitude)
 		maximum_bank = maxf(maximum_bank, absf(mission.bomber.rotation.z))
+		if not arrival_observed and (mission.bomber.ai as BomberPilot).arrived and mission.elapsed < mission.definition.deadline_seconds:
+			arrival_observed = true
+			_check(mission.phase == "ACTIVE" and mission.result_count == 0, "Real bomber arrival cannot resolve the mission before timer expiry")
 		if tick % 6000 == 0:
 			last_distance = mission.bomber.global_position.distance_to(mission.definition.bombing_point)
 			print("Approach t=", mission.elapsed, " distance=", last_distance, " speed=", mission.bomber.airspeed, " altitude=", mission.bomber.global_position.y, " escort=", mission.escort.global_position.distance_to(mission.bomber.global_position), " phase=", mission.phase)
@@ -105,7 +113,7 @@ func _run() -> void:
 	var route: BomberPilot = mission.bomber.ai
 	print("ARRIVAL_SECONDS=", route.arrival_elapsed, " minAGL=", minimum_altitude, " bank=", maximum_bank, " reason=", mission.final_reason, " released=", mission.bombs_released, " impacts=", mission.bomb_impacts)
 	_check(not mission.bomber.is_destroyed and minimum_altitude > 300, "Bomber survives continuous real-force approach above Malta terrain")
-	_check(route.arrived and route.arrival_elapsed >= 295 and route.arrival_elapsed <= 302, "Uninterrupted physical bomber reaches Valletta in approximately 300 seconds")
+	_check(route.arrived and route.arrival_elapsed >= 88 and route.arrival_elapsed <= 92, "Uninterrupted physical bomber reaches Valletta in approximately 90 seconds")
 	_check(mission.phase == "FAILED" and mission.final_reason == "Valletta bombed — interception failed" and mission.result_count == 1, "Actual bomber arrival reports bombing failure once")
 	_check(mission.bombs_released == mission.definition.bomb_count and mission.bomb_impacts >= 2, "Level run releases a sequence of physical falling bombs with swept ground impacts")
 	_check(session.field.get_instance_id() == world_id, "Arrival/bombing never reloads continuous Malta")
@@ -126,7 +134,13 @@ func _run() -> void:
 	mission.escort.take_damage(100)
 	mission.escort.take_damage(100)
 	await _frames(2)
-	_check(mission.success and mission.result_count == 1 and mission.elapsed >= saved_clock, "Destroying both before deadline succeeds once")
+	_check(mission.phase == "ACTIVE" and mission.result_count == 0 and mission.elapsed >= saved_clock, "Early double destruction keeps countdown and flight running")
+	mission.elapsed = mission.definition.deadline_seconds - 1
+	await _frames(2)
+	_check(mission.phase == "ACTIVE" and not mission.results.visible, "No success panel before timer expiry")
+	mission.elapsed = mission.definition.deadline_seconds
+	mission._resolve()
+	_check(mission.success and mission.result_count == 1, "Early enemy losses produce one success at expiry")
 	_check(not session.encounters.awaiting_confirmation and session.encounters.active.is_empty(), "Mission kills never open the continuous encounter confirmation")
 	await _restart_activate()
 	mission = session.interception
@@ -135,7 +149,10 @@ func _run() -> void:
 	_check(not mission.bomber_destroyed and mission.phase == "ACTIVE", "Escort destruction cannot stop bomber")
 	mission.bomber.take_damage(100)
 	await _frames(2)
-	_check(mission.success, "Escort-first destruction can also complete mission")
+	_check(mission.phase == "ACTIVE" and mission.result_count == 0, "Escort-first losses also wait for timer expiry")
+	mission.elapsed = mission.definition.deadline_seconds
+	mission._resolve()
+	_check(mission.success, "Escort-first losses succeed at expiry")
 	await _restart_activate()
 	mission = session.interception
 	mission.bomber.take_damage(100)
@@ -156,9 +173,66 @@ func _run() -> void:
 	_check(mission.final_reason == "Time expired — interception failed", "Live bomber timeout reports failure without inventing an unreached bombing")
 	await _restart_activate()
 	mission = session.interception
+	(mission.bomber.ai as BomberPilot).arrived = true # isolated early bombing fixture
+	mission._resolve()
+	_check(mission.bombing and mission.phase == "ACTIVE", "Even an early bombing event waits for expiry")
+	mission.bomber.take_damage(100)
+	mission.escort.take_damage(100)
+	await _frames(2)
+	mission.elapsed = mission.definition.deadline_seconds
+	mission._resolve()
+	_check(not mission.success and mission.final_reason == "Valletta bombed — interception failed", "Late losses cannot undo an already-started bombing run")
+	await _restart_activate()
+	mission = session.interception
+	mission.bomber.take_damage(100)
+	mission.escort.take_damage(100)
+	await _frames(2)
 	session.aircraft.take_damage(100)
 	await _frames(2)
-	_check(mission.phase == "FAILED" and mission.final_reason.contains("Player aircraft destroyed") and mission.result_count == 1, "Player destruction ends mission exactly once")
+	_check(mission.phase == "FAILED" and mission.final_reason.contains("Player aircraft destroyed") and mission.result_count == 1, "Player destruction immediately fails even after both enemies were lost")
+	await _restart_activate()
+	mission = session.interception
+	var crash_field: MaltaAirfield = session.malta_mission.world.fields.ta_qali
+	for foe in [mission.bomber, mission.escort]:
+		foe.request_reset()
+		foe.pending_reset_pose = Transform3D(Basis.IDENTITY, crash_field.to_global(Vector3(-100 if foe == mission.bomber else 100, 22, 0)))
+		foe.pending_reset_velocity = Vector3.DOWN * 35
+	await _frames(3)
+	for foe in [mission.bomber, mission.escort]:
+		foe.ai.set_physics_process(false)
+		foe.rear_gunner.set_physics_process(false)
+		foe.engine_running = false
+		foe.gear.extended = false
+	for tick in range(480):
+		await physics_frame
+		if mission.bomber.impact_started and mission.escort.impact_started:
+			break
+	await _frames(3)
+	_check(mission.bomber_destroyed and mission.escort_destroyed and mission.phase == "ACTIVE" and mission.result_count == 0, "Two real enemy terrain crashes count as losses without ending early")
+	_check(mission.bomber.impact_count == 1 and mission.escort.impact_count == 1 and session.encounter_effects.get_child_count() == 2, "Enemy crashes produce one existing destruction burst per aircraft")
+	mission.elapsed = mission.definition.deadline_seconds
+	mission._resolve()
+	_check(mission.success, "Enemy crash losses count toward success at timer expiry")
+	await _restart_activate()
+	mission = session.interception
+	for foe in [mission.bomber, mission.escort]:
+		foe.ai.combat_enabled = false
+	session.aircraft.request_reset()
+	session.aircraft.pending_reset_pose = Transform3D(Basis.IDENTITY, session.malta_mission.world.fields.ta_qali.to_global(Vector3(0, 20, 0)))
+	session.aircraft.pending_reset_velocity = Vector3.DOWN * 30
+	await _frames(3)
+	session.aircraft.engine_running = false
+	session.aircraft.gear.extended = false
+	for tick in range(600):
+		await physics_frame
+		if session.aircraft.is_crashed:
+			break
+	await _frames(3)
+	_check(session.aircraft.is_crashed and mission.phase == "FAILED" and mission.elapsed < mission.definition.deadline_seconds, "Actual player terrain crash fails immediately rather than waiting for expiry")
+	_check(mission.player_impact_count == 1, "Player crash displays one Compatibility destruction burst")
+	mission._player_crashed("duplicate", session.aircraft)
+	await _frames(3)
+	_check(mission.player_impact_count == 1 and mission.result_count == 1, "Duplicate player contacts cannot repeat explosion or result")
 	var old_mission_id: int = mission.get_instance_id()
 	var old_enemy_ids: Array[int] = [mission.bomber.get_instance_id(), mission.escort.get_instance_id()]
 	session.restart_malta()
@@ -183,7 +257,10 @@ func _run() -> void:
 	session.interception.bomber.take_damage(100)
 	session.interception.escort.take_damage(100)
 	await _frames(2)
-	_check(session.interception.success and session.interception.result_count == 1, "Simultaneous pre-deadline kills produce one success")
+	_check(session.interception.phase == "ACTIVE" and session.interception.result_count == 0, "Simultaneous early kills do not resolve before expiry")
+	session.interception.elapsed = session.interception.definition.deadline_seconds
+	session.interception._resolve()
+	_check(session.interception.success and session.interception.result_count == 1, "Simultaneous pre-deadline kills produce one success at expiry")
 	session.return_to_missions()
 	await _frames(3)
 	# A late physics crash can occur after capture was queued but before its

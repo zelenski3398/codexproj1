@@ -34,11 +34,12 @@ uses the supplied Spitfire audio. See [audio controls, tuning and checks](docs/a
 
 Choose **Missions → Defend Valletta — Ta’ Qali Interception** from the first
 menu. Start on foot beside a Spitfire or Sea Gladiator at Ta’ Qali, board with
-**E**, start the engine with **I**, taxi and take off. Follow five numbered airborne
+**E**, start the engine with **I**, taxi and take off. Follow two nearby numbered airborne
 checkpoints shown on **M**'s navigation map. The last checkpoint spawns an
-**SM.79 bomber** and **C.200 escort** about **2,500 m away at one o’clock** and starts the
-five-minute interception; all navigation before it is untimed. Destroy both before time
-expires; results offer **Retry Mission** and **Return to Missions**.
+**SM.79 bomber** and **C.200 escort** about **1,200 m away at one o’clock** and starts
+**01:30**; all navigation before it is untimed. Enemy losses are counted immediately,
+but results wait for timer expiry. Player crash/destruction fails immediately.
+Results offer **Retry Mission** and **Return to Missions**.
 
 The new **Fiat CR.42**, **Macchi C.200** and **Savoia-Marchetti SM.79** share
 existing physics, components, projectiles, effects and wrecks. Each has its own

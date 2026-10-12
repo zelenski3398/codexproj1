@@ -40,8 +40,12 @@ var bomb_impacts: int = 0
 var bomb_clock: float = 0
 var effects: Node3D
 var _resolution_queued: bool = false
+var player_impact_started: bool = false
+var player_impact_count: int = 0
 
 func _ready() -> void:
+	# Derived release lead belongs to this run, never the shared menu resource.
+	definition = definition.duplicate() as InterceptionDefinition
 	radio = MissionRadio.new()
 	radio.voice_clip = definition.commander_voice
 	radio.voice_volume_db = definition.commander_volume_db
@@ -63,6 +67,7 @@ func _ready() -> void:
 	_build_ui()
 	for player in session.malta_mission.fleet:
 		player.destroyed.connect(_player_destroyed.bind(player))
+		player.crashed.connect(_player_crashed.bind(player))
 	if definition.checkpoint_positions.is_empty():
 		_finish(false, "No navigation checkpoints configured — retry mission")
 
@@ -142,6 +147,27 @@ func _player_destroyed(player: FlightAircraft) -> void:
 	if player == session.aircraft and phase in ["CHECKPOINT", "ACTIVE"]:
 		_finish(false, "Player aircraft destroyed — interception failed")
 
+func _player_crashed(_reason: String, player: FlightAircraft) -> void:
+	if player != session.aircraft or phase == "CANCELLED":
+		return
+	_player_impact(player.global_position)
+	if phase in ["CHECKPOINT", "ACTIVE"]:
+		_finish(false, "Player aircraft destroyed — interception failed")
+
+func _player_impact(point: Vector3) -> void:
+	if player_impact_started:
+		return
+	player_impact_started = true
+	call_deferred("_show_player_impact", point)
+
+func _show_player_impact(point: Vector3) -> void:
+	if phase == "CANCELLED" or is_queued_for_deletion():
+		return
+	var burst: DestructionBurst = DestructionBurst.new()
+	effects.add_child(burst)
+	burst.global_position = point
+	player_impact_count += 1
+
 func remaining_seconds() -> float:
 	return maxf(definition.deadline_seconds - elapsed, 0)
 
@@ -149,7 +175,15 @@ func _physics_process(delta: float) -> void:
 	var player: FlightAircraft = session.aircraft
 	if phase in ["CHECKPOINT", "ACTIVE"] and is_instance_valid(player) and (player.is_destroyed or player.is_crashed):
 		_finish(false, "Player aircraft destroyed — interception failed")
-	if phase == "CHECKPOINT" and not activation_queued and is_instance_valid(session.malta_mission.occupied) and player.gear.contact_count == 0 and player.altitude >= definition.minimum_checkpoint_agl and player.global_position.distance_to(current_checkpoint()) <= definition.checkpoint_radius:
+	# An aircraft destroyed in the air keeps falling; explode only on contact.
+	if is_instance_valid(player) and player.is_destroyed and not player_impact_started:
+		var grounded: bool = player.gear.contact_count > 0
+		for body in player.get_colliding_bodies():
+			if body is CollisionObject3D and (body.collision_layer & 1) != 0:
+				grounded = true
+		if grounded:
+			_player_impact(player.global_position)
+	if phase == "CHECKPOINT" and not activation_queued and is_instance_valid(session.malta_mission.occupied) and player.gear.contact_count == 0 and player.altitude >= definition.minimum_checkpoint_agl and absf(player.global_position.y - current_checkpoint().y) <= definition.checkpoint_vertical_tolerance and player.global_position.distance_to(current_checkpoint()) <= definition.checkpoint_radius:
 		activation_queued = true # latch before deferred physics-safe body insertion
 		call_deferred("_advance_checkpoint", checkpoint_index)
 	if phase == "ACTIVE" and countdown_started:
@@ -204,9 +238,9 @@ func _formation_spawn() -> Vector3:
 	var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(candidate + Vector3.UP * 5000, candidate + Vector3.DOWN * 5000, 1)
 	var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(query)
 	var ground: float = float(hit.position.y) if not hit.is_empty() else 0
-	var height: float = maxf(maxf(definition.bombing_point.y, player.global_position.y), ground + definition.spawn_clearance)
+	var height: float = maxf(player.global_position.y + definition.formation_height_offset, ground + definition.spawn_clearance)
 	var height_difference: float = height - player.global_position.y
-	if height_difference >= distance or distance <= 600:
+	if height_difference >= distance or height_difference > definition.maximum_formation_height_difference or distance <= 600:
 		return Vector3(INF, INF, INF)
 	# Exact 3D separation, not a flat distance plus an unaccounted height offset.
 	var horizontal: float = sqrt(distance * distance - height_difference * height_difference)
@@ -215,6 +249,19 @@ func _formation_spawn() -> Vector3:
 	activation_bearing = rad_to_deg(atan2(bearing_direction.dot(activation_approach.cross(Vector3.UP)), bearing_direction.dot(activation_approach)))
 	return candidate
 
+func _release_waypoint(start: Vector3) -> Vector3:
+	if not definition.automatic_release_lead:
+		return definition.bombing_point
+	var flat: Vector3 = (definition.target_area - start) * Vector3(1, 0, 1)
+	var fall_seconds: float = sqrt(2 * maxf(definition.bombing_point.y - definition.target_area.y, 0) / 9.81)
+	# v = (target distance - arrival allowance)/(approach time + fall time).
+	# Therefore release distance / v remains the requested approach duration,
+	# while inherited horizontal velocity carries the falling bomb to Valletta.
+	var speed: float = (flat.length() - definition.arrival_radius * 0.5) / (definition.deadline_seconds + fall_seconds)
+	var point: Vector3 = definition.target_area - flat.normalized() * speed * fall_seconds
+	point.y = definition.bombing_point.y
+	return point
+
 func activate() -> void:
 	if activated or phase != "CHECKPOINT" or session.encounters.ended or definition.checkpoint_positions.is_empty() or checkpoint_index != definition.checkpoint_positions.size():
 		return
@@ -222,11 +269,12 @@ func activate() -> void:
 	activation_queued = false
 	checkpoint_mesh.visible = false
 	phase = "ACTIVE"
-	var point: Vector3 = definition.bombing_point
 	var start: Vector3 = _formation_spawn()
 	if not start.is_finite():
 		_finish(false, "No safe formation spawn — retry mission")
 		return
+	definition.bombing_point = _release_waypoint(start)
+	var point: Vector3 = definition.bombing_point
 	# Spawn ahead of the approaching player; the bomber turns NO corner on
 	# insertion: its initial forward axis and velocity already face Valletta.
 	var direction: Vector3 = ((point - start) * Vector3(1, 0, 1)).normalized()
@@ -301,14 +349,17 @@ func _resolve() -> void:
 	_resolution_queued = false
 	if phase != "ACTIVE":
 		return
-	# All destruction events in the current physics tick settle before resolution.
-	# Strictly-before-deadline kills win; at/after-deadline kills cannot win.
-	if bomber_destroyed and escort_destroyed and maxf(bomber_kill_time, escort_kill_time) < definition.deadline_seconds:
-		_finish(true, "Bomber and escort destroyed — Valletta defended")
-	elif is_instance_valid(bomber) and not bomber.is_destroyed and (bomber.ai as BomberPilot).arrived:
+	# Enemy losses and bombing never end the run early. Only the deadline (or
+	# immediate player loss) resolves it, after all same-tick events settle.
+	if is_instance_valid(bomber) and not bomber.is_destroyed and (bomber.ai as BomberPilot).arrived:
 		bombing = true
+	if elapsed < definition.deadline_seconds:
+		return
+	if bombing:
 		_finish(false, "Valletta bombed — interception failed")
-	elif elapsed >= definition.deadline_seconds:
+	elif bomber_destroyed and escort_destroyed and maxf(bomber_kill_time, escort_kill_time) < definition.deadline_seconds:
+		_finish(true, "Bomber and escort destroyed — Valletta defended")
+	else:
 		_finish(false, "Interception incomplete" if bomber_destroyed else "Time expired — interception failed")
 
 func _finish(won: bool, reason: String) -> void:
@@ -352,6 +403,10 @@ func _process(_delta: float) -> void:
 	elif phase == "ACTIVE":
 		var seconds: int = ceili(remaining_seconds())
 		var goal: String = "Bomber stopped — destroy the remaining escort" if bomber_destroyed else "Destroy the bomber and escort before they reach Valletta"
+		if bomber_destroyed and escort_destroyed:
+			goal = "All enemies lost — hold position until timer expires"
+		if bombing:
+			goal = "Bombing run begun — results at timer expiry"
 		if elapsed < definition.detection_notice_seconds and not bomber_destroyed:
 			goal = MissionRadio.FORMATION_LINE
 		objective.text = "%02d:%02d · %s\nBomber: %s    Escort: %s" % [seconds / 60, seconds % 60, goal, "DESTROYED" if bomber_destroyed else "APPROACHING", "DESTROYED" if escort_destroyed else "ACTIVE"]

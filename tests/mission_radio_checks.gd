@@ -35,7 +35,7 @@ func _run() -> void:
 	_check(mission.activated and radio.triggered and radio.transmissions_played == 1 and radio.player.playing, "Final checkpoint activates one formation and one real voice playback")
 	_check(radio.subtitle.visible and radio.subtitle.text.contains(MissionRadio.FORMATION_LINE) and mission.objective.text.contains(MissionRadio.FORMATION_LINE), "Matching warning and commander subtitle appear during playback")
 	_check(radio.player is AudioStreamPlayer and radio.player.bus == "Master" and radio.player.volume_db == mission.definition.commander_volume_db, "Player radio is non-spatial with consistent gain independent of enemy distance")
-	_check(absf(mission.activation_bearing - 30) < 0.001 and absf(mission.activation_distance - 2500) < 1, "Formation is measured 30 degrees right and 2500 metres away")
+	_check(absf(mission.activation_bearing - 30) < 0.001 and absf(mission.activation_distance - 1200) < 1, "Formation is measured 30 degrees right and 1200 metres away")
 	_check(not (radio.player.stream as AudioStreamOggVorbis).loop and (radio.voice_clip as AudioStreamOggVorbis).loop == source_loop, "Transmission is non-looping without mutating imported voice")
 	for bus in ["Aircraft", "Guns"]:
 		_check(absf(AudioServer.get_bus_volume_db(AudioServer.get_bus_index(bus)) - (linear_to_db(0.6) - 4)) < 0.001 and mixer.volumes[bus] == 0.6, bus + " ducks by 4 dB without overwriting saved volume")

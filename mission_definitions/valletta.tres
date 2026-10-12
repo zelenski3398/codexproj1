@@ -4,4 +4,4 @@
 [resource]
 script = ExtResource("1")
 commander_voice = ExtResource("2")
-checkpoint_positions = PackedVector3Array(3957.155, 450, 3357.118, 8000, 650, 1500, 13000, 700, -1000, 18000, 700, -3700, 24700, 700, -8200)
+checkpoint_positions = PackedVector3Array(2600, 330, 5000, 3900, 430, 5050)
