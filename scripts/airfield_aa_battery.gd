@@ -1,8 +1,9 @@
 class_name AirfieldAABattery
 extends Node3D
 ## One battery per continuous world. Retry frees this owner, shells and effects.
-@export var burst_radius: float = 12
-@export var blast_damage: float = 8
+@export var burst_radius: float = 24
+@export var blast_damage: float = 75
+@export var falloff_exponent: float = 1.0
 @export var aerial_burst_visual_scale: float = 4.0
 var world: MaltaWorld
 var guns: Array[BritishAAGun] = []
@@ -66,4 +67,8 @@ func _burst(point: Vector3, direct: Object, _team: int) -> void:
 		if closest == null: continue
 		var query := PhysicsRayQueryParameters3D.create(point, closest_point, 1)
 		if get_world_3d().direct_space_state.intersect_ray(query).is_empty():
-			closest.receive_projectile_hit(blast_damage * (1 - distance / burst_radius), point)
+			closest.receive_projectile_hit(damage_at_distance(distance), point)
+
+func damage_at_distance(distance: float) -> float:
+	if not is_finite(distance) or distance < 0 or burst_radius <= 0 or distance >= burst_radius: return 0
+	return maxf(blast_damage,0)*pow(1-distance/burst_radius,maxf(falloff_exponent,0.1))

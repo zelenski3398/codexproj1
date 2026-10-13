@@ -34,6 +34,7 @@ jobs:
           godot --headless --path . --fixed-fps 120 --script res://tests/pilot_character_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/aa_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/aa_presentation_checks.gd
+          godot --headless --path . --fixed-fps 120 --script res://tests/flak_damage_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/airfield_controls_checks.gd
       - name: Export browser game
         run: bash tools/build_web.sh

@@ -112,6 +112,16 @@ func _run() -> void:
 	battery.projectiles.spawn(gun.global_position+Vector3(12,20,0),Vector3(0,-700,-1),1,1,RID(),true,CombatTeams.PLAYER)
 	await frames(6)
 	check(battery.effects.emitted.ground > ground_before,"Swept terrain impacts emit dirt splashes")
+	# Earlier severe blast may already have destroyed the isolated victim.
+	var kill_position := enemy.global_position
+	enemy.queue_free()
+	enemy = EnemyAircraft.new()
+	enemy.target = scene.aircraft
+	scene.add_child(enemy)
+	enemy.freeze = true
+	enemy.reset_pending = false
+	enemy.global_position = kill_position
+	await frames(3)
 	scene.encounters.track_enemy(enemy)
 	var count: int = scene.encounters.active.size()
 	battery.blast_damage = 1000

@@ -45,7 +45,7 @@ func run() -> void:
 	mission.world.aa_battery._burst(point,null,CombatTeams.PLAYER)
 	check(effect.particles[slot].global_position.is_equal_approx(point) and effect.particles[slot].scale.x>5,"Large shell flash appears at actual burst position")
 	check(effect.particles[(slot+3)%FlakEffectPool.CAPACITY].scale.x>=3.5,"Expanded dark smoke accompanies large burst")
-	check(mission.world.aa_battery.burst_radius==12 and mission.world.aa_battery.blast_damage==8,"Visual enlargement preserves damage balance")
+	check(mission.world.aa_battery.aerial_burst_visual_scale==4,"Large visual burst scale remains independently configurable")
 	check(effect.particles.size()==192,"Larger bursts retain bounded effect pool")
 	mission.interaction.leave_gun()
 	check(not gun.mounted and not gun.sound.playing,"Exit still immediately stops firing and sound")
