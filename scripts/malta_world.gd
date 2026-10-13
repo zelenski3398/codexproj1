@@ -2,6 +2,7 @@ class_name MaltaWorld
 extends Node3D
 ## A single 1:1 environment. Only built on mission start; no travel triggers.
 var fields: Dictionary = {}
+var trucks: Array[MilitaryTruck] = []
 var terrain: Node3D
 var terrain_appearance: MaltaTerrainAppearance
 var mesh_count: int = 0
@@ -38,6 +39,11 @@ func _ready() -> void:
 		field.record = record
 		add_child(field)
 		fields[record.id] = field
+		var truck := MilitaryTruck.new()
+		truck.name = String(record.id) + "_MilitaryTruck"
+		add_child(truck)
+		truck.global_transform = Transform3D(Basis(Vector3.UP,-deg_to_rad(float(record.heading))),field.to_global(Vector3(78,0.04,field.runway_length*0.31+12)))
+		trucks.append(truck)
 	aa_battery = AirfieldAABattery.new()
 	aa_battery.world = self
 	add_child(aa_battery)

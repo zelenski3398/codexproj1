@@ -1,28 +1,31 @@
 class_name BritishAAGun
 extends StaticBody3D
-## Supportive, finite-speed British flak. Fuzed bursts are gameplay abstraction.
+## Manual-only British AA. Empty positions never select targets or aim/fire.
+signal destroyed
 @export var max_hp: float = 150
 @export var range_metres: float = 2400
 @export var projectile_speed: float = 700
 @export var rounds_per_second: float = 1.4
 @export var maximum_lifetime: float = 4
 @export var direct_damage: float = 22
-@export var aim_error_degrees: float = 1.15
-@export var reaction_seconds: float = 1.5
-@export var traverse_degrees: float = 65
-@export var elevation_degrees: float = 35
+@export var aim_error_degrees: float = 0.35
+@export var traverse_degrees: float = 45
+@export var elevation_degrees: float = 30
+@export var minimum_elevation_degrees: float = 5
+@export var maximum_elevation_degrees: float = 85
+@export var fuse_distance: float = 900
 var hp: float = 150
 var is_destroyed: bool = false
+var mounted: bool = false
+var operator_session: AirfieldInteraction
 var battery: AirfieldAABattery
-var target: FlightAircraft
 var yaw: Node3D
 var elevation: Node3D
 var muzzle: Node3D
 var elevation_origin: Vector3
 var sound: AudioStreamPlayer3D
 var flash: MeshInstance3D
-var scan_time: float = 0
-var reaction: float = 0
+var camera: Camera3D
 var cooldown: float = 0
 var recoil: float = 0
 var shots_fired: int = 0
@@ -42,7 +45,16 @@ func _ready() -> void:
 	elevation = model.find_child("ElevationPivot", true, false)
 	muzzle = model.find_child("Muzzle", true, false)
 	elevation_origin = elevation.position
-	# Sparse solid shapes, not hundreds of individual sandbag collisions.
+	var label := Label3D.new()
+	label.name = "FriendlyAALabel"
+	label.text = "FRIENDLY AA · MANUAL"
+	label.position = Vector3(0, 4, 0)
+	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	label.modulate = Color("acd7ac")
+	label.font_size = 30
+	label.pixel_size = 0.03
+	label.visibility_range_end = 500
+	add_child(label)
 	for spec in [Vector3(6.8,0.8,0.6),Vector3(1.9,2.0,1.9)]:
 		var shape := CollisionShape3D.new()
 		var box := BoxShape3D.new()
@@ -53,6 +65,13 @@ func _ready() -> void:
 	flash = MeshKit.sphere(muzzle, Vector3.ONE * 0.35, Vector3.ZERO, MeshKit.material(Color("ffdf98")))
 	flash.material_override.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	flash.visible = false
+	camera = Camera3D.new()
+	camera.name = "GunnerCamera"
+	camera.fov = 58
+	camera.far = 100000
+	# Sight ahead of the barrel tip: gun geometry cannot obstruct this view.
+	camera.position = Vector3(0,0.22,-1.0)
+	muzzle.add_child(camera)
 	sound = AudioStreamPlayer3D.new()
 	sound.stream = load(GameAudioMixer.SPITFIRE_GUNS)
 	sound.bus = "Guns"
@@ -71,68 +90,58 @@ func take_damage(amount: float) -> void:
 	hp = clampf(hp - amount, 0, max_hp)
 	if hp == 0:
 		is_destroyed = true
-		target = null
-		sound.stop()
-		flash.visible = false
+		stop_operation()
 		battery.effects.puff(global_position + Vector3.UP, "air", 2)
+		destroyed.emit()
 
-func _select_target() -> void:
-	var best: FlightAircraft = null
-	var score := INF
-	for aircraft in battery.candidates():
-		var distance := global_position.distance_to(aircraft.global_position)
-		if distance > range_metres: continue
-		var assigned := 0
-		for other in battery.guns:
-			if other != self and other.target == aircraft and not other.is_destroyed: assigned += 1
-		var value := distance + assigned * 750
-		if aircraft == target: value -= 350
-		if value < score:
-			score = value
-			best = aircraft
-	if target != best: reaction = reaction_seconds
-	target = best
+func start_operation(operator: AirfieldInteraction = null) -> void:
+	if is_destroyed: return
+	mounted = true
+	operator_session = operator
+	camera.make_current()
 
-func clear_line(point: Vector3) -> bool:
-	var query := PhysicsRayQueryParameters3D.create(muzzle.global_position, point, 15, [get_rid()])
-	query.collide_with_areas = true
-	var hit := get_world_3d().direct_space_state.intersect_ray(query)
-	if hit.is_empty(): return true
-	if hit.collider is AircraftHitbox: return hit.collider.damage_system.aircraft == target
-	return hit.collider == target
+func stop_operation() -> void:
+	mounted = false
+	operator_session = null
+	sound.stop()
+	flash.visible = false
+	recoil = 0
+	elevation.position = elevation_origin
 
 func _physics_process(delta: float) -> void:
-	if is_destroyed: return
-	cooldown -= delta
-	reaction -= delta
+	cooldown = maxf(0,cooldown-delta)
 	recoil = maxf(0, recoil - delta * 0.7)
 	elevation.position = elevation_origin + Vector3(0,0,recoil)
-	flash.visible = recoil > 0.08
-	scan_time -= delta
-	if scan_time <= 0:
-		scan_time = 0.45 + rng.randf() * 0.15
-		_select_target()
-	if not is_instance_valid(target) or target.is_destroyed: return
-	var time := muzzle.global_position.distance_to(target.global_position) / projectile_speed
-	var aim := target.global_position + target.linear_velocity * time * 0.94
-	var local: Vector3 = global_basis.inverse() * (aim - yaw.global_position)
-	var desired_yaw := atan2(-local.x, -local.z)
-	var desired_elevation := atan2(local.y, Vector2(local.x,local.z).length())
-	yaw.rotation.y = rotate_toward(yaw.rotation.y, desired_yaw, deg_to_rad(traverse_degrees) * delta)
-	elevation.rotation.x = move_toward(elevation.rotation.x, clampf(desired_elevation, deg_to_rad(8), deg_to_rad(85)), deg_to_rad(elevation_degrees) * delta)
-	if reaction > 0 or cooldown > 0 or desired_elevation < deg_to_rad(8): return
+	flash.visible = mounted and recoil > 0.08
+	if not mounted or is_destroyed: return
+	if operator_session != null and operator_session.mission_ended():
+		stop_operation()
+		return
+	var fine: float = 0.18 if Input.is_action_pressed("brake") else 1.0
+	yaw.rotation.y -= Input.get_axis("roll_left", "roll_right") * deg_to_rad(traverse_degrees) * delta * fine
+	elevation.rotation.x = clampf(elevation.rotation.x + Input.get_axis("pitch_up", "pitch_down") * deg_to_rad(elevation_degrees) * delta * fine, deg_to_rad(minimum_elevation_degrees), deg_to_rad(maximum_elevation_degrees))
+	fuse_distance = clampf(fuse_distance + Input.get_axis("throttle_down", "throttle_up") * 180 * delta,100,range_metres)
+	if Input.is_action_pressed("fire"): fire_round()
+	elif sound.playing: sound.stop()
+
+func fire_round() -> bool:
+	if not mounted or is_destroyed or cooldown > 0: return false
+	if operator_session != null and operator_session.mission_ended(): return false
 	var forward: Vector3 = -muzzle.global_basis.z
-	if forward.angle_to((aim - muzzle.global_position).normalized()) > deg_to_rad(3) or not clear_line(aim): return
 	var spread := deg_to_rad(aim_error_degrees)
 	var direction := (forward + muzzle.global_basis.x * rng.randfn(0,spread) + muzzle.global_basis.y * rng.randfn(0,spread)).normalized()
-	var endpoint := muzzle.global_position + direction * projectile_speed * time
-	if not clear_line(endpoint): return
-	if battery.projectiles.spawn(muzzle.global_position, direction * projectile_speed, clampf(time + rng.randf_range(-0.06,0.06),0.1,maximum_lifetime), direct_damage, get_rid(), true, CombatTeams.PLAYER):
-		shots_fired += 1
-		cooldown = 1 / rounds_per_second
-		recoil = 0.12
-		battery.effects.puff(muzzle.global_position, "muzzle", 0.25)
-		if GameAudioMixer.instance.playback_enabled: sound.play()
+	# Friendly bodies block shots; terrain/buildings receive normal swept impacts.
+	var query := PhysicsRayQueryParameters3D.create(muzzle.global_position,muzzle.global_position + direction * fuse_distance,15,[get_rid()])
+	query.collide_with_areas = true
+	var hit := get_world_3d().direct_space_state.intersect_ray(query)
+	if not hit.is_empty() and hit.collider.has_method("get_team_id") and hit.collider.get_team_id() == CombatTeams.PLAYER: return false
+	if not battery.projectiles.spawn(muzzle.global_position, direction * projectile_speed, minf(fuse_distance/projectile_speed,maximum_lifetime), direct_damage, get_rid(), true, CombatTeams.PLAYER): return false
+	shots_fired += 1
+	cooldown = 1 / rounds_per_second
+	recoil = 0.12
+	battery.effects.puff(muzzle.global_position, "muzzle", 0.25)
+	if GameAudioMixer.instance.playback_enabled: sound.play()
+	return true
 
 func _cull_visuals(node: Node) -> void:
 	if node is MeshInstance3D:

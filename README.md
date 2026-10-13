@@ -720,3 +720,5 @@ The aircraft's local **-Z** axis is forward, +Y up, +X right, leaving a clear
 shared coordinate convention for player and enemy physics and weapons. Each model's gun markers are the authoritative firing origins.
 
 Friendly Malta airfield defences: see [AA setup, tuning and tests](docs/airfield-aa.md).
+
+Manual airfield controls: E mounts/exits guns and enters/exits trucks; AA uses arrows/Ctrl/Space/W-S, trucks use W-S/A-D/Space. See [ground controls and limitations](docs/airfield-aa.md).

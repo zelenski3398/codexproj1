@@ -1,27 +1,56 @@
-# Friendly airfield AA
+# Manual AA and airfield truck
 
-Each existing Malta airfield has two British emplacements (six in total). This follows the repeated detailed placement requirement; the request's opening sentence said four. The original countryside test map is unchanged.
+Every Malta airfield has two manual AA guns and one drivable military truck. The original countryside test map is unchanged. There is no autonomous targeting, aiming or firing in any friendly AA gun, including empty positions or positions the player has exited.
 
-The supplied `British_AA_Emplacement.glb` is used at metre scale, including sandbags and crates. Its local -Z barrel direction, Y-axis `YawPivot`, X-axis `ElevationPivot`, initial 32° elevation and `Muzzle` position were checked against the GLB transforms and runtime aiming. Positions are on the opposite side of the runway from the dispersal apron: local X=-72 m, Z=±28% of runway length. A terrain ray locates each pad and its normal aligns the emplacement. No terrain or airfield coordinate changes are made.
+## Finding the guns
 
-![Actual Godot Compatibility render](previews/british-aa.png)
+Both guns are on the **runway side of the dispersal apron**, at opposite apron ends. Their local positions are X=37 m, Z=31% of runway length ±90 m. The original terrain placement put Ta' Qali's guns 14–18 m below the graded runway, making them difficult to see. Their new positions are supported by the existing apron at runway height; no tall new platforms or changes to imported terrain are needed. The runway, parking slots and hangars stay clear.
 
-## Components and tuning
+The truck is beside the initial parking area at local X=78 m, Z=apron centre +12 m. Use the continuous apron lane between the parked aircraft and hangars, then approach either gun across the open apron end. Leave the truck and walk up to the gun; remote mounting is rejected.
 
-- `airfield_aa_battery.gd`: world-owned six-gun battery, shared 96-shell pool, nearest component blast damage; 12 m radius and 8 maximum blast damage with linear falloff.
-- `british_aa_gun.gd`: supplied visual hierarchy, coarse solid collision/damage hitboxes, targeting, traverse, recoil and positional sound. Defaults: 150 HP, 2,400 m range, 700 m/s shell speed, 1.4 shots/sec, 22 direct damage, 1.15° Gaussian aiming error, 1.5 s reaction delay, 65°/s traverse and 35°/s elevation. Elevation limits are 8–85°. Maximum shell lifetime is 4 s.
-- `flak_effect_pool.gd`: 192 reusable CPU mesh particles for flashes, sparks, smoke, dirt and water effects. Each gun has one audio voice; the existing aircraft gun recording pitched down is a temporary sound, not an authentic Bofors recording.
+![AA at the apron edge, actual Compatibility render](previews/manual-aa-apron.png)
 
-Prediction deliberately under-leads by 6%; dispersion, finite projectile travel, reaction delay and mechanical aiming limits make this supporting fire rather than guaranteed damage. Target assignment discourages every gun choosing the same enemy. Scans run every 0.45–0.6 s, not every frame. Both the predicted aim and dispersed firing path must have a clear ray; friendly aircraft and installations block it. Shared team rules prevent damage to British aircraft even if one crosses a shot in flight.
+## Controls
 
-AA uses the existing swept projectile pool, localized aircraft damage multipliers, critical hits, health, smoke/fire and one-shot destruction events. One shell never applies both direct and blast damage to the same aircraft. Blast chooses the nearest component and checks terrain/building occlusion. A fuzed aerial burst is a configurable gameplay abstraction for this Bofors-inspired asset, not an exact historical ammunition simulation. Shells follow the existing weapon system's straight finite-speed ballistics without gravity.
+| Activity | Controls |
+|---|---|
+| Walking | Existing WASD movement, left/right arrows turn; E interacts with the nearest eligible object |
+| AA gun | E mounts/exits; left/right arrows traverse; up/down arrows elevate/depress; Ctrl fires; hold Space for fine aiming; W/S increases/decreases burst range |
+| Truck | E enters/exits; W drives forward; S reverses; A/D steers; Space brakes |
+| All ground activities | M navigation map; Escape pause/resume; R full session retry |
 
-Enemy bullets and actual mission bomb impacts can damage the guns. Destroyed positions remain as obstacles/ruins and stop firing. Bomb blast defaults to 35 m radius and 180 maximum AA damage, subject to obstruction. Mission retry replaces the world-owned battery and its shells, effects and sounds; changing aircraft within the same world does not repair guns. AA kills flow through existing enemy destruction tracking. Interception continues to resolve at timer expiry even after early kills.
+The gunner camera sits ahead of the muzzle with a central reticle, leaving the barrel and breech out of its view. The HUD shows gun HP and the selected airburst range. Burst range holds its setting when W/S are released. Aim and firing use the supplied model's actual `YawPivot`, `ElevationPivot` and `Muzzle`. No target prediction is applied to a player-operated gun; lead moving aircraft manually.
 
-## Verification / play test
+![Unobstructed gunner sight after firing, native Compatibility render](previews/manual-aa-sight.png)
 
-Run `godot --headless --path . --fixed-fps 120 --script res://tests/aa_checks.gd`. It checks all six placements and support rays, imported aiming nodes/axes, actual firing, bounded pools, swept direct hits, component blast damage, exclusion of double damage/friendly damage, obstructions, enemy bullets, bomb damage, ground/water impacts, destruction, actual enemy kill tracking and clean retry.
+Guns retain health and orientation on exit. Exit, destruction and mission completion stop firing and sound immediately. Destruction of an occupied gun restores walking and the walking camera at a capsule-checked ground position beside the wreck. If every nearby exit is blocked, the existing home pilot spawn is a last-resort safe fallback. Aircraft boarding remains available when both guns are lost.
 
-For a visual test, select Malta at each of Ta' Qali, Luqa and Ħal Far. Inspect the two positions across the runway from parking. Taxi and take off normally. Bring enemies above the airfield, watch traverse/elevation and muzzle recoil, flashes/tracers and compact grey aerial bursts. Fly between a gun and its target to check withheld shots. Watch enemy HP/component loss and mission counts. Retry and inspect six fresh positions. In interception, early AA kills must still wait for 01:30 expiry.
+The truck uses a forgiving `CharacterBody3D` vehicle controller with acceleration, gravity, floor snapping, swept collision, reverse steering, animated wheels and front-wheel steering. It cannot physically tip: the chassis remains upright. It collides with terrain, buildings, both aircraft factions and guns. It is a simplified airfield utility vehicle, not a full suspension/rigid-body driving simulation. Exit requires low speed and ground contact, with a capsule-checked clear position beside it. Empty trucks apply a parking brake and ignore driving keys.
 
-Native Compatibility preview and automated firing/collision checks are available. No human-controlled six-gun dogfight, subjective sound mix, frame-rate guarantee on the user's hardware, or exhaustive uneven-ground edge inspection is claimed. The asset is deliberately simple; collision approximates the gun and sandbag cover rather than every crate and individual bag. Visual geometry is not independently damageable by sub-part. The pooled particle cap may recycle the oldest puffs during heavy fire, keeping effects bounded.
+![Original reference-inspired truck, actual Compatibility render](previews/military-truck.png)
+
+The supplied photograph was inspected. The original mesh model takes its rounded bonnet, enclosed cab, four wheels, covered rear cargo body, spare tyre, steps and small equipment details from that reference. The stone camouflage texture is generated from original Voronoi cells; no photograph pixels, watermark or background are baked into it. It is a simplified model consistent with the game's placeholder aircraft, not a precise identified make or museum replica.
+
+## Architecture and tuning
+
+- `airfield_interaction.gd`: one ground interaction owner; exclusive walking/truck/gun/aircraft transitions, prompts, safe exits, destruction and mission-end handling. Gun mounting range 6 m; truck entry range 4.5 m. No transition recreates the battle or aircraft state.
+- `british_aa_gun.gd`: 150 HP, 45°/s traverse, 30°/s elevation, 5–85° elevation limits, 0.35° dispersion; 700 m/s shells, 1.4 shots/sec, 22 direct damage. Range setting defaults to 900 m, adjustable 100–2,400 m; shell maximum lifetime 4 s. Space uses 18% of ordinary aiming speed.
+- `airfield_aa_battery.gd`: exactly six guns, one world-owned 96-shell pool; 12 m burst radius, 8 maximum blast damage with linear falloff.
+- `military_truck.gd`: 12 m/s forward, 4 m/s reverse, 4 m/s² acceleration, 16 m/s² braking; configurable wheelbase and floor-snap handling.
+- `military_truck_model.gd`: original reusable procedural vehicle geometry, separate from driving controls; the RAF pilot asset supplies its seated driver.
+- `flak_effect_pool.gd`: 192 reusable CPU effect particles. Shells and effects are world-owned; retry removes old objects and restores fresh guns/trucks exactly once.
+
+Shared swept-projectile hit detection, factions, localized aircraft component damage, critical hits, smoke/fire, recoil, muzzle flashes, positional gun sound, aerial bursts, ground dust and sea splashes remain in use. A direct victim is excluded from the same shell's blast damage. Airbursts are a configurable gameplay abstraction, not exact historical Bofors ammunition. The gun sound still reuses a pitched existing aircraft gun recording as a placeholder. The truck has no dedicated engine recording, fuel or combat-damage model in this milestone.
+
+## Verification and limits
+
+Run:
+
+```
+godot --headless --path . --fixed-fps 120 --script res://tests/aa_checks.gd
+godot --headless --path . --fixed-fps 120 --script res://tests/airfield_controls_checks.gd
+```
+
+AA checks cover all six visible apron placements, support, supplied hierarchy, empty-gun inactivity under fire/aim inputs, mounted aiming and actual muzzle shots, hit/critical-damage integration, friendly-fire protection, bomb damage, impact types, kill tracking and retry. Ground-control checks exercise both gun entries/exits, HP retention, real input-driven travel to both positions, braking/reverse, remote-mount prevention, solid collisions, safe exits, occupied-gun destruction, mission-end firing inhibition, aircraft fallback, exclusive controllers/cameras, and clean retry. A real Survival enemy continues moving in the same wave during driving. Fixture teleports are used only to set up isolated proximity/collision cases; the two-gun driving route uses ordinary controls without body transform changes.
+
+The repository currently contains Encounter, Survival and the Valletta interception mission. It does **not** contain a separate airfield-defence/base-health mission; none was invented or reset by this update. Existing wave progress, enemy identities and interception timer rules are preserved. No subjective manual combat-balance, truck sound mix, high-speed cross-country handling or performance guarantee on the user's hardware is claimed. Entry/exit uses the existing instantaneous handoff, not new climb-in/out animations.

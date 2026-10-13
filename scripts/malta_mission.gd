@@ -11,6 +11,7 @@ var initial_kind: String = "spitfire"
 var fleet: Array[FlightAircraft] = []
 var pilot: GroundPilot
 var occupied: FlightAircraft
+var interaction: AirfieldInteraction
 var initial_aircraft: FlightAircraft
 var canvas: CanvasLayer
 var status: Label
@@ -51,6 +52,9 @@ func _ready() -> void:
 	pilot.global_position = world.fields[home].pilot_spawn
 	pilot.yaw = -deg_to_rad(float(world.fields[home].record.heading))
 	_build_ui()
+	interaction = AirfieldInteraction.new()
+	interaction.mission = self
+	add_child(interaction)
 	set_process_input(true)
 
 func _build_ui() -> void:
@@ -96,7 +100,8 @@ func _input(event: InputEvent) -> void:
 		chart_panel.visible = not chart_panel.visible
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("board") and not get_tree().paused:
-		call_deferred("leave_aircraft" if is_instance_valid(occupied) else "board_nearest")
+		if is_instance_valid(occupied): call_deferred("leave_aircraft")
+		else: interaction.call_deferred("interact")
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("engine") and is_instance_valid(occupied) and not get_tree().paused:
 		if occupied.is_destroyed or occupied.is_crashed or occupied.components.power_factor() <= 0:
@@ -133,7 +138,7 @@ func board_nearest() -> bool:
 
 func board_aircraft(aircraft: FlightAircraft) -> bool:
 	# Keep the same validation for calls from UI and tests; no remote boarding.
-	if occupied != null or aircraft != nearest_serviceable():
+	if occupied != null or interaction.is_operating() or not pilot.active or aircraft != nearest_serviceable():
 		return false
 	occupied = aircraft
 	pilot.set_active(false)
@@ -208,6 +213,12 @@ func _process(delta: float) -> void:
 		notice_time = maxf(notice_time - delta, 0)
 	var position: Vector3 = occupied.global_position if is_instance_valid(occupied) else pilot.global_position
 	var heading: Vector3 = -occupied.global_basis.z if is_instance_valid(occupied) else -Basis(Vector3.UP, pilot.yaw).z
+	if interaction.occupied_gun != null:
+		position = interaction.occupied_gun.global_position
+		heading = -interaction.occupied_gun.muzzle.global_basis.z
+	elif interaction.occupied_vehicle != null:
+		position = interaction.occupied_vehicle.global_position
+		heading = -interaction.occupied_vehicle.global_basis.z
 	chart.player_position = position
 	chart.player_heading = heading
 	chart.contacts.clear()
@@ -221,8 +232,9 @@ func _process(delta: float) -> void:
 	if is_instance_valid(occupied):
 		status.text = "MALTA · %s    M Map    E Leave    I Engine %s\nFUEL %d%% · home %s" % [occupied.display_name, "ON" if occupied.engine_running else "OFF", roundi(occupied.components.fuel_remaining * 100), world.fields[home].record.name]
 	else:
-		var nearest: FlightAircraft = nearest_serviceable()
-		status.text = "WINGS OVER MALTA · ON FOOT\nWASD Walk · Arrows Turn · M Map · ESC Pause · R Full restart\n" + ("E Board " + nearest.display_name if nearest != null else "Walk to an aircraft · E boards within 8 m")
+		status.text = interaction.prompt()
+		if not interaction.is_operating():
+			status.text = "WINGS OVER MALTA · ON FOOT\nWASD Walk · Arrows Turn · M Map · ESC Pause · R Full restart\n" + status.text
 	if get_tree().paused and not is_instance_valid(occupied):
 		status.text += "\nPAUSED · ESC resumes"
 	if notice_time > 0:

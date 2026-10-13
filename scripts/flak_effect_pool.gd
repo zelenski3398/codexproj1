@@ -6,6 +6,7 @@ var particles: Array[MeshInstance3D] = []
 var materials: Array[StandardMaterial3D] = []
 var velocities: Array[Vector3] = []
 var remaining: Array[float] = []
+var growth: Array[float] = []
 var emitted: Dictionary = {"air":0,"ground":0,"water":0,"muzzle":0}
 var cursor: int = 0
 var rng := RandomNumberGenerator.new()
@@ -26,6 +27,7 @@ func _ready() -> void:
 		materials.append(mat)
 		velocities.append(Vector3.ZERO)
 		remaining.append(0)
+		growth.append(0)
 
 func puff(point: Vector3, kind: String = "air", strength: float = 1) -> void:
 	emitted[kind] = int(emitted.get(kind, 0)) + 1
@@ -41,6 +43,8 @@ func puff(point: Vector3, kind: String = "air", strength: float = 1) -> void:
 		particles[slot].global_position = point
 		particles[slot].scale = Vector3.ONE * (0.9 if smoke else 0.22) * strength
 		remaining[slot] = rng.randf_range(0.6, 1.3) if smoke else 0.16
+		if kind == "muzzle" and smoke: remaining[slot] = 0.4
+		growth[slot] = 0.7 * strength
 		velocities[slot] = Vector3(rng.randf_range(-2,2), rng.randf_range(1,4), rng.randf_range(-2,2)) * strength
 		particles[slot].visible = true
 
@@ -50,7 +54,7 @@ func _physics_process(delta: float) -> void:
 		remaining[i] -= delta
 		particles[i].visible = remaining[i] > 0
 		particles[i].position += velocities[i] * delta
-		particles[i].scale += Vector3.ONE * delta * 0.7
+		particles[i].scale += Vector3.ONE * delta * growth[i]
 		var color := materials[i].albedo_color
 		color.a = minf(remaining[i], 0.65)
 		materials[i].albedo_color = color

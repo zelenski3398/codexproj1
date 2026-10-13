@@ -29,7 +29,7 @@ func _process(delta: float) -> void:
 	if sample_clock > 0:
 		return
 	sample_clock = 0.2
-	var state: Dictionary = {"selecting": session.selector != null, "selected": session.selected_aircraft, "paused": get_tree().paused, "environment": session.environment_id, "airfield_selecting": is_instance_valid(session.malta_menu), "on_foot": is_instance_valid(session.malta_mission) and session.malta_mission.occupied == null}
+	var state: Dictionary = {"selecting": session.selector != null, "selected": session.selected_aircraft, "paused": get_tree().paused, "environment": session.environment_id, "airfield_selecting": is_instance_valid(session.malta_menu), "on_foot": is_instance_valid(session.malta_mission) and session.malta_mission.pilot.active}
 	state.missions_selecting = is_instance_valid(session.missions_menu)
 	if is_instance_valid(session.missions_menu):
 		state.mission_depart_button = _center(session.missions_menu.launch_button)
@@ -75,6 +75,24 @@ func _process(delta: float) -> void:
 		var aa: AirfieldAABattery = session.malta_mission.world.aa_battery
 		state.aa_count = aa.guns.size()
 		state.aa_healthy = aa.guns.all(func(gun): return gun.hp == gun.max_hp)
+		state.aa_mounted = aa.guns.filter(func(gun): return gun.mounted).size()
+		state.aa_shots = 0
+		for gun in aa.guns: state.aa_shots += gun.shots_fired
+		state.truck_count = session.malta_mission.world.trucks.size()
+		var ground: AirfieldInteraction = session.malta_mission.interaction
+		state.ground_mode = "gun" if ground.occupied_gun != null else ("truck" if ground.occupied_vehicle != null else ("aircraft" if session.malta_mission.occupied != null else "walking"))
+		state.ground_prompt = ground.prompt()
+		state.truck_speed = ground.occupied_vehicle.speed if ground.occupied_vehicle != null else 0
+		state.ground_reticle = ground.sight.visible
+		var pilot: GroundPilot = session.malta_mission.pilot
+		state.ground_position = [pilot.global_position.x,pilot.global_position.y,pilot.global_position.z]
+		state.pilot_yaw = pilot.yaw
+		state.truck_positions = []
+		for truck in session.malta_mission.world.trucks:
+			state.truck_positions.append([truck.global_position.x,truck.global_position.y,truck.global_position.z])
+		state.gun_positions = []
+		for gun in aa.guns:
+			state.gun_positions.append([gun.global_position.x,gun.global_position.y,gun.global_position.z])
 		state.map_open = session.malta_mission.chart_panel.visible
 		state.engine_running = session.aircraft.engine_running
 		state.home_airfield = session.malta_mission.home

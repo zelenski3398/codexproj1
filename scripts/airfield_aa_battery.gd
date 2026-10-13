@@ -22,19 +22,14 @@ func _place() -> void:
 	if not is_inside_tree() or not guns.is_empty(): return
 	for field in world.fields.values():
 		for side in [-1, 1]:
-			var point: Vector3 = field.to_global(Vector3(-72, 0, side * field.runway_length * 0.28))
-			var ray := PhysicsRayQueryParameters3D.create(point + Vector3.UP * 1000, point - Vector3.UP * 1000, 1)
-			var hit := get_world_3d().direct_space_state.intersect_ray(ray)
-			if hit.is_empty(): continue
+			# Existing apron: X 13..109, Z centre ±115. These positions leave
+			# the runway, parked aircraft, hangars and a continuous driving lane clear.
+			var local := Vector3(37,0.025,field.runway_length * 0.31 + side * 90)
 			var gun := BritishAAGun.new()
 			gun.battery = self
 			gun.name = String(field.record.id) + "_AA_" + str(side)
 			add_child(gun)
-			gun.global_position = hit.position + Vector3.UP * 0.025
-			# Align the model's ground pad with the measured local surface normal.
-			var normal: Vector3 = hit.normal.normalized()
-			var right := Vector3.FORWARD.cross(normal).normalized()
-			gun.global_basis = Basis(right, normal, right.cross(normal)).orthonormalized()
+			gun.global_transform = field.global_transform * Transform3D(Basis.IDENTITY,local)
 			guns.append(gun)
 
 func candidates() -> Array[FlightAircraft]:

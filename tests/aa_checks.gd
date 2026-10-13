@@ -22,7 +22,9 @@ func _run() -> void:
 		for candidate in scene.malta_mission.world.fields.values():
 			if gun.name.begins_with(candidate.record.id): field = candidate
 		var local := field.to_local(gun.global_position)
-		check(local.x < -60 and absf(local.z) < field.runway_length * 0.4, gun.name + ": clear of runway/apron/parking")
+		check(local.y >= -0.05,gun.name + ": visible at or above graded runway height")
+		check(gun.get_node_or_null("FriendlyAALabel") != null,gun.name + ": nearby identification label")
+		check(local.x > 32 and local.x < 42 and absf(local.z-field.runway_length*0.31) <= 91, gun.name + ": clear of runway/apron/parking")
 		var ray := PhysicsRayQueryParameters3D.create(gun.global_position + Vector3.UP * 0.1,gun.global_position - Vector3.UP,1,[gun.get_rid()])
 		check(not gun.get_world_3d().direct_space_state.intersect_ray(ray).is_empty(),gun.name + ": terrain-supported pad")
 	var enemy := EnemyAircraft.new()
@@ -34,32 +36,34 @@ func _run() -> void:
 	enemy.global_position = battery.guns[0].global_position + Vector3(0,250,-400)
 	await frames(4)
 	check(battery.candidates().has(enemy),"Enemy faction acquired without selecting parked friendly planes")
-	for gun in battery.guns:
-		gun.target = enemy
-		gun.reaction = 0
-		gun.scan_time = 100
-	await frames(360)
+	var before_shots := battery.projectiles.total_spawned
+	var before_yaw: float = battery.guns[0].yaw.rotation.y
+	Input.action_press("fire")
+	Input.action_press("roll_right")
+	await frames(60)
+	Input.action_release("fire")
+	Input.action_release("roll_right")
+	check(battery.projectiles.total_spawned == before_shots and battery.guns[0].yaw.rotation.y == before_yaw,"All unoccupied guns ignore targeting and player fire/aim input")
 	var gun := battery.guns[0]
-	check(gun.shots_fired > 0, "Imported pivots smoothly aim and fire visible swept shells")
-	check((-gun.muzzle.global_basis.z).dot((enemy.global_position-gun.muzzle.global_position).normalized()) > 0.9,"Muzzle local -Z follows actual elevated barrel")
-	var stress_targets: Array[EnemyAircraft] = []
-	for i in range(1,6):
-		var dummy := EnemyAircraft.new()
-		dummy.target = scene.aircraft
-		scene.add_child(dummy)
-		dummy.freeze = true
-		dummy.reset_pending = false
-		dummy.global_position = battery.guns[i].global_position + Vector3(0,250,-400)
-		stress_targets.append(dummy)
-		battery.guns[i].target = dummy
-		battery.guns[i].reaction = 0
-		battery.guns[i].scan_time = 100
-	await frames(360)
-	check(battery.guns.all(func(g):return g.shots_fired > 0),"All six emplacements operate simultaneously")
-	for dummy in stress_targets: dummy.queue_free()
-	check(battery.projectiles.active.size() <= 96 and battery.effects.particles.size() == 192,"Six guns share bounded shell/effect pools")
+	var field: MaltaAirfield = scene.malta_mission.world.fields.ta_qali
+	scene.malta_mission.pilot.global_position = gun.global_position + field.global_basis.x * 5 + Vector3.UP*1.05
+	await frames(3)
+	var interaction: AirfieldInteraction = scene.malta_mission.interaction
+	check(interaction.mount_gun(gun),"Nearby E interaction mounts manual AA")
+	Input.action_press("roll_right")
+	Input.action_press("pitch_down")
+	await frames(30)
+	Input.action_release("roll_right")
+	Input.action_release("pitch_down")
+	check(gun.yaw.rotation.y != before_yaw and gun.elevation.rotation.x > deg_to_rad(32),"Arrow input operates imported yaw and elevation pivots")
+	Input.action_press("fire")
+	await frames(120)
+	Input.action_release("fire")
+	check(gun.shots_fired > 0,"Manual Ctrl emits swept shells at actual Muzzle")
+	check(gun.camera.current and interaction.sight.visible,"Unobstructed gunner camera and aiming reticle active")
+	check(interaction.leave_gun(),"Manual gun exit restores walking")
+	check(battery.projectiles.active.size() <= 96 and battery.effects.particles.size() == 192,"Bounded shared shell/effect pools retained")
 	# Controlled direct shot through a real engine hitbox, using the shared pool.
-	for other in battery.guns: other.set_physics_process(false)
 	battery.projectiles.clear()
 	var old_position := enemy.global_position
 	enemy.queue_free()
@@ -87,18 +91,6 @@ func _run() -> void:
 	battery._burst(friendly.global_position,null,CombatTeams.PLAYER)
 	check(friendly.health.hp == friendly_hp,"Blast never damages British/player aircraft")
 	check(not CombatTeams.can_damage(CombatTeams.PLAYER,gun) and CombatTeams.can_damage(CombatTeams.ENEMY,gun),"Emplacement team rejects friendly bullets and accepts enemy bullets")
-	gun.target = enemy
-	var blocker := StaticBody3D.new()
-	var shape := CollisionShape3D.new()
-	var geometry := BoxShape3D.new()
-	geometry.size = Vector3(80,80,80)
-	shape.shape = geometry
-	blocker.add_child(shape)
-	scene.add_child(blocker)
-	blocker.global_position = (gun.muzzle.global_position + enemy.global_position) * 0.5
-	await frames(3)
-	check(not gun.clear_line(enemy.global_position),"Buildings/terrain collision obstructs firing line")
-	blocker.queue_free()
 	var receiver := battery.guns[1]
 	var receiver_hp := receiver.hp
 	battery.projectiles.spawn(receiver.global_position + Vector3(0,1,15),Vector3(0,0,-700),1,20,RID(),true,CombatTeams.ENEMY)

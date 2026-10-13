@@ -12,5 +12,6 @@ cp "$project_dir/assets/malta/ATTRIBUTION.txt" "$output_dir/MALTA-ATTRIBUTION.tx
 cp "$project_dir/assets/audio/ATTRIBUTION.txt" "$output_dir/AUDIO-ATTRIBUTION.txt"
 cp "$project_dir/assets/characters/ATTRIBUTION.txt" "$output_dir/PILOT-ATTRIBUTION.txt"
 cp "$project_dir/assets/ground/british_aa/ATTRIBUTION.txt" "$output_dir/AA-ATTRIBUTION.txt"
+cp "$project_dir/assets/vehicles/ATTRIBUTION.txt" "$output_dir/VEHICLE-ATTRIBUTION.txt"
 touch "$output_dir/.nojekyll"
 printf 'Browser build: %s\n' "$output_dir"
