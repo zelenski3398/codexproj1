@@ -18,7 +18,7 @@ func _run() -> void:
 	root.add_child(world)
 	await _frames(3)
 	var appearance: MaltaTerrainAppearance = world.terrain_appearance
-	_check(original.size() == 36 and appearance.meshes.size() == 36, "All 36 supplied island meshes receive the explicit terrain material")
+	_check(original.size() >= 36 and appearance.meshes.size() == original.size(), "Supplied islands and nonoverlapping road terrain chunks receive the explicit terrain material")
 	_check(not appearance.debug_heatmap_enabled and not appearance.debug_notice.visible, "A fresh Malta world defaults to normal mode without a debug notice")
 	_check(_all_materials(appearance, MaltaTerrainAppearance.LANDSCAPE), "Every active surface uses the explicit shared landscape resource")
 	var textures: bool = true
@@ -42,7 +42,7 @@ func _run() -> void:
 	_check(ProjectSettings.get_setting("rendering/renderer/rendering_method") == "gl_compatibility", "Terrain uses the project's existing Compatibility renderer")
 	_check(_snapshot(appearance.meshes) == source_data, "Override leaves imported vertices, indices, vertex colours, transforms and bounds unchanged")
 	var collider_data: Array = _colliders(appearance.meshes)
-	_check(collider_data.size() == 36, "All 36 existing static terrain collider shapes are retained")
+	_check(collider_data.size() == original.size(), "Each continuous terrain chunk has one matching static collider")
 	_check(world.fields.luqa.record.position == MaltaGeography.field("luqa").position and world.fields.ta_qali.record.position == MaltaGeography.field("ta_qali").position and world.fields.hal_far.record.position == MaltaGeography.field("hal_far").position, "All three airfields retain the original geography records")
 	_key(KEY_F4, true)
 	await _frames(3)

@@ -724,3 +724,5 @@ Friendly Malta airfield defences: see [AA setup, tuning and tests](docs/airfield
 Manual airfield controls: E mounts/exits guns and enters/exits trucks; AA uses arrows/Ctrl/Space/W-S, trucks use W-S/A-D/Space. See [ground controls and limitations](docs/airfield-aa.md).
 
 Malta ground integration: [terrain grading, before/after views and checks](docs/malta-ground-integration.md).
+
+Malta base grading and editable terrain-integrated roads: see [ground integration](docs/malta-ground-integration.md) and [road network, previews and reference-alignment limitations](docs/malta-road-network.md). AA blast damage now falls with actual distance to aircraft components; direct shell impacts are devastating (configurable in `AirfieldAABattery` / `BritishAAGun`).

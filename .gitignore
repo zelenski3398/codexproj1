@@ -2,3 +2,4 @@
 *.tmp
 builds/
 
+__pycache__/

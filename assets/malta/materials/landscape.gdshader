@@ -12,6 +12,7 @@ uniform vec3 soil_color : source_color = vec3(0.31, 0.20, 0.135);
 uniform vec3 cultivated_color : source_color = vec3(0.22, 0.265, 0.135);
 uniform vec3 scrub_color : source_color = vec3(0.30, 0.29, 0.18);
 uniform vec3 wall_color : source_color = vec3(0.48, 0.425, 0.315);
+uniform vec3 road_color : source_color = vec3(0.40, 0.365, 0.30);
 uniform float detail_metres : hint_range(4.0, 40.0) = 14.0;
 uniform float detail_fade_start : hint_range(100.0, 2000.0) = 400.0;
 uniform float detail_fade_end : hint_range(500.0, 6000.0) = 1800.0;
@@ -63,7 +64,10 @@ void fragment() {
     // Very low shores expose neutral rock, not blue terrain or white foam.
     float shore = 1.0 - smoothstep(0.5, 5.0, terrain_position.y);
     color = mix(color, limestone_color * 0.86, shore * 0.65);
-    ALBEDO = color;
+    // UV.x is an offline road coverage mask on the actual terrain vertices.
+    // No raised road strip, depth offset, separate floor or runtime projection.
+    vec3 road = road_color * (0.97 + (detail.g - 0.5) * 0.14 * detail_fade);
+    ALBEDO = mix(color, road, clamp(UV.x, 0.0, 1.0));
     ROUGHNESS = 1.0;
     METALLIC = 0.0;
 }

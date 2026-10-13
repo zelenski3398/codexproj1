@@ -1,0 +1,204 @@
+{
+  "registration": {
+    "affine_rms_metres": 559.1765765989483,
+    "control_fit_max_metres": 3.749942721349417e-12,
+    "leave_one_out_max_metres": 2523.994844826752,
+    "leave_one_out_rms_metres": 1233.5079946044623,
+    "north_image_direction": [
+      0.0002264314710352694,
+      -0.02715829203947169
+    ]
+  },
+  "paths": [
+    {
+      "id": "mdina_ta_qali",
+      "samples": 524,
+      "dry_land_samples": 524,
+      "runway_excluded_samples": 19,
+      "inferred": false,
+      "length_metres": 2090.1130417619615
+    },
+    {
+      "id": "ta_qali_mosta",
+      "samples": 359,
+      "dry_land_samples": 359,
+      "runway_excluded_samples": 0,
+      "inferred": false,
+      "length_metres": 1431.6758882341553
+    },
+    {
+      "id": "mosta_birkirkara",
+      "samples": 952,
+      "dry_land_samples": 952,
+      "runway_excluded_samples": 0,
+      "inferred": false,
+      "length_metres": 3802.679475377816
+    },
+    {
+      "id": "birkirkara_valletta",
+      "samples": 1129,
+      "dry_land_samples": 981,
+      "runway_excluded_samples": 0,
+      "inferred": false,
+      "length_metres": 4511.085838721906
+    },
+    {
+      "id": "birkirkara_msida",
+      "samples": 757,
+      "dry_land_samples": 757,
+      "runway_excluded_samples": 0,
+      "inferred": false,
+      "length_metres": 3023.6042931542047
+    },
+    {
+      "id": "msida_valletta",
+      "samples": 498,
+      "dry_land_samples": 498,
+      "runway_excluded_samples": 0,
+      "inferred": false,
+      "length_metres": 1986.6927578424336
+    },
+    {
+      "id": "mdina_rabat_south",
+      "samples": 424,
+      "dry_land_samples": 424,
+      "runway_excluded_samples": 0,
+      "inferred": false,
+      "length_metres": 1691.6630482574824
+    },
+    {
+      "id": "rabat_zebbug",
+      "samples": 445,
+      "dry_land_samples": 445,
+      "runway_excluded_samples": 0,
+      "inferred": false,
+      "length_metres": 1773.198189498499
+    },
+    {
+      "id": "zebbug_qormi",
+      "samples": 726,
+      "dry_land_samples": 726,
+      "runway_excluded_samples": 0,
+      "inferred": false,
+      "length_metres": 2897.9455863939993
+    },
+    {
+      "id": "birkirkara_qormi",
+      "samples": 796,
+      "dry_land_samples": 796,
+      "runway_excluded_samples": 0,
+      "inferred": false,
+      "length_metres": 3179.44388447107
+    },
+    {
+      "id": "qormi_luqa",
+      "samples": 506,
+      "dry_land_samples": 506,
+      "runway_excluded_samples": 14,
+      "inferred": false,
+      "length_metres": 2019.3706708195593
+    },
+    {
+      "id": "zebbug_siggiewi",
+      "samples": 746,
+      "dry_land_samples": 746,
+      "runway_excluded_samples": 0,
+      "inferred": false,
+      "length_metres": 2977.8360565440635
+    },
+    {
+      "id": "siggiewi_qrendi",
+      "samples": 837,
+      "dry_land_samples": 837,
+      "runway_excluded_samples": 0,
+      "inferred": false,
+      "length_metres": 3341.946737130086
+    },
+    {
+      "id": "qrendi_zurrieq",
+      "samples": 525,
+      "dry_land_samples": 477,
+      "runway_excluded_samples": 0,
+      "inferred": false,
+      "length_metres": 2092.438221090789
+    },
+    {
+      "id": "luqa_zurrieq",
+      "samples": 1089,
+      "dry_land_samples": 1089,
+      "runway_excluded_samples": 12,
+      "inferred": false,
+      "length_metres": 4350.106898610321
+    },
+    {
+      "id": "zurrieq_hal_far",
+      "samples": 787,
+      "dry_land_samples": 787,
+      "runway_excluded_samples": 0,
+      "inferred": false,
+      "length_metres": 3141.3468011586383
+    },
+    {
+      "id": "luqa_zejtun",
+      "samples": 1002,
+      "dry_land_samples": 1002,
+      "runway_excluded_samples": 13,
+      "inferred": false,
+      "length_metres": 4002.4317598811763
+    },
+    {
+      "id": "zejtun_marsaxlokk",
+      "samples": 665,
+      "dry_land_samples": 665,
+      "runway_excluded_samples": 0,
+      "inferred": false,
+      "length_metres": 2654.943566493309
+    },
+    {
+      "id": "hal_far_marsaxlokk",
+      "samples": 1008,
+      "dry_land_samples": 1008,
+      "runway_excluded_samples": 0,
+      "inferred": false,
+      "length_metres": 4024.344319500083
+    },
+    {
+      "id": "access_ta_qali",
+      "samples": 42,
+      "dry_land_samples": 42,
+      "runway_excluded_samples": 0,
+      "inferred": true,
+      "length_metres": 162.99700730888497
+    },
+    {
+      "id": "access_luqa",
+      "samples": 51,
+      "dry_land_samples": 51,
+      "runway_excluded_samples": 0,
+      "inferred": true,
+      "length_metres": 196.77891663248818
+    },
+    {
+      "id": "access_hal_far",
+      "samples": 142,
+      "dry_land_samples": 142,
+      "runway_excluded_samples": 0,
+      "inferred": true,
+      "length_metres": 563.2494025828472
+    }
+  ],
+  "terrain_chunks": 130,
+  "mask_vertices": 44433,
+  "max_road_cut_fill": 1.5,
+  "original_island_geometries": 36,
+  "collision": "Nonoverlapping terrain faces; shared render/physics geometry",
+  "uncertainties": [
+    "Northern Marfa/Mellieha minor-road network: folds, inset and small labels prevent dependable tracing in this supplied image.",
+    "Gozo's cropped/unclear routes and Comino routes: not extrapolated from the inset or replaced by modern data.",
+    "Western minor farm tracks and dense urban side streets: thin lines cannot reliably be separated from contours/settlement symbols.",
+    "Any mapped path portions intersecting prototype runways or water are intentionally excluded, documented in generation_report.json.",
+    "Dingli-side western routes: landmark location is ambiguous in the displayed scan; not used as a registration anchor or connected speculatively."
+  ],
+  "runway_exclusion_metres": 8,
+  "coast_guard_metres": 10
+}

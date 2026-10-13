@@ -67,7 +67,9 @@ func _prepare_terrain(node: Node) -> void:
 		var mesh: MeshInstance3D = node
 		mesh_count += 1
 		terrain_appearance.register_mesh(mesh)
-		mesh.lod_bias = 0.6
+		# Keep narrow road masks/patch boundaries intact; other island meshes
+		# retain distance LOD. Road patches use frustum culling instead.
+		mesh.lod_bias = 128.0 if (String(mesh.name).begins_with("RoadGround") or String(mesh.name) == "Malta") else 0.6
 		mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		mesh.create_trimesh_collision()
 	for child in node.get_children():

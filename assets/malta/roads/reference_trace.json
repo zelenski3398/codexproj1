@@ -1,0 +1,657 @@
+{
+  "source": "User-supplied Malta and Gozo historical map, displayed 721 x 674 pixels. Manual interpretation of thin brown road lines only; no modern road dataset used.",
+  "image_size": [
+    721,
+    674
+  ],
+  "projection": "EPSG:32633, same origin and axes as world_data.json",
+  "registration": "Thin-plate spline from distributed manually read control points. Airfield pixel readings are approximate; the scan is folded/distorted. This is a prototype trace, not surveyed road alignment.",
+  "anchors": [
+    {
+      "id": "mdina",
+      "pixel": [
+        285,
+        304
+      ],
+      "lon_lat": [
+        14.4023,
+        35.8864
+      ]
+    },
+    {
+      "id": "mosta",
+      "pixel": [
+        350,
+        235
+      ],
+      "lon_lat": [
+        14.4267,
+        35.9098
+      ]
+    },
+    {
+      "id": "valletta",
+      "pixel": [
+        554,
+        334
+      ],
+      "lon_lat": [
+        14.5125,
+        35.8992
+      ]
+    },
+    {
+      "id": "ta_qali",
+      "pixel": [
+        316,
+        289
+      ],
+      "airfield": "ta_qali"
+    },
+    {
+      "id": "luqa",
+      "pixel": [
+        477,
+        424
+      ],
+      "airfield": "luqa"
+    },
+    {
+      "id": "hal_far",
+      "pixel": [
+        540,
+        573
+      ],
+      "airfield": "hal_far"
+    },
+    {
+      "id": "marsaxlokk",
+      "pixel": [
+        610,
+        549
+      ],
+      "lon_lat": [
+        14.5439,
+        35.8419
+      ]
+    },
+    {
+      "id": "delimara",
+      "pixel": [
+        679,
+        625
+      ],
+      "lon_lat": [
+        14.5626,
+        35.8093
+      ]
+    }
+  ],
+  "junctions": {
+    "mdina": [
+      285,
+      304
+    ],
+    "mosta": [
+      350,
+      235
+    ],
+    "birkirkara": [
+      441,
+      313
+    ],
+    "msida": [
+      515,
+      350
+    ],
+    "valletta": [
+      554,
+      334
+    ],
+    "zebbug": [
+      348,
+      367
+    ],
+    "qormi": [
+      430,
+      389
+    ],
+    "luqa": [
+      477,
+      424
+    ],
+    "siggiewi": [
+      350,
+      436
+    ],
+    "dingli": [
+      225,
+      437
+    ],
+    "qrendi": [
+      415,
+      508
+    ],
+    "zurrieq": [
+      467,
+      529
+    ],
+    "hal_far_approach": [
+      540,
+      560
+    ],
+    "zejtun": [
+      565,
+      480
+    ],
+    "marsaxlokk": [
+      610,
+      549
+    ],
+    "ta_qali_approach": [
+      327,
+      279
+    ],
+    "rabat_south": [
+      300,
+      348
+    ]
+  },
+  "paths": [
+    {
+      "id": "mdina_ta_qali",
+      "from": "mdina",
+      "to": "ta_qali_approach",
+      "pixels": [
+        [
+          285,
+          304
+        ],
+        [
+          294,
+          297
+        ],
+        [
+          306,
+          287
+        ],
+        [
+          317,
+          285
+        ],
+        [
+          327,
+          279
+        ]
+      ],
+      "confidence": "approximate visible main route"
+    },
+    {
+      "id": "ta_qali_mosta",
+      "from": "ta_qali_approach",
+      "to": "mosta",
+      "pixels": [
+        [
+          327,
+          279
+        ],
+        [
+          336,
+          267
+        ],
+        [
+          340,
+          252
+        ],
+        [
+          350,
+          235
+        ]
+      ],
+      "confidence": "approximate visible main route"
+    },
+    {
+      "id": "mosta_birkirkara",
+      "from": "mosta",
+      "to": "birkirkara",
+      "pixels": [
+        [
+          350,
+          235
+        ],
+        [
+          371,
+          250
+        ],
+        [
+          393,
+          273
+        ],
+        [
+          417,
+          294
+        ],
+        [
+          441,
+          313
+        ]
+      ],
+      "confidence": "approximate visible main route"
+    },
+    {
+      "id": "birkirkara_valletta",
+      "from": "birkirkara",
+      "to": "valletta",
+      "pixels": [
+        [
+          441,
+          313
+        ],
+        [
+          465,
+          318
+        ],
+        [
+          488,
+          325
+        ],
+        [
+          520,
+          329
+        ],
+        [
+          554,
+          334
+        ]
+      ],
+      "confidence": "approximate visible main route"
+    },
+    {
+      "id": "birkirkara_msida",
+      "from": "birkirkara",
+      "to": "msida",
+      "pixels": [
+        [
+          441,
+          313
+        ],
+        [
+          457,
+          329
+        ],
+        [
+          485,
+          342
+        ],
+        [
+          515,
+          350
+        ]
+      ],
+      "confidence": "coarse reading; harbour approach uncertain"
+    },
+    {
+      "id": "msida_valletta",
+      "from": "msida",
+      "to": "valletta",
+      "pixels": [
+        [
+          515,
+          350
+        ],
+        [
+          531,
+          347
+        ],
+        [
+          543,
+          340
+        ],
+        [
+          554,
+          334
+        ]
+      ],
+      "confidence": "uncertain; water crossings omitted"
+    },
+    {
+      "id": "mdina_rabat_south",
+      "from": "mdina",
+      "to": "rabat_south",
+      "pixels": [
+        [
+          285,
+          304
+        ],
+        [
+          285,
+          321
+        ],
+        [
+          294,
+          335
+        ],
+        [
+          300,
+          348
+        ]
+      ],
+      "confidence": "approximate visible main route"
+    },
+    {
+      "id": "rabat_zebbug",
+      "from": "rabat_south",
+      "to": "zebbug",
+      "pixels": [
+        [
+          300,
+          348
+        ],
+        [
+          319,
+          354
+        ],
+        [
+          331,
+          363
+        ],
+        [
+          348,
+          367
+        ]
+      ],
+      "confidence": "approximate visible main route"
+    },
+    {
+      "id": "zebbug_qormi",
+      "from": "zebbug",
+      "to": "qormi",
+      "pixels": [
+        [
+          348,
+          367
+        ],
+        [
+          371,
+          372
+        ],
+        [
+          397,
+          379
+        ],
+        [
+          430,
+          389
+        ]
+      ],
+      "confidence": "approximate visible main route"
+    },
+    {
+      "id": "birkirkara_qormi",
+      "from": "birkirkara",
+      "to": "qormi",
+      "pixels": [
+        [
+          441,
+          313
+        ],
+        [
+          448,
+          341
+        ],
+        [
+          444,
+          363
+        ],
+        [
+          430,
+          389
+        ]
+      ],
+      "confidence": "approximate visible main route"
+    },
+    {
+      "id": "qormi_luqa",
+      "from": "qormi",
+      "to": "luqa",
+      "pixels": [
+        [
+          430,
+          389
+        ],
+        [
+          446,
+          405
+        ],
+        [
+          461,
+          415
+        ],
+        [
+          477,
+          424
+        ]
+      ],
+      "confidence": "approximate visible main route"
+    },
+    {
+      "id": "zebbug_siggiewi",
+      "from": "zebbug",
+      "to": "siggiewi",
+      "pixels": [
+        [
+          348,
+          367
+        ],
+        [
+          349,
+          392
+        ],
+        [
+          353,
+          415
+        ],
+        [
+          350,
+          436
+        ]
+      ],
+      "confidence": "approximate visible main route"
+    },
+    {
+      "id": "siggiewi_qrendi",
+      "from": "siggiewi",
+      "to": "qrendi",
+      "pixels": [
+        [
+          350,
+          436
+        ],
+        [
+          367,
+          455
+        ],
+        [
+          384,
+          474
+        ],
+        [
+          399,
+          494
+        ],
+        [
+          415,
+          508
+        ]
+      ],
+      "confidence": "approximate visible main route"
+    },
+    {
+      "id": "qrendi_zurrieq",
+      "from": "qrendi",
+      "to": "zurrieq",
+      "pixels": [
+        [
+          415,
+          508
+        ],
+        [
+          437,
+          515
+        ],
+        [
+          454,
+          522
+        ],
+        [
+          467,
+          529
+        ]
+      ],
+      "confidence": "approximate visible main route"
+    },
+    {
+      "id": "luqa_zurrieq",
+      "from": "luqa",
+      "to": "zurrieq",
+      "pixels": [
+        [
+          477,
+          424
+        ],
+        [
+          474,
+          452
+        ],
+        [
+          476,
+          481
+        ],
+        [
+          473,
+          508
+        ],
+        [
+          467,
+          529
+        ]
+      ],
+      "confidence": "approximate visible main route"
+    },
+    {
+      "id": "zurrieq_hal_far",
+      "from": "zurrieq",
+      "to": "hal_far_approach",
+      "pixels": [
+        [
+          467,
+          529
+        ],
+        [
+          491,
+          535
+        ],
+        [
+          515,
+          546
+        ],
+        [
+          540,
+          560
+        ]
+      ],
+      "confidence": "approximate visible main route"
+    },
+    {
+      "id": "luqa_zejtun",
+      "from": "luqa",
+      "to": "zejtun",
+      "pixels": [
+        [
+          477,
+          424
+        ],
+        [
+          503,
+          438
+        ],
+        [
+          530,
+          457
+        ],
+        [
+          550,
+          471
+        ],
+        [
+          565,
+          480
+        ]
+      ],
+      "confidence": "approximate visible main route"
+    },
+    {
+      "id": "zejtun_marsaxlokk",
+      "from": "zejtun",
+      "to": "marsaxlokk",
+      "pixels": [
+        [
+          565,
+          480
+        ],
+        [
+          578,
+          500
+        ],
+        [
+          596,
+          525
+        ],
+        [
+          610,
+          549
+        ]
+      ],
+      "confidence": "approximate visible main route"
+    },
+    {
+      "id": "hal_far_marsaxlokk",
+      "from": "hal_far_approach",
+      "to": "marsaxlokk",
+      "pixels": [
+        [
+          540,
+          560
+        ],
+        [
+          563,
+          558
+        ],
+        [
+          585,
+          555
+        ],
+        [
+          610,
+          549
+        ]
+      ],
+      "confidence": "southern bends uncertain at supplied resolution"
+    }
+  ],
+  "omitted_uncertain_sections": [
+    "Northern Marfa/Mellieha minor-road network: folds, inset and small labels prevent dependable tracing in this supplied image.",
+    "Gozo's cropped/unclear routes and Comino routes: not extrapolated from the inset or replaced by modern data.",
+    "Western minor farm tracks and dense urban side streets: thin lines cannot reliably be separated from contours/settlement symbols.",
+    "Any mapped path portions intersecting prototype runways or water are intentionally excluded, documented in generation_report.json.",
+    "Dingli-side western routes: landmark location is ambiguous in the displayed scan; not used as a registration anchor or connected speculatively."
+  ],
+  "settings": {
+    "default_width_metres": 4.5,
+    "shoulder_metres": 1.5,
+    "grading_blend_metres": 7.0,
+    "sample_metres": 4.0,
+    "terrain_chunk_metres": 512.0,
+    "maximum_initial_gap_metres": 400.0
+  }
+}

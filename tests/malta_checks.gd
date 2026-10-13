@@ -25,7 +25,7 @@ func _run() -> void:
 	world.malta_menu.depart_button.pressed.emit()
 	await _frames(180)
 	mission = world.malta_mission
-	_check(world.field is MaltaWorld and mission.world.mesh_count == 36, "All 36 supplied island meshes occupy one continuous metre-scale world")
+	_check(world.field is MaltaWorld and mission.world.mesh_count >= 36, "All supplied islands and road terrain patches occupy one continuous metre-scale world")
 	_check(mission.world.fields.size() == 3 and mission.fleet.size() == 6, "All three airfields and six configurable stationed aircraft coexist")
 	_check(mission.world.bounds.size.x > 35000 and mission.world.bounds.size.z > 32000, "Terrain bounds retain 1:1 geographical proportions")
 	_check(mission.pilot.active and mission.occupied == null and mission.pilot.is_on_floor(), "Mission starts with a collision-driven pilot beside the selected aircraft")

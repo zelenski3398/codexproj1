@@ -8,8 +8,11 @@ https://opendatacommons.org/licenses/odbl/1-0/
 Source datasets, metadata and terrain generator are provided in the repository:
 https://github.com/zelenski3398/codexproj1/tree/main/assets/malta/source
 Changes by this game: north-up navigation chart; imported mesh LOD/collision;
-approximate historical airfield markers, independent playable runway/apron decks.
-The GLB coastline, vertex elevations, axes and scale have not been changed.
+approximate historical airfield markers and terrain-aligned runway/apron surfaces.
+The original supplied GLB is retained unchanged. Runtime terrain elevations are
+locally graded for base grounds and roads; coastline XZ, axes and metre scale are
+preserved. Roads are an approximate interpretation of the user-supplied historic
+map, with original generated materials; see docs/malta-road-network.md for limits.
 The elevation is a coarse 2012 measured-terrain foundation, not surveyed WWII terrain.
 
 Landscape additions: original algorithmically generated soil/limestone/scrub

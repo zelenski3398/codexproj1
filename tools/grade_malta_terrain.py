@@ -118,8 +118,11 @@ def regenerate(roads=None):
  original_top=main.vertices[sampler.top_indices][:,[0,2]]
  extra,core_segments=extra_points(records,sampler)
  # No roads in the first independent terrain/base commit.
+ road_surface=None
  if roads is not None:
-  raise NotImplementedError('Road corridor refinement added in road-network commit')
+  from malta_road_surface import RoadSurface
+  road_surface=RoadSurface(roads,records,sampler,grade_values,local_xz,world_xz,smooth)
+  extra=np.vstack([extra,road_surface.extra])
  valid=np.isfinite(sampler.heights(extra));extra=extra[valid]
  allpoints=np.vstack([original_top,extra])
  keys={tuple(np.round(p,5)):i for i,p in enumerate(original_top)}
@@ -128,6 +131,24 @@ def regenerate(roads=None):
   key=tuple(np.round(p,5))
   if key not in keys: keys[key]=len(unique);unique.append(p)
  segments=list(sampler.edges)
+ if road_surface is not None:
+  from shapely.geometry import LineString
+  # Node road edges against original triangle edges BEFORE constrained meshing.
+  # No crossing PSLG constraints and no lost original terrain boundaries.
+  lines=[LineString(original_top[e]) for e in sampler.edges]
+  for a,b in road_surface.constraints:
+   if np.isfinite(sampler.heights(np.array([a,b]))).all():lines.append(LineString([a,b]))
+  noded=unary_union(lines)
+  segments=[]
+  for line in noded.geoms:
+   coords=np.asarray(line.coords)
+   for a,b in zip(coords[:-1],coords[1:]):
+    ids=[]
+    for point in [a,b]:
+     key=tuple(np.round(point,5))
+     if key not in keys:keys[key]=len(unique);unique.append(point)
+     ids.append(keys[key])
+    if ids[0]!=ids[1]:segments.append(ids)
  # Dense 8 m samples include the footprint boundaries; retain original
  # triangle-edge constraints without adding crossing PSLG segments.
  result=triangle.triangulate({'vertices':np.asarray(unique),'segments':np.asarray(segments)},'pQ')
@@ -135,6 +156,10 @@ def regenerate(roads=None):
  h[:len(original_top)]=main.vertices[sampler.top_indices,1]
  assert np.isfinite(h).all(),'Triangulation escaped original land domain'
  graded,w=grade_values(xz,h,records,sampler)
+ road_mask=np.zeros(len(xz));road_weight=np.zeros(len(xz))
+ if road_surface is not None:
+  graded,road_mask,road_weight=road_surface.evaluate(xz,graded)
+  w=np.maximum(w,road_weight)
  # Original vertex positions retained; only local Y values change.
  v=main.vertices.copy();v[sampler.top_indices,1]=graded[:len(original_top)]
  new_top=np.column_stack([xz[len(original_top):,0],graded[len(original_top):],xz[len(original_top):,1]])
@@ -149,7 +174,13 @@ def regenerate(roads=None):
  colors[changed_original]=(colormaps['terrain'](np.clip((v[changed_original,1]+5)/300,0,1))*255).astype('uint8')
  mesh.visual=trimesh.visual.ColorVisuals(mesh=mesh,vertex_colors=colors)
  scene.geometry['Malta']=mesh
+ chunks=0
+ if road_surface is not None:
+  from malta_road_surface import split_terrain,add_uv_buffers
+  mask=np.zeros(len(v));mask[mapping]=road_mask
+  masks,chunks=split_terrain(scene,mesh,mask,roads['settings']['terrain_chunk_metres'])
  scene.export(ASSET/'terrain.glb')
+ if road_surface is not None:add_uv_buffers(ASSET/'terrain.glb',masks)
  data['placement_note']='Approximate historical sites and runway layouts. Elevations fitted to original terrain by localized cut/fill grading, with smoothly blended base grounds; island scale/coastline preserved.'
  (ASSET/'world_data.json').write_text(json.dumps(data,indent=2)+'\n')
  untouched=w[:len(original_top)]==0
@@ -157,6 +188,17 @@ def regenerate(roads=None):
  assert np.array_equal(v[:len(main.vertices),[0,2]],main.vertices[:,[0,2]])
  summary=dict(airfields=report,settings=SETTINGS,original_triangles=len(main.faces),graded_triangles=len(faces),added_vertices=len(new_top),changed_original_vertices=int((~untouched).sum()),max_cut_fill=float(np.max(abs(graded-h))),unmodified_original_vertices=int(untouched.sum()),coastline_preserved=True,geometry_outside_local_footprints_preserved=True)
  (ASSET/'grading/report.json').write_text(json.dumps(summary,indent=2)+'\n')
+ if road_surface is not None:
+  road_report=dict(registration=roads['registration'],paths=road_surface.paths,terrain_chunks=chunks,mask_vertices=int((road_mask>0).sum()),max_road_cut_fill=1.5,original_island_geometries=36,collision='Nonoverlapping terrain faces; shared render/physics geometry',uncertainties=roads['uncertainties'],runway_exclusion_metres=8,coast_guard_metres=10)
+  (ASSET/'roads/generation_report.json').write_text(json.dumps(road_report,indent=2)+'\n')
  print(json.dumps(summary,indent=2))
 
-if __name__=='__main__': regenerate()
+if __name__=='__main__':
+ import sys
+ roads=None
+ if '--roads' in sys.argv:
+  from malta_road_trace import trace_network
+  trace,paths,registration=trace_network()
+  roads=dict(paths=paths,registration=registration,settings=trace['settings'],junctions=trace['junctions'],world_junctions=trace['world_junctions'],uncertainties=trace['omitted_uncertain_sections'])
+  (ASSET/'roads/world_paths.json').write_text(json.dumps(roads,indent=2)+'\n')
+ regenerate(roads)

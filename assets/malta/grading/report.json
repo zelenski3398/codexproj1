@@ -36,11 +36,11 @@
     "description": "Localized cut/fill grading of runway plus apron and usable base grounds; C2 blend into measured terrain."
   },
   "original_triangles": 107714,
-  "graded_triangles": 143134,
-  "added_vertices": 17710,
-  "changed_original_vertices": 845,
+  "graded_triangles": 342434,
+  "added_vertices": 117360,
+  "changed_original_vertices": 992,
   "max_cut_fill": 44.45859110281616,
-  "unmodified_original_vertices": 45309,
+  "unmodified_original_vertices": 45162,
   "coastline_preserved": true,
   "geometry_outside_local_footprints_preserved": true
 }
