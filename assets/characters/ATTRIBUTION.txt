@@ -1,0 +1,7 @@
+Original RAF-style pilot geometry, rig and animations created for this project.
+Reference: the black-and-white photograph supplied in the conversation showing
+RAF-style open-collar uniforms. No photographic pixels, watermark, background,
+lighting, likeness identification or seated photographic pose are included.
+Blue-grey fabric is an artistic colour choice, not a colour recovered from the
+monochrome reference. Runtime GLB is self-contained; no paid/external assets.
+Reproducible source: tools/build_raf_pilot.py and source/raf_pilot.blend.

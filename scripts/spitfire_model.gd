@@ -35,11 +35,13 @@ func _ready() -> void:
 		patch.rotation.y = side * 0.2
 		_roundel(Vector3(side * 3.8, 0.035, -0.1), 0.54, false)
 		_roundel(Vector3(side * 0.49, 0.1, 1.55), 0.38, true)
-	var canopy := MeshKit.material(Color("517f93"), 0.12)
+	var canopy := MeshKit.material(Color(0.32, 0.5, 0.58, 0.18), 0.12)
+	canopy.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	canopy.cull_mode = BaseMaterial3D.CULL_DISABLED
 	canopy.metallic = 0.32
-	MeshKit.sphere(self, Vector3(0.83, 0.86, 1.65), Vector3(0.0, 0.49, 0.18), canopy)
+	MeshKit.sphere(self, Vector3(0.83, 1.04, 1.65), Vector3(0.0, 0.60, 0.18), canopy)
 	MeshKit.rod(self, Vector3(-0.39, 0.45, -0.32), Vector3(0.39, 0.45, -0.32), 0.045, green)
-	MeshKit.rod(self, Vector3(0.0, 0.88, -0.55), Vector3(0.0, 0.86, 0.5), 0.035, green)
+	MeshKit.rod(self, Vector3(0.0, 1.03, -0.55), Vector3(0.0, 1.03, 0.5), 0.035, green)
 	MeshKit.box(self, Vector3(0.13, 1.1, 1.0), Vector3(0.0, 0.55, 3.82), green).rotation.x = -0.2
 	MeshKit.sphere(self, Vector3(0.16, 0.8, 1.0), Vector3(0.0, 1.05, 3.74), green)
 	# Fin flash: original RAF red / white / blue rectangles.
@@ -71,9 +73,21 @@ func _ready() -> void:
 		var hub := MeshKit.cylinder(root, radius * 0.45, 0.2 if i < 2 else 0.13, Vector3.ZERO, metal)
 		hub.rotation.z = PI / 2.0
 		struts.append(MeshKit.cylinder(self, 0.055, 0.5, Vector3.ZERO, metal))
+	build_pilot_station(0.25, 0.10)
+
+func build_pilot_station(cockpit_z: float, hip_height: float) -> void:
+	# Visual seat, stick, throttle and pedals. No physics/collision changes.
+	var seat: StandardMaterial3D = MeshKit.material(Color("414a42"))
+	MeshKit.box(self, Vector3(0.37, 0.045, 0.36), Vector3(0, hip_height - 0.035, cockpit_z), seat)
+	MeshKit.box(self, Vector3(0.37, 0.44, 0.045), Vector3(0, hip_height + 0.20, cockpit_z + 0.18), seat)
+	MeshKit.rod(self, Vector3(0, hip_height - 0.35, cockpit_z - 0.58), Vector3(-0.10, hip_height + 0.31, cockpit_z - 0.58), 0.013, metal)
+	MeshKit.sphere(self, Vector3(0.045, 0.085, 0.045), Vector3(-0.10, hip_height + 0.31, cockpit_z - 0.58), rubber)
+	MeshKit.box(self, Vector3(0.04, 0.07, 0.065), Vector3(0.21, hip_height + 0.24, cockpit_z - 0.58), rubber)
+	for side in [-1.0, 1.0]:
+		MeshKit.box(self, Vector3(0.095, 0.02, 0.12), Vector3(side * 0.11, hip_height - 0.575, cockpit_z - 0.5), metal)
 
 func _fuselage() -> void:
-	var rings: Array[Vector3] = [Vector3(-3.75, 0.29, 0.3), Vector3(-3.1, 0.48, 0.5), Vector3(-1.8, 0.52, 0.6), Vector3(0.0, 0.48, 0.57), Vector3(1.6, 0.35, 0.4), Vector3(3.1, 0.17, 0.23), Vector3(4.3, 0.065, 0.09)]
+	var rings: Array[Vector3] = [Vector3(-3.75, 0.29, 0.3), Vector3(-3.1, 0.48, 0.5), Vector3(-1.8, 0.52, 0.6), Vector3(-0.72, 0.496, 0.582), Vector3(0.0, 0.48, 0.57), Vector3(1.05, 0.3947, 0.4584), Vector3(1.6, 0.35, 0.4), Vector3(3.1, 0.17, 0.23), Vector3(4.3, 0.065, 0.09)]
 	var surface := SurfaceTool.new()
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for j in range(rings.size() - 1):
@@ -82,6 +96,9 @@ func _fuselage() -> void:
 			var b := TAU * (i + 1) / 20.0
 			var r := rings[j]
 			var s := rings[j + 1]
+			# Visual cockpit opening only: physics hull/contact shapes stay intact.
+			if r.x >= -0.72 and s.x <= 1.05 and sin((a + b) * 0.5) > 0.3:
+				continue
 			var points := [Vector3(cos(a) * r.y, sin(a) * r.z, r.x), Vector3(cos(b) * r.y, sin(b) * r.z, r.x), Vector3(cos(a) * s.y, sin(a) * s.z, s.x), Vector3(cos(b) * s.y, sin(b) * s.z, s.x)]
 			for index in [0, 2, 1, 1, 2, 3]:
 				surface.add_vertex(points[index])

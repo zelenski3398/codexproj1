@@ -32,6 +32,10 @@ uses the supplied Spitfire audio. See [audio controls, tuning and checks](docs/a
 
 ## Italian aircraft and the Valletta interception
 
+The walking pilot now uses an original skinned RAF-uniform character, with idle,
+walk and seated poses in occupied aircraft. See [character previews, integration
+and animation limits](docs/raf-pilot.md).
+
 Choose **Missions → Defend Valletta — Ta’ Qali Interception** from the first
 menu. Start on foot beside a Spitfire or Sea Gladiator at Ta’ Qali, board with
 **E**, start the engine with **I**, taxi and take off. Follow two nearby numbered airborne

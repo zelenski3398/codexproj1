@@ -5,6 +5,7 @@ extends CharacterBody3D
 var yaw: float = 0
 var camera: Camera3D
 var active: bool = true
+var avatar: RafPilotAvatar
 
 func _ready() -> void:
 	collision_layer = 16
@@ -16,8 +17,9 @@ func _ready() -> void:
 	collision.shape = capsule
 	add_child(collision)
 	floor_snap_length = 0.45
-	MeshKit.sphere(self, Vector3(0.42, 0.42, 0.42), Vector3(0, 0.65, 0), MeshKit.material(Color("c4ac88")))
-	MeshKit.box(self, Vector3(0.55, 0.95, 0.35), Vector3(0, -0.05, 0), MeshKit.material(Color("516779")))
+	avatar = RafPilotAvatar.new()
+	avatar.position.y = -0.9 # feet at the unchanged capsule's bottom
+	add_child(avatar)
 	camera = Camera3D.new()
 	camera.fov = 65
 	camera.far = 100000
@@ -35,6 +37,8 @@ func _physics_process(delta: float) -> void:
 	velocity.z = movement.z
 	velocity.y -= 9.81 * delta
 	move_and_slide()
+	avatar.rotation.y = yaw
+	avatar.animate_walk(Vector2(velocity.x, velocity.z).length(), delta)
 	var desired: Vector3 = global_position + basis * Vector3(0, 2.8, 5)
 	var target: Vector3 = global_position + Vector3.UP * 0.6
 	var ray: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(target, desired, 7, [get_rid()])

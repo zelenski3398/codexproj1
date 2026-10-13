@@ -32,14 +32,15 @@ func _ready() -> void:
 		letters.outline_size = 0
 		add_child(letters)
 	# Glazed sliding canopy / windscreen above the exposed cockpit recess.
-	MeshKit.sphere(self, Vector3(0.84, 0.19, 1.6), Vector3(0, 0.48, 0.75), rubber)
-	var glass: StandardMaterial3D = MeshKit.material(Color("7a949d"), 0.2)
-	MeshKit.sphere(self, Vector3(0.76, 0.63, 1.5), Vector3(0, 0.64, 0.75), glass)
+	var glass: StandardMaterial3D = MeshKit.material(Color(0.48, 0.58, 0.62, 0.16), 0.2)
+	glass.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	glass.cull_mode = BaseMaterial3D.CULL_DISABLED
+	MeshKit.sphere(self, Vector3(0.80, 1.03, 1.5), Vector3(0, 0.66, 0.75), glass)
 	for z in [0.1, 0.65, 1.3]:
-		MeshKit.rod(self, Vector3(-0.34, 0.56, z), Vector3(-0.24, 0.91, z), 0.025, green)
-		MeshKit.rod(self, Vector3(-0.24, 0.91, z), Vector3(0.24, 0.91, z), 0.025, green)
-		MeshKit.rod(self, Vector3(0.24, 0.91, z), Vector3(0.34, 0.56, z), 0.025, green)
-	MeshKit.rod(self, Vector3(0, 0.9, 0.05), Vector3(0, 0.9, 1.4), 0.025, green)
+		MeshKit.rod(self, Vector3(-0.34, 0.56, z), Vector3(-0.27, 1.05, z), 0.025, green)
+		MeshKit.rod(self, Vector3(-0.27, 1.05, z), Vector3(0.27, 1.05, z), 0.025, green)
+		MeshKit.rod(self, Vector3(0.27, 1.05, z), Vector3(0.34, 0.56, z), 0.025, green)
+	MeshKit.rod(self, Vector3(0, 1.05, 0.05), Vector3(0, 1.05, 1.4), 0.025, green)
 	_wing(2.0, 1.3, 3.3, 0.04, green)
 	MeshKit.sphere(self, Vector3(0.15, 1.65, 1.3), Vector3(0, 0.77, 3.58), green)
 	for side in [-1.0, 1.0]:
@@ -55,9 +56,10 @@ func _ready() -> void:
 	for side in [-1.0, 1.0]:
 		_port(Vector3(side * 0.58, 0.10, -2.30), "FuselageGun")
 		_port(Vector3(side * 2.5, -0.15, -0.86), "LowerWingGun")
+	build_pilot_station(0.8, 0.16)
 
 func _fuselage() -> void:
-	var rings: Array[Vector3] = [Vector3(-2.8, 0.62, 0.63), Vector3(-1.8, 0.62, 0.6), Vector3(-0.1, 0.48, 0.55), Vector3(1.6, 0.33, 0.39), Vector3(3.2, 0.17, 0.23), Vector3(4.1, 0.07, 0.10)]
+	var rings: Array[Vector3] = [Vector3(-2.8, 0.62, 0.63), Vector3(-1.8, 0.62, 0.6), Vector3(-0.1, 0.48, 0.55), Vector3(0.02, 0.4694, 0.5387), Vector3(1.48, 0.3406, 0.4013), Vector3(1.6, 0.33, 0.39), Vector3(3.2, 0.17, 0.23), Vector3(4.1, 0.07, 0.10)]
 	var surface: SurfaceTool = SurfaceTool.new()
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for j in range(rings.size() - 1):
@@ -66,6 +68,8 @@ func _fuselage() -> void:
 			var b: float = TAU * (i + 1) / 24.0
 			var r: Vector3 = rings[j]
 			var s: Vector3 = rings[j + 1]
+			if r.x >= 0.02 and s.x <= 1.48 and sin((a + b) * 0.5) > 0.3:
+				continue
 			var points: Array[Vector3] = [Vector3(cos(a) * r.y, sin(a) * r.z, r.x), Vector3(cos(b) * r.y, sin(b) * r.z, r.x), Vector3(cos(a) * s.y, sin(a) * s.z, s.x), Vector3(cos(b) * s.y, sin(b) * s.z, s.x)]
 			var color: Color = Color("adb2af") if sin(a) < -0.25 else Color("4c574a") if j % 2 == 0 else Color("444d58")
 			for index in [0, 2, 1, 1, 2, 3]:

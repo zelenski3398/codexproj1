@@ -138,6 +138,7 @@ func board_aircraft(aircraft: FlightAircraft) -> bool:
 	occupied = aircraft
 	pilot.set_active(false)
 	aircraft.input_enabled = true
+	aircraft.seated_pilot.visible = true
 	aircraft.pilot.reset_commands()
 	aircraft.pilot.automated = false
 	session.attach_malta_player(aircraft)
@@ -179,6 +180,7 @@ func leave_aircraft() -> bool:
 		_message("No safe exit beside the aircraft; taxi to open ground")
 		return false
 	occupied.input_enabled = false
+	occupied.seated_pilot.visible = false
 	occupied.pilot.automated = true
 	occupied.pilot.reset_commands()
 	occupied.pilot.brakes = true

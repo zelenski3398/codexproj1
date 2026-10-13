@@ -58,6 +58,7 @@ var reset_pending: bool = false
 var pending_reset_pose: Transform3D
 var pending_reset_velocity: Vector3 = Vector3.ZERO
 var airborne_time: float = 0.0
+var seated_pilot: RafPilotAvatar
 
 func _ready() -> void:
 	mass = 3000.0
@@ -80,6 +81,13 @@ func _ready() -> void:
 	add_child(gear)
 	model = create_model()
 	add_child(model)
+	if team_id == CombatTeams.PLAYER:
+		seated_pilot = RafPilotAvatar.new()
+		seated_pilot.name = "SeatedPilot"
+		seated_pilot.position = Vector3(0, -0.78, 0.80) if self is SeaGladiator else Vector3(0, -0.84, 0.25)
+		model.add_child(seated_pilot)
+		seated_pilot.set_pose("Seated")
+		seated_pilot.visible = input_enabled
 	health = AircraftHealth.new()
 	health.name = "Health"
 	add_child(health)
