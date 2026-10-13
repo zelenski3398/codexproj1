@@ -1,5 +1,6 @@
 class_name ProjectilePool
 extends Node3D
+signal round_finished(point: Vector3, collider: Object, team: int)
 ## Fixed-size world-space pool. No per-shot nodes, rigid bodies, or timers.
 ## Every round (including invisible ones) sweeps its ENTIRE travelled segment.
 @export var capacity: int = 384
@@ -122,8 +123,10 @@ func _physics_process(delta: float) -> void:
 				var component: StringName = collider.definition.id if collider is AircraftHitbox else &"fuselage"
 				statistics.record_aircraft_hit(component, hp_before - hit_aircraft.health.hp, shot_distances[index], ages[index])
 			_impact(hit.position)
+			round_finished.emit(hit.position, collider, teams[index])
 			_release(slot)
 		elif ages[index] >= lifetimes[index]:
+			round_finished.emit(next, null, teams[index])
 			_release(slot)
 		else:
 			positions[index] = next

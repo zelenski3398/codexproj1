@@ -72,6 +72,9 @@ func _process(delta: float) -> void:
 		state.terrain = session.malta_mission.world.terrain_appearance.diagnostic_state()
 		state.world_id = session.malta_mission.world.get_instance_id()
 		state.fleet_count = session.malta_mission.fleet.size()
+		var aa: AirfieldAABattery = session.malta_mission.world.aa_battery
+		state.aa_count = aa.guns.size()
+		state.aa_healthy = aa.guns.all(func(gun): return gun.hp == gun.max_hp)
 		state.map_open = session.malta_mission.chart_panel.visible
 		state.engine_running = session.aircraft.engine_running
 		state.home_airfield = session.malta_mission.home

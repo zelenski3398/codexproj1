@@ -61,6 +61,7 @@ var airborne_time: float = 0.0
 var seated_pilot: RafPilotAvatar
 
 func _ready() -> void:
+	add_to_group("combat_aircraft")
 	mass = 3000.0
 	inertia = Vector3(9500.0, 14000.0, 8000.0)
 	linear_damp = 0.0

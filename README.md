@@ -718,3 +718,5 @@ worktree is required.
 
 The aircraft's local **-Z** axis is forward, +Y up, +X right, leaving a clear
 shared coordinate convention for player and enemy physics and weapons. Each model's gun markers are the authoritative firing origins.
+
+Friendly Malta airfield defences: see [AA setup, tuning and tests](docs/airfield-aa.md).

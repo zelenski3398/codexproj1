@@ -7,6 +7,7 @@ var terrain_appearance: MaltaTerrainAppearance
 var mesh_count: int = 0
 var bounds: AABB
 var sea: MeshInstance3D
+var aa_battery: AirfieldAABattery
 var landscape_details: MaltaLandscapeDetails
 
 func _ready() -> void:
@@ -37,6 +38,9 @@ func _ready() -> void:
 		field.record = record
 		add_child(field)
 		fields[record.id] = field
+	aa_battery = AirfieldAABattery.new()
+	aa_battery.world = self
+	add_child(aa_battery)
 	_lighting()
 	for marker in MaltaGeography.data().landmarks:
 		var label: Label3D = Label3D.new()

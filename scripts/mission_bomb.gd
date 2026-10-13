@@ -1,9 +1,11 @@
 class_name MissionBomb
 extends Node3D
 ## Finite cosmetic ordnance: inherited aircraft velocity, gravity and a swept
-## terrain ray. No direct damage to the player, no mass-raid simulation.
+## terrain ray. Blast damages friendly AA installations, not the player.
 signal impacted(point: Vector3)
 var velocity: Vector3
+@export var aa_blast_radius: float = 35
+@export var aa_blast_damage: float = 180
 var age: float = 0
 var impact_effects: Node3D
 
@@ -22,6 +24,13 @@ func _physics_process(delta: float) -> void:
 		impact_effects.add_child(burst)
 		burst.global_position = hit.position
 		burst.scale = Vector3.ONE * 2
+		for gun in get_tree().get_nodes_in_group("friendly_aa"):
+			var distance: float = gun.global_position.distance_to(hit.position)
+			if distance < aa_blast_radius:
+				var sight := PhysicsRayQueryParameters3D.create(hit.position + Vector3.UP * 0.2, gun.global_position + Vector3.UP, 1)
+				var obstruction := get_world_3d().direct_space_state.intersect_ray(sight)
+				if obstruction.is_empty() or obstruction.collider == gun:
+					gun.take_damage(aa_blast_damage * (1 - distance / aa_blast_radius))
 		impacted.emit(hit.position)
 		queue_free()
 	else:

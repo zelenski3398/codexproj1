@@ -1,0 +1,6 @@
+British_AA_Emplacement.glb supplied by the user in British_AA_Emplacement_Pack.zip.
+The supplied README describes original simplified Bofors-inspired game geometry,
+with embedded PBR colours and no external textures. The original README and
+editable generator are retained. No claim of a measured historical replica.
+Runtime firing sound reuses the project's existing user-supplied aircraft gun SFX;
+see assets/audio/ATTRIBUTION.txt. This is a temporary sound, not Bofors audio.
