@@ -1,0 +1,10 @@
+{
+  "transition_metres": 360.0,
+  "maximum_grade": 0.008,
+  "core_grid_metres": 8.0,
+  "transition_grid_metres": 24.0,
+  "coast_guard_metres": 60.0,
+  "runway_end_clearance_metres": 65.0,
+  "base_ground_margin_metres": 22.0,
+  "description": "Localized cut/fill grading of runway plus apron and usable base grounds; C2 blend into measured terrain."
+}

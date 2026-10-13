@@ -722,3 +722,5 @@ shared coordinate convention for player and enemy physics and weapons. Each mode
 Friendly Malta airfield defences: see [AA setup, tuning and tests](docs/airfield-aa.md).
 
 Manual airfield controls: E mounts/exits guns and enters/exits trucks; AA uses arrows/Ctrl/Space/W-S, trucks use W-S/A-D/Space. See [ground controls and limitations](docs/airfield-aa.md).
+
+Malta ground integration: [terrain grading, before/after views and checks](docs/malta-ground-integration.md).

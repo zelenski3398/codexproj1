@@ -1,7 +1,7 @@
 class_name MaltaAirfield
 extends Node3D
-## Graded takeoff strip/apron above the unmodified measured terrain. All fields
-## coexist, with static BVH/box collision and persistent damageable installations.
+## Terrain-supported graded strip/apron. Only the island mesh collides under
+## these visual surfaces; buildings retain their own solid collision.
 var record: Dictionary
 var parking: Array[Transform3D] = []
 var pilot_spawn: Vector3
@@ -15,12 +15,12 @@ func _ready() -> void:
 	var heading: float = deg_to_rad(float(record.heading))
 	var grade: float = atan(float(record.slope))
 	transform = Transform3D(Basis(Vector3.UP, -heading) * Basis(Vector3.RIGHT, grade), origin)
-	# Colour/texture only; retain the exact graded strips, markings and collision.
+	# Millimetre-scale visual offset; graded terrain is the sole ground collider.
 	var runway: Material = preload("res://assets/malta/materials/airfield.tres")
 	var paint: Material = MeshKit.material(Color("eee0b2"))
-	_box(Vector3(54, 2, runway_length), Vector3(0, -1, 0), runway)
+	_surface(Vector2(54,runway_length),Vector3(0,0.015,0),runway)
 	# Apron and taxi lane join the strip physically. Spawn/exit points stay on it.
-	_box(Vector3(96, 2, 230), Vector3(61, -1, runway_length * 0.31), runway)
+	_surface(Vector2(96,230),Vector3(61,0.015,runway_length*0.31),runway)
 	for z in range(-int(runway_length * 0.46), int(runway_length * 0.46), 75):
 		MeshKit.box(self, Vector3(1.2, 0.025, 24), Vector3(0, 0.025, z), paint)
 	for side in [-1, 1]:
@@ -36,6 +36,9 @@ func _ready() -> void:
 		building.size = Vector3(22, 10, 32)
 		building.display_name = String(record.name) + " hangar"
 		add_child(building)
+		var ground := to_global(Vector3(93,0,runway_length*.31-45-i*80))
+		building.global_basis = Basis(Vector3.UP,-heading)
+		building.global_position = ground+Vector3.UP*4.85
 		installations.append(building)
 	var label: Label3D = Label3D.new()
 	label.text = String(record.name) + "\nDISPERSAL · E TO BOARD"
@@ -47,16 +50,10 @@ func _ready() -> void:
 	label.visibility_range_end = 700
 	add_child(label)
 
-func _box(size: Vector3, pos: Vector3, material: Material) -> void:
-	var body: StaticBody3D = StaticBody3D.new()
-	body.position = pos
-	add_child(body)
-	MeshKit.box(body, size, Vector3.ZERO, material)
-	var collision: CollisionShape3D = CollisionShape3D.new()
-	var shape: BoxShape3D = BoxShape3D.new()
-	shape.size = size
-	collision.shape = shape
-	body.add_child(collision)
+func _surface(size: Vector2,pos: Vector3,material: Material) -> void:
+	var mesh := PlaneMesh.new()
+	mesh.size = size
+	MeshKit.mesh(self,mesh,material,pos)
 
 func contains(point: Vector3) -> bool:
 	var local: Vector3 = to_local(point)

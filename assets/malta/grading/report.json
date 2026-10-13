@@ -1,0 +1,46 @@
+{
+  "airfields": [
+    {
+      "id": "ta_qali",
+      "previous_elevation": 123.98494682256587,
+      "elevation": 109.3331115039709,
+      "grade": 0.005059263305823612,
+      "runway_sample_min": 98.24035332448344,
+      "runway_sample_max": 119.42842245070995
+    },
+    {
+      "id": "luqa",
+      "previous_elevation": 79.31992287343888,
+      "elevation": 76.68908272716621,
+      "grade": 0.007164247990796656,
+      "runway_sample_min": 54.706633450685786,
+      "runway_sample_max": 81.60575297910103
+    },
+    {
+      "id": "hal_far",
+      "previous_elevation": 67.90009501110268,
+      "elevation": 62.656023023829846,
+      "grade": -0.008,
+      "runway_sample_min": 37.0191100798088,
+      "runway_sample_max": 79.78393281308541
+    }
+  ],
+  "settings": {
+    "transition_metres": 360.0,
+    "maximum_grade": 0.008,
+    "core_grid_metres": 8.0,
+    "transition_grid_metres": 24.0,
+    "coast_guard_metres": 60.0,
+    "runway_end_clearance_metres": 65.0,
+    "base_ground_margin_metres": 22.0,
+    "description": "Localized cut/fill grading of runway plus apron and usable base grounds; C2 blend into measured terrain."
+  },
+  "original_triangles": 107714,
+  "graded_triangles": 143134,
+  "added_vertices": 17710,
+  "changed_original_vertices": 845,
+  "max_cut_fill": 44.45859110281616,
+  "unmodified_original_vertices": 45309,
+  "coastline_preserved": true,
+  "geometry_outside_local_footprints_preserved": true
+}

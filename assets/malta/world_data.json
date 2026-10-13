@@ -19,16 +19,17 @@
       "latitude": 35.8953,
       "position": [
         1357.1550942739705,
-        123.98494682256587,
+        109.3331115039709,
         3857.117503037676
       ],
       "heading": 130.0,
       "length": 1450.0,
-      "slope": 0.004413003077970787,
+      "slope": 0.005059263305823612,
       "stationed_aircraft": [
         "spitfire",
         "sea_gladiator"
-      ]
+      ],
+      "width": 54.0
     },
     {
       "id": "luqa",
@@ -37,16 +38,17 @@
       "latitude": 35.8586,
       "position": [
         6948.8215844673105,
-        79.31992287343888,
+        76.68908272716621,
         7959.45468694903
       ],
       "heading": 140.0,
       "length": 1600.0,
-      "slope": 0.007626527091790794,
+      "slope": 0.007164247990796656,
       "stationed_aircraft": [
         "spitfire",
         "sea_gladiator"
-      ]
+      ],
+      "width": 54.0
     },
     {
       "id": "hal_far",
@@ -55,16 +57,17 @@
       "latitude": 35.8153,
       "position": [
         9561.061691343435,
-        67.90009501110268,
+        62.656023023829846,
         12775.674105946906
       ],
       "heading": 130.0,
       "length": 1400.0,
-      "slope": -0.02,
+      "slope": -0.008,
       "stationed_aircraft": [
         "spitfire",
         "sea_gladiator"
-      ]
+      ],
+      "width": 54.0
     }
   ],
   "landmarks": [
@@ -113,5 +116,5 @@
       15938.015
     ]
   ],
-  "placement_note": "Approximate site coordinates; prototype runway headings, lengths, raised grading and parking layouts. No historical airfield reference image supplied."
+  "placement_note": "Approximate historical sites and runway layouts. Elevations fitted to original terrain by localized cut/fill grading, with smoothly blended base grounds; island scale/coastline preserved."
 }
