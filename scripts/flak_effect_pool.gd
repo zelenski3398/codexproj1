@@ -41,7 +41,7 @@ func puff(point: Vector3, kind: String = "air", strength: float = 1) -> void:
 		if kind == "muzzle": color = Color("868b89") if smoke else Color("ffe6a4")
 		materials[slot].albedo_color = color
 		particles[slot].global_position = point
-		particles[slot].scale = Vector3.ONE * (0.9 if smoke else 0.22) * strength
+		particles[slot].scale = Vector3.ONE * (0.9 if smoke else (1.4 if kind == "air" and i == 0 else 0.22)) * strength
 		remaining[slot] = rng.randf_range(0.6, 1.3) if smoke else 0.16
 		if kind == "muzzle" and smoke: remaining[slot] = 0.4
 		growth[slot] = 0.7 * strength

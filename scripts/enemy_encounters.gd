@@ -239,18 +239,22 @@ func _process(_delta: float) -> void:
 	for foe in active:
 		var widget: VBoxContainer = enemy_widgets[foe.get_instance_id()]
 		widget.visible = false
-		# The existing HUD draws the focused enemy. Supplement the other aircraft.
-		if foe == session.enemy or camera == null or get_tree().paused or not _player_live():
+		# Flight HUD draws the focused aircraft only while it is actually visible.
+		# Ground/gunner cameras still need a marker for that same enemy.
+		var focused_in_hud: bool = foe == session.enemy and is_instance_valid(session.hud) and session.hud.visible
+		if focused_in_hud or camera == null or get_tree().paused or not _player_live():
 			continue
 		var overhead: Vector3 = foe.global_position + Vector3.UP * 5
 		var screen: Vector2 = get_viewport().get_visible_rect().size
-		var nearby: bool = not camera.is_position_behind(overhead) and foe.global_position.distance_to(session.aircraft.global_position) <= 800
+		var nearby: bool = not camera.is_position_behind(overhead) and foe.global_position.distance_to(camera.global_position) <= 800
 		var local: Vector3 = camera.to_local(overhead)
 		var point: Vector2 = camera.unproject_position(overhead) if local.z < -0.1 else screen * 0.5 + Vector2(local.x, -local.y).normalized() * screen.length()
+		if local.z >= -0.1 and Vector2(local.x,-local.y).length_squared() < 0.0001:
+			point = Vector2(screen.x-80,screen.y*.5)
 		nearby = nearby and get_viewport().get_visible_rect().has_point(point)
 		widget.visible = true
 		widget.position = Vector2(clampf(point.x - 75, 10, screen.x - 160), clampf(point.y - 35, 190, screen.y - 185))
-		widget.get_child(0).text = "%s · %d m%s" % [("ACE " if foe.encounter_ace else "") + foe.marker_name, roundi(foe.global_position.distance_to(session.aircraft.global_position)), " · HP %d/%d" % [ceili(foe.health.hp), roundi(foe.health.max_hp)] if nearby else ""]
+		widget.get_child(0).text = "%s · %d m%s" % [("ACE " if foe.encounter_ace else "") + foe.marker_name, roundi(foe.global_position.distance_to(camera.global_position)), " · HP %d/%d" % [ceili(foe.health.hp), roundi(foe.health.max_hp)] if nearby else ""]
 		widget.get_child(1).visible = nearby
 		widget.get_child(1).max_value = foe.health.max_hp
 		widget.get_child(1).value = foe.health.hp

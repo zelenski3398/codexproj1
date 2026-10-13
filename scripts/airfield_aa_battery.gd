@@ -3,6 +3,7 @@ extends Node3D
 ## One battery per continuous world. Retry frees this owner, shells and effects.
 @export var burst_radius: float = 12
 @export var blast_damage: float = 8
+@export var aerial_burst_visual_scale: float = 4.0
 var world: MaltaWorld
 var guns: Array[BritishAAGun] = []
 var projectiles: ProjectilePool
@@ -43,7 +44,7 @@ func _burst(point: Vector3, direct: Object, _team: int) -> void:
 	var kind := "air"
 	if direct != null and not direct is AircraftHitbox and not direct is FlightAircraft:
 		kind = "water" if direct is Node and direct.name == "MediterraneanSea" else "ground"
-	effects.puff(point, kind)
+	effects.puff(point, kind, aerial_burst_visual_scale if kind == "air" else 1.0)
 	var direct_aircraft: FlightAircraft = direct.damage_system.aircraft if direct is AircraftHitbox else (direct if direct is FlightAircraft else null)
 	for aircraft in candidates():
 		# One shell cannot apply both direct-hit and blast damage to the same plane.

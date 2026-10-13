@@ -5,7 +5,7 @@ signal destroyed
 @export var max_hp: float = 150
 @export var range_metres: float = 2400
 @export var projectile_speed: float = 700
-@export var rounds_per_second: float = 1.4
+@export var rounds_per_second: float = 2.0
 @export var maximum_lifetime: float = 4
 @export var direct_damage: float = 22
 @export var aim_error_degrees: float = 0.35
@@ -73,10 +73,10 @@ func _ready() -> void:
 	camera.position = Vector3(0,0.22,-1.0)
 	muzzle.add_child(camera)
 	sound = AudioStreamPlayer3D.new()
-	sound.stream = load(GameAudioMixer.SPITFIRE_GUNS)
+	sound.stream = load("res://assets/audio/aa_cannon_shot.ogg")
 	sound.bus = "Guns"
-	sound.volume_db = -13
-	sound.pitch_scale = 0.65
+	sound.volume_db = -6
+	sound.pitch_scale = 1.0
 	sound.unit_size = 25
 	sound.max_distance = 2000
 	sound.playback_type = AudioServer.PLAYBACK_TYPE_SAMPLE if OS.has_feature("web") else AudioServer.PLAYBACK_TYPE_STREAM
@@ -122,7 +122,6 @@ func _physics_process(delta: float) -> void:
 	elevation.rotation.x = clampf(elevation.rotation.x + Input.get_axis("pitch_up", "pitch_down") * deg_to_rad(elevation_degrees) * delta * fine, deg_to_rad(minimum_elevation_degrees), deg_to_rad(maximum_elevation_degrees))
 	fuse_distance = clampf(fuse_distance + Input.get_axis("throttle_down", "throttle_up") * 180 * delta,100,range_metres)
 	if Input.is_action_pressed("fire"): fire_round()
-	elif sound.playing: sound.stop()
 
 func fire_round() -> bool:
 	if not mounted or is_destroyed or cooldown > 0: return false
@@ -140,7 +139,9 @@ func fire_round() -> bool:
 	cooldown = 1 / rounds_per_second
 	recoil = 0.12
 	battery.effects.puff(muzzle.global_position, "muzzle", 0.25)
-	if GameAudioMixer.instance.playback_enabled: sound.play()
+	if GameAudioMixer.instance.playback_enabled:
+		sound.pitch_scale = rng.randf_range(0.97,1.03)
+		sound.play()
 	return true
 
 func _cull_visuals(node: Node) -> void:

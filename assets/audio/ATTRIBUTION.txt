@@ -24,3 +24,7 @@ speech was generated. Runtime commander_formation_detected.ogg adds a mild
 transmission clicks. This is a non-looping, non-spatial player-radio recording.
 Source hash/settings: commander_formation_detected.json.
 Reproduce with tools/prepare_radio.py and the original supplied MP3.
+
+AA cannon: original procedural single-shot effect (0.43 s), generated with
+tools/build_aa_sound.py. Bass report, short noise crack and decaying rumble.
+Illustrative sound design, not an authentic historical gun recording.
