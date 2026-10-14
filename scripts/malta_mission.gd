@@ -118,6 +118,7 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func nearest_serviceable() -> FlightAircraft:
+	if session.game_mode=="aa_defence":return null
 	var nearest: FlightAircraft
 	var distance: float = boarding_range
 	for aircraft in fleet:
@@ -137,6 +138,9 @@ func board_nearest() -> bool:
 	return board_aircraft(aircraft)
 
 func board_aircraft(aircraft: FlightAircraft) -> bool:
+	if session.game_mode=="aa_defence":
+		_message("This mission requires the two AA emplacements; no aircraft fallback")
+		return false
 	# Keep the same validation for calls from UI and tests; no remote boarding.
 	if occupied != null or interaction.is_operating() or not pilot.active or aircraft != nearest_serviceable():
 		return false

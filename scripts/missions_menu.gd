@@ -1,7 +1,14 @@
 class_name MissionsMenu
 extends CanvasLayer
 signal launch_requested(kind: String)
+signal aa_requested
 signal back_requested
+var mission_picker: OptionButton
+var title: Label
+var briefing: Label
+var guide: Label
+var mission_note: Label
+var mission_chart: MaltaChart
 var aircraft_picker: OptionButton
 var launch_button: Button
 var back_button: Button
@@ -26,12 +33,18 @@ func _ready() -> void:
 	column.add_theme_constant_override("separation", 18)
 	row.add_child(column)
 	_label(column, "WINGS OVER MALTA · MISSIONS", 25)
-	var title: Label = _label(column, DEFINITION.title, 24)
+	mission_picker=OptionButton.new()
+	mission_picker.add_item("Defend Valletta — Ta’ Qali Interception")
+	mission_picker.add_item("Under Dive-Bomber Attack — Ħal Luqa")
+	mission_picker.custom_minimum_size.y=44
+	column.add_child(mission_picker)
+	mission_picker.item_selected.connect(_choose_mission)
+	title = _label(column, DEFINITION.title, 24)
 	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	var briefing: Label = _label(column, DEFINITION.briefing, 20)
+	briefing = _label(column, DEFINITION.briefing, 20)
 	briefing.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	briefing.custom_minimum_size = Vector2(480, 200)
-	_label(column, "CONTINUOUS MALTA · RAF TA’ QALI\nStart on foot · E board · I start engine\nW power · arrows fly · two nearby gold checkpoints", 17)
+	guide = _label(column, "CONTINUOUS MALTA · RAF TA’ QALI\nStart on foot · E board · I start engine\nW power · arrows fly · two nearby gold checkpoints", 17)
 	aircraft_picker = OptionButton.new()
 	aircraft_picker.add_item("Spitfire Mk I · faster interception")
 	aircraft_picker.add_item("Sea Gladiator · slower, more challenging")
@@ -42,7 +55,7 @@ func _ready() -> void:
 	launch_button.custom_minimum_size.y = 56
 	launch_button.pressed.connect(_launch)
 	column.add_child(launch_button)
-	_label(column, "Small fictional interception · one bomber and one escort", 14)
+	mission_note = _label(column, "Small fictional interception · one bomber and one escort", 14)
 	back_button = Button.new()
 	back_button.text = "BACK TO MAIN MENU"
 	back_button.pressed.connect(func(): back_requested.emit())
@@ -52,6 +65,7 @@ func _ready() -> void:
 	chart.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	chart.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	row.add_child(chart)
+	mission_chart=chart
 
 func _label(parent: Node, content: String, size: int) -> Label:
 	var label: Label = Label.new()
@@ -65,13 +79,25 @@ func _launch() -> void:
 	if launch_button.disabled:
 		return
 	launch_button.disabled = true
-	launch_requested.emit("sea_gladiator" if aircraft_picker.selected == 1 else "spitfire")
+	if mission_picker.selected==1:aa_requested.emit()
+	else:launch_requested.emit("sea_gladiator" if aircraft_picker.selected == 1 else "spitfire")
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.is_echo() and not aircraft_picker.get_popup().visible:
+	if get_viewport().gui_get_focus_owner() in [mission_picker,aircraft_picker]:return
+	if event is InputEventKey and event.pressed and not event.is_echo() and not aircraft_picker.get_popup().visible and not mission_picker.get_popup().visible:
 		if event.keycode in [KEY_ENTER, KEY_KP_ENTER]:
 			_launch()
 			get_viewport().set_input_as_handled()
 		elif event.keycode == KEY_ESCAPE:
 			back_requested.emit()
 			get_viewport().set_input_as_handled()
+
+func _choose_mission(index: int) -> void:
+	var aa: bool=index==1
+	title.text="Under Dive-Bomber Attack" if aa else DEFINITION.title
+	briefing.text=DiveDefenceMission.BRIEFING if aa else DEFINITION.briefing
+	guide.text="RAF ĦAL LUQA · TWO MANUAL AA GUNS\nE mount / dismount · arrows aim · Ctrl fire\nW/S airburst distance · six waves, ten Stukas" if aa else "CONTINUOUS MALTA · RAF TA’ QALI\nStart on foot · E board · I start engine\nW power · arrows fly · two nearby gold checkpoints"
+	mission_note.text="Six waves · ten Stukas · final ace · manual AA only" if aa else "Small fictional interception · one bomber and one escort"
+	mission_chart.home="luqa" if aa else "ta_qali"
+	aircraft_picker.disabled=aa
+	launch_button.text="DEFEND ĦAL LUQA" if aa else "DEPART FROM TA’ QALI"

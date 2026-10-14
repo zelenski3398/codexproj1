@@ -5,6 +5,8 @@ extends CharacterBody3D
 var yaw: float = 0
 var camera: Camera3D
 var active: bool = true
+var combat_enabled: bool = false
+var health: AircraftHealth
 var avatar: RafPilotAvatar
 
 func _ready() -> void:
@@ -16,6 +18,9 @@ func _ready() -> void:
 	capsule.height = 1.8
 	collision.shape = capsule
 	add_child(collision)
+	health=AircraftHealth.new()
+	add_child(health)
+	health.depleted.connect(func(): active=false;set_physics_process(false))
 	floor_snap_length = 0.45
 	avatar = RafPilotAvatar.new()
 	avatar.position.y = -0.9 # feet at the unchanged capsule's bottom
@@ -50,7 +55,11 @@ func set_active(value: bool) -> void:
 	active = value
 	visible = value
 	set_physics_process(value)
-	collision_layer = 16 if value else 0
+	collision_layer = 16 if value or combat_enabled else 0
 	collision_mask = 7 if value else 0
 	if value:
 		camera.make_current()
+
+func get_team_id() -> int:return CombatTeams.PLAYER
+func take_damage(amount: float) -> void:
+	if combat_enabled:health.take_damage(amount)

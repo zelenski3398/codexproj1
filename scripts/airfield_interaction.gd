@@ -66,6 +66,9 @@ func mount_gun(gun: BritishAAGun) -> bool:
 	occupied_gun = gun
 	_hide_pilot()
 	gun.start_operation(self)
+	if mission.pilot.combat_enabled:
+		# Hidden seated visual, live collision capsule at the actual operator.
+		mission.pilot.global_position=gun.to_global(Vector3(0,1.45,1.55))
 	sight.visible = true
 	mission._message("AA mounted · lead targets manually; W/S sets the airburst distance")
 	return true
@@ -74,6 +77,7 @@ func enter_vehicle(truck: MilitaryTruck) -> bool:
 	if is_operating() or mission.occupied != null or not mission.pilot.active or truck != nearest(): return false
 	occupied_vehicle = truck
 	_hide_pilot()
+	if mission.pilot.combat_enabled:truck.add_collision_exception_with(mission.pilot)
 	truck.start_driving()
 	mission._message("W forward · S reverse · A/D steer · SPACE brake · E exit when stopped")
 	return true
@@ -100,7 +104,8 @@ func find_exit(body: Node3D, radius: float) -> Vector3:
 func _restore_pilot(position: Vector3) -> void:
 	mission.pilot.global_position = position
 	mission.pilot.velocity = Vector3.ZERO
-	mission.pilot.set_active(true)
+	mission.pilot.set_active(mission.pilot.health.hp>0)
+	mission.pilot.camera.make_current()
 	Input.mouse_mode = previous_mouse_mode
 	sight.visible = false
 
@@ -127,6 +132,7 @@ func leave_vehicle() -> bool:
 		mission._message("No clear exit beside the truck")
 		return false
 	occupied_vehicle.stop_driving()
+	occupied_vehicle.remove_collision_exception_with(mission.pilot)
 	occupied_vehicle = null
 	_restore_pilot(position)
 	return true
@@ -134,12 +140,17 @@ func leave_vehicle() -> bool:
 func _gun_destroyed(gun: BritishAAGun) -> void:
 	if occupied_gun == gun:
 		leave_gun(true)
-		mission._message("AA gun destroyed · aircraft remain available")
+		mission._message("AA gun destroyed · reach the other operational gun" if mission.session.game_mode=="aa_defence" else "AA gun destroyed · aircraft remain available")
 
 func mission_ended() -> bool:
+	if is_instance_valid(mission.session.aa_defence):return mission.session.aa_defence.is_finished()
 	return mission.session.encounters.ended or mission.session.encounters.complete or (is_instance_valid(mission.session.interception) and mission.session.interception.phase in ["SUCCESS","FAILED"])
 
 func _process(_delta: float) -> void:
+	if mission.pilot.combat_enabled and occupied_vehicle!=null:
+		mission.pilot.global_position=occupied_vehicle.to_global(Vector3(.3,1.8,-.5))
+	if mission.pilot.combat_enabled and occupied_gun!=null:
+		mission.pilot.global_position=occupied_gun.to_global(Vector3(0,1.45,1.55))
 	if occupied_gun != null and mission_ended(): leave_gun(true)
 
 func prompt() -> String:

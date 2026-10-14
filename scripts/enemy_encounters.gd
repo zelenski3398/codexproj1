@@ -89,6 +89,7 @@ func set_target(player: FlightAircraft) -> void:
 		player.guns.telemetry_target = session.enemy
 
 func player_destroyed(source: FlightAircraft) -> void:
+	if session.game_mode=="aa_defence":return
 	if ended or source != session.aircraft or stage == 0:
 		return
 	ended = true
@@ -111,6 +112,7 @@ func _confirmed_spawn(token: int) -> void:
 	_spawn_batch()
 
 func _player_live() -> bool:
+	if session.game_mode=="aa_defence" and is_instance_valid(session.malta_mission):return session.malta_mission.pilot.health.hp>0
 	return is_instance_valid(session.aircraft) and not session.aircraft.is_destroyed and not session.aircraft.is_crashed
 
 func _spawn_batch() -> void:

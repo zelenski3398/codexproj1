@@ -4,6 +4,7 @@ var encounters: EnemyEncounters
 var environment_id: String = "countryside"
 var field: Node3D
 var missions_menu: MissionsMenu
+var aa_defence: DiveDefenceMission
 var interception: VallettaInterception
 var malta_menu: MaltaDepartureMenu
 var malta_mission: MaltaMission
@@ -47,6 +48,11 @@ func _ready() -> void:
 func show_selection() -> void:
 	GameAudioMixer.instance.set_menu_active(true)
 	_remember_difficulty()
+	if is_instance_valid(aa_defence):
+		aa_defence.cancel()
+		remove_child(aa_defence)
+		aa_defence.queue_free()
+	aa_defence=null
 	if is_instance_valid(interception):
 		interception.cancel()
 		remove_child(interception)
@@ -125,6 +131,7 @@ func _exported_settings(component: Node) -> Dictionary:
 	return settings
 
 func _remember_difficulty() -> void:
+	if game_mode=="aa_defence":return # mission attack settings never leak into normal encounters
 	# Never copy ace aiming overrides back into normal pilots.
 	if is_instance_valid(enemy) and not enemy.encounter_ace and enemy.aircraft_kind == "stuka":
 		var settings: Dictionary = _exported_settings(enemy.ai)
@@ -269,7 +276,7 @@ func _clear_malta() -> void:
 	environment_id = "countryside"
 
 func start_malta(field_id: String, kind: String, selected_mode: String = "encounter") -> void:
-	if selected_mode not in ["encounter", "survival", "interception"]:
+	if selected_mode not in ["encounter", "survival", "interception", "aa_defence"]:
 		return
 	if MaltaGeography.field(field_id).is_empty() or kind not in ["spitfire", "sea_gladiator"]:
 		return
@@ -305,7 +312,15 @@ func start_malta(field_id: String, kind: String, selected_mode: String = "encoun
 	malta_mission.initial_kind = kind
 	add_child(malta_mission)
 	aircraft = malta_mission.initial_aircraft
-	if game_mode == "interception":
+	if game_mode == "aa_defence":
+		session_number+=1
+		defeat_notifications=0
+		enemy_defeated=false
+		encounters.begin_external()
+		aa_defence=DiveDefenceMission.new()
+		aa_defence.session=self
+		add_child(aa_defence)
+	elif game_mode == "interception":
 		session_number += 1
 		defeat_notifications = 0
 		enemy_defeated = false
@@ -360,6 +375,7 @@ func show_missions() -> void:
 	selector = null
 	missions_menu = MissionsMenu.new()
 	missions_menu.launch_requested.connect(start_interception, CONNECT_DEFERRED)
+	missions_menu.aa_requested.connect(start_aa_defence,CONNECT_DEFERRED)
 	missions_menu.back_requested.connect(show_selection, CONNECT_DEFERRED)
 	add_child(missions_menu)
 
@@ -369,3 +385,6 @@ func start_interception(kind: String) -> void:
 func return_to_missions() -> void:
 	show_selection()
 	show_missions()
+
+func start_aa_defence() -> void:
+	start_malta("luqa","spitfire","aa_defence")

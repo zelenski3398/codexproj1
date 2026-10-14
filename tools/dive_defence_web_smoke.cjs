@@ -1,0 +1,46 @@
+const {chromium}=require('playwright');
+const {spawn}=require('node:child_process');
+const path=require('node:path');
+const assert=require('node:assert/strict');
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
+(async()=>{
+ const server=spawn('python3',['-m','http.server','8772','--bind','127.0.0.1','--directory',path.resolve(__dirname,'../builds/web')],{stdio:'ignore'});
+ let browser;let checks=0;const errors=[];
+ const check=(v,t)=>{assert.ok(v,t);checks++;console.log('PASS: '+t)};
+ try{
+  await delay(500);
+  browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+  const page=await browser.newPage({viewport:{width:1280,height:800}});
+  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+  const state=()=>page.evaluate(()=>window.firstSortieState);
+  const wait=async (fn,argument=null)=>{try{return await page.waitForFunction(fn,argument,{timeout:120000})}catch(e){console.error('STATE',JSON.stringify(await state()),'ERRORS',errors);await page.screenshot({path:'/tmp/dive-web-failure.png'});throw e}};
+  const click=async key=>{const [x,y]=(await state())[key];await page.mouse.click(x,y)};
+  await page.goto('http://127.0.0.1:8772/index.html?smoke=1');
+  await wait(()=>window.firstSortieState?.selecting);
+  await click('missions_button');await wait(()=>window.firstSortieState.missions_selecting);
+  await click('mission_picker');await delay(300);await page.keyboard.press('ArrowUp');await page.keyboard.press('Enter');
+  await wait(()=>window.firstSortieState.mission_selected===1);
+  check((await state()).missions_selecting,'AA mission can be selected without prematurely launching');
+  await click('mission_depart_button');
+  await wait(()=>window.firstSortieState.aa_defence?.phase==='WAIT_MOUNT' && window.firstSortieState.aa_count===6);
+  check((await state()).aa_defence.spawned===0 && (await state()).aa_defence.player_hp===100,'Luqa ground mission waits with healthy independent operator and no enemies');
+  await page.keyboard.down('Control');await delay(1000);await page.keyboard.up('Control');
+  check((await state()).aa_shots===0,'All unoccupied guns ignore firing input');
+  await page.keyboard.press('e');await wait(()=>window.firstSortieState.ground_mode==='gun');
+  check((await state()).ground_reticle && (await state()).aa_mounted===1,'Real browser E mounts one gun with exclusive controls and reticle');
+  await wait(()=>window.firstSortieState.aa_defence.phase==='ACTIVE');
+  check((await state()).aa_defence.wave===1 && (await state()).aa_defence.spawned===1,'Countdown produces exactly one initial Stuka');
+  await wait(()=>window.firstSortieState.aa_defence.markers?.some(Boolean));
+  check((await state()).aa_defence.markers.some(Boolean),'Enemy name marker remains visible through AA camera');
+  await page.keyboard.down('Control');await wait(()=>window.firstSortieState.aa_shots>=2);await page.keyboard.up('Control');
+  check((await state()).aa_shots>=2,'Manual browser Ctrl fires existing shell/effect system');
+  const world=(await state()).world_id;
+  await page.screenshot({path:'/tmp/dive-defence-browser.png'});
+  await page.keyboard.press('e');await wait(()=>window.firstSortieState.ground_mode==='walking');
+  check((await state()).world_id===world && (await state()).aa_defence.wave===1,'Dismount keeps live battle and world');
+  await page.keyboard.press('r');await wait(previous=>window.firstSortieState.world_id!==previous && window.firstSortieState.aa_defence.phase==='WAIT_MOUNT',world);
+  check((await state()).aa_defence.spawned===0 && (await state()).aa_defence.player_hp===100 && (await state()).aa_healthy,'Browser retry resets enemy/wave, health and interaction state');
+  check(errors.length===0,'No browser script/shader/resource errors');
+  console.log(`DIVE DEFENCE WEB RESULT: ${checks}/${checks} passed`);
+ }finally{if(browser)await browser.close();server.kill()}
+})().catch(e=>{console.error(e);process.exitCode=1});

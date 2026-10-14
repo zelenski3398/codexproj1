@@ -726,3 +726,5 @@ Manual airfield controls: E mounts/exits guns and enters/exits trucks; AA uses a
 Malta ground integration: [terrain grading, before/after views and checks](docs/malta-ground-integration.md).
 
 Malta base grading and editable terrain-integrated roads: see [ground integration](docs/malta-ground-integration.md) and [road network, previews and reference-alignment limitations](docs/malta-road-network.md). AA blast damage now falls with actual distance to aircraft components; direct shell impacts are devastating (configurable in `AirfieldAABattery` / `BritishAAGun`).
+
+**Under Dive-Bomber Attack** is available under Missions: defend Ħal Luqa's two manual AA guns through six waves / ten Stukas. [Controls, balance and validation](docs/dive-bomber-defence.md).

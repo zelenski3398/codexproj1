@@ -32,8 +32,13 @@ func _process(delta: float) -> void:
 	var state: Dictionary = {"selecting": session.selector != null, "selected": session.selected_aircraft, "paused": get_tree().paused, "environment": session.environment_id, "airfield_selecting": is_instance_valid(session.malta_menu), "on_foot": is_instance_valid(session.malta_mission) and session.malta_mission.pilot.active}
 	state.missions_selecting = is_instance_valid(session.missions_menu)
 	if is_instance_valid(session.missions_menu):
+		state.mission_picker = _center(session.missions_menu.mission_picker)
+		state.mission_selected = session.missions_menu.mission_picker.selected
 		state.mission_depart_button = _center(session.missions_menu.launch_button)
 		state.mission_back_button = _center(session.missions_menu.back_button)
+	if is_instance_valid(session.aa_defence):
+		var defence: DiveDefenceMission=session.aa_defence
+		state.aa_defence={"phase":defence.phase,"wave":defence.wave,"remaining":defence.alive.size(),"spawned":defence.total_spawned,"lost":defence.total_destroyed,"clock":defence.clock,"bombs":defence.bombs_released,"ordnance":defence.outstanding_ordnance(),"gun_hp":defence.guns.map(func(g):return g.hp),"player_hp":session.malta_mission.pilot.health.hp,"result_count":defence.result_count,"markers":session.encounters.enemy_widgets.values().map(func(w):return w.visible),"retry":_center(defence.retry_button),"return":_center(defence.return_button)}
 	if is_instance_valid(session.interception):
 		state.interception = {"phase": session.interception.phase, "checkpoint_index": session.interception.checkpoint_index, "checkpoint_count": session.interception.definition.checkpoint_positions.size(), "activation_distance": session.interception.activation_distance, "elapsed": session.interception.elapsed, "activated": session.interception.activated, "result": session.interception.final_reason, "marker": session.interception.checkpoint_marker.visible, "nav_checkpoint": session.malta_mission.chart.show_objective, "retry": _center(session.interception.retry_button), "return": _center(session.interception.return_button)}
 		var radio: MissionRadio = session.interception.radio
