@@ -28,3 +28,7 @@ Reproduce with tools/prepare_radio.py and the original supplied MP3.
 AA cannon: original procedural single-shot effect (0.43 s), generated with
 tools/build_aa_sound.py. Bass report, short noise crack and decaying rumble.
 Illustrative sound design, not an authentic historical gun recording.
+
+QF heavy-AA placeholder: lower, extended version of the original procedural
+report, generated with tools/build_heavy_aa_sound.py using FFmpeg. It is original
+illustrative sound design, not an authentic historical artillery recording.

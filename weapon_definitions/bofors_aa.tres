@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AAWeaponDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/aa_weapon_definition.gd" id="1"]
+[resource]
+script = ExtResource("1")
+display_name = "Bofors 40 mm L/60"
+heavy = false
+velocity = 850.0
+reload_seconds = 0.5
+traverse = 45.0
+elevation = 30.0
+recoil_metres = 0.12
+ammunition = 240
+maximum_lifetime = 5.0
+direct_damage = 40.0
+blast_radius = 0.0
+sound_path = "res://assets/audio/aa_cannon_shot.ogg"

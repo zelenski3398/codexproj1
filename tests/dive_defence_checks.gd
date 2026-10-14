@@ -32,7 +32,7 @@ func run() -> void:
 	var mission: DiveDefenceMission=session.aa_defence
 	var controls: AirfieldInteraction=session.malta_mission.interaction
 	var pilot: GroundPilot=session.malta_mission.pilot
-	check(session.home_airfield=="luqa" and mission.guns.size()==2 and session.field.aa_battery.guns.size()==6,"Luqa uses exactly its existing two emplacements; no duplicate guns")
+	check(session.home_airfield=="luqa" and mission.guns.size()==6 and session.field.aa_battery.guns.size()==18,"Luqa uses exactly its four heavy and two light emplacements; no duplicate guns")
 	await frames(240)
 	check(mission.phase=="WAIT_MOUNT" and mission.wave==0 and mission.total_spawned==0,"First wave waits indefinitely for first mount")
 	Input.action_press("fire")
@@ -97,7 +97,8 @@ func run() -> void:
 	await frames(8)
 	check(pilot.active and controls.occupied_gun==null and pilot.health.hp==after and not mission.is_finished(),"Surviving operator exits destroyed gun without healing or automatic remount")
 	check(await mount(mission.guns[1]),"Survivor can approach and mount second gun")
-	mission.guns[1].take_damage(1000)
+	for gun in mission.guns:
+		gun.take_damage(1000)
 	await frames(6)
 	check(mission.phase=="FAILED" and mission.result_count==1,"Both local guns lost fails once despite four other Malta guns")
 	mission=await reset()

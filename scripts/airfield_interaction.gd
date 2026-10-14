@@ -155,7 +155,7 @@ func _process(_delta: float) -> void:
 
 func prompt() -> String:
 	if occupied_gun != null:
-		return "AA GUN · HP %d/%d · BURST RANGE %d m\nARROWS Aim · CTRL Fire · SPACE Fine aim · W/S Range\nE Exit AA Gun · M Map · ESC Pause · R Full restart" % [occupied_gun.hp,occupied_gun.max_hp,occupied_gun.fuse_distance]
+		return occupied_gun.status_text() + "\nARROWS Aim · SPACE Fine aim · E Exit AA Gun · M Map · ESC Pause · R Restart"
 	if occupied_vehicle != null:
 		return "MILITARY TRUCK · %d km/h\nW Forward · S Reverse · A/D Steer · SPACE Brake\nE Exit when stopped · M Map · ESC Pause · R Full restart" % roundi(absf(occupied_vehicle.speed)*3.6)
 	var object := nearest()

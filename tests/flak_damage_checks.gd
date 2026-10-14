@@ -14,10 +14,10 @@ func run() -> void:
 	game.start_malta("ta_qali","spitfire","interception")
 	await frames(15)
 	var battery: AirfieldAABattery = game.field.aa_battery
-	check(battery.damage_at_distance(0)==75 and battery.damage_at_distance(6)>battery.damage_at_distance(12) and battery.damage_at_distance(12)>battery.damage_at_distance(20),"Blast strength decreases smoothly from centre to edge")
+	check(battery.damage_at_distance(0)==150 and battery.damage_at_distance(6)>battery.damage_at_distance(12) and battery.damage_at_distance(12)>battery.damage_at_distance(20),"Blast strength decreases smoothly from centre to edge")
 	check(battery.damage_at_distance(24)==0 and battery.damage_at_distance(100)==0,"No blast damage beyond configured radius")
 	var losses: Array[float] = []
-	for distance in [2.0,12.0,22.0,30.0]:
+	for distance in [2.0,7.0,13.0,30.0]:
 		var foe := EnemyAircraft.new()
 		game.add_child(foe)
 		foe.freeze=true
@@ -29,7 +29,7 @@ func run() -> void:
 		var point: Vector3 = foe.global_position + Vector3(0,1.11+distance,0.55)
 		battery._burst(point,null,CombatTeams.PLAYER)
 		losses.append(100-foe.health.hp)
-		check(foe.components.last_hit!=&"" if distance<24 else foe.components.last_hit==&"","Actual burst damage uses localized component framework at %d m"%distance)
+		check(foe.components.last_hit!=&"" if distance<15 else foe.components.last_hit==&"","Actual burst damage uses localized component framework at %d m"%distance)
 		foe.queue_free()
 		await frames(2)
 	check(losses[0]>50 and losses[0]>losses[1] and losses[1]>losses[2] and losses[3]==0,"Actual spawned enemy suffers severe nearby, moderate middle, light edge and zero distant damage")

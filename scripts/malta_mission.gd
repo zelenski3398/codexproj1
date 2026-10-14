@@ -139,7 +139,7 @@ func board_nearest() -> bool:
 
 func board_aircraft(aircraft: FlightAircraft) -> bool:
 	if session.game_mode=="aa_defence":
-		_message("This mission requires the two AA emplacements; no aircraft fallback")
+		_message("This mission requires the six AA emplacements; no aircraft fallback")
 		return false
 	# Keep the same validation for calls from UI and tests; no remote boarding.
 	if occupied != null or interaction.is_operating() or not pilot.active or aircraft != nearest_serviceable():

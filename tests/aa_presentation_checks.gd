@@ -15,7 +15,7 @@ func run() -> void:
 	await frames(20)
 	var mission: MaltaMission = scene.malta_mission
 	check(mission.board_nearest() and mission.leave_aircraft(),"Board/exit creates the actual hidden flight HUD")
-	var gun: BritishAAGun = mission.world.aa_battery.guns[0]
+	var gun: BritishAAGun = mission.world.aa_battery.guns[4]
 	mission.pilot.global_position = gun.global_position + mission.world.fields.ta_qali.global_basis.x*5 + Vector3.UP*1.05
 	await frames(4)
 	check(mission.interaction.mount_gun(gun),"Mount AA with flight HUD hidden")

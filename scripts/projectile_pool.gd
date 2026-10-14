@@ -3,6 +3,8 @@ extends Node3D
 signal round_finished(point: Vector3, collider: Object, team: int)
 ## Fixed-size world-space pool. No per-shot nodes, rigid bodies, or timers.
 ## Every round (including invisible ones) sweeps its ENTIRE travelled segment.
+@export var shell_definition: AAWeaponDefinition
+@export var gravity: float = 0
 @export var capacity: int = 384
 @export_flags_3d_physics var hit_mask: int = 15
 var active: Array[int] = []
@@ -82,7 +84,7 @@ func spawn(origin: Vector3, velocity: Vector3, life: float, hit_damage: float, s
 	tracers[index].position = origin
 	tracers[index].visible = visible_tracer
 	if velocity.length_squared() > 0.01:
-		tracers[index].look_at(origin + velocity)
+		tracers[index].look_at(origin + velocity, Vector3.RIGHT if absf(velocity.normalized().y) > .99 else Vector3.UP)
 	total_spawned += 1
 	statistics.record_shot(target_distance)
 	return true
@@ -92,7 +94,8 @@ func _physics_process(delta: float) -> void:
 	for slot in range(active.size() - 1, -1, -1):
 		var index := active[slot]
 		var step := minf(delta, lifetimes[index] - ages[index])
-		var next := positions[index] + velocities[index] * step
+		var next := positions[index] + velocities[index] * step + Vector3.DOWN * gravity * step * step * .5
+		velocities[index] += Vector3.DOWN * gravity * step
 		var exclusions: Array[RID] = [excluded[index]]
 		exclusions.append_array(excluded_hitboxes[index])
 		var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(positions[index], next, hit_mask, exclusions)
@@ -116,7 +119,13 @@ func _physics_process(delta: float) -> void:
 			var hp_before: float = hit_aircraft.health.hp if hit_aircraft != null else 0
 			if is_instance_valid(collider) and collider.has_method("take_damage") and CombatTeams.can_damage(teams[index], collider):
 				if collider.has_method("receive_projectile_hit"):
-					collider.call("receive_projectile_hit", damage[index], hit.position)
+					if shell_definition != null and collider is AircraftHitbox:
+						var id: StringName = collider.definition.id
+						var amount: float = shell_definition.direct_damage if shell_definition.heavy else float(shell_definition.location_damage.get(String(id),shell_definition.direct_damage))
+						# Convert final hull HP into existing component input exactly once.
+						collider.receive_projectile_hit(amount / maxf(collider.definition.airframe_multiplier,.001),hit.position)
+					else:
+						collider.call("receive_projectile_hit", damage[index], hit.position)
 				else:
 					collider.call("take_damage", damage[index])
 			if hit_aircraft != null and hit_aircraft.health.hp < hp_before and statistic_generations[index] == statistics.generation:

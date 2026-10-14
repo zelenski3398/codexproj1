@@ -61,7 +61,7 @@ const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   await page.keyboard.down('Control');await delay(1000);await page.keyboard.up('Control');
   check((await state()).aa_shots===rounds && (await state()).aa_mounted===0,'Exited gun never restores autonomous fire');
   await page.keyboard.press('r');await page.waitForFunction(previous=>window.firstSortieState.world_id!==previous && window.firstSortieState.ground_mode==='walking',world,{timeout:120000});
-  check((await state()).truck_count===3 && (await state()).aa_count===6 && (await state()).aa_healthy && (await state()).aa_shots===0,'Browser retry cleans guns, trucks and controllers');
+  check((await state()).truck_count===3 && (await state()).aa_count===18 && (await state()).aa_healthy && (await state()).aa_shots===0,'Browser retry cleans guns, trucks and controllers');
   check(errors.length===0,'No ANGLE browser runtime errors');
   console.log(`GROUND WEB RESULT: ${checks}/${checks} passed`);
  }finally{if(browser)await browser.close();server.kill();}

@@ -84,6 +84,9 @@ func _process(delta: float) -> void:
 		state.fleet_count = session.malta_mission.fleet.size()
 		var aa: AirfieldAABattery = session.malta_mission.world.aa_battery
 		state.aa_count = aa.guns.size()
+		state.aa_heavy_count = aa.guns.filter(func(gun):return gun.weapon.heavy).size()
+		state.aa_light_count = aa.guns.size()-state.aa_heavy_count
+		state.aa_reload = session.malta_mission.interaction.occupied_gun.cooldown if session.malta_mission.interaction.occupied_gun != null else 0
 		state.aa_healthy = aa.guns.all(func(gun): return gun.hp == gun.max_hp)
 		state.aa_mounted = aa.guns.filter(func(gun): return gun.mounted).size()
 		state.aa_shots = 0

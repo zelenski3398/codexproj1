@@ -1,3 +1,5 @@
+The battery now contains four heavy guns and two Bofors, all manual. All six must be lost for emplacement-loss failure. See [current weapon controls and tuning](layered-aa.md); the original two-gun descriptions below are retained as integration history.
+
 # Under Dive-Bomber Attack
 
 Select **Missions → Under Dive-Bomber Attack → Defend Ħal Luqa**. Start beside Luqa's existing two guns. **E** mounts/dismounts; **arrows** aim, **Ctrl** fires (browser also supports F), **Space** gives fine aiming, **W/S** adjusts airburst distance. On foot use WASD and arrow turning; E also operates the existing truck. **M** opens the map, **Escape** pauses, **R** fully retries. This dedicated mission has no aircraft fallback, base-health objective or interception deadline.

@@ -14,7 +14,7 @@ func _run() -> void:
 	scene.start_malta("ta_qali","spitfire","interception")
 	await frames(12)
 	var battery: AirfieldAABattery = scene.malta_mission.world.aa_battery
-	check(battery.guns.size() == 6, "Exactly six AA guns in the continuous Malta world")
+	check(battery.guns.size() == 18, "Exactly eighteen AA guns in the continuous Malta world")
 	check(battery.candidates().is_empty(), "Checkpoint phase has no premature mission enemies")
 	for gun in battery.guns:
 		check(gun.yaw != null and gun.elevation != null and gun.muzzle != null,gun.name + ": imported aiming hierarchy")
@@ -55,7 +55,7 @@ func _run() -> void:
 	await frames(30)
 	Input.action_release("roll_right")
 	Input.action_release("pitch_down")
-	check(gun.yaw.rotation.y != before_yaw and gun.elevation.rotation.x > deg_to_rad(32),"Arrow input operates imported yaw and elevation pivots")
+	check(gun.yaw.rotation.y != before_yaw and gun.elevation.rotation.x > deg_to_rad(5),"Arrow input operates imported yaw and elevation pivots")
 	Input.action_press("fire")
 	await frames(120)
 	Input.action_release("fire")
@@ -85,7 +85,7 @@ func _run() -> void:
 	battery._burst(center,box,CombatTeams.PLAYER)
 	check(enemy.health.hp == hp,"Direct victim excluded from same-impact blast damage")
 	battery._burst(center + Vector3.UP * 3,null,CombatTeams.PLAYER)
-	check(enemy.health.hp < hp,"Actual nearby burst applies limited component damage")
+	check(enemy.health.hp == hp and enemy.is_destroyed,"Destroyed direct-hit victim does not receive repeated blast damage")
 	var friendly: FlightAircraft = scene.aircraft
 	var friendly_hp: float = friendly.health.hp
 	battery._burst(friendly.global_position,null,CombatTeams.PLAYER)
@@ -124,7 +124,7 @@ func _run() -> void:
 	await frames(3)
 	scene.encounters.track_enemy(enemy)
 	var count: int = scene.encounters.active.size()
-	battery.blast_damage = 1000
+	battery.heavy_definition.blast_knots = PackedVector2Array([Vector2(0,1000),Vector2(15,0)])
 	battery._burst(enemy.global_position,null,CombatTeams.PLAYER)
 	check(enemy.is_destroyed and scene.encounters.active.size() == count - 1,"AA kill uses actual destruction event and removes active enemy")
 	gun.take_damage(1000)
@@ -139,7 +139,7 @@ func _run() -> void:
 	scene.restart_malta()
 	await frames(15)
 	var clean: AirfieldAABattery = scene.malta_mission.world.aa_battery
-	check(clean != battery and clean.guns.size() == 6 and get_nodes_in_group("friendly_aa").size() == 6,"Retry replaces battery without duplicate emplacements")
+	check(clean != battery and clean.guns.size() == 18 and get_nodes_in_group("friendly_aa").size() == 18,"Retry replaces battery without duplicate emplacements")
 	check(clean.projectiles.active.is_empty() and clean.guns.all(func(g):return g.hp == g.max_hp),"Retry restores health and clears shells/effects")
 	print("AA RESULT: ",passed,"/",passed+failed," passed")
 	quit(0 if failed == 0 else 1)

@@ -2,18 +2,24 @@ class_name BritishAAGun
 extends StaticBody3D
 ## Manual-only British AA. Empty positions never select targets or aim/fire.
 signal destroyed
+@export var weapon: AAWeaponDefinition
+var ammunition: int = 0
+var clip_remaining: int = 4
+var trigger_held: bool = false
+var fuze_seconds: float = 1.14
+var breech: MeshInstance3D
 @export var max_hp: float = 150
-@export var range_metres: float = 2400
-@export var projectile_speed: float = 700
-@export var rounds_per_second: float = 2.0
-@export var maximum_lifetime: float = 4
-@export var direct_damage: float = 180
-@export var aim_error_degrees: float = 0.35
-@export var traverse_degrees: float = 45
-@export var elevation_degrees: float = 30
+var range_metres: float = 2400
+var projectile_speed: float = 700
+var rounds_per_second: float = 2.0
+var maximum_lifetime: float = 4
+var direct_damage: float = 180
+var aim_error_degrees: float = 0.35
+var traverse_degrees: float = 45
+var elevation_degrees: float = 30
 @export var minimum_elevation_degrees: float = 5
 @export var maximum_elevation_degrees: float = 85
-@export var fuse_distance: float = 900
+var fuse_distance: float = 900
 var hp: float = 150
 var is_destroyed: bool = false
 var mounted: bool = false
@@ -32,6 +38,17 @@ var shots_fired: int = 0
 var rng := RandomNumberGenerator.new()
 
 func _ready() -> void:
+	if weapon == null: weapon = load("res://weapon_definitions/heavy_aa.tres")
+	projectile_speed = weapon.velocity
+	rounds_per_second = 1 / maxf(weapon.reload_seconds,.001)
+	traverse_degrees = weapon.traverse
+	elevation_degrees = weapon.elevation
+	direct_damage = weapon.direct_damage
+	maximum_lifetime = weapon.maximum_lifetime
+	aim_error_degrees = weapon.dispersion_degrees
+	ammunition = weapon.ammunition
+	clip_remaining = weapon.clip_size
+	fuze_seconds = weapon.fuze_seconds
 	add_to_group("friendly_aa")
 	rng.randomize()
 	hp = max_hp
@@ -45,9 +62,16 @@ func _ready() -> void:
 	elevation = model.find_child("ElevationPivot", true, false)
 	muzzle = model.find_child("Muzzle", true, false)
 	elevation_origin = elevation.position
+	if weapon.heavy:
+		# Original heavier cradle/barrel silhouette around the imported emplacement.
+		var steel := MeshKit.material(Color("424a3c"))
+		MeshKit.box(elevation,Vector3(.8,.65,1.8),Vector3(0,0,.4),steel)
+		MeshKit.rod(elevation,Vector3(0,0,0),Vector3(0,0,-4),.15,steel)
+		muzzle.position = Vector3(0,0,-4)
+		breech = MeshKit.box(elevation,Vector3(.55,.3,.5),Vector3(0,.4,1),steel)
 	var label := Label3D.new()
 	label.name = "FriendlyAALabel"
-	label.text = "FRIENDLY AA · MANUAL"
+	label.text = weapon.display_name + " · MANUAL"
 	label.position = Vector3(0, 4, 0)
 	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	label.modulate = Color("acd7ac")
@@ -62,7 +86,7 @@ func _ready() -> void:
 		shape.shape = box
 		shape.position = Vector3(0,0.4,2.8) if spec.x > 3 else Vector3(0,1,0)
 		add_child(shape)
-	flash = MeshKit.sphere(muzzle, Vector3.ONE * 0.35, Vector3.ZERO, MeshKit.material(Color("ffdf98")))
+	flash = MeshKit.sphere(muzzle, Vector3.ONE * (.8 if weapon.heavy else .35), Vector3.ZERO, MeshKit.material(Color("ffdf98")))
 	flash.material_override.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	flash.visible = false
 	camera = Camera3D.new()
@@ -73,9 +97,9 @@ func _ready() -> void:
 	camera.position = Vector3(0,0.22,-1.0)
 	muzzle.add_child(camera)
 	sound = AudioStreamPlayer3D.new()
-	sound.stream = load("res://assets/audio/aa_cannon_shot.ogg")
+	sound.stream = load(weapon.sound_path)
 	sound.bus = "Guns"
-	sound.volume_db = -6
+	sound.volume_db = weapon.sound_volume_db
 	sound.pitch_scale = 1.0
 	sound.unit_size = 25
 	sound.max_distance = 2000
@@ -102,6 +126,7 @@ func start_operation(operator: AirfieldInteraction = null) -> void:
 
 func stop_operation() -> void:
 	mounted = false
+	trigger_held = false
 	operator_session = null
 	sound.stop()
 	flash.visible = false
@@ -112,7 +137,9 @@ func _physics_process(delta: float) -> void:
 	cooldown = maxf(0,cooldown-delta)
 	recoil = maxf(0, recoil - delta * 0.7)
 	elevation.position = elevation_origin + Vector3(0,0,recoil)
-	flash.visible = mounted and recoil > 0.08
+	flash.visible = mounted and recoil > weapon.recoil_metres * .7
+	if breech != null:breech.position.z = 1 + .3 * sin(clampf(cooldown / maxf(weapon.reload_seconds,.001),0,1)*PI)
+	if not weapon.heavy and clip_remaining == 0 and cooldown <= 0:clip_remaining = mini(weapon.clip_size,ammunition)
 	if not mounted or is_destroyed: return
 	if operator_session != null and operator_session.mission_ended():
 		stop_operation()
@@ -120,11 +147,15 @@ func _physics_process(delta: float) -> void:
 	var fine: float = 0.18 if Input.is_action_pressed("brake") else 1.0
 	yaw.rotation.y -= Input.get_axis("roll_left", "roll_right") * deg_to_rad(traverse_degrees) * delta * fine
 	elevation.rotation.x = clampf(elevation.rotation.x + Input.get_axis("pitch_up", "pitch_down") * deg_to_rad(elevation_degrees) * delta * fine, deg_to_rad(minimum_elevation_degrees), deg_to_rad(maximum_elevation_degrees))
-	fuse_distance = clampf(fuse_distance + Input.get_axis("throttle_down", "throttle_up") * 180 * delta,100,range_metres)
-	if Input.is_action_pressed("fire"): fire_round()
+	if weapon.heavy:
+		fuze_seconds = clampf(fuze_seconds + Input.get_axis("throttle_down", "throttle_up") * weapon.fuze_adjustment_per_second * delta,weapon.minimum_fuze_seconds,maximum_lifetime)
+		fuse_distance = fuze_seconds * projectile_speed
+	var pressed := Input.is_action_pressed("fire")
+	if pressed and (not weapon.heavy or not trigger_held):fire_round()
+	trigger_held = pressed
 
 func fire_round() -> bool:
-	if not mounted or is_destroyed or cooldown > 0: return false
+	if not mounted or is_destroyed or cooldown > 0 or ammunition <= 0 or (not weapon.heavy and clip_remaining <= 0): return false
 	if operator_session != null and operator_session.mission_ended(): return false
 	var forward: Vector3 = -muzzle.global_basis.z
 	var spread := deg_to_rad(aim_error_degrees)
@@ -134,12 +165,19 @@ func fire_round() -> bool:
 	query.collide_with_areas = true
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
 	if not hit.is_empty() and hit.collider.has_method("get_team_id") and hit.collider.get_team_id() == CombatTeams.PLAYER: return false
-	if not battery.projectiles.spawn(muzzle.global_position, direction * projectile_speed, minf(fuse_distance/projectile_speed,maximum_lifetime), direct_damage, get_rid(), true, CombatTeams.PLAYER): return false
+	if not battery.pool_for(weapon).spawn(muzzle.global_position, direction * projectile_speed, fuze_seconds if weapon.heavy else maximum_lifetime, direct_damage, get_rid(), true, CombatTeams.PLAYER): return false
 	shots_fired += 1
-	cooldown = 1 / rounds_per_second
-	recoil = 0.12
-	battery.effects.puff(muzzle.global_position, "muzzle", 0.25)
-	if GameAudioMixer.instance.playback_enabled:
+	ammunition -= 1
+	cooldown = weapon.reload_seconds
+	if not weapon.heavy:
+		clip_remaining -= 1
+		if clip_remaining == 0:cooldown += weapon.clip_delay
+	recoil = weapon.recoil_metres
+	battery.effects.puff(muzzle.global_position, "muzzle", .8 if weapon.heavy else .25)
+	var voices := 0
+	for gun in get_tree().get_nodes_in_group("friendly_aa"):
+		if gun.sound.playing:voices += 1
+	if GameAudioMixer.instance.playback_enabled and voices < weapon.simultaneous_reports:
 		sound.pitch_scale = rng.randf_range(0.97,1.03)
 		sound.play()
 	return true
@@ -149,3 +187,6 @@ func _cull_visuals(node: Node) -> void:
 		node.visibility_range_end = 3500
 		node.visibility_range_end_margin = 250
 	for child in node.get_children(): _cull_visuals(child)
+
+func status_text() -> String:
+	return "%s · HP %d/%d · AMMO %d · %s\n%s" % [weapon.display_name,hp,max_hp,ammunition,("RELOAD %.1fs"%cooldown) if cooldown > 0 else "READY",("FUZE %.2fs · W/S adjust · PRESS Ctrl each shot"%fuze_seconds) if weapon.heavy else "CLIP %d/%d · HOLD Ctrl fire"%[clip_remaining,weapon.clip_size]]

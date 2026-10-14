@@ -1,6 +1,8 @@
+Current weapon configuration and damage values: [Layered AA](layered-aa.md). The descriptions below document the original manual-AA integration; weapon timing and battery counts were superseded by the layered AA upgrade.
+
 # Manual AA and airfield truck
 
-Every Malta airfield has two manual AA guns and one drivable military truck. The original countryside test map is unchanged. There is no autonomous targeting, aiming or firing in any friendly AA gun, including empty positions or positions the player has exited.
+Every Malta airfield now has four manual heavy AA guns and two manual Bofors guns and one drivable military truck. The original countryside test map is unchanged. There is no autonomous targeting, aiming or firing in any friendly AA gun, including empty positions or positions the player has exited.
 
 ## Finding the guns
 

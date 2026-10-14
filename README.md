@@ -727,6 +727,8 @@ Malta ground integration: [terrain grading, before/after views and checks](docs/
 
 Malta base grading and editable terrain-integrated roads: see [ground integration](docs/malta-ground-integration.md) and [road network, previews and reference-alignment limitations](docs/malta-road-network.md). AA blast damage now falls with actual distance to aircraft components; direct shell impacts are devastating (configurable in `AirfieldAABattery` / `BritishAAGun`).
 
-**Under Dive-Bomber Attack** is available under Missions: defend Ħal Luqa's two manual AA guns through six waves / ten Stukas. [Controls, balance and validation](docs/dive-bomber-defence.md).
+**Under Dive-Bomber Attack** is available under Missions: defend Ħal Luqa's four heavy and two Bofors manual AA guns through six waves / ten Stukas. [Controls, balance and validation](docs/dive-bomber-defence.md).
 
 [Base access connections](docs/base-access-roads.md) now provide drivable public-road/apron routes to both guns at all three fields. The two obstructed hangar-side links were corrected locally; the terrain and public network were not rebuilt.
+
+Heavy and light Malta AA: [controls, configuration, damage and testing](docs/layered-aa.md). Each airfield now has four manual heavy guns and two manual Bofors.

@@ -39,10 +39,11 @@ func _prepare() -> void:
 		if String(gun.name).begins_with(session.home_airfield):
 			guns.append(gun)
 			gun.destroyed.connect(_queue_resolution)
-	if guns.size()!=2:
-		_finish(false,"Expected the two existing Luqa guns")
+	if guns.size()!=6:
+		_finish(false,"Expected four heavy and two Bofors guns")
 		return
-	centre=(guns[0].global_position+guns[1].global_position)*.5
+	centre=Vector3.ZERO
+	for gun in guns:centre+=gun.global_position/float(guns.size())
 	var pilot: GroundPilot=session.malta_mission.pilot
 	pilot.combat_enabled=true
 	pilot.health.depleted.connect(_queue_resolution)
@@ -50,7 +51,7 @@ func _prepare() -> void:
 	pilot.global_position=session.malta_mission.interaction.find_exit(guns[0],5)
 	if not pilot.global_position.is_finite():pilot.global_position=guns[0].global_position+Vector3(7,1.1,0)
 	pilot.velocity=Vector3.ZERO
-	session.malta_mission._message("E Mount AA Gun · defend both emplacements through six waves")
+	session.malta_mission._message("E Mount AA Gun · defend all six emplacements through six waves")
 
 func is_finished() -> bool:return cancelled or phase in ["SUCCESS","FAILED"]
 func choose_target(slot: int) -> BritishAAGun:
@@ -67,7 +68,7 @@ func _physics_process(delta: float) -> void:
 		if pool.active.is_empty() and pool.spark_times.all(func(t):return t<=0):
 			retired_pools.erase(pool)
 			pool.queue_free()
-	if is_finished() or guns.size()!=2:return
+	if is_finished() or guns.size()!=6:return
 	_queue_resolution()
 	if phase=="WAIT_MOUNT":
 		if guns.has(session.malta_mission.interaction.occupied_gun):
@@ -199,7 +200,7 @@ func _resolve() -> void:
 	_resolution_queued=false
 	if is_finished():return
 	if session.malta_mission.pilot.health.hp<=0:_finish(false,"Operator killed")
-	elif guns.size()==2 and operational_guns()==0:_finish(false,"Both AA emplacements destroyed")
+	elif guns.size()==6 and operational_guns()==0:_finish(false,"All six AA emplacements destroyed")
 	elif wave==6 and total_destroyed==10 and alive.is_empty() and outstanding_ordnance()==0:_finish(true,"All ten Stukas destroyed — airfield defended")
 func _finish(won: bool,reason: String) -> void:
 	if is_finished():return
@@ -266,7 +267,7 @@ func _build_ui() -> void:
 	column.add_child(return_button)
 	results.hide()
 func _process(_delta: float) -> void:
-	if guns.size()!=2:return
+	if guns.size()!=6:return
 	var screen: Vector2=get_viewport().get_visible_rect().size
 	objective.position.x=32
 	objective.size.x=screen.x-64
@@ -279,7 +280,9 @@ func _process(_delta: float) -> void:
 		for foe in alive:
 			if foe.ai is DiveAttackPilot and foe.ai.attack_state=="DIVE":instruction="STUKA DIVING ON THE EMPLACEMENTS — fire or reposition!"
 	elif is_finished():instruction=final_reason
-	objective.text="UNDER DIVE-BOMBER ATTACK · WAVE %d/6 · %d REMAIN\nPLAYER HP %d/100 · AA 1 %d/%d %s · AA 2 %d/%d %s\n%s"%[maxi(wave,1),alive.size(),pilot.health.hp,guns[0].hp,guns[0].max_hp,"LOST" if guns[0].is_destroyed else "READY",guns[1].hp,guns[1].max_hp,"LOST" if guns[1].is_destroyed else "READY",instruction]
+	var health_status := ""
+	for i in range(guns.size()):health_status += " · %s %d: %dHP"%["HEAVY" if guns[i].weapon.heavy else "BOFORS",i+1,guns[i].hp]
+	objective.text="UNDER DIVE-BOMBER ATTACK · WAVE %d/6 · %d REMAIN\nPLAYER HP %d/100%s\n%s"%[maxi(wave,1),alive.size(),pilot.health.hp,health_status,instruction]
 	if phase=="WAIT_MOUNT":objective.text+="\n"+BRIEFING
 	marker.hide()
 	if is_finished() or session.malta_mission.interaction.occupied_gun!=null:return
