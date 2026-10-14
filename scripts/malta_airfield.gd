@@ -4,6 +4,8 @@ extends Node3D
 ## these visual surfaces; buildings retain their own solid collision.
 var record: Dictionary
 var parking: Array[Transform3D] = []
+var access_record: Dictionary
+var apron_surface: MeshInstance3D
 var pilot_spawn: Vector3
 var installations: Array[AirfieldInstallation] = []
 var runway_length: float
@@ -20,7 +22,10 @@ func _ready() -> void:
 	var paint: Material = MeshKit.material(Color("eee0b2"))
 	_surface(Vector2(54,runway_length),Vector3(0,0.015,0),runway)
 	# Apron and taxi lane join the strip physically. Spawn/exit points stay on it.
-	_surface(Vector2(96,230),Vector3(61,0.015,runway_length*0.31),runway)
+	access_record=MaltaBaseAccess.field(String(record.id))
+	var apron_material: ShaderMaterial=(runway as ShaderMaterial).duplicate()
+	MaltaBaseAccess.paint(apron_material,record)
+	apron_surface=_surface(Vector2(96,230),Vector3(61,0.015,runway_length*0.31),apron_material)
 	for z in range(-int(runway_length * 0.46), int(runway_length * 0.46), 75):
 		MeshKit.box(self, Vector3(1.2, 0.025, 24), Vector3(0, 0.025, z), paint)
 	for side in [-1, 1]:
@@ -50,10 +55,10 @@ func _ready() -> void:
 	label.visibility_range_end = 700
 	add_child(label)
 
-func _surface(size: Vector2,pos: Vector3,material: Material) -> void:
+func _surface(size: Vector2,pos: Vector3,material: Material) -> MeshInstance3D:
 	var mesh := PlaneMesh.new()
 	mesh.size = size
-	MeshKit.mesh(self,mesh,material,pos)
+	return MeshKit.mesh(self,mesh,material,pos)
 
 func contains(point: Vector3) -> bool:
 	var local: Vector3 = to_local(point)

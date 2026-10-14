@@ -1,0 +1,19 @@
+extends SceneTree
+func _initialize() -> void:call_deferred("run")
+func run() -> void:
+	var world:=MaltaWorld.new()
+	root.add_child(world)
+	for i in range(12):await process_frame
+	GameAudioMixer.instance.audio_button.hide()
+	var camera:=Camera3D.new()
+	camera.far=100000
+	world.add_child(camera)
+	camera.make_current()
+	for field in world.fields.values():
+		var centre: Vector3=field.to_global(Vector3(65,0,field.runway_length*.31))
+		camera.global_position=centre+field.global_basis*Vector3(190,170,210)
+		camera.look_at(centre)
+		for i in range(8):await process_frame
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png("res://docs/previews/access-"+String(field.record.id)+".png")
+	quit()

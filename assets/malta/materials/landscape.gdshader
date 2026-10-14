@@ -20,7 +20,51 @@ uniform float cliff_slope_start : hint_range(0.0, 1.0) = 0.12;
 uniform float cliff_slope_end : hint_range(0.0, 1.0) = 0.5;
 uniform float wall_strength : hint_range(0.0, 1.0) = 0.55;
 uniform float terrace_strength : hint_range(0.0, 0.3) = 0.08;
+// Focused base-access correction; existing public-road UV masks remain intact.
+// Bounds branch limits extra segment work to the two small corrected areas.
+uniform int access_zone_count = 0;
+uniform vec2 access_zone_min[2];
+uniform vec2 access_zone_max[2];
+uniform int new_access_count = 0;
+uniform vec2 new_access_start[32];
+uniform vec2 new_access_end[32];
+uniform int old_access_count = 0;
+uniform vec2 old_access_start[8];
+uniform vec2 old_access_end[8];
+uniform int access_repair_count = 0;
+uniform vec2 access_repair_start[4];
+uniform vec2 access_repair_end[4];
 varying vec3 terrain_position;
+float segment_distance(vec2 p, vec2 a, vec2 b) {
+    vec2 v = b-a;
+    float t = clamp(dot(p-a,v)/max(dot(v,v),0.001),0.0,1.0);
+    return distance(p,a+v*t);
+}
+float access_mask(vec2 p, float original) {
+    bool nearby = false;
+    for (int i=0;i<2;i++) {
+        if (i>=access_zone_count) { break; }
+        nearby = nearby || (all(greaterThanEqual(p,access_zone_min[i])) && all(lessThanEqual(p,access_zone_max[i])));
+    }
+    if (!nearby) { return original; }
+    float old_d=100000.0;
+    for (int i=0;i<8;i++) {
+        if (i>=old_access_count) { break; }
+        old_d=min(old_d,segment_distance(p,old_access_start[i],old_access_end[i]));
+    }
+    float new_d=100000.0;
+    for (int i=0;i<32;i++) {
+        if (i>=new_access_count) { break; }
+        new_d=min(new_d,segment_distance(p,new_access_start[i],new_access_end[i]));
+    }
+    for (int i=0;i<4;i++) {
+        if (i>=access_repair_count) { break; }
+        new_d=min(new_d,segment_distance(p,access_repair_start[i],access_repair_end[i]));
+    }
+    float keep=smoothstep(7.0,9.0,old_d);
+    float corrected=1.0-smoothstep(2.25,3.75,new_d);
+    return max(original*keep,corrected);
+}
 
 void vertex() {
     terrain_position = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
@@ -67,7 +111,7 @@ void fragment() {
     // UV.x is an offline road coverage mask on the actual terrain vertices.
     // No raised road strip, depth offset, separate floor or runtime projection.
     vec3 road = road_color * (0.97 + (detail.g - 0.5) * 0.14 * detail_fade);
-    ALBEDO = mix(color, road, clamp(UV.x, 0.0, 1.0));
+    ALBEDO = mix(color, road, access_mask(terrain_position.xz,clamp(UV.x,0.0,1.0)));
     ROUGHNESS = 1.0;
     METALLIC = 0.0;
 }

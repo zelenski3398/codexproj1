@@ -38,6 +38,8 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
   check(normal.terrain.material === 'res://assets/malta/materials/landscape.tres', 'Export loads the explicit landscape material resource');
   check(normal.terrain.mesh_count >= 36 && normal.terrain.matching_meshes === normal.terrain.mesh_count, 'All island/road terrain chunks use the same intended material');
   check(normal.terrain.textures.length === 3 && normal.terrain.textures.every(p => p.startsWith('res://assets/malta/landscape/')) && !normal.terrain.vertex_colors_as_albedo, 'Default material loads bundled textures and ignores debug colours');
+  check(normal.base_access_count === 3 && normal.base_access_widths.every(w => w === 4.5) && normal.base_apron_lane_counts.every(n => n === 4), 'Export bundles all three base routes and matching full-width apron lanes');
+  check(normal.corrected_access_segments === 22, 'Browser loads the two focused hangar-avoidance corrections without rebuilding terrain');
   check(normal.enemy_count === 1 && normal.home_airfield === 'luqa' && normal.hp === 100, 'Luqa departure, fleet, player health and one enemy remain intact');
   await page.keyboard.press('Escape');
   await wait(() => window.firstSortieState.paused);

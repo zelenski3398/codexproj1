@@ -75,6 +75,11 @@ func _process(delta: float) -> void:
 		state.hal_far_button = _center(session.malta_menu.chart.buttons.hal_far)
 	if is_instance_valid(session.malta_mission):
 		state.terrain = session.malta_mission.world.terrain_appearance.diagnostic_state()
+		var access_fields: Array=session.malta_mission.world.fields.values()
+		state.base_access_count=access_fields.filter(func(f):return not f.access_record.is_empty()).size()
+		state.base_access_widths=access_fields.map(func(f):return f.access_record.width)
+		state.base_apron_lane_counts=access_fields.map(func(f):return int(f.apron_surface.material_override.get_shader_parameter("access_count")))
+		state.corrected_access_segments=int(MaltaTerrainAppearance.LANDSCAPE.get_shader_parameter("new_access_count"))
 		state.world_id = session.malta_mission.world.get_instance_id()
 		state.fleet_count = session.malta_mission.fleet.size()
 		var aa: AirfieldAABattery = session.malta_mission.world.aa_battery
