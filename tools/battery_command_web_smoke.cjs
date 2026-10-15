@@ -23,6 +23,7 @@ const delay=ms=>new Promise(r=>setTimeout(r,ms));
   await wait(()=>window.firstSortieState.command_posts?.length===3 && window.firstSortieState.defence_sounds?.intro_count===1);
   check((await state()).aa_count===18,'Browser world retains four heavy and two Bofors per field plus one separate command post');
   check((await state()).defence_sounds.intro_count===1,'Supplied Harrington mission introduction starts once in web build');
+  check((await state()).defence_sounds.siren && (await state()).defence_sounds.siren_loop,'Air-raid alarm already loops at mission start before mounting');
   const goal=(await state()).command_posts.find(p=>p.field==='luqa').position;
   const held=new Set();
   for(let tick=0;tick<500;tick++){
@@ -49,8 +50,8 @@ const delay=ms=>new Promise(r=>setTimeout(r,ms));
   const post=(await state()).command_posts.find(p=>p.mounted);
   check(post.salvos===1 && post.shots===4 && (await state()).aa_shots===4,'One LMB decision produces four physical gun shots with individual reloads');
   await page.screenshot({path:'/tmp/battery-command-browser.png'});
-  await wait(()=>window.firstSortieState.defence_sounds.warnings.includes(1));
-  check((await state()).defence_sounds.warnings.filter(n=>n===1).length===1,'Approaching Stukas activate the supplied air-raid warning once');
+  await wait(()=>window.firstSortieState.defence_sounds.siren);
+  check((await state()).defence_sounds.siren_starts===1 && (await state()).defence_sounds.siren_loop,'Mission air-raid siren loops without stacking or restarting for a wave');
   await page.keyboard.press('f');await wait(()=>window.firstSortieState.ground_mode==='walking' && document.pointerLockElement===null);
   check(!(await state()).command_posts.some(p=>p.mounted || p.pending>0),'F dismount restores walking and clears coordinated orders');
   await wait(()=>window.firstSortieState.defence_sounds.dives.some(n=>n>0));

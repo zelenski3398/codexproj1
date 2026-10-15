@@ -21,19 +21,20 @@ func run() -> void:
 	check(not sound.radio.subtitle.visible,"No invented speech transcript is displayed")
 	check(absf(sound.radio.voice_clip.get_length()-30.19755)<.02,"Complete 30.2-second supplied radio recording retained")
 	check(GameAudioMixer.instance.radio_duck_db==-8,"Mission introduction ducks engine/gun/siren mix")
-	check(sound.warned_waves.is_empty() and not sound.siren.playing,"No premature siren before approaching aircraft exist")
+	check(sound.siren.playing and sound.siren.stream.loop and mission.wave==0,"Air-raid siren loops immediately while on foot before any enemy spawns")
 	var interaction: AirfieldInteraction=game.malta_mission.interaction
 	var gun: BritishAAGun=mission.guns[0]
 	game.malta_mission.pilot.global_position=interaction.find_exit(gun,5)
 	await frames(2)
 	interaction.mount_gun(gun)
 	await frames(2)
+	check(sound.siren.playing and mission.phase=="PREPARING","Siren continues through gun mounting and wave preparation")
 	mission.clock=.01
 	await frames(15)
 	var foe: EnemyAircraft=mission.alive[0]
-	check(sound.warned_waves==[1] and sound.siren.playing,"First approaching wave triggers positional air-raid siren")
+	check(sound.siren_starts==1 and sound.siren.playing,"First wave keeps the existing positional siren playing without restarting")
 	await frames(20)
-	check(sound.warned_waves==[1],"One approach never duplicates the air-raid warning")
+	check(sound.siren_starts==1 and sound.siren.playing,"Ongoing alarm never stacks or restarts each frame")
 	var dive: StukaDiveAudio
 	for child in foe.get_children():
 		if child is StukaDiveAudio:dive=child
@@ -58,15 +59,21 @@ func run() -> void:
 	foe.take_damage(1000)
 	dive._process(.4)
 	check(not dive.player.playing,"Destroyed aircraft cannot continue its attack siren")
+	mission.phase="INTERVAL"
+	mission.clock=10
+	await frames(3)
+	check(sound.siren.playing and sound.siren_starts==1,"Alarm remains continuous between waves without enemies")
+	mission._finish(true,"Audio lifecycle test")
+	check(not sound.siren.playing,"Mission result stops the continuous alarm")
 	mission.cancel()
 	check(not sound.siren.playing and not sound.radio.player.playing and GameAudioMixer.instance.radio_owner==0,"Leaving/cancelling mission stops all sounds and restores previous mix")
 	game.restart_malta()
 	await frames(20)
-	check(game.aa_defence.audio!=sound and game.aa_defence.audio.radio.transmissions_played==1 and game.aa_defence.audio.warned_waves.is_empty(),"Retry owns fresh one-shot intro and resets wave warning latches")
+	check(game.aa_defence.audio!=sound and game.aa_defence.audio.radio.transmissions_played==1 and game.aa_defence.audio.siren.playing and game.aa_defence.audio.siren_starts==1,"Retry stops old alarm and starts exactly one fresh mission-long siren")
 	game.restart_malta()
 	var aborted: DiveDefenceAudio=game.aa_defence.audio
 	game.aa_defence.cancel()
 	await frames(3)
-	check(aborted.radio.transmissions_played==0 and GameAudioMixer.instance.radio_owner==0,"Immediate cancellation suppresses queued introduction and cannot steal the next radio mix")
+	check(aborted.radio.transmissions_played==0 and aborted.siren_starts==0 and not aborted.siren.playing and GameAudioMixer.instance.radio_owner==0,"Immediate cancellation suppresses both queued siren and introduction")
 	print("DEFENCE SOUND RESULT: ",passed,"/",passed+failed," passed")
 	quit(0 if failed==0 else 1)
