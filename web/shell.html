@@ -45,6 +45,7 @@ const canvas = document.getElementById('canvas');
 let loading = false;
 const missing = Engine.getMissingFeatures({threads: $GODOT_THREADS_ENABLED});
 canvas.addEventListener('pointerdown',()=>canvas.focus());
+canvas.addEventListener('contextmenu',event=>event.preventDefault());
 async function startGame(){
   if(loading || missing.length) return;
   loading = true;

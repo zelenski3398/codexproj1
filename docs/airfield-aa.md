@@ -1,3 +1,5 @@
+**Current AA controls/ammunition:** [Mouse aiming, sight zoom and unlimited automatic reloads](aa-mouse-controls.md). The finite ammunition/clip descriptions below document the earlier implementation and are superseded.
+
 Current weapon configuration and damage values: [Layered AA](layered-aa.md). The descriptions below document the original manual-AA integration; weapon timing and battery counts were superseded by the layered AA upgrade.
 
 # Manual AA and airfield truck

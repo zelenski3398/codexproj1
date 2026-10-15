@@ -16,6 +16,9 @@ var initial_aircraft: FlightAircraft
 var canvas: CanvasLayer
 var status: Label
 var chart_panel: PanelContainer
+var aa_settings: PanelContainer
+var aa_sensitivity: HSlider
+var aa_sensitivity_label: Label
 var chart: MaltaChart
 var notice: String = ""
 var notice_time: float = 0
@@ -92,6 +95,25 @@ func _build_ui() -> void:
 	legend.text = "WHITE: you / heading    GOLD: home    RED: enemy / GOLD ACE: ace\nMap does not pause flight. North is up; grid spacing 5 km."
 	column.add_child(legend)
 	chart_panel.visible = false
+	aa_settings = PanelContainer.new()
+	aa_settings.position = Vector2(850,270)
+	aa_settings.custom_minimum_size = Vector2(350,150)
+	canvas.add_child(aa_settings)
+	var settings_column := VBoxContainer.new()
+	aa_settings.add_child(settings_column)
+	aa_sensitivity_label = Label.new()
+	settings_column.add_child(aa_sensitivity_label)
+	aa_sensitivity = HSlider.new()
+	aa_sensitivity.min_value = .2
+	aa_sensitivity.max_value = 3
+	aa_sensitivity.step = .05
+	aa_sensitivity.value = AAMouseControls.sensitivity
+	aa_sensitivity.value_changed.connect(AAMouseControls.set_sensitivity)
+	settings_column.add_child(aa_sensitivity)
+	var help := Label.new()
+	help.text = "Mouse aims · LMB fire · RMB sight zoom\nESC resumes · click view to recapture mouse"
+	settings_column.add_child(help)
+	aa_settings.hide()
 
 func _input(event: InputEvent) -> void:
 	if event.is_echo():
@@ -209,6 +231,10 @@ func _message(value: String) -> void:
 	notice_time = 5
 
 func _process(delta: float) -> void:
+	var show_settings: bool = get_tree().paused and interaction.occupied_gun != null
+	if show_settings and not aa_settings.visible:aa_sensitivity.set_value_no_signal(AAMouseControls.sensitivity)
+	aa_settings.visible = show_settings
+	aa_sensitivity_label.text = "AA mouse sensitivity: %.2f×"%AAMouseControls.sensitivity
 	chart.show_objective = is_instance_valid(session.interception) and session.interception.phase == "CHECKPOINT"
 	if chart.show_objective:
 		chart.objective_position = session.interception.current_checkpoint()

@@ -70,7 +70,7 @@ func mount_gun(gun: BritishAAGun) -> bool:
 		# Hidden seated visual, live collision capsule at the actual operator.
 		mission.pilot.global_position=gun.to_global(Vector3(0,1.45,1.55))
 	sight.visible = true
-	mission._message("AA mounted · lead targets manually; W/S sets the airburst distance")
+	mission._message("Mouse aims · LMB fire · RMB zoom · ESC releases cursor; click to recapture")
 	return true
 
 func enter_vehicle(truck: MilitaryTruck) -> bool:
@@ -155,7 +155,7 @@ func _process(_delta: float) -> void:
 
 func prompt() -> String:
 	if occupied_gun != null:
-		return occupied_gun.status_text() + "\nARROWS Aim · SPACE Fine aim · E Exit AA Gun · M Map · ESC Pause · R Restart"
+		return occupied_gun.status_text() + "\nMOUSE Aim · LMB Fire · RMB Zoom · arrows alternative · SPACE Fine aim · E Exit AA Gun · M Map · ESC Pause · R Restart"
 	if occupied_vehicle != null:
 		return "MILITARY TRUCK · %d km/h\nW Forward · S Reverse · A/D Steer · SPACE Brake\nE Exit when stopped · M Map · ESC Pause · R Full restart" % roundi(absf(occupied_vehicle.speed)*3.6)
 	var object := nearest()

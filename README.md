@@ -732,3 +732,5 @@ Malta base grading and editable terrain-integrated roads: see [ground integratio
 [Base access connections](docs/base-access-roads.md) now provide drivable public-road/apron routes to both guns at all three fields. The two obstructed hangar-side links were corrected locally; the terrain and public network were not rebuilt.
 
 Heavy and light Malta AA: [controls, configuration, damage and testing](docs/layered-aa.md). Each airfield now has four manual heavy guns and two manual Bofors.
+
+AA now uses [relative mouse aiming, LMB fire, RMB sight zoom and unlimited ammunition](docs/aa-mouse-controls.md). Pause while mounted to adjust AA sensitivity.

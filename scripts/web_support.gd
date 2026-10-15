@@ -87,6 +87,8 @@ func _process(delta: float) -> void:
 		state.aa_heavy_count = aa.guns.filter(func(gun):return gun.weapon.heavy).size()
 		state.aa_light_count = aa.guns.size()-state.aa_heavy_count
 		state.aa_reload = session.malta_mission.interaction.occupied_gun.cooldown if session.malta_mission.interaction.occupied_gun != null else 0
+		var mounted: BritishAAGun = session.malta_mission.interaction.occupied_gun
+		state.aa_mouse = {"captured":Input.mouse_mode==Input.MOUSE_MODE_CAPTURED,"armed":mounted!=null and not mounted.mouse_controls.release_fire,"sensitivity":AAMouseControls.sensitivity,"yaw":mounted.yaw.rotation.y if mounted!=null else 0,"pitch":mounted.elevation.rotation.x if mounted!=null else 0,"fov":mounted.camera.fov if mounted!=null else 58,"settings":session.malta_mission.aa_settings.visible,"slider":_center(session.malta_mission.aa_sensitivity)}
 		state.aa_healthy = aa.guns.all(func(gun): return gun.hp == gun.max_hp)
 		state.aa_mounted = aa.guns.filter(func(gun): return gun.mounted).size()
 		state.aa_shots = 0

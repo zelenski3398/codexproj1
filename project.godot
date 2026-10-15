@@ -19,6 +19,15 @@ window/stretch/mode="canvas_items"
 
 [input]
 
+aa_fire={
+"deadzone": 0.2,
+"events": [Object(InputEventMouseButton,"button_index":1)]
+}
+aa_zoom={
+"deadzone": 0.2,
+"events": [Object(InputEventMouseButton,"button_index":2)]
+}
+
 debug_terrain_heatmap={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"physical_keycode":4194335), Object(InputEventKey,"keycode":4194335)]

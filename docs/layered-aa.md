@@ -1,3 +1,5 @@
+**Current AA controls/ammunition:** [Mouse aiming, sight zoom and unlimited automatic reloads](aa-mouse-controls.md). The finite ammunition/clip descriptions below document the earlier implementation and are superseded.
+
 # Layered Malta airfield defence
 
 Each of the three existing airfields has four QF 3.7-inch inspired heavy positions and two Bofors 40 mm positions. All six are manual, independently damageable, and persist through dismounting. They occupy the existing graded apron at X37, clear of the runway, parking and X78 driving lane. The original north/south positions and road access remain intact. The dive-defence mission now tracks all six local guns, failing if all are lost; its six waves, operator death, delayed ordnance drain and aircraft combat are preserved.

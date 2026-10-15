@@ -3,8 +3,7 @@ extends StaticBody3D
 ## Manual-only British AA. Empty positions never select targets or aim/fire.
 signal destroyed
 @export var weapon: AAWeaponDefinition
-var ammunition: int = 0
-var clip_remaining: int = 4
+var mouse_controls: AAMouseControls
 var trigger_held: bool = false
 var fuze_seconds: float = 1.14
 var breech: MeshInstance3D
@@ -46,8 +45,6 @@ func _ready() -> void:
 	direct_damage = weapon.direct_damage
 	maximum_lifetime = weapon.maximum_lifetime
 	aim_error_degrees = weapon.dispersion_degrees
-	ammunition = weapon.ammunition
-	clip_remaining = weapon.clip_size
 	fuze_seconds = weapon.fuze_seconds
 	add_to_group("friendly_aa")
 	rng.randomize()
@@ -105,6 +102,9 @@ func _ready() -> void:
 	sound.max_distance = 2000
 	sound.playback_type = AudioServer.PLAYBACK_TYPE_SAMPLE if OS.has_feature("web") else AudioServer.PLAYBACK_TYPE_STREAM
 	muzzle.add_child(sound)
+	mouse_controls = AAMouseControls.new()
+	mouse_controls.gun = self
+	add_child(mouse_controls)
 
 func get_team_id() -> int:
 	return CombatTeams.PLAYER
@@ -123,8 +123,10 @@ func start_operation(operator: AirfieldInteraction = null) -> void:
 	mounted = true
 	operator_session = operator
 	camera.make_current()
+	mouse_controls.begin()
 
 func stop_operation() -> void:
+	if mounted:mouse_controls.finish()
 	mounted = false
 	trigger_held = false
 	operator_session = null
@@ -139,24 +141,23 @@ func _physics_process(delta: float) -> void:
 	elevation.position = elevation_origin + Vector3(0,0,recoil)
 	flash.visible = mounted and recoil > weapon.recoil_metres * .7
 	if breech != null:breech.position.z = 1 + .3 * sin(clampf(cooldown / maxf(weapon.reload_seconds,.001),0,1)*PI)
-	if not weapon.heavy and clip_remaining == 0 and cooldown <= 0:clip_remaining = mini(weapon.clip_size,ammunition)
 	if not mounted or is_destroyed: return
 	if operator_session != null and operator_session.mission_ended():
 		stop_operation()
 		return
-	var fine: float = 0.18 if Input.is_action_pressed("brake") else 1.0
-	yaw.rotation.y -= Input.get_axis("roll_left", "roll_right") * deg_to_rad(traverse_degrees) * delta * fine
-	elevation.rotation.x = clampf(elevation.rotation.x + Input.get_axis("pitch_up", "pitch_down") * deg_to_rad(elevation_degrees) * delta * fine, deg_to_rad(minimum_elevation_degrees), deg_to_rad(maximum_elevation_degrees))
+	if mouse_controls.blocked():
+		trigger_held = true
+		return
 	if weapon.heavy:
 		fuze_seconds = clampf(fuze_seconds + Input.get_axis("throttle_down", "throttle_up") * weapon.fuze_adjustment_per_second * delta,weapon.minimum_fuze_seconds,maximum_lifetime)
 		fuse_distance = fuze_seconds * projectile_speed
-	var pressed := Input.is_action_pressed("fire")
+	var pressed := mouse_controls.sample(delta)
 	if pressed and (not weapon.heavy or not trigger_held):fire_round()
 	trigger_held = pressed
 
 func fire_round() -> bool:
-	if not mounted or is_destroyed or cooldown > 0 or ammunition <= 0 or (not weapon.heavy and clip_remaining <= 0): return false
-	if operator_session != null and operator_session.mission_ended(): return false
+	if not mounted or is_destroyed or cooldown > 0: return false
+	if mouse_controls.blocked(): return false
 	var forward: Vector3 = -muzzle.global_basis.z
 	var spread := deg_to_rad(aim_error_degrees)
 	var direction := (forward + muzzle.global_basis.x * rng.randfn(0,spread) + muzzle.global_basis.y * rng.randfn(0,spread)).normalized()
@@ -167,11 +168,7 @@ func fire_round() -> bool:
 	if not hit.is_empty() and hit.collider.has_method("get_team_id") and hit.collider.get_team_id() == CombatTeams.PLAYER: return false
 	if not battery.pool_for(weapon).spawn(muzzle.global_position, direction * projectile_speed, fuze_seconds if weapon.heavy else maximum_lifetime, direct_damage, get_rid(), true, CombatTeams.PLAYER): return false
 	shots_fired += 1
-	ammunition -= 1
 	cooldown = weapon.reload_seconds
-	if not weapon.heavy:
-		clip_remaining -= 1
-		if clip_remaining == 0:cooldown += weapon.clip_delay
 	recoil = weapon.recoil_metres
 	battery.effects.puff(muzzle.global_position, "muzzle", .8 if weapon.heavy else .25)
 	var voices := 0
@@ -189,4 +186,4 @@ func _cull_visuals(node: Node) -> void:
 	for child in node.get_children(): _cull_visuals(child)
 
 func status_text() -> String:
-	return "%s · HP %d/%d · AMMO %d · %s\n%s" % [weapon.display_name,hp,max_hp,ammunition,("RELOAD %.1fs"%cooldown) if cooldown > 0 else "READY",("FUZE %.2fs · W/S adjust · PRESS Ctrl each shot"%fuze_seconds) if weapon.heavy else "CLIP %d/%d · HOLD Ctrl fire"%[clip_remaining,weapon.clip_size]]
+	return "%s · HP %d/%d · AMMO ∞ · %s\n%s" % [weapon.display_name,hp,max_hp,("AUTO RELOAD %.1fs"%cooldown) if cooldown > 0 else "READY",("FUZE %.2fs · W/S adjust · LMB single shot"%fuze_seconds) if weapon.heavy else "HOLD LMB · 2 shots/sec"]
