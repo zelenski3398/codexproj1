@@ -121,6 +121,14 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("navigation_map"):
 		chart_panel.visible = not chart_panel.visible
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("battery_command") and not get_tree().paused:
+		if interaction.occupied_gun is AACommandStation:
+			interaction.occupied_gun.cancel_orders()
+			interaction.call_deferred("leave_gun")
+			get_viewport().set_input_as_handled()
+		elif interaction.nearest_command()!=null:
+			interaction.call_deferred("mount_gun",interaction.nearest_command())
+			get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("board") and not get_tree().paused:
 		if is_instance_valid(occupied): call_deferred("leave_aircraft")
 		else: interaction.call_deferred("interact")

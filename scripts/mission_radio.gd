@@ -4,6 +4,7 @@ extends Node
 ## supplied recording offline so desktop streaming and web samples sound alike.
 ## Missing speech stays silent: no generated speech, beep or noise replacement.
 const FORMATION_LINE: String = "Italian formation detected, one o’clock — intercept!"
+@export var subtitle_text: String = FORMATION_LINE
 @export var voice_clip: AudioStream
 @export_range(-24, 6, 0.5) var voice_volume_db: float = 0
 @export_range(-12, 0, 0.5) var duck_db: float = -4
@@ -40,7 +41,7 @@ func _ready() -> void:
 	subtitle.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	subtitle.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	subtitle.text = "COMMANDER: “" + FORMATION_LINE + "”"
+	subtitle.text = "COMMANDER: “" + subtitle_text + "”"
 	subtitle.add_theme_font_size_override("font_size", 22)
 	subtitle.add_theme_color_override("font_shadow_color", Color.BLACK)
 	subtitle.add_theme_constant_override("shadow_offset_x", 2)
@@ -72,7 +73,7 @@ func transmit_formation(_distance: float = 0) -> void:
 	player.volume_db = voice_volume_db
 	player.play()
 	transmissions_played += 1
-	subtitle.show()
+	if not subtitle_text.is_empty():subtitle.show()
 
 func stop() -> void:
 	if is_instance_valid(player):

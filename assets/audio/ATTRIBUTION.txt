@@ -32,3 +32,12 @@ Illustrative sound design, not an authentic historical gun recording.
 QF heavy-AA placeholder: lower, extended version of the original procedural
 report, generated with tools/build_heavy_aa_sound.py using FFmpeg. It is original
 illustrative sound design, not an authentic historical artillery recording.
+
+AA-defence recordings supplied by the project owner:
+stuka_jericho_trumpet.wav, malta_wwii_air_raid_siren.wav,
+colonel_harrington_wwii_radio_static.wav. Runtime Ogg versions preserve the
+complete supplied content with mono 44.1 kHz loudness normalization (-19 LUFS,
+-2 dB true peak). Source SHA-256 hashes and conversion settings are in
+assets/audio/defence/sources.json. No replacement speech or siren was generated;
+no verified transcript was supplied, so the introduction has no invented subtitle.
+These filenames alone do not establish historical recording authenticity.

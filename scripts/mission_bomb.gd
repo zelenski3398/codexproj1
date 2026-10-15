@@ -60,7 +60,7 @@ func explode(point: Vector3) -> void:
 				var hit:=get_world_3d().direct_space_state.intersect_ray(ray)
 				cover+=1.0 if hit.is_empty() else (sandbag_transmission if hit.collider is BritishAAGun else (.6 if hit.collider is MilitaryTruck else 0.0))
 			receivers.append([pilot,pilot_blast_damage*(1-d/aa_blast_radius)*cover/3])
-	for gun in get_tree().get_nodes_in_group("friendly_aa"):
+	for gun in get_tree().get_nodes_in_group("friendly_aa")+get_tree().get_nodes_in_group("friendly_aa_commands"):
 		var d: float=gun.global_position.distance_to(point)
 		if d>=aa_blast_radius:continue
 		var ray:=PhysicsRayQueryParameters3D.create(point+Vector3.UP*.2,gun.global_position+Vector3.UP,1)

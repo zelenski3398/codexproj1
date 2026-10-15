@@ -4,6 +4,7 @@ extends Node3D
 @export var aerial_burst_visual_scale: float = 4.0
 var world: MaltaWorld
 var guns: Array[BritishAAGun] = []
+var command_stations: Array[BritishAAGun] = []
 var projectiles: ProjectilePool
 var light_projectiles: ProjectilePool
 var heavy_definition: AAWeaponDefinition = preload("res://weapon_definitions/heavy_aa.tres")
@@ -41,6 +42,16 @@ func _place() -> void:
 			add_child(gun)
 			gun.global_transform = field.global_transform * Transform3D(Basis.IDENTITY,local)
 			guns.append(gun)
+
+		var station:=AACommandStation.new()
+		station.battery=self
+		station.field_id=String(field.record.id)
+		station.name=station.field_id+"_Battery_Command"
+		for gun in guns:
+			if gun.name.begins_with(station.field_id) and gun.weapon.heavy:station.battery_guns.append(gun)
+		add_child(station)
+		station.global_transform=field.global_transform*Transform3D(Basis.IDENTITY,Vector3(47,.025,field.runway_length*.31-80))
+		command_stations.append(station)
 
 func pool_for(definition: AAWeaponDefinition) -> ProjectilePool:
 	return projectiles if definition.heavy else light_projectiles

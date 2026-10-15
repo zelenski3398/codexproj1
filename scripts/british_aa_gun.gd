@@ -3,6 +3,7 @@ extends StaticBody3D
 ## Manual-only British AA. Empty positions never select targets or aim/fire.
 signal destroyed
 @export var weapon: AAWeaponDefinition
+var command_station: Node3D
 var mouse_controls: AAMouseControls
 var trigger_held: bool = false
 var fuze_seconds: float = 1.14
@@ -139,8 +140,11 @@ func _physics_process(delta: float) -> void:
 	cooldown = maxf(0,cooldown-delta)
 	recoil = maxf(0, recoil - delta * 0.7)
 	elevation.position = elevation_origin + Vector3(0,0,recoil)
-	flash.visible = mounted and recoil > weapon.recoil_metres * .7
+	flash.visible = (mounted or (is_instance_valid(command_station) and command_station.command_active())) and recoil > weapon.recoil_metres * .7
 	if breech != null:breech.position.z = 1 + .3 * sin(clampf(cooldown / maxf(weapon.reload_seconds,.001),0,1)*PI)
+	if not mounted and is_instance_valid(command_station):
+		command_station.drive_gun(self,delta)
+		return
 	if not mounted or is_destroyed: return
 	if operator_session != null and operator_session.mission_ended():
 		stop_operation()
@@ -155,9 +159,11 @@ func _physics_process(delta: float) -> void:
 	if pressed and (not weapon.heavy or not trigger_held):fire_round()
 	trigger_held = pressed
 
-func fire_round() -> bool:
-	if not mounted or is_destroyed or cooldown > 0: return false
-	if mouse_controls.blocked(): return false
+func fire_round(command_order: bool = false) -> bool:
+	if is_destroyed or cooldown > 0:return false
+	if command_order:
+		if not is_instance_valid(command_station) or not command_station.command_active() or not command_station.orders.has(self):return false
+	elif not mounted or mouse_controls.blocked():return false
 	var forward: Vector3 = -muzzle.global_basis.z
 	var spread := deg_to_rad(aim_error_degrees)
 	var direction := (forward + muzzle.global_basis.x * rng.randfn(0,spread) + muzzle.global_basis.y * rng.randfn(0,spread)).normalized()

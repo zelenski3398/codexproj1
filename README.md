@@ -734,3 +734,5 @@ Malta base grading and editable terrain-integrated roads: see [ground integratio
 Heavy and light Malta AA: [controls, configuration, damage and testing](docs/layered-aa.md). Each airfield now has four manual heavy guns and two manual Bofors.
 
 AA now uses [relative mouse aiming, LMB fire, RMB sight zoom and unlimited ammunition](docs/aa-mouse-controls.md). Pause while mounted to adjust AA sensitivity.
+
+[Heavy battery command and supplied defence recordings](docs/battery-command-and-defence-audio.md): walk to a predictor post and press F, RMB designate, LMB issue a staggered four-gun salvo. Individual guns and unlimited ammunition remain available.

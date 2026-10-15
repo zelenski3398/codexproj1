@@ -18,6 +18,7 @@ var total_destroyed: int=0
 var bombs_released: int=0
 var result_count: int=0
 var final_reason: String=""
+var audio: DiveDefenceAudio
 var effects: Node3D
 var canvas: CanvasLayer
 var objective: Label
@@ -32,6 +33,9 @@ func _ready() -> void:
 	effects=Node3D.new()
 	add_child(effects)
 	_build_ui()
+	audio=DiveDefenceAudio.new()
+	audio.director=self
+	add_child(audio)
 	call_deferred("_prepare")
 
 func _prepare() -> void:
@@ -60,6 +64,7 @@ func choose_target(slot: int) -> BritishAAGun:
 		if is_instance_valid(gun) and not gun.is_destroyed:available.append(gun)
 	if available.is_empty():return null
 	var mounted: BritishAAGun=session.malta_mission.interaction.occupied_gun
+	if mounted is AACommandStation and not mounted.is_destroyed and mounted.field_id==session.home_airfield and slot%2==0:return mounted
 	if mounted!=null and available.has(mounted) and slot%2==0:return mounted
 	return available[slot%available.size()]
 
@@ -71,7 +76,7 @@ func _physics_process(delta: float) -> void:
 	if is_finished() or guns.size()!=6:return
 	_queue_resolution()
 	if phase=="WAIT_MOUNT":
-		if guns.has(session.malta_mission.interaction.occupied_gun):
+		if guns.has(session.malta_mission.interaction.occupied_gun) or (session.malta_mission.interaction.occupied_gun is AACommandStation and session.malta_mission.interaction.occupied_gun.field_id==session.home_airfield):
 			phase="PREPARING"
 			clock=definition.first_countdown
 	elif phase in ["PREPARING","INTERVAL"]:
@@ -136,6 +141,7 @@ func _spawn_wave() -> void:
 		foe.health.changed.connect(_retain_hostile_rounds.bind(foe))
 		foe.destroyed.connect(_enemy_destroyed.bind(foe))
 		alive.append(foe)
+		audio.attach(foe)
 		total_spawned+=1
 	session.encounter_tracking_changed()
 	phase="ACTIVE"
@@ -204,13 +210,14 @@ func _resolve() -> void:
 	elif wave==6 and total_destroyed==10 and alive.is_empty() and outstanding_ordnance()==0:_finish(true,"All ten Stukas destroyed — airfield defended")
 func _finish(won: bool,reason: String) -> void:
 	if is_finished():return
+	audio.stop()
 	phase="SUCCESS" if won else "FAILED"
 	final_reason=reason
 	result_count+=1
 	if session.malta_mission.interaction.occupied_vehicle!=null:session.malta_mission.interaction.occupied_vehicle.stop_driving()
 	session.encounters.ended=true
 	session.encounters.awaiting_confirmation=false
-	for gun in session.malta_mission.world.aa_battery.guns:gun.stop_operation()
+	for gun in session.malta_mission.world.aa_battery.guns+session.malta_mission.world.aa_battery.command_stations:gun.stop_operation()
 	for foe in session.encounters.active:
 		foe.ai.set_physics_process(false)
 		foe.pilot.fire=false
@@ -219,6 +226,9 @@ func _finish(won: bool,reason: String) -> void:
 	results.visible=true
 	results.get_child(0).get_child(0).text=("MISSION COMPLETE\n" if won else "MISSION FAILED\n")+reason
 func cancel() -> void:
+	if is_instance_valid(audio):audio.stop()
+	for station in session.malta_mission.world.aa_battery.command_stations:
+		if is_instance_valid(station):station.stop_operation()
 	cancelled=true
 	for gun in guns:
 		if is_instance_valid(gun):gun.stop_operation()
@@ -269,10 +279,11 @@ func _build_ui() -> void:
 func _process(_delta: float) -> void:
 	if guns.size()!=6:return
 	var screen: Vector2=get_viewport().get_visible_rect().size
+	objective.position.y=230 if session.malta_mission.interaction.occupied_gun is AACommandStation else 150
 	objective.position.x=32
 	objective.size.x=screen.x-64
 	var pilot: GroundPilot=session.malta_mission.pilot
-	var instruction: String="Man an AA gun · E mount · arrows aim · Ctrl fire"
+	var instruction: String="Man an AA gun (E) or command post (F) · mouse aim · LMB fire"
 	if phase in ["PREPARING","INTERVAL"]:instruction="Prepare — next wave in %d s"%ceili(clock)
 	elif phase=="DRAINING":instruction="Wave cleared — waiting for falling bombs / hostile rounds"
 	elif phase=="ACTIVE":

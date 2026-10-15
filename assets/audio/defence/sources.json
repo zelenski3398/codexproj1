@@ -1,0 +1,20 @@
+{
+  "jericho_trumpet": {
+    "source": "stuka_jericho_trumpet.wav",
+    "sha256": "2da30efe15cf9e1c9f9f97d834a4f291fad3e4c4862d9f53ab1088832bf33c55",
+    "output": "assets/audio/defence/jericho_trumpet.ogg",
+    "processing": "mono 44100 Hz; loudnorm I=-19 TP=-2 LRA=10; libvorbis q5; complete supplied recording"
+  },
+  "air_raid_siren": {
+    "source": "malta_wwii_air_raid_siren.wav",
+    "sha256": "17d5ebd90a6a649f65cc973808fcaba51635f08a022f4468a4d35591fbe8cc4a",
+    "output": "assets/audio/defence/air_raid_siren.ogg",
+    "processing": "mono 44100 Hz; loudnorm I=-19 TP=-2 LRA=10; libvorbis q5; complete supplied recording"
+  },
+  "harrington_intro": {
+    "source": "colonel_harrington_wwii_radio_static.wav",
+    "sha256": "873ac61e249edc1b718a35ed5bef855f420498d5eee14fcb7fa1fd10da13f739",
+    "output": "assets/audio/defence/harrington_intro.ogg",
+    "processing": "mono 44100 Hz; loudnorm I=-19 TP=-2 LRA=10; libvorbis q5; complete supplied recording"
+  }
+}

@@ -43,12 +43,14 @@ func blocked() -> bool:
 	if not gun.mounted or gun.is_destroyed or get_tree().paused or (DisplayServer.get_name() != "headless" and not get_window().has_focus()):return true
 	if GameAudioMixer.instance.panel.visible:return true
 	if gun.operator_session != null:
+		if gun.operator_session.mission.pilot.combat_enabled and gun.operator_session.mission.pilot.health.hp<=0:return true
 		return gun.operator_session.mission.chart_panel.visible or gun.operator_session.mission_ended()
 	return false
 
 func _process(_delta: float) -> void:
 	if not gun.mounted:return
 	if blocked():
+		if gun.has_method("cancel_orders"):gun.cancel_orders()
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		recapture_required = true
 		release_fire = true

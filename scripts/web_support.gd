@@ -83,7 +83,13 @@ func _process(delta: float) -> void:
 		state.world_id = session.malta_mission.world.get_instance_id()
 		state.fleet_count = session.malta_mission.fleet.size()
 		var aa: AirfieldAABattery = session.malta_mission.world.aa_battery
+		state.command_posts=[]
+		for post in aa.command_stations:
+			state.command_posts.append({"field":post.field_id,"position":[post.global_position.x,post.global_position.y,post.global_position.z],"mounted":post.mounted,"hp":post.hp,"salvos":post.salvos_issued,"shots":post.commanded_shots,"pending":post.orders.size(),"target":post.target.marker_name if is_instance_valid(post.target) else "","designated":post.designated,"valid":post.solutions.values().filter(func(s):return s.valid and s.aimable).size()})
 		state.aa_count = aa.guns.size()
+		if is_instance_valid(session.aa_defence):
+			state.defence_sounds={"intro":session.aa_defence.audio.radio.player.playing,"intro_count":session.aa_defence.audio.radio.transmissions_played,"siren":session.aa_defence.audio.siren.playing,"warnings":session.aa_defence.audio.warned_waves,"dives":session.encounters.active.map(func(f):return f.get_children().filter(func(c):return c is StukaDiveAudio and c.player.playing).size())}
+
 		state.aa_heavy_count = aa.guns.filter(func(gun):return gun.weapon.heavy).size()
 		state.aa_light_count = aa.guns.size()-state.aa_heavy_count
 		state.aa_reload = session.malta_mission.interaction.occupied_gun.cooldown if session.malta_mission.interaction.occupied_gun != null else 0
