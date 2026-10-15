@@ -75,6 +75,8 @@ func _process(delta: float) -> void:
 		state.hal_far_button = _center(session.malta_menu.chart.buttons.hal_far)
 	if is_instance_valid(session.malta_mission):
 		state.terrain = session.malta_mission.world.terrain_appearance.diagnostic_state()
+		var city: VallettaCity = session.malta_mission.world.valletta_city
+		state.valletta = {"ready":city.ready_for_flight,"buildings":city.layout.building_count,"structures":city.structure_count,"details":city.detail_count,"collision_chunks":city.collision_count,"visible":city.visible,"landmarks":city.layout.landmarks.size()}
 		var access_fields: Array=session.malta_mission.world.fields.values()
 		state.base_access_count=access_fields.filter(func(f):return not f.access_record.is_empty()).size()
 		state.base_access_widths=access_fields.map(func(f):return f.access_record.width)

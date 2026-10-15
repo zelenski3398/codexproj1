@@ -82,7 +82,7 @@ func _run() -> void:
 	await _frames(3)
 	_check(not fresh.terrain_appearance.debug_heatmap_enabled and _all_materials(fresh.terrain_appearance, MaltaTerrainAppearance.LANDSCAPE), "A new mission never inherits debug mode from an earlier world")
 	_check(not is_instance_valid(world), "Previous world and render details can be freed cleanly")
-	_check(fresh.landscape_details.instance_count > 0 and fresh.landscape_details.instance_count <= 416 and fresh.landscape_details.town_instance_count <= 32, "Decorative vegetation/town instance budget is bounded")
+	_check(fresh.landscape_details.instance_count > 0 and fresh.landscape_details.instance_count <= 384 and fresh.landscape_details.town_instance_count == 0, "Rural vegetation budget is bounded and provisional town blocks are replaced")
 	_check(fresh.landscape_details.find_children("*", "CollisionObject3D", true, false).is_empty(), "Decorative rural/town details cannot change flight/landing collision")
 	fresh.terrain_appearance.set_debug_heatmap(true)
 	_check(not fresh.landscape_details.visible, "Heatmap hides optional decorative instances while preserving geometry")

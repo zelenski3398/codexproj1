@@ -29,6 +29,7 @@ jobs:
           godot --headless --path . --fixed-fps 120 --script res://tests/survival_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/malta_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/malta_terrain_checks.gd
+          godot --headless --path . --fixed-fps 120 --script res://tests/valletta_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/airfield_ground_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/malta_roads_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/base_access_checks.gd

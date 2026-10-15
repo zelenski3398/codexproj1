@@ -736,3 +736,7 @@ Heavy and light Malta AA: [controls, configuration, damage and testing](docs/lay
 AA now uses [relative mouse aiming, LMB fire, RMB sight zoom and unlimited ammunition](docs/aa-mouse-controls.md). Pause while mounted to adjust AA sensitivity.
 
 [Heavy battery command and supplied defence recordings](docs/battery-command-and-defence-audio.md): walk to a predictor post and press F, RMB designate, LMB issue a staggered four-gun salvo. Individual guns and unlimited ammunition remain available.
+
+## Fortified Valletta
+
+All Malta environments now include an original dense limestone city, courtyard street blocks, bastions and a Fort St Elmo-inspired fort at the existing Valletta landmark. See the [city guide and screenshots](docs/valletta-city.md) for placement, performance, validation and limitations.
