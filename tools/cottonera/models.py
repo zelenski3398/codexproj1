@@ -84,6 +84,31 @@ class Models:
             direction=np.array([x,z])-centre;direction/=np.linalg.norm(direction)
             mid=np.array([x,z])+direction*.04;tangent=np.array([-direction[1],direction[0]])
             self.pane(mid-tangent*.3,mid+tangent*.3,base+2.3,1.1)
+    def battered_wall(self,a,b,bottom,top,width=6):
+        a=np.asarray(a,dtype=float);b=np.asarray(b,dtype=float);d=b-a;d/=np.linalg.norm(d);n=np.array([d[1],-d[0]])
+        lower=np.array([a+n*width/2,b+n*width/2,b-n*width/2,a-n*width/2])
+        upper=np.array([a+n*(width/2-1),b+n*(width/2-1),b-n*(width/2-1),a-n*(width/2-1)])
+        v=np.vstack([np.c_[lower[:,0],np.full(4,bottom),lower[:,1]],np.c_[upper[:,0],np.full(4,top),upper[:,1]]])
+        faces=[[0,2,1],[0,3,2],[4,5,6],[4,6,7]]
+        for j in range(4):k=(j+1)%4;faces.extend([[j,k,4+k],[j,4+k,4+j]])
+        mesh=trimesh.Trimesh(v,faces,process=False);mesh.fix_normals();self.add(mesh,STONE,True,skyline=True)
+        walk=Polygon(upper);self.prism(walk.difference(walk.buffer(-.7)),top,top+1.1,TRIM,True,True)
+    def bastion(self,outline,base,top):
+        # Only mapped angular polygons; no circle/regular-star fallback.
+        self.prism(outline,base,top,STONE,True,skyline=True)
+        self.prism(outline.difference(outline.buffer(-1)),top,top+1.2,TRIM,True,True)
+    def gate(self,centre,bottom,width=7,depth=5,bearing=0):
+        opening=width/2;spring=4.5
+        outside=box(-opening-3,0,opening+3,12)
+        arch=[[-opening,0],[opening,0],[opening,spring]]
+        arch.extend([[opening*np.cos(t),spring+opening*np.sin(t)] for t in np.linspace(0,np.pi,20)])
+        arch.append([-opening,0]);face=outside.difference(Polygon(arch))
+        mesh=trimesh.creation.extrude_polygon(face,depth,engine='triangle');mesh.vertices[:,2]-=depth/2
+        # Rotate the real gate void to the source-specified passage bearing.
+        mesh.apply_transform(trimesh.transformations.rotation_matrix(bearing,[0,1,0]));mesh.apply_translation([centre[0],bottom,centre[1]])
+        self.add(mesh,STONE,True,skyline=True)
+        cap=trimesh.creation.box(extents=[width+7,1,depth+1]);cap.apply_translation([0,12,0]);cap.apply_transform(trimesh.transformations.rotation_matrix(bearing,[0,1,0]));cap.apply_translation([centre[0],bottom,centre[1]])
+        self.add(cap,TRIM,True)
     def scene(self,meshes):
         scene=trimesh.Scene()
         if meshes:scene.add_geometry(trimesh.util.concatenate(meshes))
