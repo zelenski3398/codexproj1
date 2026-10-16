@@ -135,6 +135,36 @@ class Models:
         for inset in [1.2,2.0]:
             edge=outline.buffer(-inset).difference(outline.buffer(-inset-.35))
             self.prism(edge,quay_top-1,quay_top-.7,TRIM,False,True)
+    def dome(self,x,z,bottom,radius,height):
+        sectors=24;rings=8;v=[];faces=[]
+        for row in range(rings+1):
+            t=row/rings*(np.pi/2-.01)
+            for col in range(sectors):
+                a=col/sectors*2*np.pi;v.append([x+radius*np.cos(t)*np.cos(a),bottom+height*np.sin(t),z+radius*np.cos(t)*np.sin(a)])
+        for row in range(rings):
+            for col in range(sectors):
+                a=row*sectors+col;b=row*sectors+(col+1)%sectors;c=(row+1)*sectors+(col+1)%sectors;d=(row+1)*sectors+col;faces.extend([[a,b,c],[a,c,d]])
+        mesh=trimesh.Trimesh(v,faces,process=False);mesh.fix_normals();self.add(mesh,STONE,True,skyline=True)
+        self.cube(x,z,1,1,bottom+height,2,TRIM,False,True)
+        self.rod([x,bottom+height+2,z],[x,bottom+height+3,z],.1,TRIM)
+        self.rod([x-.4,bottom+height+2.65,z],[x+.4,bottom+height+2.65,z],.1,TRIM)
+    def church(self,outline,base,roof,twin=True):
+        self.prism(outline,base,roof,STONE,True,skyline=True)
+        poly=max(polygons(outline),key=lambda p:p.area);minx,minz,maxx,maxz=poly.bounds;cx,cz=np.array(poly.representative_point().coords[0])
+        # Keep all added masses within the actual supplied building footprint.
+        for tx in ([minx+(maxx-minx)*.2,maxx-(maxx-minx)*.2] if twin else [minx+(maxx-minx)*.2]):
+            tower=box(tx-3,minz+2,tx+3,minz+9).intersection(poly)
+            self.prism(tower,roof,roof+9,STONE,True,skyline=True)
+            self.prism(tower.buffer(.2).intersection(poly),roof+9,roof+10,TRIM,True)
+        radius=min(8,poly.boundary.distance(Point(cx,cz))*.65)
+        if radius>2:self.dome(cx,cz,roof,radius,radius*1.15)
+        # Geometry-only window/door panels and stone framing, no photo texture.
+        a=np.array([minx,minz]);b=np.array([maxx,minz]);middle=(a+b)/2
+        self.pane(middle+[-2,-.05],middle+[2,-.05],base+.1,5.5)
+        for x in np.linspace(minx+1,maxx-1,5):self.cube(x,minz-.1,.55,.5,base,roof-base,TRIM,False,True)
+    def palace(self,outline,base,roof):
+        self.house(outline,base,roof)
+        self.prism(outline.difference(outline.buffer(-.45)),roof,roof+1.2,TRIM,False,True)
     def scene(self,meshes):
         scene=trimesh.Scene()
         if meshes:scene.add_geometry(trimesh.util.concatenate(meshes))
