@@ -150,3 +150,8 @@ board again. Check that no old engine/gun persists after returning to the menu.
 Listen to a close enemy pass for positional sound/Doppler. Automated output
 checks do not verify perceived mix quality on real speakers/headphones or
 audio behaviour in Firefox/Safari.
+
+## Enemy flyby layers
+
+See [enemy flyby audio](enemy-flyby-audio.md) for shared proximity/Doppler tuning,
+validation and the still-missing optional airflow recording.

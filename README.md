@@ -8,7 +8,7 @@ Ju 87-inspired opponent; Malta free roam starts peacefully until you request com
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`e13cef200ed63bc10efca04e0342e16efc3b1cbf`](https://github.com/zelenski3398/codexproj1/commit/e13cef200ed63bc10efca04e0342e16efc3b1cbf)
+**Latest documented commit:** [`fbfab9dd1bf49bfdd61d893021a2e568f887c45d`](https://github.com/zelenski3398/codexproj1/commit/fbfab9dd1bf49bfdd61d893021a2e568f887c45d)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
 [latest encounter/aircraft update](docs/development-updates/2026-10-16-random-encounters.md)
@@ -20,9 +20,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor e13cef200ed63bc10efca04e0342e16efc3b1cbf HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' e13cef200ed63bc10efca04e0342e16efc3b1cbf..HEAD
-git diff --stat e13cef200ed63bc10efca04e0342e16efc3b1cbf..HEAD
+git merge-base --is-ancestor fbfab9dd1bf49bfdd61d893021a2e568f887c45d HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' fbfab9dd1bf49bfdd61d893021a2e568f887c45d..HEAD
+git diff --stat fbfab9dd1bf49bfdd61d893021a2e568f887c45d..HEAD
 ```
 
 Append a dated, evidence-linked update and advance this SHA to the newest inspected
@@ -784,3 +784,5 @@ All Malta environments also include an original georeferenced Mdina hilltop city
 ## Cottonera preparation — geographic data pending
 
 The source-gated Three Cities region, local OSM/GeoJSON importer and original unplaced architectural templates are prepared. **Birgu, Senglea and Bormla are not yet reconstructed in the playable map:** the requested reference/data sites were blocked, and the task prohibits invented geography. See [Cottonera status, asset review and required datasets](docs/cottonera-region.md).
+
+Enemy aircraft now use [distance-dependent engine roar and bounded Doppler](docs/enemy-flyby-audio.md). The separate rushing-air layer is ready for a suitable mono loop; that recording is still needed.
