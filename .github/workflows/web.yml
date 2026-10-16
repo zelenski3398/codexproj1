@@ -39,6 +39,7 @@ jobs:
           godot --headless --path . --fixed-fps 120 --script res://tests/dive_defence_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/dive_attack_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/audio_checks.gd
+          godot --headless --path . --fixed-fps 120 --script res://tests/flyby_audio_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/mission_radio_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/pilot_character_checks.gd
           xvfb-run -a godot --path . --audio-driver Dummy --disable-render-loop --fixed-fps 120 --script res://tests/aa_mouse_checks.gd

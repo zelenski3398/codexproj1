@@ -6,6 +6,8 @@ extends Node3D
 @export var blend_seconds: float = 0.35
 @export var minimum_pitch: float = 0.82
 @export var maximum_pitch: float = 1.16
+@export var enemy_flyby_profile: AircraftFlybyProfile = preload("res://audio_profiles/enemy_flyby.tres")
+var flyby: EnemyFlybyAudio
 var aircraft: FlightAircraft
 var idle: AudioStreamPlayer3D
 var flight: AudioStreamPlayer3D
@@ -22,6 +24,12 @@ func _ready() -> void:
 	position = Vector3(0, 0, -2.8)
 	idle = _make_player("IdleEngine", GameAudioMixer.instance.engine_stream(aircraft, false))
 	flight = _make_player("FlightEngine", GameAudioMixer.instance.engine_stream(aircraft, true))
+	if aircraft.team_id == CombatTeams.ENEMY:
+		flyby = EnemyFlybyAudio.new()
+		flyby.name = "EnemyFlybyAudio"
+		flyby.audio = self
+		flyby.profile = enemy_flyby_profile
+		add_child(flyby)
 	aircraft.reset_completed.connect(clear)
 	aircraft.destroyed.connect(clear)
 	aircraft.crashed.connect(func(_reason: String): clear())
@@ -54,13 +62,23 @@ func _process(delta: float) -> void:
 	if running and not idle.playing:
 		idle.play()
 		flight.play()
+	var mix: float = flight_mix
+	var proximity: float = 1
+	var shift: float = 1
+	var volume: float = engine_volume_db
+	if flyby != null:
+		mix = flyby.effective_flight_mix()
+		proximity = flyby.distance_gain * flyby.mix_gain(delta)
+		shift = flyby.doppler_factor
+		volume = flyby.profile.engine_volume_db
+		flyby.apply_airflow()
 	for player in [idle, flight]:
-		player.pitch_scale = lerpf(minimum_pitch, maximum_pitch, rpm)
+		player.pitch_scale = lerpf(minimum_pitch, maximum_pitch, rpm) * shift
 	# Equal-power blend avoids a dip at half throttle. Samples were converted
 	# to mono for 3D panning; bus/headroom prevents loud aircraft from clipping.
-	var loudness: float = engine_gain * lerpf(0.6, 1.0, rpm)
-	idle.volume_db = engine_volume_db + linear_to_db(maxf(loudness * sqrt(1.0 - flight_mix), 0.0001))
-	flight.volume_db = engine_volume_db + linear_to_db(maxf(loudness * sqrt(flight_mix), 0.0001))
+	var loudness: float = engine_gain * lerpf(0.6, 1.0, rpm) * proximity
+	idle.volume_db = volume + linear_to_db(maxf(loudness * sqrt(1.0 - mix), 0.0001))
+	flight.volume_db = volume + linear_to_db(maxf(loudness * sqrt(mix), 0.0001))
 	if not running and engine_gain <= 0:
 		idle.stop()
 		flight.stop()
@@ -69,5 +87,6 @@ func clear() -> void:
 	engine_gain = 0
 	flight_mix = 0
 	rpm = 0
+	if is_instance_valid(flyby): flyby.clear()
 	idle.stop()
 	flight.stop()
