@@ -1,0 +1,135 @@
+[gd_resource type="Resource" script_class="AircraftDamageProfile" load_steps=21 format=3]
+
+[ext_resource type="Script" path="res://scripts/aircraft_damage_profile.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/aircraft_component_definition.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/damage_hitbox_spec.gd" id="3"]
+
+[sub_resource type="Resource" id="fuselage_0"]
+script = ExtResource("3")
+position = Vector3(0, 0, 1.5)
+size = Vector3(0.9, 0.85, 3.3)
+
+[sub_resource type="Resource" id="fuselage_front"]
+script = ExtResource("3")
+position = Vector3(0, -0.06, -1.75)
+size = Vector3(0.95, 0.95, 1.5)
+
+[sub_resource type="Resource" id="fuselage"]
+script = ExtResource("2")
+id = &"fuselage"
+display_name = "Fuselage"
+max_integrity = 140.0
+damage_multiplier = 1
+airframe_multiplier = 1
+debug_color = Color(0.3, 0.8, 0.9, 1)
+hitboxes = Array[ExtResource("3")]([SubResource("fuselage_0"), SubResource("fuselage_front")])
+
+[sub_resource type="Resource" id="left_wing_0"]
+script = ExtResource("3")
+position = Vector3(-2.9095000000000004, -0.3, -0.3)
+size = Vector3(4.5494, 0.26, 1.65)
+
+[sub_resource type="Resource" id="left_wing"]
+script = ExtResource("2")
+id = &"left_wing"
+display_name = "Left Wing"
+max_integrity = 80.0
+damage_multiplier = 1.25
+airframe_multiplier = 0.65
+debug_color = Color(0.4, 0.8, 0.4, 1)
+hitboxes = Array[ExtResource("3")]([SubResource("left_wing_0")])
+
+[sub_resource type="Resource" id="right_wing_0"]
+script = ExtResource("3")
+position = Vector3(2.9095000000000004, -0.3, -0.3)
+size = Vector3(4.5494, 0.26, 1.65)
+
+[sub_resource type="Resource" id="right_wing"]
+script = ExtResource("2")
+id = &"right_wing"
+display_name = "Right Wing"
+max_integrity = 80.0
+damage_multiplier = 1.25
+airframe_multiplier = 0.65
+debug_color = Color(0.6, 0.9, 0.3, 1)
+hitboxes = Array[ExtResource("3")]([SubResource("right_wing_0")])
+
+[sub_resource type="Resource" id="engine_0"]
+script = ExtResource("3")
+position = Vector3(0, 0, -3.15)
+size = Vector3(0.95, 1.1, 2.1)
+
+[sub_resource type="Resource" id="engine"]
+script = ExtResource("2")
+id = &"engine"
+display_name = "Engine"
+max_integrity = 80.0
+damage_multiplier = 1.6
+airframe_multiplier = 1
+debug_color = Color(1, 0.5, 0.3, 1)
+hitboxes = Array[ExtResource("3")]([SubResource("engine_0")])
+
+[sub_resource type="Resource" id="cockpit_0"]
+script = ExtResource("3")
+position = Vector3(0, 0.65, -0.1)
+size = Vector3(0.78, 0.7, 1.6)
+
+[sub_resource type="Resource" id="cockpit"]
+script = ExtResource("2")
+id = &"cockpit"
+display_name = "Cockpit"
+max_integrity = 60.0
+damage_multiplier = 1.5
+airframe_multiplier = 1.5
+debug_color = Color(0.4, 0.6, 1, 1)
+hitboxes = Array[ExtResource("3")]([SubResource("cockpit_0")])
+
+[sub_resource type="Resource" id="rudder_0"]
+script = ExtResource("3")
+position = Vector3(0, 0.7, 3.4)
+size = Vector3(0.25, 1.6, 1.4)
+
+[sub_resource type="Resource" id="rudder"]
+script = ExtResource("2")
+id = &"rudder"
+display_name = "Rudder"
+max_integrity = 45.0
+damage_multiplier = 1.25
+airframe_multiplier = 0.5
+debug_color = Color(0.9, 0.5, 1, 1)
+hitboxes = Array[ExtResource("3")]([SubResource("rudder_0")])
+
+[sub_resource type="Resource" id="elevator_0"]
+script = ExtResource("3")
+position = Vector3(0, 0.15, 3.25)
+size = Vector3(3.3, 0.25, 1)
+
+[sub_resource type="Resource" id="elevator"]
+script = ExtResource("2")
+id = &"elevator"
+display_name = "Elevator"
+max_integrity = 55.0
+damage_multiplier = 1.25
+airframe_multiplier = 0.6
+debug_color = Color(0.9, 0.4, 0.7, 1)
+hitboxes = Array[ExtResource("3")]([SubResource("elevator_0")])
+
+[sub_resource type="Resource" id="fuel_tank_0"]
+script = ExtResource("3")
+position = Vector3(0, 0, -0.4)
+size = Vector3(0.8, 0.8, 1.2)
+
+[sub_resource type="Resource" id="fuel_tank"]
+script = ExtResource("2")
+id = &"fuel_tank"
+display_name = "Fuel Tank"
+max_integrity = 60.0
+damage_multiplier = 1.2
+airframe_multiplier = 0.8
+debug_color = Color(1, 0.9, 0.4, 1)
+hitboxes = Array[ExtResource("3")]([SubResource("fuel_tank_0")])
+
+[resource]
+script = ExtResource("1")
+components = Array[ExtResource("2")]([SubResource("fuselage"), SubResource("left_wing"), SubResource("right_wing"), SubResource("engine"), SubResource("cockpit"), SubResource("rudder"), SubResource("elevator"), SubResource("fuel_tank")])
+lift_lever_arm = 2.3

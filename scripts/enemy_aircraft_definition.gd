@@ -34,5 +34,6 @@ static func find(kind: String) -> EnemyAircraftDefinition:
 	match kind:
 		"cr42": return load("res://aircraft_definitions/cr42.tres")
 		"c200": return load("res://aircraft_definitions/c200.tres")
+		"c202": return load("res://aircraft_definitions/c202.tres")
 		"sm79": return load("res://aircraft_definitions/sm79.tres")
 	return null

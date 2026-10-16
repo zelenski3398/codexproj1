@@ -192,7 +192,9 @@ func encounter_tracking_changed() -> void:
 		enemy = encounters.wrecks.back()
 	else:
 		enemy = null
-	enemy_defeated = encounters.active.is_empty()
+	# A peaceful departure is not a kill. This distinction also keeps the
+	# flight HUD from announcing ENEMY DESTROYED before the first request.
+	enemy_defeated = encounters.active.is_empty() and not encounters.initial_spawn_pending
 	if is_instance_valid(enemy):
 		enemy_front_statistics = enemy.guns.pool.statistics
 		enemy_rear_statistics = enemy.rear_gunner.guns.pool.statistics

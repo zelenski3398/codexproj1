@@ -13,6 +13,9 @@ func run() -> void:
 	await frames(8)
 	scene.start_malta("ta_qali","spitfire","encounter")
 	await frames(20)
+	scene.encounters.free_roam_enemy_types.assign(["stuka"])
+	scene.encounters.confirm()
+	await frames(4)
 	var mission: MaltaMission = scene.malta_mission
 	check(mission.board_nearest() and mission.leave_aircraft(),"Board/exit creates the actual hidden flight HUD")
 	var gun: BritishAAGun = mission.world.aa_battery.guns[4]

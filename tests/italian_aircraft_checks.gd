@@ -15,8 +15,8 @@ func _run() -> void:
 	session.encounters.clear()
 	session.enemy = null
 	var aircraft: Array[EnemyAircraft] = []
-	for i in range(3):
-		var kind: String = ["cr42", "c200", "sm79"][i]
+	for i in range(4):
+		var kind: String = ["cr42", "c200", "sm79", "c202"][i]
 		var foe: EnemyAircraft = session.create_encounter_enemy(Vector3(-2500 + i * 2200, 800, -3500), false, kind)
 		foe.ai.combat_enabled = false
 		foe.ai.patrol_center = foe.reset_position
@@ -32,14 +32,17 @@ func _run() -> void:
 			_check((foe.model as ItalianAircraftModel).propellers.size() == 3 and (foe as ItalianEnemy).additional_gunners.size() == 1 and foe.guns.rounds_per_second == 0, "SM79 has three engines, dorsal/ventral mounts and route-first forward fire disabled")
 		else:
 			_check(foe.model.gun_ports.size() == 2 and not foe.rear_gunner.enabled, def.id + " has two forward guns and no fictitious rear gunner")
+	var folgore: ItalianEnemy = aircraft[3] as ItalianEnemy
+	_check(folgore.model.find_child("InlineEngineCowling", true, false) != null and folgore.model.find_child("VentralRadiator", true, false) != null and folgore.model.find_child("EnclosedCanopy", true, false) != null, "C202 has its own inline nose, radiator and enclosed canopy silhouette")
+	_check(folgore.model.find_child("RadialEngineCowling", true, false) == null and folgore.definition.cruise_speed > (aircraft[1] as ItalianEnemy).definition.cruise_speed and folgore.engine_thrust > aircraft[1].engine_thrust, "C202 is distinct from radial C200 and uses higher performance tuning")
 	var previous: Array[Vector3] = []
-	var travelled: Array[float] = [0.0, 0.0, 0.0]
+	var travelled: Array[float] = [0.0, 0.0, 0.0, 0.0]
 	for foe in aircraft:
 		previous.append(foe.global_position)
 	for tick in range(7200):
 		await physics_frame
 		if tick % 120 == 0:
-			for i in range(3):
+			for i in range(4):
 				travelled[i] += aircraft[i].global_position.distance_to(previous[i])
 				previous[i] = aircraft[i].global_position
 	for foe in aircraft:

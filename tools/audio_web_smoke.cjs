@@ -111,7 +111,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
   await page.keyboard.press('e');
   await wait(() => window.firstSortieState.on_foot);
   await page.keyboard.press('r');
-  await wait(() => window.firstSortieState.on_foot && window.firstSortieState.hp === 100 && window.firstSortieState.enemy_count === 1);
+  await wait(() => window.firstSortieState.on_foot && window.firstSortieState.hp === 100 && window.firstSortieState.enemy_count === 0);
   check(!(await state()).audio.engine_playing && !(await state()).audio.music_playing, 'Full Malta restart leaves parked engines and menu music off');
   check(errors.length === 0, 'Release export has no browser runtime errors');
   fs.writeFileSync('/tmp/first-sortie-web-checks/audio-results.json', JSON.stringify({checks, errors, measurements, sources:await page.evaluate(() => window.sourceStarts), state:await state()}, null, 2));

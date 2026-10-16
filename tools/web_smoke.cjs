@@ -124,7 +124,7 @@ function check(condition, message) {
     await wait(() => window.firstSortieState.home_airfield === 'ta_qali');
     await clickControl('depart_button');
     await wait(() => window.firstSortieState.on_foot && window.firstSortieState.fleet_count === 6);
-    check((await state()).enemy_count === 1 && (await state()).hp === 100, 'Real Malta GLB loads with a pilot, six aircraft and exactly one enemy');
+    check((await state()).enemy_count === 0 && (await state()).hp === 100 && (await state()).encounter.initial_pending, 'Real Malta GLB loads peacefully with a pilot, six aircraft and a spawn button');
     await delay(1500);
     await page.screenshot({path:path.join(output,'malta-on-foot.png')});
     await page.keyboard.press('e');
@@ -151,7 +151,7 @@ function check(condition, message) {
     check((await state()).world_id === maltaWorld && (await state()).hp === 90, 'Reboarding retains persistent aircraft health without reset');
     await page.keyboard.press('r');
     await wait(() => window.firstSortieState.on_foot && window.firstSortieState.hp === 100 && window.firstSortieState.shots === 0);
-    check((await state()).fleet_count === 6 && (await state()).enemy_count === 1, 'Only full R restart restores the fleet and one enemy');
+    check((await state()).fleet_count === 6 && (await state()).enemy_count === 0 && (await state()).encounter.initial_pending, 'Full R restart restores the fleet and waits for another spawn command');
     const licenseStatuses = [];
     for (const filename of ['GODOT-LICENSE.txt','GODOT-COPYRIGHT.txt','DejaVu-LICENSE.txt','MALTA-ATTRIBUTION.txt']) {
       licenseStatuses.push((await page.request.get('http://127.0.0.1:' + port + '/' + filename)).status());

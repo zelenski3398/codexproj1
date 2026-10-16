@@ -30,7 +30,7 @@ func _run() -> void:
 	engine_key.pressed = false
 	Input.parse_input_event(engine_key)
 	player.pilot.automated = true
-	session.enemy.ai.combat_enabled = false # isolate route safety from combat luck
+	_check(session.encounters.active.is_empty(), "Continuous journey begins peacefully without requesting an enemy")
 	var field: MaltaAirfield = mission.world.fields[home]
 	var world_id: int = mission.world.get_instance_id()
 	var started: Vector3 = player.global_position

@@ -45,7 +45,7 @@ func _ready() -> void:
 	fighter_picker.item_selected.connect(_choose_kind)
 	left.add_child(fighter_picker)
 	mode_picker = OptionButton.new()
-	mode_picker.add_item("ENCOUNTERS · Confirm each next enemy")
+	mode_picker.add_item("FREE ROAM · C spawns a random enemy")
 	mode_picker.add_item("SURVIVAL · Five stages, persistent damage")
 	mode_picker.select(1 if selected_mode == "survival" else 0)
 	mode_picker.item_selected.connect(func(index: int): selected_mode = "survival" if index == 1 else "encounter")
@@ -55,7 +55,7 @@ func _ready() -> void:
 	depart_button.custom_minimum_size.y = 58
 	depart_button.pressed.connect(depart)
 	left.add_child(depart_button)
-	left.add_child(_label("E  Board / leave · I  Engine\nWASD  Walk · Arrows  Turn on foot\nM  Navigation · C  Confirm next fight\nR  Full mission restart\n\nAll airfields share one persistent world.\nAircraft damage and fuel persist.\n\nApproximate historical airfield positions;\nprototype runway layouts.", 16))
+	left.add_child(_label("E  Board / leave · I  Engine\nWASD  Walk · Arrows  Turn on foot\nM  Navigation · C  Spawn / confirm fight\nR  Full mission restart\n\nAll airfields share one persistent world.\nAircraft damage and fuel persist.\n\nApproximate historical airfield positions;\nprototype runway layouts.", 16))
 	var back: Button = Button.new()
 	back.text = "BACK TO COUNTRYSIDE / AIRCRAFT"
 	back.pressed.connect(func(): back_requested.emit())

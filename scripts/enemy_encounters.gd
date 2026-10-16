@@ -4,6 +4,11 @@ extends Node
 ## Destruction signals remove active enemies immediately; falling wrecks persist.
 const STAGE_COUNTS: Array[int] = [1, 2, 2, 3, 3]
 @export var enemy_types: Array[String] = ["stuka"]
+## Only Malta's ordinary free roam uses this random roster. Survival and authored
+## missions retain their own aircraft choices and progression.
+@export var free_roam_enemy_types: Array[String] = ["stuka", "cr42", "c200", "c202"]
+var random: RandomNumberGenerator = RandomNumberGenerator.new()
+var initial_spawn_pending: bool = false
 @export var minimum_spawn_distance: float = 650.0
 @export var spawn_distance: float = 1400.0
 @export var spawn_clearance: float = 160.0
@@ -26,6 +31,7 @@ var confirm_button: Button
 var enemy_widgets: Dictionary = {}
 
 func _ready() -> void:
+	random.randomize()
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	canvas = CanvasLayer.new()
 	canvas.layer = 9
@@ -60,13 +66,24 @@ func begin(selected_mode: String) -> void:
 	complete = false
 	canvas.visible = true
 	status.visible = true
-	_spawn_batch()
+	initial_spawn_pending = is_manual_free_roam()
+	if initial_spawn_pending:
+		awaiting_confirmation = true
+		# No aircraft is created until a real button/key confirmation. In
+		# particular, retries must return to an empty, peaceful Malta world.
+		session.encounter_tracking_changed()
+	else:
+		_spawn_batch()
+
+func is_manual_free_roam() -> bool:
+	return mode == "encounter" and session.environment_id == "malta"
 
 func clear() -> void:
 	generation += 1 # invalidate confirmations queued before restart/menu changes
 	awaiting_confirmation = false
 	spawning = false
 	stage = 0
+	initial_spawn_pending = false
 	for foe in active + wrecks:
 		if is_instance_valid(foe):
 			foe.get_parent().remove_child(foe)
@@ -108,7 +125,10 @@ func confirm() -> void:
 func _confirmed_spawn(token: int) -> void:
 	if token != generation or ended or complete or not _player_live():
 		return
-	stage += 1
+	if initial_spawn_pending:
+		initial_spawn_pending = false
+	else:
+		stage += 1
 	_spawn_batch()
 
 func _player_live() -> bool:
@@ -129,27 +149,44 @@ func _spawn_batch() -> void:
 		positions.append(point)
 	for index in range(count):
 		var ace: bool = mode == "survival" and stage == 5 and index == 2
-		var foe: EnemyAircraft = session.create_encounter_enemy(positions[index], ace, enemy_types[(stage - 1 + index) % enemy_types.size()] if not enemy_types.is_empty() else "stuka")
+		var foe: EnemyAircraft = session.create_encounter_enemy(positions[index], ace, _enemy_kind(index))
 		track_enemy(foe)
 	spawning = false
 	session.encounter_tracking_changed()
 	set_target(session.malta_mission.occupied if is_instance_valid(session.malta_mission) else session.aircraft)
 
+func _enemy_kind(index: int) -> String:
+	if is_manual_free_roam():
+		return free_roam_enemy_types[random.randi_range(0, free_roam_enemy_types.size() - 1)] if not free_roam_enemy_types.is_empty() else "stuka"
+	return enemy_types[(stage - 1 + index) % enemy_types.size()] if not enemy_types.is_empty() else "stuka"
+
+func _spawn_anchor() -> Node3D:
+	# A player can request an encounter after travelling on foot or by truck;
+	# do not spawn at the abandoned aircraft back at the home airfield.
+	if is_instance_valid(session.malta_mission):
+		var mission: MaltaMission = session.malta_mission
+		if is_instance_valid(mission.occupied): return mission.occupied
+		if is_instance_valid(mission.interaction.occupied_vehicle): return mission.interaction.occupied_vehicle
+		if is_instance_valid(mission.interaction.occupied_gun): return mission.interaction.occupied_gun
+		return mission.pilot
+	return session.aircraft
+
 func _safe_position(index: int, planned: Array[Vector3]) -> Vector3:
 	var player: FlightAircraft = session.aircraft
+	var origin: Vector3 = _spawn_anchor().global_position
 	var space: PhysicsDirectSpaceState3D = player.get_world_3d().direct_space_state
 	for attempt in range(32):
 		var angle: float = deg_to_rad(-135.0 + index * 24.0 + attempt * 37.0)
 		var radius: float = maxf(spawn_distance, minimum_spawn_distance + 100) + floorf(attempt / 8.0) * 300
-		var point: Vector3 = player.global_position + Vector3(sin(angle), 0, cos(angle)) * radius
+		var point: Vector3 = origin + Vector3(sin(angle), 0, cos(angle)) * radius
 		if mode == "encounter" and stage == 1 and session.environment_id == "countryside" and attempt == 0:
 			point = session.enemy_spawn_position
-		if point.distance_to(player.global_position) < minimum_spawn_distance:
+		if point.distance_to(origin) < minimum_spawn_distance:
 			continue
-		var ray: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(Vector3(point.x, maxf(10000, player.global_position.y + 2000), point.z), Vector3(point.x, -2000, point.z), 1)
+		var ray: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(Vector3(point.x, maxf(10000, origin.y + 2000), point.z), Vector3(point.x, -2000, point.z), 1)
 		var hit: Dictionary = space.intersect_ray(ray)
 		var ground: float = float(hit.position.y) if not hit.is_empty() else 0.0
-		point.y = maxf(point.y, maxf(player.global_position.y + 180, ground + spawn_clearance))
+		point.y = maxf(point.y, maxf(origin.y + 180, ground + spawn_clearance))
 		if session.environment_id == "malta":
 			point.y = maxf(point.y, 500)
 		var separated: bool = true
@@ -233,10 +270,12 @@ func _process(_delta: float) -> void:
 	elif complete:
 		status.text += "\nSurvival Complete"
 	elif awaiting_confirmation:
-		status.text += "\nStage Cleared — Confirm to Start Next Stage" if mode == "survival" else "\nEnemy destroyed"
+		status.text += "\nStage Cleared — Confirm to Start Next Stage" if mode == "survival" else ("\nPeaceful free roam · C to spawn an enemy" if initial_spawn_pending else "\nEnemy destroyed")
 	confirm_button.visible = awaiting_confirmation and not ended and not complete
 	confirm_button.disabled = get_tree().paused or spawning
 	confirm_button.text = "CONFIRM / START NEXT STAGE · C" if mode == "survival" else "CONFIRM / SPAWN NEXT ENEMY · C"
+	if is_manual_free_roam():
+		confirm_button.text = "SPAWN RANDOM ENEMY · C" if initial_spawn_pending else "SPAWN NEXT RANDOM ENEMY · C"
 	var camera: Camera3D = get_viewport().get_camera_3d()
 	for foe in active:
 		var widget: VBoxContainer = enemy_widgets[foe.get_instance_id()]

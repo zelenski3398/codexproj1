@@ -22,7 +22,7 @@ func _run() -> void:
 	camera.far = 100000
 	world.add_child(camera)
 	camera.make_current()
-	for kind in ["cr42", "c200", "sm79"]:
+	for kind in ["cr42", "c200", "c202", "sm79"]:
 		var enemy: EnemyAircraft = world.create_encounter_enemy(Vector3(0, 1000, 0), false, kind)
 		for tick in range(3):
 			await physics_frame

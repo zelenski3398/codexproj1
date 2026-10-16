@@ -44,10 +44,10 @@ func _process(delta: float) -> void:
 		var radio: MissionRadio = session.interception.radio
 		state.interception.radio = {"supplied": radio.voice_clip != null, "triggered": radio.triggered, "playing": radio.player.playing, "transmissions": radio.transmissions_played, "subtitle": radio.subtitle.visible, "bearing": session.interception.activation_bearing}
 	state.audio = {"menu_active": GameAudioMixer.instance.menu_active, "music_playing": GameAudioMixer.instance.music.playing, "music_gain": GameAudioMixer.instance.music_gain, "music_db": GameAudioMixer.instance.music.volume_db, "music_paused": GameAudioMixer.instance.music.stream_paused, "music_position": GameAudioMixer.instance.music.get_playback_position(), "muted": GameAudioMixer.instance.muted, "master_muted": AudioServer.is_bus_mute(0), "volumes": GameAudioMixer.instance.volumes, "panel_open": GameAudioMixer.instance.panel.visible, "gameplay_muted": AudioServer.is_bus_mute(AudioServer.get_bus_index("Aircraft"))}
-	state.encounter = {"mode": session.game_mode, "stage": session.encounters.stage, "remaining": session.encounters.active.size(), "awaiting": session.encounters.awaiting_confirmation, "ended": session.encounters.ended, "complete": session.encounters.complete}
+	state.encounter = {"mode": session.game_mode, "stage": session.encounters.stage, "remaining": session.encounters.active.size(), "awaiting": session.encounters.awaiting_confirmation, "initial_pending": session.encounters.initial_spawn_pending, "ended": session.encounters.ended, "complete": session.encounters.complete}
 	state.encounter.enemies = []
 	for foe in session.encounters.active:
-		state.encounter.enemies.append({"id": foe.get_instance_id(), "hp": foe.health.hp, "ace": foe.encounter_ace})
+		state.encounter.enemies.append({"id": foe.get_instance_id(), "hp": foe.health.hp, "ace": foe.encounter_ace, "kind": foe.aircraft_kind})
 	if is_instance_valid(session.component_debug):
 		state.debug_target_popup = session.component_debug.target_picker.get_popup().visible
 		state.debug_target_focus = session.component_debug.target_picker.get_popup().get_focused_item()

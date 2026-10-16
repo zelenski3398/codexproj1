@@ -22,7 +22,11 @@ func _run() -> void:
 	session.malta_menu.depart()
 	await _frames(180)
 	var mission: MaltaMission = session.malta_mission
-	_check(session.game_mode == "encounter" and session.encounters.active.size() == 1, "Existing Malta departure starts exactly one normal encounter")
+	_check(session.game_mode == "encounter" and session.encounters.active.is_empty() and session.encounters.awaiting_confirmation, "Malta free roam starts without enemies and waits for confirmation")
+	session.encounters.free_roam_enemy_types.assign(["stuka"]) # isolate existing transition assertions
+	session.encounters.confirm_button.pressed.emit()
+	await _frames(4)
+	_check(session.encounters.active.size() == 1 and session.encounters.stage == 1, "First explicit spawn begins encounter one")
 	_check(mission.board_nearest(), "Boards existing aircraft for airborne transition checks")
 	var player: FlightAircraft = session.aircraft
 	player.request_reset()

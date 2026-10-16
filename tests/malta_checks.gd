@@ -44,6 +44,10 @@ func _run() -> void:
 	_check(mission.nearest_serviceable() == mission.initial_aircraft, "Selected serviceable Spitfire is boardable at Ta' Qali")
 	_key(KEY_E)
 	await _frames(4)
+	_check(world.enemy == null and world.encounters.active.is_empty() and world.encounters.initial_spawn_pending, "Malta departure and boarding do not spawn an enemy before confirmation")
+	world.encounters.free_roam_enemy_types.assign(["stuka"]) # deterministic combat fixture
+	_key(KEY_C)
+	await _frames(4)
 	var player: FlightAircraft = mission.occupied
 	_check(player == mission.initial_aircraft and not mission.pilot.active and world.enemy.target == player, "E boards the existing Spitfire and routes enemy target and player input")
 	_check(not player.engine_running and player.pilot.throttle == 0, "Boarding leaves engine stopped and throttle at idle")
@@ -120,7 +124,7 @@ func _run() -> void:
 	_check(world.enemy.is_destroyed and world.enemy_defeated and notifications == 1, "Enemy destruction is one-shot and does not respawn on aircraft changes")
 	world.restart_malta()
 	await _frames(120)
-	_check(world.malta_mission.fleet.size() == 6 and world.enemy.health.hp == 100 and not world.enemy_defeated and world.malta_mission.occupied == null, "Explicit full restart creates one fresh enemy, clean fleet and pilot")
+	_check(world.malta_mission.fleet.size() == 6 and world.enemy == null and world.encounters.active.is_empty() and world.encounters.initial_spawn_pending and not world.enemy_defeated and world.malta_mission.occupied == null, "Explicit full restart restores peaceful free roam, clean fleet and pilot")
 	_check(world.malta_mission.world.get_instance_id() != scene_id and world.malta_mission.fleet[0].health.hp == 100, "Only explicit mission restart replaces the environment and damaged aircraft")
 	world.show_selection()
 	await _frames(3)

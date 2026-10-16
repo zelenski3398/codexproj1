@@ -1,7 +1,7 @@
 class_name ItalianAircraftModel
 extends SpitfireModel
 ## Original procedural silhouettes, not imported historical 3D assets.
-@export_enum("cr42", "c200", "sm79") var kind: String = "c200"
+@export_enum("cr42", "c200", "c202", "sm79") var kind: String = "c200"
 var propellers: Array[Node3D] = []
 var defensive_mounts: Array[DefensiveGunMount] = []
 var gear_parts: Array[Node3D] = []
@@ -12,11 +12,14 @@ func _ready() -> void:
 	underside = MeshKit.material(Color("b0b0a1"))
 	if kind == "sm79":
 		_bomber()
+	elif kind == "c202":
+		_inline_fighter()
 	else:
 		_fighter()
 
 func _radial(at: Vector3, radius: float) -> void:
 	var cowling: MeshInstance3D = MeshKit.cylinder(self, radius, 1.1, at, green)
+	cowling.name = "RadialEngineCowling"
 	cowling.rotation.x = PI / 2
 	var engine: MeshInstance3D = MeshKit.cylinder(self, radius * 0.84, 0.05, at + Vector3(0, 0, -0.57), rubber)
 	engine.rotation.x = PI / 2
@@ -37,6 +40,9 @@ func _radial(at: Vector3, radius: float) -> void:
 
 func _fighter() -> void:
 	var falco: bool = kind == "cr42"
+	if falco:
+		green = MeshKit.material(Color("a08e69"))
+		brown = MeshKit.material(Color("626b4b"))
 	MeshKit.sphere(self, Vector3(1.0, 1.15, 7.8), Vector3(0, 0, 0.15), green)
 	MeshKit.sphere(self, Vector3(0.95, 0.24, 5.7), Vector3(0, -0.42, 0), underside)
 	_radial(Vector3(0, 0, -3.2), 0.7 if falco else 0.78)
@@ -65,6 +71,75 @@ func _fighter() -> void:
 		MeshKit.rod(self, port.position + Vector3(0, 0, 0.3), port.position, 0.035, rubber)
 	_tail_wheel(Vector3(0, -0.3, 3.3))
 	_tail_cross(Vector3(0.085, 0.73, 3.4))
+	_wing_camouflage(3.25 if falco else 5.29, -0.45, -0.3)
+	if falco:
+		_wing_camouflage(4.85, -0.8, 1.45)
+		# Warren-style diagonal bracing makes the unequal-span biplane distinct
+		# from the Saetta. These are visual-only rods, not extra contact bodies.
+		for side in [-1.0, 1.0]:
+			MeshKit.rod(self, Vector3(side * 2.2, -.2, -.8), Vector3(side * 3.8, 1.45, -.65), .035, metal)
+	_fuselage_band(Vector3(.92, 1.01, .38), Vector3(0, 0, 1.3))
+
+func _wing_camouflage(span: float, z: float, y: float) -> void:
+	# Deliberately low-cost, original muted camouflage. Positions follow the
+	# existing wing's dihedral/sweep rather than hovering above a flat plane.
+	for side in [-1.0, 1.0]:
+		for index in range(4):
+			var t: float = .25 + index * .15
+			var patch: MeshInstance3D = MeshKit.sphere(self, Vector3(span * .18, .014, .42), Vector3(side * span * t, y + t * .12 + .014, z + t * .45), brown)
+			patch.rotation.y = side * (.35 + index * .25)
+
+func _fuselage_band(size: Vector3, at: Vector3) -> void:
+	MeshKit.sphere(self, size, at, MeshKit.material(Color("dbd6bf"))).name = "RecognitionBand"
+
+func _inline_fighter() -> void:
+	# Original C.202 placeholder: slim liquid-cooled engine, spinner, enclosed
+	# canopy and ventral radiator. Never reuse the C.200's circular radial nose.
+	green = MeshKit.material(Color("a18b62"))
+	brown = MeshKit.material(Color("616c49"))
+	_fuselage()
+	MeshKit.sphere(self, Vector3(.86, 1.0, 2.25), Vector3(0, 0, -2.95), green).name = "InlineEngineCowling"
+	_wing(5.29, 2.25, -.45, -.3, green)
+	_wing(1.65, 1.0, 3.25, .15, green)
+	_wing_camouflage(5.29, -.45, -.3)
+	MeshKit.sphere(self, Vector3(.14, 1.7, 1.5), Vector3(0, .65, 3.4), green)
+	var glass: StandardMaterial3D = MeshKit.material(Color(.35, .50, .55, .6), .2)
+	glass.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	MeshKit.sphere(self, Vector3(.78, .9, 1.7), Vector3(0, .63, -.1), glass).name = "EnclosedCanopy"
+	for z in [-.65, .35]:
+		MeshKit.rod(self, Vector3(-.32, .5, z), Vector3(-.22, .98, z), .025, green)
+		MeshKit.rod(self, Vector3(.32, .5, z), Vector3(.22, .98, z), .025, green)
+		MeshKit.rod(self, Vector3(-.22, .98, z), Vector3(.22, .98, z), .025, green)
+	MeshKit.box(self, Vector3(.7, .45, 1.45), Vector3(0, -.72, -.5), underside).name = "VentralRadiator"
+	MeshKit.box(self, Vector3(.56, .27, .025), Vector3(0, -.74, -1.235), rubber)
+	MeshKit.box(self, Vector3(.26, .28, .7), Vector3(-.52, -.1, -2.6), green)
+	for side in [-1.0, 1.0]:
+		for i in range(6):
+			MeshKit.box(self, Vector3(.15, .1, .17), Vector3(side * .43, .16, -3.4 + i * .21), metal)
+		_gear(Vector3(side * 1.35, -.4, -.7), false)
+		_marking(Vector3(side * 3.4, -.15, -.35), .55, false)
+		_marking(Vector3(side * .37, 0, 1.85), .33, true)
+		var port := Marker3D.new()
+		port.name = "CowlingGunPort" + str(gun_ports.size())
+		port.position = Vector3(side * .25, .28, -3.9)
+		add_child(port)
+		gun_ports.append(port)
+		MeshKit.rod(self, port.position + Vector3(0, 0, .3), port.position, .03, rubber)
+	var rotor := Node3D.new()
+	rotor.name = "ThreeBladePropeller"
+	rotor.position = Vector3(0, .02, -4.0)
+	add_child(rotor)
+	propellers.append(rotor)
+	MeshKit.sphere(rotor, Vector3(.57, .57, .7), Vector3(0, 0, -.2), green)
+	for i in range(3):
+		var blade := Node3D.new()
+		blade.rotation.z = TAU * i / 3
+		rotor.add_child(blade)
+		MeshKit.box(blade, Vector3(.15, 1.18, .055), Vector3(0, .78, 0), rubber)
+		MeshKit.box(blade, Vector3(.16, .14, .06), Vector3(0, 1.3, 0), underside)
+	_tail_wheel(Vector3(0, -.3, 3.3))
+	_tail_cross(Vector3(.085, .73, 3.4))
+	_fuselage_band(Vector3(.77, .9, .36), Vector3(0, 0, 1.35))
 
 func _bomber() -> void:
 	MeshKit.sphere(self, Vector3(1.75, 1.8, 15.6), Vector3(0, 0, 0.3), green)

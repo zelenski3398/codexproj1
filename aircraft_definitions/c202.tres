@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="EnemyAircraftDefinition" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemy_aircraft_definition.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/italian_aircraft_model.gd" id="2"]
+[ext_resource type="Resource" path="res://damage_profiles/c202.tres" id="3"]
+
+[resource]
+script = ExtResource("1")
+id = "c202"
+model_script = ExtResource("2")
+damage = ExtResource("3")
+title = "Macchi C.202 Folgore"
+marker = "C.202"
+mass_kg = 2930.0
+body_size = Vector3(0.95, 1.15, 8.85)
+wing_area = 16.8
+thrust = 16500.0
+drag = 0.032
+cruise_speed = 92.0
+stall_speed = 32.0
+maximum_bank = 55.0
+body_inertia = Vector3(8500, 14000, 7300)
+control_torque = Vector3(21000, 13500, 25000)
