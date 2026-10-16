@@ -1,6 +1,6 @@
 # Malta landscape: Commit 2
 
-**Scenery update:** the original 32-block town placeholder described below has been replaced by the [fortified Valletta city](valletta-city.md). Rural scenery and the landscape material pipeline remain as documented; historical counts below describe the original landscape milestone.
+**Scenery update:** [Historic Mdina](mdina-city.md) is now also present at its geographic location. the original 32-block town placeholder described below has been replaced by the [fortified Valletta city](valletta-city.md). Rural scenery and the landscape material pipeline remain as documented; historical counts below describe the original landscape milestone.
 
 Normal mode now shows limestone, reddish/brown dry soil, muted cultivated
 fields, sparse scrub and rocky slopes using one explicit shared material on

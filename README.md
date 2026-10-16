@@ -740,3 +740,7 @@ AA now uses [relative mouse aiming, LMB fire, RMB sight zoom and unlimited ammun
 ## Fortified Valletta
 
 All Malta environments now include an original dense limestone city, courtyard street blocks, bastions and a Fort St Elmo-inspired fort at the existing Valletta landmark. See the [city guide and screenshots](docs/valletta-city.md) for placement, performance, validation and limitations.
+
+## Historic Mdina
+
+All Malta environments also include an original georeferenced Mdina hilltop city with battered bastions, narrow streets, a working gate passage and St Paul's Cathedral. Open **M** and head southwest from Ta' Qali toward **Mdina**. See the [placement, previews and validation guide](docs/mdina-city.md).

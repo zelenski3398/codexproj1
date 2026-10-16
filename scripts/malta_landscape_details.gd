@@ -23,7 +23,7 @@ func _populate() -> void:
 			var point: Vector3 = Vector3(float(centre[0]) + random.randf_range(-12, 12), 0, float(centre[1]) + random.randf_range(-12, 12))
 			var hit: Dictionary = _ground(point)
 			# New city roofs are physical ground hits, but never planting sites.
-			if not hit.is_empty() and world.valletta_city.is_ancestor_of(hit.collider):
+			if not hit.is_empty() and (world.valletta_city.is_ancestor_of(hit.collider) or world.mdina_city.is_ancestor_of(hit.collider)):
 				continue
 			if hit.is_empty() or hit.position.y < 2 or hit.normal.y < 0.8:
 				continue

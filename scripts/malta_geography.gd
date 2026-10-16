@@ -6,6 +6,12 @@ static var _data: Dictionary = {}
 static func data() -> Dictionary:
 	if _data.is_empty():
 		_data = JSON.parse_string(FileAccess.get_file_as_string("res://assets/malta/world_data.json"))
+		# Additional scenery marker; existing source landmarks/mission points retain
+		# their order and coordinates. The city generator supplies the projection.
+		var mdina: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://assets/malta/mdina/layout.json"))
+		var origin: Array = mdina.origin_world.duplicate()
+		origin[1] = mdina.reference_terrain_height
+		_data.landmarks.append({"name":"Mdina", "position":origin})
 	return _data
 
 static func vector(value: Array) -> Vector3:

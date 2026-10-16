@@ -8,7 +8,7 @@ The procedural model uses the project's existing EPSG:32633 transform relative t
 
 ## Integration and performance
 
-- `scripts/valletta_city.gd` is world-owned scenery, created once by `MaltaWorld` for every Malta environment/mode; restarting frees the old city. No travel loading or new scene transition is introduced.
+- `scripts/valletta_city.gd` configures world-owned scenery through the shared `HistoricCity` renderer, created once by `MaltaWorld` for every Malta environment/mode; restarting frees the old city. No travel loading or new scene transition is introduced.
 - `assets/malta/valletta/city.glb` contains 162,816 source triangles in 42 render chunks, with importer-generated mesh LODs. Main structures remain visible out to 14 km; windows, balconies and trim cull at 1.6 km. Chunk frustum/distance culling is independent of collision.
 - `collision.glb` contains only main structures, roofs and fortifications. Its 21 static collision chunks block aircraft, on-foot movement and existing swept gunfire. Small cosmetic details are omitted from collision. Buildings do not have new destruction/damage logic.
 - An explicit rough `StandardMaterial3D` uses the authored sRGB limestone palette. There are no custom city shaders, downloaded textures, GPU particles or renderer-specific features. This city palette is independent of terrain heatmap colours.
