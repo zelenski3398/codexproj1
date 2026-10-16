@@ -1,0 +1,16 @@
+stateDiagram-v2
+    [*] --> WAIT_MOUNT: six local guns and vulnerable pilot prepared
+    WAIT_MOUNT --> PREPARING: mount local gun or command post
+    PREPARING --> SPAWNING: initial countdown expires
+    SPAWNING --> ACTIVE: whole wave spawned once
+    ACTIVE --> DRAINING: all actual wave enemies destroyed
+    DRAINING --> INTERVAL: hostile rounds and bombs exhausted, waves remain
+    INTERVAL --> SPAWNING: interval expires
+    DRAINING --> SUCCESS: wave 6 and ten losses, no remaining ordnance
+    WAIT_MOUNT --> FAILED: operator killed or all guns lost
+    ACTIVE --> FAILED: operator killed or all guns lost
+    DRAINING --> FAILED: late ordnance kills operator or last guns
+    note right of FAILED
+        Failure guard is evaluated in all live phases.
+        Retry reconstructs world, batteries and mission.
+    end note

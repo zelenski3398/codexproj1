@@ -1,0 +1,20 @@
+stateDiagram-v2
+    [*] --> Stage1: one normal enemy
+    Stage1 --> Wait2: all stage enemies destroyed
+    Wait2 --> Stage2: confirm, two normal enemies
+    Stage2 --> Wait3: all destroyed
+    Wait3 --> Stage3: confirm, two normal enemies
+    Stage3 --> Wait4: all destroyed
+    Wait4 --> Stage4: confirm, three normal enemies
+    Stage4 --> Wait5: all destroyed
+    Wait5 --> Stage5: confirm, two normal plus one ace
+    Stage5 --> Complete: all destroyed, no stage six
+    Stage1 --> Ended: player lost
+    Stage2 --> Ended: player lost
+    Stage3 --> Ended: player lost
+    Stage4 --> Ended: player lost
+    Stage5 --> Ended: player lost
+    note right of Ended
+        Every waiting state also ends on player loss.
+        No repairs or world reloads between stages.
+    end note

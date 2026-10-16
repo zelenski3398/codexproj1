@@ -1,0 +1,17 @@
+stateDiagram-v2
+    [*] --> ParkedEngineOff: Malta fleet creation
+    ParkedEngineOff --> PoweredGround: board then I
+    PoweredGround --> GroundRoll: W holds throttle setting
+    GroundRoll --> Airborne: aerodynamic lift exceeds weight
+    Airborne --> Stalled: low airspeed or high angle of attack
+    Stalled --> Airborne: lower nose and recover speed
+    Airborne --> GroundRoll: gentle gear-down landing
+    GroundRoll --> PoweredGround: wheel brakes
+    PoweredGround --> ParkedEngineOff: zero throttle and I
+    GroundRoll --> Crashed: severe contact or gear-up impact
+    Airborne --> Destroyed: health depleted
+    PoweredGround --> Destroyed: health depleted
+    Destroyed --> WreckContact: enemy ground impact
+    WreckContact --> Removed: enemy delay expires
+    Crashed --> ParkedEngineOff: explicit Malta session restart
+    Destroyed --> ParkedEngineOff: explicit Malta session restart

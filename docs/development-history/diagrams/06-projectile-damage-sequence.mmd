@@ -1,0 +1,22 @@
+sequenceDiagram
+    participant W as WingGuns._fire_salvo
+    participant P as ProjectilePool
+    participant T as CombatTeams
+    participant H as AircraftHitbox
+    participant D as AircraftDamage
+    participant A as FlightAircraft / AircraftHealth
+    W->>P: spawn(origin, velocity, life, damage, shooter RID, team)
+    P->>P: sweep previous-to-next position, exclude shooter and own areas
+    P->>P: skip coarse aircraft body, retain nearest hitbox or terrain
+    P->>T: can_damage(team, collider)
+    alt hostile AircraftHitbox
+        P->>H: receive_projectile_hit(amount, point)
+        H->>D: apply_damage(component id, amount, point)
+        D->>D: integrity loss and optional tank hazards
+        D->>A: take_damage(amount times airframe multiplier)
+        A-->>A: changed signal updates DamageEffects
+        A-->>A: depleted signal latches destruction at zero
+        A->>D: read lift, power and control factors on next force step
+    else terrain or friendly collider
+        P->>P: impact and release round, no friendly HP loss
+    end

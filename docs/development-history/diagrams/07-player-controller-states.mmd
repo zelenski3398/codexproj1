@@ -1,0 +1,19 @@
+stateDiagram-v2
+    [*] --> OnFoot: MaltaMission creates GroundPilot
+    OnFoot --> Piloting: E near serviceable stopped aircraft
+    Piloting --> OnFoot: E stopped, engine off, safe ground exit
+    OnFoot --> Driving: E near truck
+    Driving --> OnFoot: E low speed, grounded, clear exit
+    OnFoot --> IndividualAA: E near operational gun
+    IndividualAA --> OnFoot: E or occupied gun destroyed
+    OnFoot --> BatteryCommand: F near command station
+    BatteryCommand --> OnFoot: F or E or station destroyed
+    IndividualAA --> AAInputBlocked: Escape or map/audio UI
+    BatteryCommand --> AAInputBlocked: Escape or map/audio UI
+    AAInputBlocked --> IndividualAA: resume same gun, click recaptures pointer
+    AAInputBlocked --> BatteryCommand: resume same post, click recaptures pointer
+    note right of OnFoot
+        No direct truck-to-gun transition.
+        Aircraft boarding is disabled in AA defence.
+        Pause/map overlays block AA input, only Escape pauses time.
+    end note

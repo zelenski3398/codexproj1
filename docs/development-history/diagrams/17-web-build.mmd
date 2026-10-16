@@ -1,0 +1,11 @@
+flowchart LR
+    Push["push main or workflow dispatch"] --> Checkout["Actions checkout"]
+    Checkout --> Install["install_godot_web.sh: 4.6.3 and verified matching templates"]
+    Install --> Import["headless editor import"]
+    Import --> Checks["native GDScript checks, Xvfb UI checks"]
+    Checks --> Export["build_web.sh / Web preset / custom shell"]
+    Export --> Artifact["web artifact and Pages artifact"]
+    Artifact --> Deploy["configure-pages and deploy-pages"]
+    Export --> Local["separate Playwright release smoke tools"]
+    Deploy --> Browser["single-thread WebGL 2 game menu"]
+    Note["Python geographic and browser smoke suites are not all invoked by current CI"] -.-> Checks

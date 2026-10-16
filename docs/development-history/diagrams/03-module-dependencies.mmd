@@ -1,0 +1,22 @@
+flowchart LR
+    Main["main.gd"] --> MM["malta_mission.gd"]
+    Main --> EC["enemy_encounters.gd"]
+    Main --> VI["valletta_interception.gd"]
+    Main --> DD["dive_defence_mission.gd"]
+    MM --> Inter["airfield_interaction.gd"]
+    Inter --> Gun["british_aa_gun.gd"]
+    Inter --> Truck["military_truck.gd"]
+    Cmd["aa_command_station.gd extends BritishAAGun"] --> Gun
+    Cmd --> FC["aa_fire_control.gd"]
+    EC --> Enemy["enemy_aircraft.gd extends FlightAircraft"]
+    Enemy --> Flight["aircraft.gd"]
+    Flight --> Damage["aircraft_damage.gd / health.gd"]
+    Flight --> Wing["wing_guns.gd"]
+    Wing --> Pool["projectile_pool.gd"]
+    Gun --> Pool
+    Pool --> Hit["aircraft_hitbox.gd"]
+    Hit --> Damage
+    DD --> Bomb["mission_bomb.gd"]
+    VI --> Bomb
+    DD --> EP["dive_attack_pilot.gd extends EnemyPilot"]
+    VI --> BP["bomber_pilot.gd / escort_pilot.gd"]

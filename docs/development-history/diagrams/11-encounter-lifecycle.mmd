@@ -1,0 +1,13 @@
+stateDiagram-v2
+    [*] --> Active: begin encounter spawns one enemy
+    Active --> AwaitConfirm: actual last enemy destroyed
+    AwaitConfirm --> Active: C or button, latch before deferred single spawn
+    Active --> Ended: player aircraft lost
+    AwaitConfirm --> Ended: player aircraft lost
+    Ended --> Active: full explicit restart
+    Active --> Cancelled: menu or mission change
+    AwaitConfirm --> Cancelled: menu or mission change
+    note right of AwaitConfirm
+        World and player aircraft state are retained.
+        Falling wrecks are separate from active enemies.
+    end note

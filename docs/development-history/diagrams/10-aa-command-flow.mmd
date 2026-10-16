@@ -1,0 +1,21 @@
+sequenceDiagram
+    participant P as Mounted player
+    participant C as AACommandStation
+    participant F as AAFireControl.solve
+    participant G as Four BritishAAGun instances
+    participant S as ProjectilePool with gravity
+    participant B as AirfieldAABattery._burst
+    P->>C: RMB designate visible hostile or area
+    C->>F: each muzzle, target estimate, velocity, shell speed, gravity
+    F-->>C: intercept point, direction, travel time and validity
+    P->>C: LMB explicit salvo order
+    C->>C: queue ready aimable guns, stagger due times
+    loop each operational gun
+        C->>G: drive_gun rotates real pivots with rate limits
+        C->>G: set timed fuze, fire_round(true) when aligned and due
+        G->>S: physical shell from own Muzzle
+        G->>G: independent five-second reload
+    end
+    S->>B: round_finished at impact or lifetime expiry
+    B->>B: effect and nearest-component distance-based blast
+    Note over C,G: No autonomous target choice or firing, dismount cancels orders

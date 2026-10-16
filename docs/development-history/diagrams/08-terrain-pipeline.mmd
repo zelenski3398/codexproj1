@@ -1,0 +1,18 @@
+flowchart TD
+    DTM["Planning Authority 2012 DTM: supplied 32 m overview"] --> Gen["source/build_terrain.py: fill gaps and bilinear heights"]
+    Coast["Supplied OSM coastline GeoJSON"] --> Gen
+    Proj["EPSG:25833 heights to EPSG:32633 local metre frame"] --> Gen
+    Gen --> Original["source/terrain_original.glb: retained baseline"]
+    Original --> Grade["grade_malta_terrain.py: local airfield cut/fill"]
+    Scan["Historical scan trace and landmark anchors"] --> Trace["malta_road_trace.py / malta_road_surface.py"]
+    Trace --> Grade
+    Grade --> Terrain["terrain.glb: graded ground and road UV masks"]
+    Terrain --> Runtime["MaltaWorld._prepare_terrain"]
+    Runtime --> Collision["static trimesh collision per mesh"]
+    Runtime --> Render["MaltaTerrainAppearance material override"]
+    Render --> Normal["landscape.tres and bundled texture shader - default"]
+    Render --> Debug["elevation_heatmap.tres - explicit F4 only"]
+    Geo["prepare_malta.py / world_data.json"] --> Fields["MaltaAirfield grade and geographic poses"]
+    Fields --> World["MaltaWorld._ready: fields share the terrain frame"]
+    World --> Runtime
+    Geo --> Chart["MaltaGeography chart_uv / chart_to_world"]

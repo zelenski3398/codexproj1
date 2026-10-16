@@ -1,0 +1,17 @@
+flowchart TD
+    Root["main.tscn / main.gd"] --> Select["AircraftSelector / MaltaDepartureMenu / MissionsMenu"]
+    Root --> World["Airfield OR MaltaWorld"]
+    Root --> Fleet["MaltaMission: persistent fleet and GroundPilot"]
+    Root --> Enc["EnemyEncounters: active aircraft and wrecks"]
+    Root --> Mission["VallettaInterception OR DiveDefenceMission"]
+    World --> Ground["MaltaAirfield / MilitaryTruck / AirfieldAABattery"]
+    World --> Cities["HistoricCity / CottoneraRegion"]
+    Fleet --> Aircraft["FlightAircraft / SeaGladiator"]
+    Enc --> Enemy["EnemyAircraft / ItalianEnemy"]
+    Enemy --> Physics["Shared FlightAircraft forces and AircraftDamage"]
+    Aircraft --> Physics
+    Ground --> Pool["ProjectilePool / FlakEffectPool"]
+    Physics --> Weapons["WingGuns / RearGunner / ProjectilePool"]
+    Root --> HUD["FlightHUD / ComponentDamageDebug"]
+    Audio["GameAudio autoload: GameAudioMixer"] -.-> Weapons
+    Audio -.-> Mission

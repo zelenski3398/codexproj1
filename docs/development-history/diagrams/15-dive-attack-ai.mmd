@@ -1,0 +1,14 @@
+stateDiagram-v2
+    [*] --> APPROACH
+    APPROACH --> DIVE: aligned run-in within range
+    DIVE --> PULL_OUT: release single bomb or abort at clearance floor
+    PULL_OUT --> CIRCLE: recovering climb and clearance
+    CIRCLE --> APPROACH: recovery delay, later pass strafes
+    APPROACH --> DESTROYED: shared aircraft HP depleted
+    DIVE --> DESTROYED: shared aircraft HP depleted
+    PULL_OUT --> DESTROYED: shared aircraft HP depleted
+    CIRCLE --> DESTROYED: shared aircraft HP depleted
+    note right of APPROACH
+        All manoeuvres write PilotInput commands.
+        FlightAircraft applies forces and damage factors.
+    end note

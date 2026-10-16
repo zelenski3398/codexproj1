@@ -1,0 +1,17 @@
+stateDiagram-v2
+    [*] --> Live
+    state Live {
+        [*] --> ComponentsHealthy
+        ComponentsHealthy --> ComponentsDamaged: AircraftDamage.apply_damage
+        ComponentsDamaged --> ComponentsDamaged: further hits or fuel burn
+    }
+    Live --> Depleted: AircraftHealth.hp reaches zero
+    Depleted --> DestroyedLatched: depleted signal / FlightAircraft._destroy
+    DestroyedLatched --> Falling: thrust and commands disabled
+    Falling --> Impact: EnemyAircraft detects terrain contact
+    Impact --> Removed: wreck_remove_delay
+    note right of Live
+        Engine effects emit only below 50 hull HP.
+        Independent fuel ignition can emit above 50 HP.
+        Component loss changes forces before hull depletion.
+    end note

@@ -1,0 +1,4258 @@
+[
+  {
+    "sha": "64406b082d49576bf5c0ec8c95367530dab9ab2c",
+    "date": "2026-10-07T16:24:09Z",
+    "committed": "2026-10-07T16:24:09Z",
+    "subject": "Build first playable Spitfire flight prototype",
+    "parents": [],
+    "files": [
+      [
+        "A",
+        ".gitignore"
+      ],
+      [
+        "A",
+        "README.md"
+      ],
+      [
+        "A",
+        "main.tscn"
+      ],
+      [
+        "A",
+        "project.godot"
+      ],
+      [
+        "A",
+        "scripts/aircraft.gd"
+      ],
+      [
+        "A",
+        "scripts/aircraft.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/airfield.gd"
+      ],
+      [
+        "A",
+        "scripts/airfield.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/chase_camera.gd"
+      ],
+      [
+        "A",
+        "scripts/chase_camera.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/hud.gd"
+      ],
+      [
+        "A",
+        "scripts/hud.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/landing_gear.gd"
+      ],
+      [
+        "A",
+        "scripts/landing_gear.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/main.gd"
+      ],
+      [
+        "A",
+        "scripts/main.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/mesh_kit.gd"
+      ],
+      [
+        "A",
+        "scripts/mesh_kit.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/pilot_input.gd"
+      ],
+      [
+        "A",
+        "scripts/pilot_input.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/spitfire_model.gd"
+      ],
+      [
+        "A",
+        "scripts/spitfire_model.gd.uid"
+      ],
+      [
+        "A",
+        "tests/flight_checks.gd"
+      ],
+      [
+        "A",
+        "tests/flight_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tests/visual_capture.gd"
+      ],
+      [
+        "A",
+        "tests/visual_capture.gd.uid"
+      ]
+    ],
+    "category": "Flight",
+    "outcome": "Feature",
+    "technical_change": "Creates the initial force-driven Spitfire, procedural countryside airfield, three-ray landing gear, chase camera, HUD, pause/reset and flight/capture checks. The root already contains playable code; no preceding prototype history is present.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/64406b082d49576bf5c0ec8c95367530dab9ab2c"
+  },
+  {
+    "sha": "81703b4933e0ca1391448c5c423ac28ae66b93f0",
+    "date": "2026-10-07T16:41:05Z",
+    "committed": "2026-10-07T16:41:05Z",
+    "subject": "Fix keyboard input for embedded game views",
+    "parents": [
+      "64406b082d49576bf5c0ec8c95367530dab9ab2c"
+    ],
+    "files": [
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "M",
+        "project.godot"
+      ],
+      [
+        "M",
+        "scripts/aircraft.gd"
+      ],
+      [
+        "M",
+        "scripts/hud.gd"
+      ],
+      [
+        "M",
+        "scripts/pilot_input.gd"
+      ],
+      [
+        "A",
+        "tests/keyboard_checks.gd"
+      ],
+      [
+        "A",
+        "tests/keyboard_checks.gd.uid"
+      ]
+    ],
+    "category": "Input",
+    "outcome": "Fix",
+    "technical_change": "Stores physical and logical key bindings in project.godot, handles HUD shortcuts before GUI navigation, removes runtime-only binding construction and adds keycode-forwarding regression tests.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/81703b4933e0ca1391448c5c423ac28ae66b93f0"
+  },
+  {
+    "sha": "b0bdb4f02babf34094c9ee2e1ff58e011672c721",
+    "date": "2026-10-08T06:04:11Z",
+    "committed": "2026-10-08T06:04:11Z",
+    "subject": "Add wing guns, aircraft health and damage effects",
+    "parents": [
+      "81703b4933e0ca1391448c5c423ac28ae66b93f0"
+    ],
+    "files": [
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "M",
+        "project.godot"
+      ],
+      [
+        "M",
+        "scripts/aircraft.gd"
+      ],
+      [
+        "A",
+        "scripts/damage_effects.gd"
+      ],
+      [
+        "A",
+        "scripts/damage_effects.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/health.gd"
+      ],
+      [
+        "A",
+        "scripts/health.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/hud.gd"
+      ],
+      [
+        "M",
+        "scripts/main.gd"
+      ],
+      [
+        "M",
+        "scripts/pilot_input.gd"
+      ],
+      [
+        "A",
+        "scripts/practice_target.gd"
+      ],
+      [
+        "A",
+        "scripts/practice_target.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/projectile_pool.gd"
+      ],
+      [
+        "A",
+        "scripts/projectile_pool.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/spitfire_model.gd"
+      ],
+      [
+        "A",
+        "scripts/wing_guns.gd"
+      ],
+      [
+        "A",
+        "scripts/wing_guns.gd.uid"
+      ],
+      [
+        "M",
+        "tests/visual_capture.gd"
+      ],
+      [
+        "A",
+        "tests/weapons_checks.gd"
+      ],
+      [
+        "A",
+        "tests/weapons_checks.gd.uid"
+      ]
+    ],
+    "category": "Weapons / health",
+    "outcome": "Feature",
+    "technical_change": "Adds eight visible wing-port salvos, fixed bullet/tracer/spark pools with segment sweeps, health/depletion, world-space damage effects and an initially stationary practice target. Flight destruction gates thrust and gun input.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/b0bdb4f02babf34094c9ee2e1ff58e011672c721"
+  },
+  {
+    "sha": "83e60738746ed2a2b4c2dcd75316e8c62f9c8579",
+    "date": "2026-10-08T16:09:11Z",
+    "committed": "2026-10-08T16:09:11Z",
+    "subject": "Make weapon script types explicit for parser compatibility",
+    "parents": [
+      "b0bdb4f02babf34094c9ee2e1ff58e011672c721"
+    ],
+    "files": [
+      [
+        "M",
+        "scripts/wing_guns.gd"
+      ],
+      [
+        "M",
+        "tests/weapons_checks.gd"
+      ]
+    ],
+    "category": "Parser / weapons",
+    "outcome": "Fix",
+    "technical_change": "Changes inferred locals to explicit StandardMaterial3D, MeshInstance3D, Vector3, int and bool types in wing_guns.gd and weapons checks; observable runtime firing logic is otherwise retained.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/83e60738746ed2a2b4c2dcd75316e8c62f9c8579"
+  },
+  {
+    "sha": "236dbf093e2ba78afd3742a4dbd52b9df0685a56",
+    "date": "2026-10-08T16:59:38Z",
+    "committed": "2026-10-08T16:59:38Z",
+    "subject": "Add a flying Stuka enemy with pursuit and return fire",
+    "parents": [
+      "83e60738746ed2a2b4c2dcd75316e8c62f9c8579"
+    ],
+    "files": [
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "M",
+        "scripts/aircraft.gd"
+      ],
+      [
+        "A",
+        "scripts/enemy_aircraft.gd"
+      ],
+      [
+        "A",
+        "scripts/enemy_aircraft.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/enemy_pilot.gd"
+      ],
+      [
+        "A",
+        "scripts/enemy_pilot.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/hud.gd"
+      ],
+      [
+        "M",
+        "scripts/main.gd"
+      ],
+      [
+        "M",
+        "scripts/projectile_pool.gd"
+      ],
+      [
+        "A",
+        "scripts/stuka_model.gd"
+      ],
+      [
+        "A",
+        "scripts/stuka_model.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/wing_guns.gd"
+      ],
+      [
+        "A",
+        "tests/enemy_checks.gd"
+      ],
+      [
+        "A",
+        "tests/enemy_checks.gd.uid"
+      ],
+      [
+        "M",
+        "tests/flight_checks.gd"
+      ],
+      [
+        "M",
+        "tests/keyboard_checks.gd"
+      ],
+      [
+        "M",
+        "tests/visual_capture.gd"
+      ],
+      [
+        "M",
+        "tests/weapons_checks.gd"
+      ]
+    ],
+    "category": "Enemy aircraft",
+    "outcome": "Feature / replacement",
+    "technical_change": "Introduces procedural inverted-gull Stuka and command-driven enemy pursuit/return fire; main.gd replaces the stationary target with EnemyAircraft. The practice-target script is retained but no longer the active encounter.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/236dbf093e2ba78afd3742a4dbd52b9df0685a56"
+  },
+  {
+    "sha": "d3dea47a244651baacf17f334f4d14f2d8c3894a",
+    "date": "2026-10-09T09:58:07Z",
+    "committed": "2026-10-09T09:58:07Z",
+    "subject": "Add selectable Gloster Sea Gladiator with slower biplane flight",
+    "parents": [
+      "236dbf093e2ba78afd3742a4dbd52b9df0685a56"
+    ],
+    "files": [
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "M",
+        "project.godot"
+      ],
+      [
+        "M",
+        "scripts/aircraft.gd"
+      ],
+      [
+        "A",
+        "scripts/aircraft_selector.gd"
+      ],
+      [
+        "A",
+        "scripts/aircraft_selector.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/hud.gd"
+      ],
+      [
+        "M",
+        "scripts/landing_gear.gd"
+      ],
+      [
+        "M",
+        "scripts/main.gd"
+      ],
+      [
+        "A",
+        "scripts/sea_gladiator.gd"
+      ],
+      [
+        "A",
+        "scripts/sea_gladiator.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/sea_gladiator_model.gd"
+      ],
+      [
+        "A",
+        "scripts/sea_gladiator_model.gd.uid"
+      ],
+      [
+        "A",
+        "tests/aircraft_choice_checks.gd"
+      ],
+      [
+        "A",
+        "tests/aircraft_choice_checks.gd.uid"
+      ],
+      [
+        "M",
+        "tests/enemy_checks.gd"
+      ],
+      [
+        "M",
+        "tests/flight_checks.gd"
+      ],
+      [
+        "M",
+        "tests/keyboard_checks.gd"
+      ],
+      [
+        "M",
+        "tests/visual_capture.gd"
+      ],
+      [
+        "M",
+        "tests/weapons_checks.gd"
+      ]
+    ],
+    "category": "Player aircraft",
+    "outcome": "Feature",
+    "technical_change": "Adds SeaGladiator/SeaGladiatorModel, fixed-gear rejection, slower biplane force tuning and startup selection. Main/HUD lifecycle supports choosing either player aircraft rather than a single hardwired Spitfire.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/d3dea47a244651baacf17f334f4d14f2d8c3894a"
+  },
+  {
+    "sha": "fc44efa7a43f2066de9a2edbf2b472e8d2c6f7d6",
+    "date": "2026-10-10T09:57:48Z",
+    "committed": "2026-10-10T09:57:48Z",
+    "subject": "Extend Stuka AI encounter with terrain avoidance and clean wreck lifecycle",
+    "parents": [
+      "d3dea47a244651baacf17f334f4d14f2d8c3894a"
+    ],
+    "files": [
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "M",
+        "scripts/aircraft.gd"
+      ],
+      [
+        "A",
+        "scripts/combat_teams.gd"
+      ],
+      [
+        "A",
+        "scripts/combat_teams.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/destruction_burst.gd"
+      ],
+      [
+        "A",
+        "scripts/destruction_burst.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/enemy_aircraft.gd"
+      ],
+      [
+        "M",
+        "scripts/enemy_pilot.gd"
+      ],
+      [
+        "M",
+        "scripts/health.gd"
+      ],
+      [
+        "M",
+        "scripts/hud.gd"
+      ],
+      [
+        "M",
+        "scripts/main.gd"
+      ],
+      [
+        "M",
+        "scripts/projectile_pool.gd"
+      ],
+      [
+        "M",
+        "scripts/wing_guns.gd"
+      ],
+      [
+        "A",
+        "tests/encounter_checks.gd"
+      ],
+      [
+        "A",
+        "tests/encounter_checks.gd.uid"
+      ],
+      [
+        "M",
+        "tests/enemy_checks.gd"
+      ],
+      [
+        "M",
+        "tests/visual_capture.gd"
+      ]
+    ],
+    "category": "AI / destruction",
+    "outcome": "Feature / fix",
+    "technical_change": "Adds CombatTeams, terrain-corridor avoidance, bounded/slewed manoeuvres, grace/damage-evade handling, one-shot ground impact and delayed wreck removal. Session cleanup/HUD distinguish an enemy loss from the still-falling wreck.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/fc44efa7a43f2066de9a2edbf2b472e8d2c6f7d6"
+  },
+  {
+    "sha": "f1b9d0576c98425770df6809fdc7048f87ac04a0",
+    "date": "2026-10-10T10:49:50Z",
+    "committed": "2026-10-10T10:49:50Z",
+    "subject": "Add shared aircraft component damage and hitbox diagnostics",
+    "parents": [
+      "fc44efa7a43f2066de9a2edbf2b472e8d2c6f7d6"
+    ],
+    "files": [
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "A",
+        "damage_profiles/sea_gladiator.tres"
+      ],
+      [
+        "A",
+        "damage_profiles/spitfire.tres"
+      ],
+      [
+        "A",
+        "damage_profiles/stuka.tres"
+      ],
+      [
+        "M",
+        "project.godot"
+      ],
+      [
+        "M",
+        "scripts/aircraft.gd"
+      ],
+      [
+        "A",
+        "scripts/aircraft_component_definition.gd"
+      ],
+      [
+        "A",
+        "scripts/aircraft_component_definition.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/aircraft_damage.gd"
+      ],
+      [
+        "A",
+        "scripts/aircraft_damage.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/aircraft_damage_profile.gd"
+      ],
+      [
+        "A",
+        "scripts/aircraft_damage_profile.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/aircraft_hitbox.gd"
+      ],
+      [
+        "A",
+        "scripts/aircraft_hitbox.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/component_damage_debug.gd"
+      ],
+      [
+        "A",
+        "scripts/component_damage_debug.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/damage_effects.gd"
+      ],
+      [
+        "A",
+        "scripts/damage_hitbox_spec.gd"
+      ],
+      [
+        "A",
+        "scripts/damage_hitbox_spec.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/enemy_aircraft.gd"
+      ],
+      [
+        "M",
+        "scripts/enemy_pilot.gd"
+      ],
+      [
+        "M",
+        "scripts/hud.gd"
+      ],
+      [
+        "M",
+        "scripts/main.gd"
+      ],
+      [
+        "M",
+        "scripts/projectile_pool.gd"
+      ],
+      [
+        "M",
+        "scripts/sea_gladiator.gd"
+      ],
+      [
+        "A",
+        "tests/component_damage_checks.gd"
+      ],
+      [
+        "A",
+        "tests/component_damage_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tests/component_visual_capture.gd"
+      ],
+      [
+        "A",
+        "tests/component_visual_capture.gd.uid"
+      ],
+      [
+        "M",
+        "tests/encounter_checks.gd"
+      ]
+    ],
+    "category": "Component damage",
+    "outcome": "Feature",
+    "technical_change": "Adds eight component definitions, hitbox areas, per-airframe profiles and integrity-driven lift/drag/torque/power/control factors. Pool skips coarse aircraft bodies for localized hits; F3 diagnostics and independent fuel hazards are integrated.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/f1b9d0576c98425770df6809fdc7048f87ac04a0"
+  },
+  {
+    "sha": "63d427747d0709d756d36ae3f33c24cc11157894",
+    "date": "2026-10-10T11:48:31Z",
+    "committed": "2026-10-10T11:48:31Z",
+    "subject": "Add Stuka rear gunner and persistent tactical pursuit",
+    "parents": [
+      "f1b9d0576c98425770df6809fdc7048f87ac04a0"
+    ],
+    "files": [
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "A",
+        "docs/stuka-tactics.md"
+      ],
+      [
+        "M",
+        "scripts/enemy_aircraft.gd"
+      ],
+      [
+        "M",
+        "scripts/enemy_pilot.gd"
+      ],
+      [
+        "M",
+        "scripts/hud.gd"
+      ],
+      [
+        "M",
+        "scripts/main.gd"
+      ],
+      [
+        "A",
+        "scripts/rear_gunner.gd"
+      ],
+      [
+        "A",
+        "scripts/rear_gunner.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/stuka_model.gd"
+      ],
+      [
+        "M",
+        "scripts/wing_guns.gd"
+      ],
+      [
+        "M",
+        "tests/enemy_checks.gd"
+      ],
+      [
+        "A",
+        "tests/rear_gunner_checks.gd"
+      ],
+      [
+        "A",
+        "tests/rear_gunner_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tests/rear_gunner_visual_capture.gd"
+      ],
+      [
+        "A",
+        "tests/rear_gunner_visual_capture.gd.uid"
+      ]
+    ],
+    "category": "Stuka gunner / tactics",
+    "outcome": "Feature / fix",
+    "technical_change": "Adds rear model pivots and RearGunner with shared WingGuns, self-clearance and firing arcs. Reworks airborne acquisition/persistent pursuit and uses break/scissors/yo-yo navigation targets rather than velocity changes.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/63d427747d0709d756d36ae3f33c24cc11157894"
+  },
+  {
+    "sha": "850e33c953b3b3289dcacbbf40a34e2b94df8b35",
+    "date": "2026-10-10T13:03:16Z",
+    "committed": "2026-10-10T13:03:16Z",
+    "subject": "Rebalance Stuka gunner with human aiming and combat telemetry",
+    "parents": [
+      "63d427747d0709d756d36ae3f33c24cc11157894"
+    ],
+    "files": [
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "A",
+        "docs/gunner-balance-results.json"
+      ],
+      [
+        "A",
+        "docs/gunner-balance.md"
+      ],
+      [
+        "M",
+        "docs/stuka-tactics.md"
+      ],
+      [
+        "A",
+        "gunner_profiles/ace.tres"
+      ],
+      [
+        "A",
+        "gunner_profiles/cadet.tres"
+      ],
+      [
+        "A",
+        "gunner_profiles/pilot.tres"
+      ],
+      [
+        "M",
+        "scripts/aircraft.gd"
+      ],
+      [
+        "M",
+        "scripts/component_damage_debug.gd"
+      ],
+      [
+        "A",
+        "scripts/gunner_debug_panel.gd"
+      ],
+      [
+        "A",
+        "scripts/gunner_debug_panel.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/gunner_skill_profile.gd"
+      ],
+      [
+        "A",
+        "scripts/gunner_skill_profile.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/main.gd"
+      ],
+      [
+        "M",
+        "scripts/projectile_pool.gd"
+      ],
+      [
+        "M",
+        "scripts/rear_gunner.gd"
+      ],
+      [
+        "A",
+        "scripts/weapon_statistics.gd"
+      ],
+      [
+        "A",
+        "scripts/weapon_statistics.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/wing_guns.gd"
+      ],
+      [
+        "A",
+        "tests/gunner_balance_checks.gd"
+      ],
+      [
+        "A",
+        "tests/gunner_balance_checks.gd.uid"
+      ],
+      [
+        "M",
+        "tests/rear_gunner_checks.gd"
+      ]
+    ],
+    "category": "Gunner balance",
+    "outcome": "Feature / rebalance",
+    "technical_change": "Adds Cadet/Pilot/Ace profiles, delayed observations and learned target velocity, reaction/tracking/range/lead/movement errors, burst corrections and self-geometry checks. Adds per-station range/component hit telemetry and reproducible balance fixtures.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/850e33c953b3b3289dcacbbf40a34e2b94df8b35"
+  },
+  {
+    "sha": "bf0a11c9be53bb888cd0052b3111e5f43df295e2",
+    "date": "2026-10-10T13:41:10Z",
+    "committed": "2026-10-10T13:41:10Z",
+    "subject": "Add tested browser export and GitHub Pages deployment",
+    "parents": [
+      "850e33c953b3b3289dcacbbf40a34e2b94df8b35"
+    ],
+    "files": [
+      [
+        "A",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "A",
+        "assets/fonts/DejaVu-LICENSE.txt"
+      ],
+      [
+        "A",
+        "assets/fonts/DejaVuSans.ttf"
+      ],
+      [
+        "A",
+        "assets/fonts/DejaVuSans.ttf.import"
+      ],
+      [
+        "A",
+        "docs/web-hosting.md"
+      ],
+      [
+        "A",
+        "export_presets.cfg"
+      ],
+      [
+        "M",
+        "scripts/aircraft_selector.gd"
+      ],
+      [
+        "M",
+        "scripts/hud.gd"
+      ],
+      [
+        "M",
+        "scripts/main.gd"
+      ],
+      [
+        "A",
+        "scripts/web_support.gd"
+      ],
+      [
+        "A",
+        "scripts/web_support.gd.uid"
+      ],
+      [
+        "A",
+        "tools/build_web.sh"
+      ],
+      [
+        "A",
+        "tools/install_godot_web.sh"
+      ],
+      [
+        "A",
+        "tools/web_smoke.cjs"
+      ],
+      [
+        "A",
+        "web/GODOT-COPYRIGHT.txt"
+      ],
+      [
+        "A",
+        "web/GODOT-LICENSE.txt"
+      ],
+      [
+        "A",
+        "web/shell.html"
+      ]
+    ],
+    "category": "Web / CI",
+    "outcome": "Feature",
+    "technical_change": "Adds Web export preset, custom browser shell, matching checked Godot/templates installer, build helper, Pages workflow, browser telemetry and smoke runner. Adds browser-friendly weapon-key guidance and bundled font/notices.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/bf0a11c9be53bb888cd0052b3111e5f43df295e2"
+  },
+  {
+    "sha": "c7b1f6cc7a9acc5d49b39472a31e411b00aa3534",
+    "date": "2026-10-10T13:47:36Z",
+    "committed": "2026-10-10T13:47:36Z",
+    "subject": "Record verified web build and deploy after Pages activation",
+    "parents": [
+      "bf0a11c9be53bb888cd0052b3111e5f43df295e2"
+    ],
+    "files": [
+      [
+        "M",
+        "docs/web-hosting.md"
+      ]
+    ],
+    "category": "Documentation / deployment",
+    "outcome": "Maintenance",
+    "technical_change": "Updates web-hosting notes with recorded build/artifact success, initial Pages-disabled deployment and owner activation. No gameplay or workflow implementation changes occur in this diff.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/c7b1f6cc7a9acc5d49b39472a31e411b00aa3534"
+  },
+  {
+    "sha": "3f1695169907679e4e43bea42e452c346993cc4d",
+    "date": "2026-10-10T16:35:04+02:00",
+    "committed": "2026-10-10T16:35:04+02:00",
+    "subject": "Create CNAME",
+    "parents": [
+      "c7b1f6cc7a9acc5d49b39472a31e411b00aa3534"
+    ],
+    "files": [
+      [
+        "A",
+        "CNAME"
+      ]
+    ],
+    "category": "Hosting configuration",
+    "outcome": "Maintenance / later removed",
+    "technical_change": "Adds root CNAME custom-domain configuration. Its hostname is not necessary to explain gameplay architecture; the next commit deletes this file.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/3f1695169907679e4e43bea42e452c346993cc4d"
+  },
+  {
+    "sha": "b093bc28793648fd28ebb7ef963513086ada5055",
+    "date": "2026-10-10T16:35:49+02:00",
+    "committed": "2026-10-10T16:35:49+02:00",
+    "subject": "Delete CNAME",
+    "parents": [
+      "3f1695169907679e4e43bea42e452c346993cc4d"
+    ],
+    "files": [
+      [
+        "D",
+        "CNAME"
+      ]
+    ],
+    "category": "Hosting configuration",
+    "outcome": "Removal",
+    "technical_change": "Deletes the just-added CNAME. No root CNAME exists at the audited snapshot; custom-domain configuration is therefore a transient historical change.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/b093bc28793648fd28ebb7ef963513086ada5055"
+  },
+  {
+    "sha": "1f83c99653e2804b811dadc8905e88f94a72d208",
+    "date": "2026-10-10T15:14:37Z",
+    "committed": "2026-10-10T15:14:37Z",
+    "subject": "Add continuous Malta world, airfield selection and persistent aircraft boarding",
+    "parents": [
+      "b093bc28793648fd28ebb7ef963513086ada5055"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "A",
+        "assets/malta/ATTRIBUTION.txt"
+      ],
+      [
+        "A",
+        "assets/malta/navigation.png"
+      ],
+      [
+        "A",
+        "assets/malta/navigation.png.import"
+      ],
+      [
+        "A",
+        "assets/malta/source/Malta-Coastline.geojson"
+      ],
+      [
+        "A",
+        "assets/malta/source/Malta-DTM-2012-32m.tif"
+      ],
+      [
+        "A",
+        "assets/malta/source/README.md"
+      ],
+      [
+        "A",
+        "assets/malta/source/Terrain-Metadata.json"
+      ],
+      [
+        "A",
+        "assets/malta/source/build_terrain.py"
+      ],
+      [
+        "A",
+        "assets/malta/terrain.glb"
+      ],
+      [
+        "A",
+        "assets/malta/terrain.glb.import"
+      ],
+      [
+        "A",
+        "assets/malta/world_data.json"
+      ],
+      [
+        "A",
+        "docs/malta-world.md"
+      ],
+      [
+        "M",
+        "docs/web-hosting.md"
+      ],
+      [
+        "M",
+        "export_presets.cfg"
+      ],
+      [
+        "M",
+        "project.godot"
+      ],
+      [
+        "M",
+        "scripts/aircraft.gd"
+      ],
+      [
+        "M",
+        "scripts/aircraft_selector.gd"
+      ],
+      [
+        "A",
+        "scripts/airfield_installation.gd"
+      ],
+      [
+        "A",
+        "scripts/airfield_installation.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/enemy_pilot.gd"
+      ],
+      [
+        "A",
+        "scripts/ground_pilot.gd"
+      ],
+      [
+        "A",
+        "scripts/ground_pilot.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/hud.gd"
+      ],
+      [
+        "M",
+        "scripts/main.gd"
+      ],
+      [
+        "A",
+        "scripts/malta_airfield.gd"
+      ],
+      [
+        "A",
+        "scripts/malta_airfield.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/malta_chart.gd"
+      ],
+      [
+        "A",
+        "scripts/malta_chart.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/malta_departure_menu.gd"
+      ],
+      [
+        "A",
+        "scripts/malta_departure_menu.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/malta_geography.gd"
+      ],
+      [
+        "A",
+        "scripts/malta_geography.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/malta_mission.gd"
+      ],
+      [
+        "A",
+        "scripts/malta_mission.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/malta_world.gd"
+      ],
+      [
+        "A",
+        "scripts/malta_world.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/web_support.gd"
+      ],
+      [
+        "A",
+        "tests/malta_checks.gd"
+      ],
+      [
+        "A",
+        "tests/malta_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tests/malta_journey_checks.gd"
+      ],
+      [
+        "A",
+        "tests/malta_journey_checks.gd.uid"
+      ],
+      [
+        "M",
+        "tools/build_web.sh"
+      ],
+      [
+        "A",
+        "tools/malta_web_smoke.cjs"
+      ],
+      [
+        "A",
+        "tools/prepare_malta.py"
+      ],
+      [
+        "M",
+        "tools/web_smoke.cjs"
+      ],
+      [
+        "M",
+        "web/shell.html"
+      ]
+    ],
+    "category": "Continuous world / ground",
+    "outcome": "Feature",
+    "technical_change": "Imports supplied Malta terrain/source/chart data and creates all airfields in one projected metre-scale world. Adds on-foot pilot, persistent parked fleet, boarding/exit, manual engine start, fuel use, installations and navigation with explicit full restart.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/1f83c99653e2804b811dadc8905e88f94a72d208"
+  },
+  {
+    "sha": "f5d9e76f94e652b336f05afc993af24f0fa23d48",
+    "date": "2026-10-10T15:49:17Z",
+    "committed": "2026-10-10T15:49:17Z",
+    "subject": "Integrate supplied menu theme and spatial aircraft audio",
+    "parents": [
+      "1f83c99653e2804b811dadc8905e88f94a72d208"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "A",
+        "assets/audio/ATTRIBUTION.txt"
+      ],
+      [
+        "A",
+        "assets/audio/conversion.json"
+      ],
+      [
+        "A",
+        "assets/audio/gladiator_303_guns_burst.ogg"
+      ],
+      [
+        "A",
+        "assets/audio/gladiator_303_guns_burst.ogg.import"
+      ],
+      [
+        "A",
+        "assets/audio/gladiator_engine_flight_loop.ogg"
+      ],
+      [
+        "A",
+        "assets/audio/gladiator_engine_flight_loop.ogg.import"
+      ],
+      [
+        "A",
+        "assets/audio/gladiator_engine_idle_loop.ogg"
+      ],
+      [
+        "A",
+        "assets/audio/gladiator_engine_idle_loop.ogg.import"
+      ],
+      [
+        "A",
+        "assets/audio/main_menu.ogg"
+      ],
+      [
+        "A",
+        "assets/audio/main_menu.ogg.import"
+      ],
+      [
+        "A",
+        "assets/audio/spitfire_303_guns_burst.ogg"
+      ],
+      [
+        "A",
+        "assets/audio/spitfire_303_guns_burst.ogg.import"
+      ],
+      [
+        "A",
+        "assets/audio/spitfire_engine_flight_loop.ogg"
+      ],
+      [
+        "A",
+        "assets/audio/spitfire_engine_flight_loop.ogg.import"
+      ],
+      [
+        "A",
+        "assets/audio/spitfire_engine_idle_loop.ogg"
+      ],
+      [
+        "A",
+        "assets/audio/spitfire_engine_idle_loop.ogg.import"
+      ],
+      [
+        "A",
+        "default_bus_layout.tres"
+      ],
+      [
+        "A",
+        "docs/audio.md"
+      ],
+      [
+        "M",
+        "project.godot"
+      ],
+      [
+        "M",
+        "scripts/aircraft.gd"
+      ],
+      [
+        "A",
+        "scripts/aircraft_audio.gd"
+      ],
+      [
+        "A",
+        "scripts/aircraft_audio.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/game_audio.gd"
+      ],
+      [
+        "A",
+        "scripts/game_audio.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/main.gd"
+      ],
+      [
+        "A",
+        "scripts/weapon_audio.gd"
+      ],
+      [
+        "A",
+        "scripts/weapon_audio.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/web_support.gd"
+      ],
+      [
+        "M",
+        "scripts/wing_guns.gd"
+      ],
+      [
+        "A",
+        "tests/audio_checks.gd"
+      ],
+      [
+        "A",
+        "tests/audio_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tools/audio_web_smoke.cjs"
+      ],
+      [
+        "M",
+        "tools/build_web.sh"
+      ],
+      [
+        "A",
+        "tools/prepare_audio.py"
+      ],
+      [
+        "M",
+        "web/shell.html"
+      ]
+    ],
+    "category": "Audio",
+    "outcome": "Feature",
+    "technical_change": "Adds menu theme, aircraft idle/flight and weapon recordings, offline conversion, audio buses/settings autoload, aircraft/weapon lifecycle components and native/web sample paths. Playback is owned by live aircraft and menus rather than previews.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/f5d9e76f94e652b336f05afc993af24f0fa23d48"
+  },
+  {
+    "sha": "4a716c086b380b59ccfc68ad373ae6ee2045de87",
+    "date": "2026-10-10T16:28:52Z",
+    "committed": "2026-10-10T16:28:52Z",
+    "subject": "fix(terrain): unify Malta terrain rendering across local and web",
+    "parents": [
+      "f5d9e76f94e652b336f05afc993af24f0fa23d48"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "A",
+        "assets/malta/materials/elevation_heatmap.tres"
+      ],
+      [
+        "A",
+        "assets/malta/materials/limestone.tres"
+      ],
+      [
+        "A",
+        "docs/malta-terrain-rendering.md"
+      ],
+      [
+        "M",
+        "docs/malta-world.md"
+      ],
+      [
+        "M",
+        "docs/web-hosting.md"
+      ],
+      [
+        "M",
+        "project.godot"
+      ],
+      [
+        "A",
+        "scripts/malta_terrain_appearance.gd"
+      ],
+      [
+        "A",
+        "scripts/malta_terrain_appearance.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/malta_world.gd"
+      ],
+      [
+        "M",
+        "scripts/web_support.gd"
+      ],
+      [
+        "A",
+        "tests/malta_terrain_capture.gd"
+      ],
+      [
+        "A",
+        "tests/malta_terrain_capture.gd.uid"
+      ],
+      [
+        "A",
+        "tests/malta_terrain_checks.gd"
+      ],
+      [
+        "A",
+        "tests/malta_terrain_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tools/malta_terrain_web_smoke.cjs"
+      ]
+    ],
+    "category": "Terrain rendering",
+    "outcome": "Fix",
+    "technical_change": "Adds explicit neutral StandardMaterial terrain override and separate default-off F4 heatmap; records the material-less COLOR_0 source and the un-reproduced Windows white appearance. Geometry, coordinates and flight remain unchanged in this commit.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/4a716c086b380b59ccfc68ad373ae6ee2045de87"
+  },
+  {
+    "sha": "e2f84517d23337779a67f04d15ffc95e68a6e4bb",
+    "date": "2026-10-10T17:24:32Z",
+    "committed": "2026-10-10T17:24:32Z",
+    "subject": "feat(terrain): add WWII-era Maltese landscape materials and details",
+    "parents": [
+      "4a716c086b380b59ccfc68ad373ae6ee2045de87"
+    ],
+    "files": [
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "M",
+        "assets/malta/ATTRIBUTION.txt"
+      ],
+      [
+        "A",
+        "assets/malta/landscape/README.md"
+      ],
+      [
+        "A",
+        "assets/malta/landscape/cliff_detail.png"
+      ],
+      [
+        "A",
+        "assets/malta/landscape/cliff_detail.png.import"
+      ],
+      [
+        "A",
+        "assets/malta/landscape/coast_distance.png"
+      ],
+      [
+        "A",
+        "assets/malta/landscape/coast_distance.png.import"
+      ],
+      [
+        "A",
+        "assets/malta/landscape/decoration.json"
+      ],
+      [
+        "A",
+        "assets/malta/landscape/landcover.png"
+      ],
+      [
+        "A",
+        "assets/malta/landscape/landcover.png.import"
+      ],
+      [
+        "A",
+        "assets/malta/landscape/surface_detail.png"
+      ],
+      [
+        "A",
+        "assets/malta/landscape/surface_detail.png.import"
+      ],
+      [
+        "A",
+        "assets/malta/materials/airfield.gdshader"
+      ],
+      [
+        "A",
+        "assets/malta/materials/airfield.gdshader.uid"
+      ],
+      [
+        "A",
+        "assets/malta/materials/airfield.tres"
+      ],
+      [
+        "A",
+        "assets/malta/materials/landscape.gdshader"
+      ],
+      [
+        "A",
+        "assets/malta/materials/landscape.gdshader.uid"
+      ],
+      [
+        "A",
+        "assets/malta/materials/landscape.tres"
+      ],
+      [
+        "A",
+        "assets/malta/materials/sea.gdshader"
+      ],
+      [
+        "A",
+        "assets/malta/materials/sea.gdshader.uid"
+      ],
+      [
+        "A",
+        "assets/malta/materials/sea.tres"
+      ],
+      [
+        "A",
+        "docs/malta-landscape.md"
+      ],
+      [
+        "M",
+        "docs/malta-terrain-rendering.md"
+      ],
+      [
+        "M",
+        "docs/malta-world.md"
+      ],
+      [
+        "M",
+        "docs/web-hosting.md"
+      ],
+      [
+        "M",
+        "export_presets.cfg"
+      ],
+      [
+        "M",
+        "scripts/malta_airfield.gd"
+      ],
+      [
+        "A",
+        "scripts/malta_landscape_details.gd"
+      ],
+      [
+        "A",
+        "scripts/malta_landscape_details.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/malta_terrain_appearance.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_world.gd"
+      ],
+      [
+        "M",
+        "tests/malta_journey_checks.gd"
+      ],
+      [
+        "M",
+        "tests/malta_terrain_capture.gd"
+      ],
+      [
+        "M",
+        "tests/malta_terrain_checks.gd"
+      ],
+      [
+        "A",
+        "tools/generate_malta_landscape.py"
+      ],
+      [
+        "M",
+        "tools/malta_terrain_web_smoke.cjs"
+      ]
+    ],
+    "category": "Landscape",
+    "outcome": "Feature",
+    "technical_change": "Replaces normal beige with bundled Mediterranean landscape ShaderMaterial/detail maps, adds MultiMesh landscape details and an initial simplified Valletta blockout, preserving opt-in heatmap. No runtime GIS downloads or shader displacement are introduced.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/e2f84517d23337779a67f04d15ffc95e68a6e4bb"
+  },
+  {
+    "sha": "af8816231ea8e7acba182be5ce0a3e29906ce6c5",
+    "date": "2026-10-11T18:38:49Z",
+    "committed": "2026-10-11T18:38:49Z",
+    "subject": "fix(web): open directly to the game menu",
+    "parents": [
+      "e2f84517d23337779a67f04d15ffc95e68a6e4bb"
+    ],
+    "files": [
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "M",
+        "docs/audio.md"
+      ],
+      [
+        "M",
+        "docs/web-hosting.md"
+      ],
+      [
+        "M",
+        "tools/audio_web_smoke.cjs"
+      ],
+      [
+        "M",
+        "tools/malta_terrain_web_smoke.cjs"
+      ],
+      [
+        "M",
+        "tools/malta_web_smoke.cjs"
+      ],
+      [
+        "M",
+        "tools/web_smoke.cjs"
+      ],
+      [
+        "M",
+        "web/shell.html"
+      ]
+    ],
+    "category": "Web menu",
+    "outcome": "Fix / removal",
+    "technical_change": "Removes the promotional landing/Play wrapper and repository footer link from the exported HTML shell, starts loading the engine automatically and opens the actual Godot game menu after a minimal progress/error overlay.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/af8816231ea8e7acba182be5ce0a3e29906ce6c5"
+  },
+  {
+    "sha": "ab97726e08ff5e59691e28e8115cda4f152c04c3",
+    "date": "2026-10-11T19:03:44Z",
+    "committed": "2026-10-11T19:03:44Z",
+    "subject": "feat(combat): add confirmed encounters and Malta Survival stages",
+    "parents": [
+      "af8816231ea8e7acba182be5ce0a3e29906ce6c5"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "A",
+        "docs/survival.md"
+      ],
+      [
+        "M",
+        "docs/web-hosting.md"
+      ],
+      [
+        "M",
+        "project.godot"
+      ],
+      [
+        "M",
+        "scripts/component_damage_debug.gd"
+      ],
+      [
+        "M",
+        "scripts/enemy_aircraft.gd"
+      ],
+      [
+        "A",
+        "scripts/enemy_encounters.gd"
+      ],
+      [
+        "A",
+        "scripts/enemy_encounters.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/hud.gd"
+      ],
+      [
+        "M",
+        "scripts/main.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_chart.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_departure_menu.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_mission.gd"
+      ],
+      [
+        "M",
+        "scripts/web_support.gd"
+      ],
+      [
+        "A",
+        "tests/survival_checks.gd"
+      ],
+      [
+        "A",
+        "tests/survival_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tools/survival_web_smoke.cjs"
+      ]
+    ],
+    "category": "Encounter progression",
+    "outcome": "Feature / refactor",
+    "technical_change": "Introduces EnemyEncounters active/wreck lists, safe batch spawn planning, latched/deferred confirmation and generation cancellation. Adds Malta Survival stages 1,2,2,3,3 and an ace while preserving live player/world state between confirmations.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/ab97726e08ff5e59691e28e8115cda4f152c04c3"
+  },
+  {
+    "sha": "ac7fbace7a0950d7d59e4413577a83a864a83553",
+    "date": "2026-10-11T21:30:46Z",
+    "committed": "2026-10-11T21:30:46Z",
+    "subject": "feat(missions): add Italian aircraft and Valletta interception",
+    "parents": [
+      "ab97726e08ff5e59691e28e8115cda4f152c04c3"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "A",
+        "aircraft_definitions/c200.tres"
+      ],
+      [
+        "A",
+        "aircraft_definitions/cr42.tres"
+      ],
+      [
+        "A",
+        "aircraft_definitions/sm79.tres"
+      ],
+      [
+        "A",
+        "damage_profiles/c200.tres"
+      ],
+      [
+        "A",
+        "damage_profiles/cr42.tres"
+      ],
+      [
+        "A",
+        "damage_profiles/sm79.tres"
+      ],
+      [
+        "A",
+        "docs/valletta-interception.md"
+      ],
+      [
+        "A",
+        "mission_definitions/valletta.tres"
+      ],
+      [
+        "M",
+        "scripts/aircraft_selector.gd"
+      ],
+      [
+        "A",
+        "scripts/bomber_pilot.gd"
+      ],
+      [
+        "A",
+        "scripts/bomber_pilot.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/component_damage_debug.gd"
+      ],
+      [
+        "M",
+        "scripts/damage_effects.gd"
+      ],
+      [
+        "A",
+        "scripts/defensive_gun_mount.gd"
+      ],
+      [
+        "A",
+        "scripts/defensive_gun_mount.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/enemy_aircraft.gd"
+      ],
+      [
+        "A",
+        "scripts/enemy_aircraft_definition.gd"
+      ],
+      [
+        "A",
+        "scripts/enemy_aircraft_definition.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/enemy_encounters.gd"
+      ],
+      [
+        "A",
+        "scripts/escort_pilot.gd"
+      ],
+      [
+        "A",
+        "scripts/escort_pilot.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/gunner_debug_panel.gd"
+      ],
+      [
+        "M",
+        "scripts/hud.gd"
+      ],
+      [
+        "A",
+        "scripts/interception_definition.gd"
+      ],
+      [
+        "A",
+        "scripts/interception_definition.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/italian_aircraft_model.gd"
+      ],
+      [
+        "A",
+        "scripts/italian_aircraft_model.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/italian_enemy.gd"
+      ],
+      [
+        "A",
+        "scripts/italian_enemy.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/main.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_chart.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_mission.gd"
+      ],
+      [
+        "A",
+        "scripts/mission_bomb.gd"
+      ],
+      [
+        "A",
+        "scripts/mission_bomb.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/missions_menu.gd"
+      ],
+      [
+        "A",
+        "scripts/missions_menu.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/rear_gunner.gd"
+      ],
+      [
+        "A",
+        "scripts/valletta_interception.gd"
+      ],
+      [
+        "A",
+        "scripts/valletta_interception.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/web_support.gd"
+      ],
+      [
+        "A",
+        "tests/interception_checks.gd"
+      ],
+      [
+        "A",
+        "tests/interception_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tests/interception_combat_checks.gd"
+      ],
+      [
+        "A",
+        "tests/interception_combat_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tests/interception_departure_checks.gd"
+      ],
+      [
+        "A",
+        "tests/interception_departure_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tests/italian_aircraft_checks.gd"
+      ],
+      [
+        "A",
+        "tests/italian_aircraft_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tests/italian_visual_capture.gd"
+      ],
+      [
+        "A",
+        "tests/italian_visual_capture.gd.uid"
+      ],
+      [
+        "A",
+        "tools/interception_web_smoke.cjs"
+      ]
+    ],
+    "category": "Italian aircraft / mission",
+    "outcome": "Feature",
+    "technical_change": "Adds resource-defined C.200, CR.42 and SM.79 visuals/flight/damage, bomber and escort pilots, defensive mounts, physical MissionBomb and the first Valletta interception director/menu with an initial single checkpoint and five-minute deadline.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/ac7fbace7a0950d7d59e4413577a83a864a83553"
+  },
+  {
+    "sha": "4a32579b9cf1bfbc087df9847494d3104cffe84a",
+    "date": "2026-10-12T07:08:01Z",
+    "committed": "2026-10-12T07:08:01Z",
+    "subject": "feat(missions): guide navigation to nearby Italian interception",
+    "parents": [
+      "ac7fbace7a0950d7d59e4413577a83a864a83553"
+    ],
+    "files": [
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "M",
+        "docs/valletta-interception.md"
+      ],
+      [
+        "M",
+        "mission_definitions/valletta.tres"
+      ],
+      [
+        "M",
+        "scripts/bomber_pilot.gd"
+      ],
+      [
+        "M",
+        "scripts/interception_definition.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_chart.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_mission.gd"
+      ],
+      [
+        "M",
+        "scripts/valletta_interception.gd"
+      ],
+      [
+        "M",
+        "scripts/web_support.gd"
+      ],
+      [
+        "M",
+        "tests/interception_checks.gd"
+      ],
+      [
+        "M",
+        "tests/interception_combat_checks.gd"
+      ],
+      [
+        "M",
+        "tests/interception_departure_checks.gd"
+      ],
+      [
+        "A",
+        "tests/interception_fixture.gd"
+      ],
+      [
+        "A",
+        "tests/interception_fixture.gd.uid"
+      ],
+      [
+        "M",
+        "tools/interception_web_smoke.cjs"
+      ]
+    ],
+    "category": "Interception navigation",
+    "outcome": "Feature / revision",
+    "technical_change": "Replaces one trigger with five resource-defined sequential checkpoints, measured 2500 m player-to-formation insertion ahead, whole-run activation guards and bomber route pacing. Player state is not reset when the final checkpoint activates.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/4a32579b9cf1bfbc087df9847494d3104cffe84a"
+  },
+  {
+    "sha": "90c99ef06854b6220e8690bd68657f518a6d7d86",
+    "date": "2026-10-12T07:18:06Z",
+    "committed": "2026-10-12T07:18:06Z",
+    "subject": "fix(hud): clear enemy placeholder during mission navigation",
+    "parents": [
+      "4a32579b9cf1bfbc087df9847494d3104cffe84a"
+    ],
+    "files": [
+      [
+        "M",
+        "docs/valletta-interception.md"
+      ],
+      [
+        "M",
+        "scripts/hud.gd"
+      ],
+      [
+        "M",
+        "scripts/web_support.gd"
+      ],
+      [
+        "M",
+        "tools/interception_web_smoke.cjs"
+      ]
+    ],
+    "category": "Mission HUD",
+    "outcome": "Fix",
+    "technical_change": "Clears the old enemy-placeholder status when interception has no spawned enemy, so checkpoint navigation does not misleadingly show a waiting or destroyed Stuka. Adds observable telemetry/assertion coverage.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/90c99ef06854b6220e8690bd68657f518a6d7d86"
+  },
+  {
+    "sha": "00351b1f3fee6623381b5ed19ce0c7e9bdc25339",
+    "date": "2026-10-12T13:11:07Z",
+    "committed": "2026-10-12T13:11:07Z",
+    "subject": "feat(audio): add commander interception radio call",
+    "parents": [
+      "90c99ef06854b6220e8690bd68657f518a6d7d86"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "M",
+        "assets/audio/ATTRIBUTION.txt"
+      ],
+      [
+        "A",
+        "assets/audio/commander_formation_detected.json"
+      ],
+      [
+        "A",
+        "assets/audio/commander_formation_detected.ogg"
+      ],
+      [
+        "A",
+        "assets/audio/commander_formation_detected.ogg.import"
+      ],
+      [
+        "M",
+        "docs/audio.md"
+      ],
+      [
+        "M",
+        "docs/valletta-interception.md"
+      ],
+      [
+        "M",
+        "mission_definitions/valletta.tres"
+      ],
+      [
+        "M",
+        "scripts/game_audio.gd"
+      ],
+      [
+        "M",
+        "scripts/interception_definition.gd"
+      ],
+      [
+        "A",
+        "scripts/mission_radio.gd"
+      ],
+      [
+        "A",
+        "scripts/mission_radio.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/valletta_interception.gd"
+      ],
+      [
+        "M",
+        "scripts/web_support.gd"
+      ],
+      [
+        "M",
+        "tests/interception_checks.gd"
+      ],
+      [
+        "A",
+        "tests/mission_radio_checks.gd"
+      ],
+      [
+        "A",
+        "tests/mission_radio_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tests/radio_web_fixture.gd"
+      ],
+      [
+        "A",
+        "tests/radio_web_fixture.gd.uid"
+      ],
+      [
+        "A",
+        "tools/build_radio_web_fixture.py"
+      ],
+      [
+        "A",
+        "tools/prepare_radio.py"
+      ],
+      [
+        "A",
+        "tools/radio_web_smoke.cjs"
+      ]
+    ],
+    "category": "Mission radio",
+    "outcome": "Feature",
+    "technical_change": "Adds supplied processed commander voice, MissionRadio single-shot subtitle/channel/mix handling and offline radio preparation; formation activation uses a 30-degree right bearing. Mixer temporarily ducks Aircraft/Guns without replacing saved levels.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/00351b1f3fee6623381b5ed19ce0c7e9bdc25339"
+  },
+  {
+    "sha": "7fe44a78a74e81c67426c6852a2dc8211ceee7a9",
+    "date": "2026-10-12T13:23:43Z",
+    "committed": "2026-10-12T13:23:43Z",
+    "subject": "test(audio): wait for radio completion cleanup",
+    "parents": [
+      "00351b1f3fee6623381b5ed19ce0c7e9bdc25339"
+    ],
+    "files": [
+      [
+        "M",
+        "docs/audio.md"
+      ],
+      [
+        "M",
+        "tests/mission_radio_checks.gd"
+      ]
+    ],
+    "category": "Audio test",
+    "outcome": "Fix / maintenance",
+    "technical_change": "Waits until playing is false, subtitle hidden and radio channel released, accounting for the later finished callback. Documents the audio-thread/idle cleanup ordering; no speech or mission logic replacement.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/7fe44a78a74e81c67426c6852a2dc8211ceee7a9"
+  },
+  {
+    "sha": "67296373d09e7f3768fed7eff69470fc96e3f1a9",
+    "date": "2026-10-12T14:18:27Z",
+    "committed": "2026-10-12T14:18:27Z",
+    "subject": "feat(mission): shorten interception to two checkpoints and 90 seconds",
+    "parents": [
+      "7fe44a78a74e81c67426c6852a2dc8211ceee7a9"
+    ],
+    "files": [
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "M",
+        "docs/valletta-interception.md"
+      ],
+      [
+        "M",
+        "mission_definitions/valletta.tres"
+      ],
+      [
+        "M",
+        "scripts/interception_definition.gd"
+      ],
+      [
+        "M",
+        "scripts/missions_menu.gd"
+      ],
+      [
+        "M",
+        "scripts/valletta_interception.gd"
+      ],
+      [
+        "M",
+        "tests/interception_checks.gd"
+      ],
+      [
+        "M",
+        "tests/interception_departure_checks.gd"
+      ],
+      [
+        "M",
+        "tests/mission_radio_checks.gd"
+      ],
+      [
+        "M",
+        "tools/interception_web_smoke.cjs"
+      ]
+    ],
+    "category": "Interception route / results",
+    "outcome": "Feature / revision",
+    "technical_change": "Shortens the actual route to two nearby checkpoints, changes formation separation to 1200 m and deadline to 90 s, adds automatic ballistic release lead, vertical practical-spawn guards and crash effects. Results wait for expiry except immediate player loss.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/67296373d09e7f3768fed7eff69470fc96e3f1a9"
+  },
+  {
+    "sha": "45a15f93a1c4ceee45a0c588f1c8c6e0aafe3265",
+    "date": "2026-10-13T08:22:58Z",
+    "committed": "2026-10-13T08:22:58Z",
+    "subject": "feat(character): replace pilot placeholder with rigged RAF model",
+    "parents": [
+      "67296373d09e7f3768fed7eff69470fc96e3f1a9"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "A",
+        "assets/characters/ATTRIBUTION.txt"
+      ],
+      [
+        "A",
+        "assets/characters/raf_pilot.glb"
+      ],
+      [
+        "A",
+        "assets/characters/raf_pilot.glb.import"
+      ],
+      [
+        "A",
+        "assets/characters/source/.gdignore"
+      ],
+      [
+        "A",
+        "assets/characters/source/raf_pilot.blend"
+      ],
+      [
+        "A",
+        "docs/previews/.gdignore"
+      ],
+      [
+        "A",
+        "docs/previews/pilot-front.png"
+      ],
+      [
+        "A",
+        "docs/previews/pilot-seated-pose.png"
+      ],
+      [
+        "A",
+        "docs/previews/pilot-seated-sea_gladiator.png"
+      ],
+      [
+        "A",
+        "docs/previews/pilot-seated-spitfire.png"
+      ],
+      [
+        "A",
+        "docs/previews/pilot-side.png"
+      ],
+      [
+        "A",
+        "docs/previews/pilot-walking.png"
+      ],
+      [
+        "A",
+        "docs/raf-pilot.md"
+      ],
+      [
+        "M",
+        "scripts/aircraft.gd"
+      ],
+      [
+        "M",
+        "scripts/ground_pilot.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_mission.gd"
+      ],
+      [
+        "A",
+        "scripts/raf_pilot_avatar.gd"
+      ],
+      [
+        "A",
+        "scripts/raf_pilot_avatar.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/sea_gladiator_model.gd"
+      ],
+      [
+        "M",
+        "scripts/spitfire_model.gd"
+      ],
+      [
+        "A",
+        "tests/pilot_character_checks.gd"
+      ],
+      [
+        "A",
+        "tests/pilot_character_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tests/pilot_preview_capture.gd"
+      ],
+      [
+        "A",
+        "tests/pilot_preview_capture.gd.uid"
+      ],
+      [
+        "A",
+        "tools/build_raf_pilot.py"
+      ]
+    ],
+    "category": "Character",
+    "outcome": "Feature / replacement",
+    "technical_change": "Replaces primitive pilot visuals with original skinned RAF GLB, generator and reusable avatar wrapper; integrates Idle/Walk/Seated and player cockpit stations while retaining ground collision and instant boarding/exit handoff.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/45a15f93a1c4ceee45a0c588f1c8c6e0aafe3265"
+  },
+  {
+    "sha": "6a362768d5065098bfce8f148181c382f6a93e6b",
+    "date": "2026-10-13T08:37:05Z",
+    "committed": "2026-10-13T08:37:05Z",
+    "subject": "feat(defence): add friendly AA batteries to Malta airfields",
+    "parents": [
+      "45a15f93a1c4ceee45a0c588f1c8c6e0aafe3265"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "A",
+        "assets/ground/british_aa/ATTRIBUTION.txt"
+      ],
+      [
+        "A",
+        "assets/ground/british_aa/British_AA_Emplacement.glb"
+      ],
+      [
+        "A",
+        "assets/ground/british_aa/British_AA_Emplacement.glb.import"
+      ],
+      [
+        "A",
+        "assets/ground/british_aa/README.txt"
+      ],
+      [
+        "A",
+        "assets/ground/british_aa/source/.gdignore"
+      ],
+      [
+        "A",
+        "assets/ground/british_aa/source/Preview.png"
+      ],
+      [
+        "A",
+        "assets/ground/british_aa/source/build_model.py"
+      ],
+      [
+        "A",
+        "docs/airfield-aa.md"
+      ],
+      [
+        "A",
+        "docs/previews/british-aa.png"
+      ],
+      [
+        "M",
+        "scripts/aircraft.gd"
+      ],
+      [
+        "A",
+        "scripts/airfield_aa_battery.gd"
+      ],
+      [
+        "A",
+        "scripts/airfield_aa_battery.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/british_aa_gun.gd"
+      ],
+      [
+        "A",
+        "scripts/british_aa_gun.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/flak_effect_pool.gd"
+      ],
+      [
+        "A",
+        "scripts/flak_effect_pool.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/malta_world.gd"
+      ],
+      [
+        "M",
+        "scripts/mission_bomb.gd"
+      ],
+      [
+        "M",
+        "scripts/projectile_pool.gd"
+      ],
+      [
+        "M",
+        "scripts/web_support.gd"
+      ],
+      [
+        "A",
+        "tests/aa_checks.gd"
+      ],
+      [
+        "A",
+        "tests/aa_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tests/aa_preview_capture.gd"
+      ],
+      [
+        "A",
+        "tests/aa_preview_capture.gd.uid"
+      ],
+      [
+        "M",
+        "tools/build_web.sh"
+      ],
+      [
+        "M",
+        "tools/malta_web_smoke.cjs"
+      ]
+    ],
+    "category": "Friendly AA",
+    "outcome": "Feature",
+    "technical_change": "Adds supplied emplacement GLB integration, two autonomous guns per field, shared shell pool/FlakEffectPool, muzzle animation/audio and bomb-damage API. This initial autonomous control is later removed.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/6a362768d5065098bfce8f148181c382f6a93e6b"
+  },
+  {
+    "sha": "5bbf563938cfd8544e40e205de8c645b51361525",
+    "date": "2026-10-13T09:39:06Z",
+    "committed": "2026-10-13T09:39:06Z",
+    "subject": "feat(airfield): add manual AA controls and drivable military truck",
+    "parents": [
+      "6a362768d5065098bfce8f148181c382f6a93e6b"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "A",
+        "assets/vehicles/ATTRIBUTION.txt"
+      ],
+      [
+        "A",
+        "assets/vehicles/stone_camouflage.png"
+      ],
+      [
+        "A",
+        "assets/vehicles/stone_camouflage.png.import"
+      ],
+      [
+        "M",
+        "docs/airfield-aa.md"
+      ],
+      [
+        "A",
+        "docs/previews/manual-aa-apron.png"
+      ],
+      [
+        "A",
+        "docs/previews/manual-aa-sight.png"
+      ],
+      [
+        "A",
+        "docs/previews/military-truck.png"
+      ],
+      [
+        "A",
+        "scripts/aa_aim_reticle.gd"
+      ],
+      [
+        "A",
+        "scripts/aa_aim_reticle.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/airfield_aa_battery.gd"
+      ],
+      [
+        "A",
+        "scripts/airfield_interaction.gd"
+      ],
+      [
+        "A",
+        "scripts/airfield_interaction.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/british_aa_gun.gd"
+      ],
+      [
+        "M",
+        "scripts/flak_effect_pool.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_mission.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_world.gd"
+      ],
+      [
+        "A",
+        "scripts/military_truck.gd"
+      ],
+      [
+        "A",
+        "scripts/military_truck.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/military_truck_model.gd"
+      ],
+      [
+        "A",
+        "scripts/military_truck_model.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/web_support.gd"
+      ],
+      [
+        "M",
+        "tests/aa_checks.gd"
+      ],
+      [
+        "A",
+        "tests/airfield_controls_checks.gd"
+      ],
+      [
+        "A",
+        "tests/airfield_controls_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tests/ground_vehicle_preview.gd"
+      ],
+      [
+        "A",
+        "tests/ground_vehicle_preview.gd.uid"
+      ],
+      [
+        "A",
+        "tools/build_truck_texture.py"
+      ],
+      [
+        "M",
+        "tools/build_web.sh"
+      ],
+      [
+        "A",
+        "tools/ground_controls_web_smoke.cjs"
+      ],
+      [
+        "M",
+        "tools/malta_web_smoke.cjs"
+      ]
+    ],
+    "category": "Manual AA / truck",
+    "outcome": "Feature / replacement",
+    "technical_change": "Removes friendly autonomous target selection/aim/fire, adds per-gun mounting/camera/reticle and exclusive AirfieldInteraction. Adds reference-inspired kinematic military truck with wheels/steering, camera, grounded safe exits and parking brake.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/5bbf563938cfd8544e40e205de8c645b51361525"
+  },
+  {
+    "sha": "71b5195c1f13751792fc75ddade4a8ca84409375",
+    "date": "2026-10-13T11:21:26Z",
+    "committed": "2026-10-13T11:21:26Z",
+    "subject": "fix(aa): retain enemy tags and add larger bursts with cannon reports",
+    "parents": [
+      "5bbf563938cfd8544e40e205de8c645b51361525"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "assets/audio/ATTRIBUTION.txt"
+      ],
+      [
+        "A",
+        "assets/audio/aa_cannon_shot.ogg"
+      ],
+      [
+        "A",
+        "assets/audio/aa_cannon_shot.ogg.import"
+      ],
+      [
+        "M",
+        "assets/ground/british_aa/ATTRIBUTION.txt"
+      ],
+      [
+        "M",
+        "docs/airfield-aa.md"
+      ],
+      [
+        "M",
+        "docs/previews/manual-aa-sight.png"
+      ],
+      [
+        "M",
+        "scripts/airfield_aa_battery.gd"
+      ],
+      [
+        "M",
+        "scripts/british_aa_gun.gd"
+      ],
+      [
+        "M",
+        "scripts/enemy_encounters.gd"
+      ],
+      [
+        "M",
+        "scripts/flak_effect_pool.gd"
+      ],
+      [
+        "A",
+        "tests/aa_presentation_checks.gd"
+      ],
+      [
+        "A",
+        "tests/aa_presentation_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tools/build_aa_sound.py"
+      ]
+    ],
+    "category": "AA presentation",
+    "outcome": "Fix / rebalance",
+    "technical_change": "Keeps hostile labels when the flight HUD is hidden for ground/gunner cameras; enlarges flak visuals, caps report voices and adds cannon-like AA sound at a two-shots/s cadence instead of the earlier machine-gun-like report.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/71b5195c1f13751792fc75ddade4a8ca84409375"
+  },
+  {
+    "sha": "82185442419146017a250afd730d17ed1cc998cd",
+    "date": "2026-10-13T11:45:37Z",
+    "committed": "2026-10-13T11:45:37Z",
+    "subject": "feat(aa): add severe proximity blast damage and devastating direct hits",
+    "parents": [
+      "71b5195c1f13751792fc75ddade4a8ca84409375"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "docs/airfield-aa.md"
+      ],
+      [
+        "M",
+        "scripts/airfield_aa_battery.gd"
+      ],
+      [
+        "M",
+        "scripts/british_aa_gun.gd"
+      ],
+      [
+        "M",
+        "tests/aa_checks.gd"
+      ],
+      [
+        "M",
+        "tests/aa_presentation_checks.gd"
+      ],
+      [
+        "A",
+        "tests/flak_damage_checks.gd"
+      ]
+    ],
+    "category": "AA damage",
+    "outcome": "Feature / rebalance",
+    "technical_change": "Raises direct-hit damage and introduces strong interpolated distance-based fragmentation using nearest component geometry/terrain cover; excludes directly struck aircraft from duplicate blast damage. Adds dedicated flak-damage checks.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/82185442419146017a250afd730d17ed1cc998cd"
+  },
+  {
+    "sha": "917c0da15000ef138ba2b92eef85b4062c5fe34c",
+    "date": "2026-10-13T12:00:36Z",
+    "committed": "2026-10-13T12:00:36Z",
+    "subject": "fix(terrain): integrate Malta airfields with smoothly graded ground",
+    "parents": [
+      "82185442419146017a250afd730d17ed1cc998cd"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "A",
+        "assets/malta/grading/report.json"
+      ],
+      [
+        "A",
+        "assets/malta/grading/settings.json"
+      ],
+      [
+        "A",
+        "assets/malta/source/.gdignore"
+      ],
+      [
+        "A",
+        "assets/malta/source/terrain_original.glb"
+      ],
+      [
+        "A",
+        "assets/malta/source/world_data_original.json"
+      ],
+      [
+        "M",
+        "assets/malta/terrain.glb"
+      ],
+      [
+        "M",
+        "assets/malta/world_data.json"
+      ],
+      [
+        "A",
+        "docs/malta-ground-integration.md"
+      ],
+      [
+        "A",
+        "docs/previews/after-hal_far.png"
+      ],
+      [
+        "A",
+        "docs/previews/after-luqa.png"
+      ],
+      [
+        "A",
+        "docs/previews/after-ta_qali.png"
+      ],
+      [
+        "A",
+        "docs/previews/before-hal_far.png"
+      ],
+      [
+        "A",
+        "docs/previews/before-luqa.png"
+      ],
+      [
+        "A",
+        "docs/previews/before-ta_qali.png"
+      ],
+      [
+        "M",
+        "scripts/malta_airfield.gd"
+      ],
+      [
+        "A",
+        "tests/airfield_ground_checks.gd"
+      ],
+      [
+        "A",
+        "tests/airfield_integration_capture.gd"
+      ],
+      [
+        "A",
+        "tests/airfield_integration_capture.gd.uid"
+      ],
+      [
+        "A",
+        "tools/grade_malta_terrain.py"
+      ]
+    ],
+    "category": "Airfield ground",
+    "outcome": "Fix",
+    "technical_change": "Retains original source GLB but locally refines/grades runtime island mesh at airfield footprints with smooth transitions/coastal protection. Replaces raised slab floor collision with terrain-only support and millimetre-offset visual runway/apron surfaces.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/917c0da15000ef138ba2b92eef85b4062c5fe34c"
+  },
+  {
+    "sha": "451ad8b77dcf4ac2482c34e90cc9781bf3534619",
+    "date": "2026-10-13T12:31:47Z",
+    "committed": "2026-10-13T12:31:47Z",
+    "subject": "feat(terrain): add editable Malta road network integrated into ground",
+    "parents": [
+      "917c0da15000ef138ba2b92eef85b4062c5fe34c"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        ".gitignore"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "M",
+        "assets/malta/ATTRIBUTION.txt"
+      ],
+      [
+        "M",
+        "assets/malta/grading/report.json"
+      ],
+      [
+        "M",
+        "assets/malta/materials/landscape.gdshader"
+      ],
+      [
+        "A",
+        "assets/malta/roads/generation_report.json"
+      ],
+      [
+        "A",
+        "assets/malta/roads/reference_trace.json"
+      ],
+      [
+        "A",
+        "assets/malta/roads/world_paths.json"
+      ],
+      [
+        "M",
+        "assets/malta/terrain.glb"
+      ],
+      [
+        "A",
+        "docs/malta-road-network.md"
+      ],
+      [
+        "A",
+        "docs/previews/road-access_hal_far.png"
+      ],
+      [
+        "A",
+        "docs/previews/road-access_luqa.png"
+      ],
+      [
+        "A",
+        "docs/previews/road-access_ta_qali.png"
+      ],
+      [
+        "A",
+        "docs/previews/road-network-close.png"
+      ],
+      [
+        "A",
+        "docs/previews/road-overhead.png"
+      ],
+      [
+        "M",
+        "scripts/malta_world.gd"
+      ],
+      [
+        "A",
+        "tests/airfield_ground_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tests/flak_damage_checks.gd.uid"
+      ],
+      [
+        "M",
+        "tests/malta_checks.gd"
+      ],
+      [
+        "A",
+        "tests/malta_roads_capture.gd"
+      ],
+      [
+        "A",
+        "tests/malta_roads_capture.gd.uid"
+      ],
+      [
+        "A",
+        "tests/malta_roads_checks.gd"
+      ],
+      [
+        "A",
+        "tests/malta_roads_checks.gd.uid"
+      ],
+      [
+        "M",
+        "tests/malta_terrain_checks.gd"
+      ],
+      [
+        "M",
+        "tools/grade_malta_terrain.py"
+      ],
+      [
+        "A",
+        "tools/malta_road_surface.py"
+      ],
+      [
+        "A",
+        "tools/malta_road_trace.py"
+      ],
+      [
+        "M",
+        "tools/malta_terrain_web_smoke.cjs"
+      ]
+    ],
+    "category": "Roads / terrain",
+    "outcome": "Feature",
+    "technical_change": "Adds editable historic-scan trace/control data, projected road paths, constrained terrain refinement and UV road masks; partitions road ground into cullable patches. Documents geographic fit uncertainty rather than claiming surveyed road alignment.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/451ad8b77dcf4ac2482c34e90cc9781bf3534619"
+  },
+  {
+    "sha": "88e17baa97591a6000022d116e846a640bc4d000",
+    "date": "2026-10-14T06:58:58Z",
+    "committed": "2026-10-14T07:33:41Z",
+    "subject": "feat(missions): add six-wave manual AA defence against Stuka dives",
+    "parents": [
+      "451ad8b77dcf4ac2482c34e90cc9781bf3534619"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "A",
+        "docs/dive-bomber-defence.md"
+      ],
+      [
+        "A",
+        "docs/previews/dive-defence-menu.png"
+      ],
+      [
+        "A",
+        "docs/previews/dive-defence-mounted.png"
+      ],
+      [
+        "A",
+        "docs/previews/dive-defence-on-foot.png"
+      ],
+      [
+        "A",
+        "mission_definitions/dive_defence.tres"
+      ],
+      [
+        "M",
+        "scripts/airfield_interaction.gd"
+      ],
+      [
+        "A",
+        "scripts/dive_attack_pilot.gd"
+      ],
+      [
+        "A",
+        "scripts/dive_attack_pilot.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/dive_defence_definition.gd"
+      ],
+      [
+        "A",
+        "scripts/dive_defence_definition.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/dive_defence_mission.gd"
+      ],
+      [
+        "A",
+        "scripts/dive_defence_mission.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/enemy_encounters.gd"
+      ],
+      [
+        "M",
+        "scripts/ground_pilot.gd"
+      ],
+      [
+        "M",
+        "scripts/main.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_mission.gd"
+      ],
+      [
+        "M",
+        "scripts/mission_bomb.gd"
+      ],
+      [
+        "M",
+        "scripts/missions_menu.gd"
+      ],
+      [
+        "M",
+        "scripts/web_support.gd"
+      ],
+      [
+        "A",
+        "tests/dive_attack_checks.gd"
+      ],
+      [
+        "A",
+        "tests/dive_attack_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tests/dive_defence_capture.gd"
+      ],
+      [
+        "A",
+        "tests/dive_defence_capture.gd.uid"
+      ],
+      [
+        "A",
+        "tests/dive_defence_checks.gd"
+      ],
+      [
+        "A",
+        "tests/dive_defence_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tools/dive_defence_web_smoke.cjs"
+      ]
+    ],
+    "category": "AA defence mission",
+    "outcome": "Feature",
+    "technical_change": "Adds six Stuka attack waves, state-driven bombing/strafe passes, vulnerable ground operator and mission-specific bomb cover damage. Tracks actual losses and retains live hostile ordnance through aircraft destruction before allowing next waves or success.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/88e17baa97591a6000022d116e846a640bc4d000"
+  },
+  {
+    "sha": "b135cdcb627bae94092c2781ea17503ce7e12b91",
+    "date": "2026-10-14T07:44:38Z",
+    "committed": "2026-10-14T07:44:38Z",
+    "subject": "feat(roads): connect Malta base entrances to parking and AA positions",
+    "parents": [
+      "88e17baa97591a6000022d116e846a640bc4d000"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "M",
+        "assets/malta/materials/airfield.gdshader"
+      ],
+      [
+        "M",
+        "assets/malta/materials/landscape.gdshader"
+      ],
+      [
+        "M",
+        "assets/malta/materials/landscape.tres"
+      ],
+      [
+        "A",
+        "assets/malta/roads/base_access.json"
+      ],
+      [
+        "A",
+        "docs/base-access-roads.md"
+      ],
+      [
+        "A",
+        "docs/previews/access-hal_far.png"
+      ],
+      [
+        "A",
+        "docs/previews/access-luqa.png"
+      ],
+      [
+        "A",
+        "docs/previews/access-ta_qali.png"
+      ],
+      [
+        "M",
+        "export_presets.cfg"
+      ],
+      [
+        "M",
+        "scripts/malta_airfield.gd"
+      ],
+      [
+        "A",
+        "scripts/malta_base_access.gd"
+      ],
+      [
+        "A",
+        "scripts/malta_base_access.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/web_support.gd"
+      ],
+      [
+        "A",
+        "tests/base_access_capture.gd"
+      ],
+      [
+        "A",
+        "tests/base_access_capture.gd.uid"
+      ],
+      [
+        "A",
+        "tests/base_access_checks.gd"
+      ],
+      [
+        "A",
+        "tests/base_access_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tools/build_base_access.py"
+      ],
+      [
+        "M",
+        "tools/malta_terrain_web_smoke.cjs"
+      ]
+    ],
+    "category": "Base access roads",
+    "outcome": "Feature / fix",
+    "technical_change": "Adds generated base-entry/parking/AA connectors and focused terrain/apron access masks, metadata and truck-route checks. Routes avoid fixed buildings/spawns and preserve field geographic centres and mission logic.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/b135cdcb627bae94092c2781ea17503ce7e12b91"
+  },
+  {
+    "sha": "2157b7227fe912762e000829a001c15294d9f097",
+    "date": "2026-10-14T12:08:33Z",
+    "committed": "2026-10-14T12:08:33Z",
+    "subject": "feat(aa): add four-gun heavy batteries and clip-fed Bofors defence",
+    "parents": [
+      "b135cdcb627bae94092c2781ea17503ce7e12b91"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "M",
+        "assets/audio/ATTRIBUTION.txt"
+      ],
+      [
+        "A",
+        "assets/audio/aa_heavy_shot.ogg"
+      ],
+      [
+        "A",
+        "assets/audio/aa_heavy_shot.ogg.import"
+      ],
+      [
+        "M",
+        "docs/airfield-aa.md"
+      ],
+      [
+        "M",
+        "docs/dive-bomber-defence.md"
+      ],
+      [
+        "A",
+        "docs/layered-aa.md"
+      ],
+      [
+        "A",
+        "docs/previews/layered-aa-bofors.png"
+      ],
+      [
+        "A",
+        "docs/previews/layered-aa-heavy.png"
+      ],
+      [
+        "A",
+        "scripts/aa_weapon_definition.gd"
+      ],
+      [
+        "A",
+        "scripts/aa_weapon_definition.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/airfield_aa_battery.gd"
+      ],
+      [
+        "M",
+        "scripts/airfield_interaction.gd"
+      ],
+      [
+        "M",
+        "scripts/british_aa_gun.gd"
+      ],
+      [
+        "M",
+        "scripts/dive_defence_mission.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_mission.gd"
+      ],
+      [
+        "M",
+        "scripts/projectile_pool.gd"
+      ],
+      [
+        "M",
+        "scripts/web_support.gd"
+      ],
+      [
+        "M",
+        "tests/aa_checks.gd"
+      ],
+      [
+        "M",
+        "tests/aa_presentation_checks.gd"
+      ],
+      [
+        "M",
+        "tests/dive_defence_checks.gd"
+      ],
+      [
+        "M",
+        "tests/flak_damage_checks.gd"
+      ],
+      [
+        "A",
+        "tests/layered_aa_capture.gd"
+      ],
+      [
+        "A",
+        "tests/layered_aa_capture.gd.uid"
+      ],
+      [
+        "A",
+        "tests/layered_aa_checks.gd"
+      ],
+      [
+        "A",
+        "tests/layered_aa_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tools/build_heavy_aa_sound.py"
+      ],
+      [
+        "M",
+        "tools/dive_defence_web_smoke.cjs"
+      ],
+      [
+        "M",
+        "tools/ground_controls_web_smoke.cjs"
+      ],
+      [
+        "M",
+        "tools/malta_web_smoke.cjs"
+      ],
+      [
+        "A",
+        "weapon_definitions/bofors_aa.tres"
+      ],
+      [
+        "A",
+        "weapon_definitions/heavy_aa.tres"
+      ]
+    ],
+    "category": "Layered AA",
+    "outcome": "Feature / revision",
+    "technical_change": "Adds AAWeaponDefinition resources, four heavy and two Bofors per field, separate gravity pools, timed heavy versus impact light shells, location-specific damage and five-second heavy reload. Briefly adds finite stocks/four-round clips, later removed.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/2157b7227fe912762e000829a001c15294d9f097"
+  },
+  {
+    "sha": "e26e5edca54b0551bf27372109a26e8adfede36b",
+    "date": "2026-10-15T06:09:10Z",
+    "committed": "2026-10-15T06:09:10Z",
+    "subject": "feat(aa): add relative mouse aiming and sight zoom with unlimited ammunition",
+    "parents": [
+      "2157b7227fe912762e000829a001c15294d9f097"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "A",
+        "docs/aa-mouse-controls.md"
+      ],
+      [
+        "M",
+        "docs/airfield-aa.md"
+      ],
+      [
+        "M",
+        "docs/layered-aa.md"
+      ],
+      [
+        "M",
+        "project.godot"
+      ],
+      [
+        "A",
+        "scripts/aa_mouse_controls.gd"
+      ],
+      [
+        "A",
+        "scripts/aa_mouse_controls.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/aa_weapon_definition.gd"
+      ],
+      [
+        "M",
+        "scripts/airfield_interaction.gd"
+      ],
+      [
+        "M",
+        "scripts/british_aa_gun.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_mission.gd"
+      ],
+      [
+        "M",
+        "scripts/web_support.gd"
+      ],
+      [
+        "A",
+        "tests/aa_mouse_checks.gd"
+      ],
+      [
+        "A",
+        "tests/aa_mouse_checks.gd.uid"
+      ],
+      [
+        "M",
+        "tests/layered_aa_checks.gd"
+      ],
+      [
+        "M",
+        "tools/dive_defence_web_smoke.cjs"
+      ],
+      [
+        "M",
+        "weapon_definitions/bofors_aa.tres"
+      ],
+      [
+        "M",
+        "web/shell.html"
+      ]
+    ],
+    "category": "AA input / ammunition",
+    "outcome": "Feature / removal",
+    "technical_change": "Adds scoped relative mouse controls, rate-limited smoothing, sight zoom, user sensitivity persistence and pointer-lock recapture; increases heavy/light traverse independently. Removes finite ammunition/clip state, preserving automatic reload and heavy single-press/Bofors hold behaviour.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/e26e5edca54b0551bf27372109a26e8adfede36b"
+  },
+  {
+    "sha": "eb5db645b24ac61e32de36e7aed320083e244c78",
+    "date": "2026-10-15T08:25:08Z",
+    "committed": "2026-10-15T08:25:08Z",
+    "subject": "feat(aa): add player-directed battery command and supplied defence audio",
+    "parents": [
+      "e26e5edca54b0551bf27372109a26e8adfede36b"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "M",
+        "assets/audio/ATTRIBUTION.txt"
+      ],
+      [
+        "A",
+        "assets/audio/defence/air_raid_siren.ogg"
+      ],
+      [
+        "A",
+        "assets/audio/defence/air_raid_siren.ogg.import"
+      ],
+      [
+        "A",
+        "assets/audio/defence/harrington_intro.ogg"
+      ],
+      [
+        "A",
+        "assets/audio/defence/harrington_intro.ogg.import"
+      ],
+      [
+        "A",
+        "assets/audio/defence/jericho_trumpet.ogg"
+      ],
+      [
+        "A",
+        "assets/audio/defence/jericho_trumpet.ogg.import"
+      ],
+      [
+        "A",
+        "assets/audio/defence/sources.json"
+      ],
+      [
+        "A",
+        "docs/battery-command-and-defence-audio.md"
+      ],
+      [
+        "A",
+        "docs/previews/aa-battery-command.png"
+      ],
+      [
+        "M",
+        "project.godot"
+      ],
+      [
+        "A",
+        "scripts/aa_command_station.gd"
+      ],
+      [
+        "A",
+        "scripts/aa_command_station.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/aa_fire_control.gd"
+      ],
+      [
+        "A",
+        "scripts/aa_fire_control.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/aa_mouse_controls.gd"
+      ],
+      [
+        "M",
+        "scripts/airfield_aa_battery.gd"
+      ],
+      [
+        "M",
+        "scripts/airfield_interaction.gd"
+      ],
+      [
+        "M",
+        "scripts/british_aa_gun.gd"
+      ],
+      [
+        "A",
+        "scripts/dive_defence_audio.gd"
+      ],
+      [
+        "A",
+        "scripts/dive_defence_audio.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/dive_defence_mission.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_mission.gd"
+      ],
+      [
+        "M",
+        "scripts/mission_bomb.gd"
+      ],
+      [
+        "M",
+        "scripts/mission_radio.gd"
+      ],
+      [
+        "A",
+        "scripts/stuka_dive_audio.gd"
+      ],
+      [
+        "A",
+        "scripts/stuka_dive_audio.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/web_support.gd"
+      ],
+      [
+        "A",
+        "tests/battery_command_checks.gd"
+      ],
+      [
+        "A",
+        "tests/battery_command_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tests/battery_command_ui_checks.gd"
+      ],
+      [
+        "A",
+        "tests/battery_command_ui_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tests/battery_engagement_checks.gd"
+      ],
+      [
+        "A",
+        "tests/battery_engagement_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tests/defence_sound_checks.gd"
+      ],
+      [
+        "A",
+        "tests/defence_sound_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tools/battery_command_web_smoke.cjs"
+      ],
+      [
+        "A",
+        "tools/prepare_defence_audio.py"
+      ]
+    ],
+    "category": "Battery command / defence audio",
+    "outcome": "Feature",
+    "technical_change": "Adds one player-operated command post per four-heavy-gun field battery, gravity interception solver, imperfect target/area designations and staggered orders to physical barrels. Integrates supplied briefing, air-raid alarm and descent-gated Jericho sounds.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/eb5db645b24ac61e32de36e7aed320083e244c78"
+  },
+  {
+    "sha": "6c0fbc90fdea1f0f46b5cca111c49c70e89d8ad9",
+    "date": "2026-10-15T11:13:32Z",
+    "committed": "2026-10-15T11:13:32Z",
+    "subject": "fix(audio): loop air-raid siren throughout defence mission",
+    "parents": [
+      "eb5db645b24ac61e32de36e7aed320083e244c78"
+    ],
+    "files": [
+      [
+        "M",
+        "docs/battery-command-and-defence-audio.md"
+      ],
+      [
+        "M",
+        "scripts/dive_defence_audio.gd"
+      ],
+      [
+        "M",
+        "scripts/web_support.gd"
+      ],
+      [
+        "M",
+        "tests/defence_sound_checks.gd"
+      ],
+      [
+        "M",
+        "tools/battery_command_web_smoke.cjs"
+      ]
+    ],
+    "category": "Defence alarm",
+    "outcome": "Fix / replacement",
+    "technical_change": "Starts one looped air-raid siren at defence mission audio startup, keeps it through waiting/travel/waves and stops on outcome/cancel. Removes the previous per-wave/approach gating logic.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/6c0fbc90fdea1f0f46b5cca111c49c70e89d8ad9"
+  },
+  {
+    "sha": "bf96f9a7e54330fcd1f74815be220e6dfc27132c",
+    "date": "2026-10-15T12:07:12Z",
+    "committed": "2026-10-15T12:07:12Z",
+    "subject": "feat(malta): add original fortified Valletta city to continuous world",
+    "parents": [
+      "6c0fbc90fdea1f0f46b5cca111c49c70e89d8ad9"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "A",
+        "assets/malta/valletta/city.glb"
+      ],
+      [
+        "A",
+        "assets/malta/valletta/city.glb.import"
+      ],
+      [
+        "A",
+        "assets/malta/valletta/collision.glb"
+      ],
+      [
+        "A",
+        "assets/malta/valletta/collision.glb.import"
+      ],
+      [
+        "A",
+        "assets/malta/valletta/layout.json"
+      ],
+      [
+        "M",
+        "docs/malta-landscape.md"
+      ],
+      [
+        "A",
+        "docs/previews/valletta-aerial.png"
+      ],
+      [
+        "A",
+        "docs/previews/valletta-fort.png"
+      ],
+      [
+        "A",
+        "docs/previews/valletta-streets.png"
+      ],
+      [
+        "A",
+        "docs/valletta-city.md"
+      ],
+      [
+        "M",
+        "scripts/malta_landscape_details.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_world.gd"
+      ],
+      [
+        "A",
+        "scripts/valletta_city.gd"
+      ],
+      [
+        "A",
+        "scripts/valletta_city.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/web_support.gd"
+      ],
+      [
+        "M",
+        "tests/malta_terrain_checks.gd"
+      ],
+      [
+        "A",
+        "tests/valletta_capture.gd"
+      ],
+      [
+        "A",
+        "tests/valletta_capture.gd.uid"
+      ],
+      [
+        "A",
+        "tests/valletta_checks.gd"
+      ],
+      [
+        "A",
+        "tests/valletta_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tools/generate_valletta.py"
+      ],
+      [
+        "M",
+        "tools/malta_terrain_web_smoke.cjs"
+      ]
+    ],
+    "category": "Valletta scenery",
+    "outcome": "Feature / replacement",
+    "technical_change": "Adds original terrain-fitted Valletta buildings/fortifications/landmarks, chunked visual GLB and separate persistent coarse collision. Replaces earlier cheap landscape blockout and records approximate, not surveyed, reconstruction limits.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/bf96f9a7e54330fcd1f74815be220e6dfc27132c"
+  },
+  {
+    "sha": "814e30850bea4f3dbe098787d9a1898d95a434ba",
+    "date": "2026-10-16T06:17:09Z",
+    "committed": "2026-10-16T06:17:09Z",
+    "subject": "feat(malta): reconstruct georeferenced fortified Mdina hilltop city",
+    "parents": [
+      "bf96f9a7e54330fcd1f74815be220e6dfc27132c"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "A",
+        "assets/malta/mdina/city.glb"
+      ],
+      [
+        "A",
+        "assets/malta/mdina/city.glb.import"
+      ],
+      [
+        "A",
+        "assets/malta/mdina/collision.glb"
+      ],
+      [
+        "A",
+        "assets/malta/mdina/collision.glb.import"
+      ],
+      [
+        "A",
+        "assets/malta/mdina/layout.json"
+      ],
+      [
+        "A",
+        "assets/malta/mdina/settings.json"
+      ],
+      [
+        "M",
+        "docs/malta-landscape.md"
+      ],
+      [
+        "A",
+        "docs/mdina-city.md"
+      ],
+      [
+        "A",
+        "docs/previews/mdina-aerial.png"
+      ],
+      [
+        "A",
+        "docs/previews/mdina-bastions.png"
+      ],
+      [
+        "A",
+        "docs/previews/mdina-cathedral.png"
+      ],
+      [
+        "A",
+        "docs/previews/mdina-gate.png"
+      ],
+      [
+        "M",
+        "docs/valletta-city.md"
+      ],
+      [
+        "A",
+        "scripts/historic_city.gd"
+      ],
+      [
+        "A",
+        "scripts/historic_city.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/malta_geography.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_landscape_details.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_world.gd"
+      ],
+      [
+        "A",
+        "scripts/mdina_city.gd"
+      ],
+      [
+        "A",
+        "scripts/mdina_city.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/valletta_city.gd"
+      ],
+      [
+        "M",
+        "scripts/web_support.gd"
+      ],
+      [
+        "A",
+        "tests/mdina_capture.gd"
+      ],
+      [
+        "A",
+        "tests/mdina_capture.gd.uid"
+      ],
+      [
+        "A",
+        "tests/mdina_checks.gd"
+      ],
+      [
+        "A",
+        "tests/mdina_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tools/generate_mdina.py"
+      ],
+      [
+        "M",
+        "tools/malta_terrain_web_smoke.cjs"
+      ]
+    ],
+    "category": "Mdina / shared scenery",
+    "outcome": "Feature / refactor",
+    "technical_change": "Adds georeferenced fortified Mdina, hilltop sample, gate/road openings and city assets/tests. Extracts HistoricCity loader reused by Valletta/Mdina and adds projected Mdina chart marker without changing terrain.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/814e30850bea4f3dbe098787d9a1898d95a434ba"
+  },
+  {
+    "sha": "29dc7139900e16ab377fe263526e771f44aae3cf",
+    "date": "2026-10-16T06:37:29Z",
+    "committed": "2026-10-16T06:37:29Z",
+    "subject": "feat(cottonera): establish source-derived alignment and record missing geography",
+    "parents": [
+      "814e30850bea4f3dbe098787d9a1898d95a434ba"
+    ],
+    "files": [
+      [
+        "A",
+        "assets/malta/cottonera/alignment.json"
+      ],
+      [
+        "A",
+        "assets/malta/cottonera/features.geojson"
+      ],
+      [
+        "A",
+        "assets/malta/cottonera/region.json"
+      ],
+      [
+        "A",
+        "assets/malta/cottonera/source/README.md"
+      ],
+      [
+        "A",
+        "assets/malta/cottonera/source/access_report.json"
+      ],
+      [
+        "A",
+        "assets/malta/cottonera/source/geonamescache-LICENSE.txt"
+      ],
+      [
+        "A",
+        "assets/malta/cottonera/source/places.json"
+      ],
+      [
+        "A",
+        "tools/cottonera/geography.py"
+      ],
+      [
+        "A",
+        "tools/prepare_cottonera.py"
+      ]
+    ],
+    "category": "Cottonera alignment",
+    "outcome": "Preparation",
+    "technical_change": "Adds projected, cited GeoNames regional anchors and source-hash/alignment metadata. Records inaccessible historical/footprint sources and missing geography; anchors do not fabricate city boundaries.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/29dc7139900e16ab377fe263526e771f44aae3cf"
+  },
+  {
+    "sha": "d3ca95977463bf2bcdd81235fd60055584af58d9",
+    "date": "2026-10-16T06:38:18Z",
+    "committed": "2026-10-16T06:38:18Z",
+    "subject": "feat(cottonera): prepare footprint-driven Fort St Angelo template",
+    "parents": [
+      "29dc7139900e16ab377fe263526e771f44aae3cf"
+    ],
+    "files": [
+      [
+        "A",
+        "tools/cottonera/models.py"
+      ]
+    ],
+    "category": "Cottonera fort asset",
+    "outcome": "Preparation",
+    "technical_change": "Adds footprint-driven Fort St Angelo architectural template construction to offline models module, awaiting an actual sourced outline; does not populate the fort at an invented world footprint.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/d3ca95977463bf2bcdd81235fd60055584af58d9"
+  },
+  {
+    "sha": "dd9049a18c1896bb40ede5cd81781131da00ac08",
+    "date": "2026-10-16T06:39:05Z",
+    "committed": "2026-10-16T06:39:05Z",
+    "subject": "feat(cottonera): prepare Senglea housing and lookout assets without invented streets",
+    "parents": [
+      "d3ca95977463bf2bcdd81235fd60055584af58d9"
+    ],
+    "files": [
+      [
+        "M",
+        "tools/cottonera/models.py"
+      ]
+    ],
+    "category": "Cottonera Senglea assets",
+    "outcome": "Preparation",
+    "technical_change": "Adds original row-house and Gardjola-style lookout template geometry. Leaves actual Senglea streets/buildings absent pending source data rather than inferring a city from the image alone.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/dd9049a18c1896bb40ede5cd81781131da00ac08"
+  },
+  {
+    "sha": "de2dd12ef323399919ae3ed63edddcd757a23755",
+    "date": "2026-10-16T06:39:29Z",
+    "committed": "2026-10-16T06:39:47Z",
+    "subject": "feat(cottonera): prepare separate defensive-line walls bastions and gates",
+    "parents": [
+      "dd9049a18c1896bb40ede5cd81781131da00ac08"
+    ],
+    "files": [
+      [
+        "M",
+        "tools/cottonera/models.py"
+      ]
+    ],
+    "category": "Cottonera defensive assets",
+    "outcome": "Preparation",
+    "technical_change": "Adds distinct curtain-wall, battered bastion and gate-opening model constructors for separate defensive systems. This is reusable template geometry, not a placed mapped perimeter.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/de2dd12ef323399919ae3ed63edddcd757a23755"
+  },
+  {
+    "sha": "170f758220295caefde9890695b1e22718531253",
+    "date": "2026-10-16T06:40:24Z",
+    "committed": "2026-10-16T06:40:24Z",
+    "subject": "feat(cottonera): prepare source-placeable wartime dockyard assets",
+    "parents": [
+      "de2dd12ef323399919ae3ed63edddcd757a23755"
+    ],
+    "files": [
+      [
+        "M",
+        "tools/cottonera/models.py"
+      ]
+    ],
+    "category": "Cottonera dockyard assets",
+    "outcome": "Preparation",
+    "technical_change": "Adds source-placeable warehouse, crane and dry-dock templates. No modern marina/yachts or invented historical dock positions are inserted into the live world.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/170f758220295caefde9890695b1e22718531253"
+  },
+  {
+    "sha": "154a95239344d0190d4755be4e2834e7140f8d4f",
+    "date": "2026-10-16T06:42:20Z",
+    "committed": "2026-10-16T06:42:20Z",
+    "subject": "feat(cottonera): import sourced footprints roads and distinct defensive lines",
+    "parents": [
+      "170f758220295caefde9890695b1e22718531253"
+    ],
+    "files": [
+      [
+        "A",
+        "tests/cottonera_import_checks.py"
+      ],
+      [
+        "A",
+        "tools/import_cottonera.py"
+      ]
+    ],
+    "category": "Cottonera data import",
+    "outcome": "Feature / preparation",
+    "technical_change": "Adds local GeoJSON/OSM XML/Overpass importer requiring provenance, licence, epoch and explicit city assignment. Preserves polygons/holes, rejects incomplete geometry and distinguishes named defensive lines and modern exclusions.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/154a95239344d0190d4755be4e2834e7140f8d4f"
+  },
+  {
+    "sha": "a4bf624afbf2a2ef6ad56580363ae174fc7a9ed8",
+    "date": "2026-10-16T06:43:15Z",
+    "committed": "2026-10-16T06:43:15Z",
+    "subject": "feat(cottonera): prepare footprint-driven church and palace landmark assets",
+    "parents": [
+      "154a95239344d0190d4755be4e2834e7140f8d4f"
+    ],
+    "files": [
+      [
+        "M",
+        "tools/cottonera/models.py"
+      ]
+    ],
+    "category": "Cottonera landmarks",
+    "outcome": "Preparation",
+    "technical_change": "Adds footprint-driven church/palace constructors with distinct selectable landmark templates; schema/model availability does not establish the historical footprint or 1942 facade at runtime.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/a4bf624afbf2a2ef6ad56580363ae174fc7a9ed8"
+  },
+  {
+    "sha": "410ef4bb777e7efea0fe953cc6541ea2036f0b24",
+    "date": "2026-10-16T06:49:09Z",
+    "committed": "2026-10-16T06:49:09Z",
+    "subject": "feat(cottonera): integrate source-gated regions collision and review templates",
+    "parents": [
+      "a4bf624afbf2a2ef6ad56580363ae174fc7a9ed8"
+    ],
+    "files": [
+      [
+        "M",
+        "assets/malta/cottonera/region.json"
+      ],
+      [
+        "A",
+        "assets/malta/cottonera/templates/architecture.glb"
+      ],
+      [
+        "A",
+        "assets/malta/cottonera/templates/architecture.glb.import"
+      ],
+      [
+        "A",
+        "assets/malta/cottonera/templates/gallery.json"
+      ],
+      [
+        "A",
+        "assets/malta/cottonera/templates/gate_collision.glb"
+      ],
+      [
+        "A",
+        "assets/malta/cottonera/templates/gate_collision.glb.import"
+      ],
+      [
+        "A",
+        "scenes/cottonera_asset_review.tscn"
+      ],
+      [
+        "A",
+        "scripts/cottonera_asset_review.gd"
+      ],
+      [
+        "A",
+        "scripts/cottonera_asset_review.gd.uid"
+      ],
+      [
+        "A",
+        "scripts/cottonera_region.gd"
+      ],
+      [
+        "A",
+        "scripts/cottonera_region.gd.uid"
+      ],
+      [
+        "M",
+        "scripts/malta_geography.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_landscape_details.gd"
+      ],
+      [
+        "M",
+        "scripts/malta_world.gd"
+      ],
+      [
+        "M",
+        "scripts/web_support.gd"
+      ],
+      [
+        "A",
+        "tests/cottonera_capture.gd"
+      ],
+      [
+        "A",
+        "tests/cottonera_capture.gd.uid"
+      ],
+      [
+        "A",
+        "tests/cottonera_checks.gd"
+      ],
+      [
+        "A",
+        "tests/cottonera_checks.gd.uid"
+      ],
+      [
+        "A",
+        "tests/cottonera_pipeline_checks.py"
+      ],
+      [
+        "A",
+        "tools/build_cottonera.py"
+      ],
+      [
+        "A",
+        "tools/generate_cottonera_templates.py"
+      ]
+    ],
+    "category": "Cottonera region pipeline",
+    "outcome": "Feature / preparation",
+    "technical_change": "Adds source-gated regional compiler, collision/near-mid-far assets, runtime CottoneraRegion, continuous-world hook and standalone unplaced gallery. Empty source remains awaiting_geodata with no fabricated structures; review scene is not a gameplay city.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/410ef4bb777e7efea0fe953cc6541ea2036f0b24"
+  },
+  {
+    "sha": "588ac7b1b37b72014b73fe679871e790e5c79145",
+    "date": "2026-10-16T06:59:46Z",
+    "committed": "2026-10-16T06:59:46Z",
+    "subject": "test(cottonera): validate safe fallback LODs native web and missing-data workflow",
+    "parents": [
+      "410ef4bb777e7efea0fe953cc6541ea2036f0b24"
+    ],
+    "files": [
+      [
+        "M",
+        ".github/workflows/web.yml"
+      ],
+      [
+        "M",
+        "README.md"
+      ],
+      [
+        "M",
+        "assets/malta/cottonera/source/access_report.json"
+      ],
+      [
+        "M",
+        "assets/malta/cottonera/templates/architecture.glb"
+      ],
+      [
+        "A",
+        "docs/cottonera-region.md"
+      ],
+      [
+        "A",
+        "docs/previews/cottonera-unplaced-templates.png"
+      ],
+      [
+        "M",
+        "scripts/cottonera_asset_review.gd"
+      ],
+      [
+        "M",
+        "tests/cottonera_import_checks.py"
+      ],
+      [
+        "M",
+        "tests/cottonera_pipeline_checks.py"
+      ],
+      [
+        "M",
+        "tools/build_cottonera.py"
+      ],
+      [
+        "M",
+        "tools/cottonera/models.py"
+      ],
+      [
+        "M",
+        "tools/import_cottonera.py"
+      ],
+      [
+        "M",
+        "tools/malta_terrain_web_smoke.cjs"
+      ]
+    ],
+    "category": "Cottonera validation / robustness",
+    "outcome": "Fix / test / maintenance",
+    "technical_change": "Adds importer/compiler/native/browser regression coverage and missing-data documentation; rejects incomplete source assemblies, corrects template dome normals, improves LOD/collision checks and gallery framing. Confirms safe empty fallback, not a completed populated Cottonera.",
+    "commit_url": "https://github.com/zelenski3398/codexproj1/commit/588ac7b1b37b72014b73fe679871e790e5c79145"
+  }
+]

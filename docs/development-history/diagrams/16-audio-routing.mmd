@@ -1,0 +1,12 @@
+flowchart LR
+    Theme["menu state"] --> Music["AudioStreamPlayer / Music"]
+    Air["AircraftAudio"] --> Engine["spatial loops / Aircraft"]
+    WG["WingGuns.salvo_fired"] --> WA["WeaponAudio / Guns"]
+    AA["BritishAAGun.fire_round"] --> Report["muzzle AudioStreamPlayer3D / Guns"]
+    Activation["formation_detected signal"] --> Radio["MissionRadio / Master - non-spatial"]
+    Mission["DiveDefenceAudio"] --> Radio
+    Mission --> Siren["looped spatial air-raid alarm / Aircraft"]
+    Dive["StukaDiveAudio real descent gate"] --> Jericho["spatial Jericho loop / Aircraft"]
+    Radio --> Mixer["GameAudioMixer radio owner"]
+    Mixer -.-> Duck["temporary attenuation on Aircraft and Guns buses"]
+    Radio --> Subtitle["configured subtitle during speech playback"]

@@ -1,0 +1,14 @@
+flowchart TD
+    Root["FirstSortie root"] --> Country["Countryside Airfield when selected"]
+    Root --> Malta["ContinuousMalta - one instance per Malta session"]
+    Malta --> Islands["Malta, Gozo, Comino and smaller island meshes"]
+    Malta --> Sea["camera-following sea visual plus infinite collision plane"]
+    Malta --> Fields["Ta Qali / Luqa / Hal Far exist together"]
+    Fields --> Assets["each: 1 truck, 4 heavy AA, 2 Bofors, 1 command station"]
+    Malta --> Cities["VallettaCity / MdinaCity - placed additive scenery"]
+    Malta --> Pending["CottoneraRegion - empty sourced regions at audit snapshot"]
+    Root --> Mission["MaltaMission owns persistent fleet and on-foot pilot"]
+    Mission --> Fleet["two parked aircraft per field in current data"]
+    Fields -. "parking transforms" .-> Fleet
+    Root --> Enemies["EnemyEncounters and selected mission director"]
+    Review["cottonera_asset_review.tscn"] -.-> Separate["standalone F6 gallery, never spawned as Malta geography"]

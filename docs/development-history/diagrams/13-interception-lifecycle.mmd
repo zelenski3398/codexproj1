@@ -1,0 +1,14 @@
+stateDiagram-v2
+    [*] --> CHECKPOINT: ground start and engine off
+    CHECKPOINT --> CHECKPOINT: airborne checkpoint 1 accepted once
+    CHECKPOINT --> ACTIVE: checkpoint 2, safe formation spawn and radio once
+    ACTIVE --> ACTIVE: enemy losses recorded, timer continues
+    ACTIVE --> ACTIVE: bomber arrives, bombing may begin
+    ACTIVE --> SUCCESS: deadline and both losses before deadline, no bombing
+    ACTIVE --> FAILED: deadline and remaining enemy or bombing
+    CHECKPOINT --> FAILED: player crash or destruction
+    ACTIVE --> FAILED: player crash or destruction
+    CHECKPOINT --> CANCELLED: leave mission
+    ACTIVE --> CANCELLED: leave mission
+    SUCCESS --> CHECKPOINT: retry creates clean session
+    FAILED --> CHECKPOINT: retry creates clean session
