@@ -19,6 +19,11 @@ window/stretch/mode="canvas_items"
 
 [input]
 
+aa_battery_toggle={
+"deadzone":0.2,
+"events":[Object(InputEventKey,"physical_keycode":66), Object(InputEventKey,"keycode":66)]
+}
+
 battery_command={
 "deadzone":0.2,
 "events":[Object(InputEventKey,"physical_keycode":70), Object(InputEventKey,"keycode":70)]

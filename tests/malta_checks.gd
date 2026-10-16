@@ -18,7 +18,7 @@ func _run() -> void:
 	world.selector.malta_button.pressed.emit()
 	await _frames(3)
 	_check(world.malta_menu != null and world.aircraft == null, "Malta map selection opens airfield chart before spawning a mission")
-	_check(world.malta_menu.chart.buttons.size() == 3 and world.malta_menu.selected_field == "ta_qali", "Map exposes Ta' Qali, Luqa and Ħal Far")
+	_check(world.malta_menu.chart.buttons.size() == 4 and world.malta_menu.selected_field == "ta_qali", "Map exposes all three airfields plus Fort St Elmo")
 	world.malta_menu.select_field("hal_far")
 	_check(world.malta_menu.selected_field == "hal_far" and world.malta_menu.info.text.contains("Ħal Far"), "Airfield selection updates name, available aircraft and departure")
 	world.malta_menu.select_field("ta_qali")

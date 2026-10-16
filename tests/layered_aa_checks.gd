@@ -92,7 +92,7 @@ func run() -> void:
 	check(battery.light_projectiles.velocities[slot].y< -2 and battery.light_projectiles.positions[slot].y<2000,"AA shell drops under gravity while travelling")
 	game.restart_malta()
 	await frames(20)
-	check(game.field.aa_battery.guns.size()==18 and get_nodes_in_group("friendly_aa").size()==18,"Retry replaces all six-gun installations without duplicates")
+	check(game.field.aa_battery.guns.size()==18 and get_nodes_in_group("friendly_aa").size()==21,"Retry replaces the three airfield installations plus the fort guns without duplicates")
 	check(game.field.aa_battery.guns.all(func(g):return g.hp==150 and g.cooldown==0),"Retry restores health and ammunition independently")
 	print("LAYERED AA RESULT: ",passed,"/",passed+failed," passed")
 	quit(0 if failed==0 else 1)

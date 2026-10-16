@@ -48,3 +48,7 @@ node tools/malta_terrain_web_smoke.cjs
 Completed checks: **17/17 city**, **30/30 terrain**, **35/35 Malta flight/landing/persistence**, **77/77 interception**, **47/47 AA defence**, and **20/20 defence audio** (226 native checks total). The release web export and **20/20 Chromium/ANGLE browser checks** passed, including bundled city geometry/collision, heatmap switching, engine/weapons controls and retry. Native Compatibility screenshots above were rendered and inspected; no script, shader or resource errors were reported.
 
 The city is intentionally an exterior flight asset: no interiors, civilians, separately damageable buildings or exact historic facade survey. Source terrain resolution still limits detailed waterfront steps and streets on steep slopes; no claim is made of a complete walkable historic city. Full manual low-level flight and every street/vehicle traversal remain unverified. Automated native ray tests sample roofs and facades, while browser checks validate loading, world ownership, debug switching and restart; they are not a browser flyover of every building.
+
+## St Elmo upgrade
+
+The former simple fort has been replaced by a reference-inspired walkable fort and three additional crewed Bofors guns. See [St Elmo ground battery](st-elmo-battery.md) for spawn/travel controls, previews and historical limitations.

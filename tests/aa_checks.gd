@@ -14,7 +14,7 @@ func _run() -> void:
 	scene.start_malta("ta_qali","spitfire","interception")
 	await frames(12)
 	var battery: AirfieldAABattery = scene.malta_mission.world.aa_battery
-	check(battery.guns.size() == 18, "Exactly eighteen AA guns in the continuous Malta world")
+	check(battery.guns.size() == 18, "All eighteen original airfield AA guns remain in the continuous Malta world")
 	check(battery.candidates().is_empty(), "Checkpoint phase has no premature mission enemies")
 	for gun in battery.guns:
 		check(gun.yaw != null and gun.elevation != null and gun.muzzle != null,gun.name + ": imported aiming hierarchy")
@@ -139,7 +139,7 @@ func _run() -> void:
 	scene.restart_malta()
 	await frames(15)
 	var clean: AirfieldAABattery = scene.malta_mission.world.aa_battery
-	check(clean != battery and clean.guns.size() == 18 and get_nodes_in_group("friendly_aa").size() == 18,"Retry replaces battery without duplicate emplacements")
+	check(clean != battery and clean.guns.size() == 18 and get_nodes_in_group("friendly_aa").size() == 21,"Retry replaces battery without duplicate emplacements")
 	check(clean.projectiles.active.is_empty() and clean.guns.all(func(g):return g.hp == g.max_hp),"Retry restores health and clears shells/effects")
 	print("AA RESULT: ",passed,"/",passed+failed," passed")
 	quit(0 if failed == 0 else 1)

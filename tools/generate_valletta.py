@@ -214,24 +214,12 @@ for x,z in [(-190,20),(155,65),(-230,420),(245,470),(-210,830)]:
     parapet=p.difference(p.buffer(-2))
     for part in ([parapet] if parapet.geom_type=='Polygon' else parapet.geoms):prism(part,level+8,level+10,TRIM,False)
 
-# Fort St Elmo: angular outer enceinte, inner star fort and open drill court.
+# Reference-inspired fort upgrade, retaining the original grid anchor/orientation.
+from fort_st_elmo_geometry import build as build_st_elmo
 x,z=local(tip);fort_centre=np.array([x,z-5]);fort_level=h(fort_centre)
-if np.isfinite(fort_level):
-    features.append(dict(name='Fort St Elmo',position=world(fort_centre).tolist(),terrain_height=fort_level))
-    outline=Point(*fort_centre).buffer(124,resolution=3).intersection(land.buffer(-10))
-    if outline.geom_type=='Polygon':
-        hh=heights(np.array(outline.exterior.coords)[:-1]);finite=hh[np.isfinite(hh)]
-        foundation=float(finite.min()-2);deck=float(finite.max()+3)
-        prism(outline,foundation,deck,STONE)
-        rim=outline.difference(outline.buffer(-5))
-        for part in ([rim] if rim.geom_type=='Polygon' else rim.geoms):prism(part,deck,deck+3,TRIM)
-        star=[]
-        for i in range(16):
-            angle=i*np.pi/8;radius=76 if i%2==0 else 47;star.append(fort_centre+np.array([np.cos(angle),np.sin(angle)])*radius)
-        star=Polygon(star).intersection(outline.buffer(-3));walls=star.difference(star.buffer(-12))
-        prism(walls,deck,deck+10)
-        parapet=star.difference(star.buffer(-2));prism(parapet,deck+10,deck+11.4,TRIM,False)
-        for ox in [-34,34]:cube(x+ox,z-5,14,36,deck,7,ROOF)
+features.append(dict(name='Fort St Elmo',position=world(fort_centre).tolist(),terrain_height=fort_level))
+fort_layout=build_st_elmo(fort_centre,land,heights,h,world,prism,cube,emit,STONE,TRIM,ROOF,DARK)
+(OUT/'st_elmo.json').write_text(json.dumps(fort_layout,indent=2)+'\n')
 
 scene=trimesh.Scene();collision_scene=trimesh.Scene();total_triangles=0
 for (cx,cz,solid),meshes in sorted(chunks.items()):

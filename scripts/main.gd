@@ -9,6 +9,7 @@ var interception: VallettaInterception
 var malta_menu: MaltaDepartureMenu
 var malta_mission: MaltaMission
 var home_airfield: String = "ta_qali"
+var departure_spawn: String = "ta_qali"
 var departure_kind: String = "spitfire"
 var aircraft: FlightAircraft
 var chase: ChaseCamera
@@ -252,7 +253,7 @@ func show_malta_selection() -> void:
 	selector = null
 	environment_id = "malta"
 	malta_menu = MaltaDepartureMenu.new()
-	malta_menu.selected_field = home_airfield
+	malta_menu.selected_field = departure_spawn
 	malta_menu.selected_kind = selected_aircraft
 	malta_menu.departed.connect(start_malta, CONNECT_DEFERRED)
 	malta_menu.back_requested.connect(show_selection, CONNECT_DEFERRED)
@@ -278,6 +279,10 @@ func _clear_malta() -> void:
 	environment_id = "countryside"
 
 func start_malta(field_id: String, kind: String, selected_mode: String = "encounter") -> void:
+	var spawn_id: String=field_id
+	if StElmoLocations.is_fort(field_id):
+		if selected_mode not in ["encounter","survival"]:return
+		field_id="luqa"
 	if selected_mode not in ["encounter", "survival", "interception", "aa_defence"]:
 		return
 	if MaltaGeography.field(field_id).is_empty() or kind not in ["spitfire", "sea_gladiator"]:
@@ -303,6 +308,7 @@ func start_malta(field_id: String, kind: String, selected_mode: String = "encoun
 	environment_id = "malta"
 	game_mode = selected_mode
 	home_airfield = field_id
+	departure_spawn = spawn_id
 	selected_aircraft = kind
 	departure_kind = kind
 	field = MaltaWorld.new()
@@ -311,6 +317,7 @@ func start_malta(field_id: String, kind: String, selected_mode: String = "encoun
 	malta_mission.session = self
 	malta_mission.world = field
 	malta_mission.home = field_id
+	malta_mission.initial_spawn_id = spawn_id
 	malta_mission.initial_kind = kind
 	add_child(malta_mission)
 	aircraft = malta_mission.initial_aircraft
@@ -362,7 +369,7 @@ func attach_malta_player(player: FlightAircraft) -> void:
 func restart_malta() -> void:
 	if environment_id != "malta":
 		return
-	var saved_home: String = home_airfield
+	var saved_home: String = departure_spawn
 	var saved_kind: String = departure_kind
 	var saved_mode: String = game_mode
 	show_selection()

@@ -32,11 +32,11 @@ func _ready() -> void:
 	left.add_theme_constant_override("separation", 14)
 	root.add_child(left)
 	left.add_child(_label("WINGS OVER MALTA", 30))
-	left.add_child(_label("ONE CONTINUOUS WORLD\nChoose your departure airfield", 19))
+	left.add_child(_label("ONE CONTINUOUS WORLD\nChoose your departure / ground spawn", 19))
 	field_picker = OptionButton.new()
-	for record in MaltaGeography.data().airfields:
+	for record in StElmoLocations.options():
 		field_picker.add_item(record.name)
-	field_picker.item_selected.connect(func(index: int): select_field(MaltaGeography.data().airfields[index].id))
+	field_picker.item_selected.connect(func(index: int): select_field(StElmoLocations.options()[index].id))
 	left.add_child(field_picker)
 	info = _label("", 17)
 	info.custom_minimum_size = Vector2(405, 120)
@@ -76,6 +76,19 @@ func _label(text: String, size: int) -> Label:
 	return label
 
 func select_field(id: String) -> void:
+	if StElmoLocations.is_fort(id):
+		selected_field=id
+		chart.home="st_elmo"
+		for i in range(StElmoLocations.options().size()):
+			if StElmoLocations.options()[i].id==id:field_picker.select(i)
+		fighter_picker.clear()
+		fighter_picker.add_item("Spitfire / Gladiator remain parked at the airfields")
+		fighter_picker.disabled=true
+		info.text="Fort St Elmo · Three manual Bofors guns\nSpawn on foot, outside the gun positions.\nM Map → travel between St Elmo and airfields.\nE Mount · B Individual / Battery · LMB Fire"
+		depart_button.text="DEPART · SPAWN AT ST ELMO"
+		return
+	fighter_picker.disabled=false
+	depart_button.text="DEPART · SPAWN BESIDE AIRCRAFT"
 	var record: Dictionary = MaltaGeography.field(id)
 	if record.is_empty():
 		return
@@ -93,6 +106,7 @@ func select_field(id: String) -> void:
 	info.text = "%s\nDeparture strip: %d m\nAvailable: %s\nSpawn on foot at the dispersal area.\nFly freely to any other airfield." % [record.name, roundi(float(record.length)), " / ".join(record.stationed_aircraft).replace("spitfire", "Spitfire").replace("sea_gladiator", "Sea Gladiator")]
 
 func _choose_kind(index: int) -> void:
+	if StElmoLocations.is_fort(selected_field):return
 	selected_kind = MaltaGeography.field(selected_field).stationed_aircraft[index]
 
 func depart() -> void:

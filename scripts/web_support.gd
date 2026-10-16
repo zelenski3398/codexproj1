@@ -69,11 +69,21 @@ func _process(delta: float) -> void:
 		state.mode_picker = _center(session.malta_menu.mode_picker)
 		state.selected_mode = session.malta_menu.selected_mode
 		state.home_airfield = session.malta_menu.selected_field
+		state.st_elmo_button = _center(session.malta_menu.chart.buttons.st_elmo)
+		state.spawn_picker = _center(session.malta_menu.field_picker)
 		state.depart_button = _center(session.malta_menu.depart_button)
 		state.ta_qali_button = _center(session.malta_menu.chart.buttons.ta_qali)
 		state.luqa_button = _center(session.malta_menu.chart.buttons.luqa)
 		state.hal_far_button = _center(session.malta_menu.chart.buttons.hal_far)
 	if is_instance_valid(session.malta_mission):
+		var fort: StElmoBattery=session.malta_mission.world.fort_battery
+		state.fort={"guns":fort.guns.size(),"operational":fort.operational_count(),"command":fort.command_active(),"shots":fort.guns.map(func(g):return g.shots_fired),"seated":fort.guns.map(func(g):return g.crew.seated),"crew_waiting":fort.guns.map(func(g):return g.crew.waiting),"spawn":session.departure_spawn}
+		state.travel_selected=session.malta_mission.travel_picker.selected
+		state.travel_popup_focus=session.malta_mission.travel_picker.get_popup().get_focused_item()
+		state.travel_notice=session.malta_mission.notice
+		state.travel_picker=_center(session.malta_mission.travel_picker)
+		state.travel_button=_center(session.malta_mission.travel_button)
+		state.travel_enabled=session.malta_mission.can_travel()
 		state.terrain = session.malta_mission.world.terrain_appearance.diagnostic_state()
 		var city: VallettaCity = session.malta_mission.world.valletta_city
 		state.valletta = {"ready":city.ready_for_flight,"buildings":city.layout.building_count,"structures":city.structure_count,"details":city.detail_count,"collision_chunks":city.collision_count,"visible":city.visible,"landmarks":city.layout.landmarks.size()}

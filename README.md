@@ -786,3 +786,7 @@ All Malta environments also include an original georeferenced Mdina hilltop city
 Cottonera now uses the supplied OSM footprint dataset: 2,575 buildings, 38 fortification features, Fort St Angelo, churches and persistent collision across the continuous Malta world. See [previews, placement, provenance and historical limitations](docs/cottonera-region.md).
 
 Enemy aircraft now use [distance-dependent engine roar and bounded Doppler](docs/enemy-flyby-audio.md). The separate rushing-air layer is ready for a suitable mono loop; that recording is still needed.
+
+## Fort St Elmo ground battery
+
+Choose St Elmo or any of its three Bofors positions in Malta departure selection. Use **M → destination → Travel** on foot to teleport between the fort and all airfields without resetting the world. **E** mounts, **B** toggles individual/battery control, and **LMB** fires. [Controls, previews, placement and validation](docs/st-elmo-battery.md).

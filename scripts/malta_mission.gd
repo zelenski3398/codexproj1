@@ -8,6 +8,9 @@ var session: Node3D
 var world: MaltaWorld
 var home: String = "ta_qali"
 var initial_kind: String = "spitfire"
+var initial_spawn_id: String = ""
+var travel_picker: OptionButton
+var travel_button: Button
 var fleet: Array[FlightAircraft] = []
 var pilot: GroundPilot
 var occupied: FlightAircraft
@@ -54,6 +57,7 @@ func _ready() -> void:
 	add_child(pilot)
 	pilot.global_position = world.fields[home].pilot_spawn
 	pilot.yaw = -deg_to_rad(float(world.fields[home].record.heading))
+	if StElmoLocations.is_fort(initial_spawn_id):pilot.global_position=StElmoLocations.position_for(initial_spawn_id)
 	_build_ui()
 	interaction = AirfieldInteraction.new()
 	interaction.mission = self
@@ -87,13 +91,22 @@ func _build_ui() -> void:
 	title.text = "MALTA · NAVIGATION    /    M TO CLOSE"
 	column.add_child(title)
 	chart = MaltaChart.new()
-	chart.home = home
+	chart.home = "st_elmo" if StElmoLocations.is_fort(initial_spawn_id) else home
 	chart.show_player = true
 	chart.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	column.add_child(chart)
 	var legend: Label = Label.new()
 	legend.text = "WHITE: you / heading    GOLD: home    RED: enemy / GOLD ACE: ace\nMap does not pause flight. North is up; grid spacing 5 km."
 	column.add_child(legend)
+	var travel_row:=HBoxContainer.new()
+	column.add_child(travel_row)
+	travel_picker=OptionButton.new()
+	for record in StElmoLocations.options():travel_picker.add_item(record.name)
+	travel_row.add_child(travel_picker)
+	travel_button=Button.new()
+	travel_button.text="TRAVEL / SPAWN HERE (on foot)"
+	travel_button.pressed.connect(func():teleport_to(StElmoLocations.options()[travel_picker.selected].id))
+	travel_row.add_child(travel_button)
 	chart_panel.visible = false
 	aa_settings = PanelContainer.new()
 	aa_settings.position = Vector2(850,270)
@@ -120,6 +133,7 @@ func _input(event: InputEvent) -> void:
 		return
 	if event.is_action_pressed("navigation_map"):
 		chart_panel.visible = not chart_panel.visible
+		if chart_panel.visible:Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("battery_command") and not get_tree().paused:
 		if interaction.occupied_gun is AACommandStation:
@@ -239,6 +253,7 @@ func _message(value: String) -> void:
 	notice_time = 5
 
 func _process(delta: float) -> void:
+	travel_button.disabled=not can_travel()
 	var show_settings: bool = get_tree().paused and interaction.occupied_gun != null
 	if show_settings and not aa_settings.visible:aa_sensitivity.set_value_no_signal(AAMouseControls.sensitivity)
 	aa_settings.visible = show_settings
@@ -272,8 +287,43 @@ func _process(delta: float) -> void:
 	else:
 		status.text = interaction.prompt()
 		if not interaction.is_operating():
-			status.text = "WINGS OVER MALTA · ON FOOT\nWASD Walk · Arrows Turn · M Map · ESC Pause · R Full restart\n" + status.text
+			status.text = "WINGS OVER MALTA · ON FOOT\nWASD Walk · Arrows Turn · M Map / travel · ESC Pause · R Full restart\n" + status.text
 	if get_tree().paused and not is_instance_valid(occupied):
 		status.text += "\nPAUSED · ESC resumes"
 	if notice_time > 0:
 		status.text += "\n" + notice
+
+func can_travel() -> bool:
+	return occupied==null and not interaction.is_operating() and pilot.active and pilot.health.hp>0 and not get_tree().paused and not interaction.mission_ended()
+
+func teleport_to(id: String) -> bool:
+	if not can_travel():
+		_message("Leave the aircraft, vehicle or AA gun before travelling on foot")
+		return false
+	var target: Vector3
+	if StElmoLocations.is_fort(id):target=StElmoLocations.position_for(id)
+	elif world.fields.has(id):target=world.fields[id].pilot_spawn
+	else:return false
+	# Resolve a safe floor and capsule clearance against the live world. Never
+	# rebuild the session, heal, respawn enemies or move a parked aircraft.
+	var space:=world.get_world_3d().direct_space_state
+	var found:=false
+	for offset in [Vector3.ZERO,Vector3(2,0,0),Vector3(-2,0,0),Vector3(0,0,2)]:
+		var point: Vector3=target+offset
+		var hit:=space.intersect_ray(PhysicsRayQueryParameters3D.create(point+Vector3.UP*3,point-Vector3.UP*6,1))
+		if hit.is_empty() or hit.normal.y<.7:continue
+		point=hit.position+Vector3.UP*1.05
+		var shape:=CapsuleShape3D.new()
+		shape.height=1.8;shape.radius=.4
+		var query:=PhysicsShapeQueryParameters3D.new()
+		query.shape=shape;query.transform=Transform3D(Basis.IDENTITY,point);query.collision_mask=31
+		query.exclude=[pilot.get_rid()]
+		if space.intersect_shape(query).is_empty():target=point;found=true;break
+	if not found:_message("Destination obstructed; choose another spawn");return false
+	pilot.global_position=target
+	pilot.velocity=Vector3.ZERO
+	pilot.camera.make_current()
+	chart_panel.hide()
+	get_viewport().gui_release_focus()
+	_message("Travel complete · aircraft, damage and the running battle preserved")
+	return true

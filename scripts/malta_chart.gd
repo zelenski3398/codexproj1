@@ -25,7 +25,7 @@ func _ready() -> void:
 	texture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texture.show_behind_parent = true
 	add_child(texture)
-	for record in MaltaGeography.data().airfields:
+	for record in _places():
 		var button: Button = Button.new()
 		button.text = String(record.name)
 		button.add_theme_font_size_override("font_size", 15)
@@ -39,7 +39,7 @@ func _ready() -> void:
 	_layout()
 
 func _layout() -> void:
-	for record in MaltaGeography.data().airfields:
+	for record in _places():
 		var point: Vector2 = MaltaGeography.chart_uv(MaltaGeography.vector(record.position)) * size
 		buttons[record.id].position = point + Vector2(8, -15)
 	queue_redraw()
@@ -48,7 +48,7 @@ func _process(_delta: float) -> void:
 	queue_redraw()
 
 func _draw() -> void:
-	for record in MaltaGeography.data().airfields:
+	for record in _places():
 		var point: Vector2 = MaltaGeography.chart_uv(MaltaGeography.vector(record.position)) * size
 		draw_circle(point, 7, Color("e4bf75") if record.id == home else Color("eee7ce"))
 		if record.id == home:
@@ -77,3 +77,9 @@ func _draw() -> void:
 			draw_circle(point, 5, Color("e4bf75") if contact.ace else Color("ed7759"))
 			if contact.ace:
 				draw_string(ThemeDB.fallback_font, point + Vector2(8, 0), "ACE", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("e4bf75"))
+
+func _places() -> Array:
+	var result: Array=MaltaGeography.data().airfields.duplicate()
+	var point:=StElmoLocations.position_for("st_elmo")
+	result.append({"id":"st_elmo","name":"Fort St Elmo","position":[point.x,point.y,point.z]})
+	return result

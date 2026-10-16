@@ -13,13 +13,13 @@ func _ready() -> void:
 	sight = AAAimReticle.new()
 	mission.canvas.add_child(sight)
 	sight.visible = false
-	for gun in mission.world.aa_battery.guns + mission.world.aa_battery.command_stations:
+	for gun in mission.world.aa_battery.guns + mission.world.fort_battery.guns + mission.world.aa_battery.command_stations:
 		gun.destroyed.connect(_gun_destroyed.bind(gun))
 	# AA placement is deferred until the world is ready.
 	call_deferred("_connect_guns")
 
 func _connect_guns() -> void:
-	for gun in mission.world.aa_battery.guns + mission.world.aa_battery.command_stations:
+	for gun in mission.world.aa_battery.guns + mission.world.fort_battery.guns + mission.world.aa_battery.command_stations:
 		if not gun.destroyed.is_connected(_gun_destroyed.bind(gun)):
 			gun.destroyed.connect(_gun_destroyed.bind(gun))
 
@@ -30,7 +30,7 @@ func nearest() -> Node3D:
 	if is_operating() or mission.occupied != null or not mission.pilot.active: return null
 	var best: Node3D = mission.nearest_serviceable()
 	var distance := mission.pilot.global_position.distance_to(best.global_position) if best != null else INF
-	for gun in mission.world.aa_battery.guns:
+	for gun in mission.world.aa_battery.guns + mission.world.fort_battery.guns:
 		var d := mission.pilot.global_position.distance_to(gun.global_position + Vector3.UP)
 		if not gun.is_destroyed and d < gun_mount_range and d < distance:
 			best = gun
@@ -72,9 +72,14 @@ func _hide_pilot() -> void:
 
 func mount_gun(gun: BritishAAGun) -> bool:
 	if is_operating() or mission.occupied != null or not mission.pilot.active or (gun != nearest_command() if gun is AACommandStation else gun != nearest()) or gun.is_destroyed or mission_ended(): return false
+	if gun is StElmoBofors and gun.crew.transitioning:return false
 	occupied_gun = gun
 	_hide_pilot()
 	gun.start_operation(self)
+	if not gun.mounted:
+		occupied_gun=null
+		_restore_pilot(mission.pilot.global_position)
+		return false
 	if mission.pilot.combat_enabled:
 		# Hidden seated visual, live collision capsule at the actual operator.
 		mission.pilot.global_position=gun.to_global(Vector3(0,1.45,1.55))
@@ -106,7 +111,8 @@ func find_exit(body: Node3D, radius: float) -> Vector3:
 			var query := PhysicsShapeQueryParameters3D.new()
 			query.shape = shape
 			query.transform = Transform3D(Basis.IDENTITY,position)
-			query.collision_mask = 7
+			query.collision_mask = 31
+			query.exclude = [mission.pilot.get_rid()]
 			if space.intersect_shape(query).is_empty(): return position
 	return Vector3.INF
 
