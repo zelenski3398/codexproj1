@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "1e52c0a91e5fd981c75d61739376e4b3f2c1ccfc",
-  "last_documented_commit": "edd402ff336f611eac20cbd37917d68a5cb68325",
-  "update_document": "2026-10-16-aircraft-crashes.md",
-  "review_range": "ace5393b3ebc4d37d0d9057ba4980a0df67b9711..edd402ff336f611eac20cbd37917d68a5cb68325",
+  "previous_documentation_publication": "9b3c6fa9ad3cc914a46d580c5fbdbc1c1cf70489",
+  "last_documented_commit": "3fee516556e501ef93d4768b1d3f5f555d048b14",
+  "update_document": "2026-10-16-component-health-hud.md",
+  "review_range": "edd402ff336f611eac20cbd37917d68a5cb68325..3fee516556e501ef93d4768b1d3f5f555d048b14",
   "date": "2026-10-16",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }

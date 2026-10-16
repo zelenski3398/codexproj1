@@ -4,6 +4,7 @@
 
 The original report is a frozen 50-commit audit through `588ac7b`. Later changes are recorded here with explicit commit boundaries, avoiding a repeated reconstruction of unchanged history.
 
+- [16 October 2026: live aircraft component health HUD](2026-10-16-component-health-hud.md).
 - [16 October 2026: aircraft breakup, sea impacts and Spitfire details](2026-10-16-aircraft-crashes.md).
 - [16 October 2026: St Elmo battery, departure and ground travel](2026-10-16-st-elmo-battery.md).
 - [16 October 2026: supplied-footprint Cottonera model](2026-10-16-cottonera-supplied-data.md).
