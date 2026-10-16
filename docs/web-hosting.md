@@ -142,3 +142,23 @@ Full browser takeoff/landing/dogfight feel, Firefox/Edge/Safari behaviour and
 the public GitHub Pages response remain unverified. GPU acceleration should
 perform better than the cloud's software renderer; no hardware frame-rate claim
 has been made.
+
+## Recovering a missing Pages artifact
+
+If deployment reports `No artifacts named "github-pages" were found`, start a
+fresh **Publish browser game** run from **Actions → Run workflow → main**, or
+choose **Re-run all jobs**. The build job must run to upload the game again;
+re-running only deployment cannot restore a deleted or expired artifact.
+
+The workflow explicitly uploads/deploys `github-pages`, retains that deployment
+artifact for seven days (the previous action default was one day), checks the
+exported HTML/JS/Wasm/PCK are present, and passes the upload ID to the deployment
+job. The separate `first-sortie-web` download is not the Pages deployment artifact.
+Configure Pages v6 and Deploy Pages v5 use Node.js 24; Upload Pages v5 uses the
+current upload-artifact action. GitHub-hosted Ubuntu 24.04 runners are retained.
+
+If the error is instead `Get Pages site failed ... Not Found`, first set
+**Settings → Pages → Build and deployment → Source → GitHub Actions**. That site
+enablement is a repository setting and cannot be performed using the ordinary
+workflow token alone. A workflow change does not prove deployment has succeeded;
+confirm the new run's **deploy** job is green before checking the site.
