@@ -50,8 +50,8 @@ def build(center,land,heights,h,world,prism,cube,emit,STONE,TRIM,ROOF,DARK):
   cube(x+ox,z+oz,16,16,deck,3,TRIM)
   ramp([ox,oz-26],[ox,oz-8],6,deck+.08,deck+3)
  # Raised drill court, reached by real solid steps and a parallel ramp.
- cube(x-30,z-8,44,45,deck,1.2,TRIM)
- for i in range(8):cube(x-44,z-35.4+i*.55,4,.55,deck,.15*(i+1),TRIM)
+ cube(x-30,z-8,44,46,deck,1.2,TRIM)
+ for i in range(8):cube(x-44,z-35.125+i*.55,4,.55,deck,.15*(i+1),TRIM)
  ramp([-36,-47],[-36,-31],4,deck,deck+1.2)
  return dict(deck=deck,center_world=world(center).tolist(),outline_grid=list(map(list,outline.exterior.coords)),
   gun_positions=[[*world(center+np.array(p)),deck+3] for p in pads],

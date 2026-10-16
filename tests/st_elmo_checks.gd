@@ -21,6 +21,18 @@ func run() -> void:
 	check(game.departure_spawn=="st_elmo" and mission.pilot.global_position.distance_to(StElmoLocations.position_for("st_elmo"))<2,"Departure spawns on foot inside St Elmo without remote mounting")
 	check(fort.guns.all(func(g):return not g.weapon.heavy and g.rounds_per_second==2 and g.crew.seated),"Three existing Bofors weapons start with seated British crews and 2 rounds/sec")
 	check(fort.guns.all(func(g):return not g.mounted and g.shots_fired==0),"Unoccupied fort guns remain idle, with no autonomous fire")
+	var forward:=Vector3(world.valletta_city.layout.grid_forward_xz[0],0,world.valletta_city.layout.grid_forward_xz[1])
+	var right:=Vector3(-forward.z,0,forward.x)
+	var layout:=StElmoLocations.data()
+	var center:=Vector3(layout.center_world[0],layout.deck,layout.center_world[1])
+	mission.pilot.global_position=center+right*(-36)+forward*(-47)+Vector3.UP*1.05
+	mission.pilot.velocity=Vector3.ZERO
+	mission.pilot.yaw=atan2(-forward.x,-forward.z)
+	Input.action_press("throttle_up")
+	await frames(430)
+	Input.action_release("throttle_up")
+	await frames(3)
+	check(mission.pilot.global_position.y>float(layout.deck)+2 and (mission.pilot.global_position-center).dot(forward)>-31,"Existing soldier physics walks up the courtyard ramp onto the raised floor")
 	var identity: int=world.get_instance_id()
 	var aircraft: FlightAircraft=mission.initial_aircraft
 	aircraft.take_damage(10)
