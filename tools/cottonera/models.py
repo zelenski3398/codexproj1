@@ -51,6 +51,39 @@ class Models:
             inner=poly.intersection(box(*poly.bounds))
             self.prism(inner,ground_top,ground_top+9,ROOF,True,skyline=True)
             break
+    def house(self,outline,base,roof):
+        # Retain the source courtyard holes; never randomly replace its footprint.
+        self.prism(outline,base,roof,STONE,True,skyline=True)
+        self.prism(outline,roof+.02,roof+.16,ROOF,False,True)
+        self.prism(outline.difference(outline.buffer(-.3)),roof+.16,roof+.9,TRIM,False,True)
+        for poly in polygons(outline):
+            ring=np.asarray(poly.exterior.coords)
+            for a,b in zip(ring[:-1],ring[1:]):
+                length=np.linalg.norm(b-a)
+                if length<3:continue
+                direction=(b-a)/length;normal=np.array([direction[1],-direction[0]])
+                if poly.contains(Point(*((a+b)/2+normal))):normal=-normal
+                for station in np.arange(1.8,length-1,4):
+                    mid=a+direction*station+normal*.04
+                    for floor in range(max(1,min(4,int((roof-base)/3.3)))):
+                        self.pane(mid-direction*.5,mid+direction*.5,roof-3.2*(floor+1)+.7,1.5)
+                mid=(a+b)/2+normal*.05
+                self.pane(mid-direction*.6,mid+direction*.6,base+.2,2.2,GREEN)
+                if length>9:
+                    balcony=LineString([mid-direction*.8,mid+direction*.8]).buffer(.4,cap_style=2)
+                    self.prism(balcony,base+3.3,base+4.5,GREEN,False,True)
+    def gardjola(self,footprint,base):
+        # Unplaced sentry/lookout asset, only sited from a supplied feature.
+        self.prism(footprint,base,base+1.3,STONE,True,skyline=True)
+        centre=np.array(footprint.centroid.coords[0]);radius=max(.8,min(2.5,np.sqrt(footprint.area)/2.2))
+        hut=Point(*centre).buffer(radius,resolution=2)
+        walls=hut.difference(hut.buffer(-.45))
+        self.prism(walls,base+1.3,base+4.2,STONE,True,skyline=True)
+        self.prism(hut.buffer(.2),base+4.2,base+4.7,TRIM,True,skyline=True)
+        for x,z in np.asarray(hut.exterior.coords)[:-1]:
+            direction=np.array([x,z])-centre;direction/=np.linalg.norm(direction)
+            mid=np.array([x,z])+direction*.04;tangent=np.array([-direction[1],direction[0]])
+            self.pane(mid-tangent*.3,mid+tangent*.3,base+2.3,1.1)
     def scene(self,meshes):
         scene=trimesh.Scene()
         if meshes:scene.add_geometry(trimesh.util.concatenate(meshes))
