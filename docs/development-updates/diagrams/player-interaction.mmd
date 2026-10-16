@@ -1,0 +1,15 @@
+stateDiagram-v2
+    [*] --> OnFoot
+    OnFoot --> Aircraft: E near stopped serviceable aircraft
+    Aircraft --> OnFoot: E grounded, stopped, engine off, clear exit
+    OnFoot --> Truck: E near stopped truck
+    Truck --> OnFoot: E low speed, grounded, clear exit
+    OnFoot --> AAGun: E near operational gun
+    AAGun --> OnFoot: E or occupied gun destroyed
+    OnFoot --> BatteryCommand: F near operational post
+    BatteryCommand --> OnFoot: F or E or post destroyed
+    note right of OnFoot
+        Exclusive controller ownership through MaltaMission and AirfieldInteraction.
+        No remote truck-to-gun mounting.
+        Aircraft entry is disabled in the dedicated AA-defence mission.
+    end note

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
+  "previous_documentation_publication": "c1512585b0222b13f38d7d6270090857eb2bfeb8",
+  "last_documented_commit": "e13cef200ed63bc10efca04e0342e16efc3b1cbf",
+  "update_document": "2026-10-16-random-encounters.md",
+  "review_range": "588ac7b1b37b72014b73fe679871e790e5c79145..e13cef200ed63bc10efca04e0342e16efc3b1cbf",
+  "date": "2026-10-16",
+  "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
+}

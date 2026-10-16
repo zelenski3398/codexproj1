@@ -1,5 +1,11 @@
 # Confirmed encounters and Malta Survival
 
+Malta free roam now waits for its first **C / Spawn Random Enemy** request and
+uses Stuka/CR.42/C.200/C.202 opponents. **Survival is unchanged**: stage 1 begins
+immediately and subsequent stages still require confirmation. See the
+[current encounter update](development-updates/2026-10-16-random-encounters.md).
+
+
 The original countryside encounter and all three Malta departure locations
 remain available. Malta is still one continuous environment. Its departure
 chart now has an **Encounters / Survival** dropdown; the mode is independent of

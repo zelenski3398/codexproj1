@@ -1,0 +1,17 @@
+flowchart TD
+    Data["Geographic datasets: supplied OSM coast and 2012 DTM overview"] --> Convert["EPSG:32633 local metres relative to 14.4 E / 35.93 N"]
+    Convert --> Terrain["Source elevation mesh, local grading and road refinement"]
+    Convert --> Fields["world_data.json airfield positions and chart frame"]
+    Scan["Historic road scan and landmark control points"] --> Roads["Warped road paths and terrain UV coverage"]
+    Terrain --> Roads
+    Fields --> Bases["Terrain-supported runways, parking and access"]
+    Terrain --> Cities["Terrain-fitted Valletta and Mdina approximation assets"]
+    Roads --> Cities
+    Reviewed["Locally supplied, licensed and reviewed Cottonera features"] -.-> Gated["Cottonera import/compiler - empty pending real geometry"]
+    Terrain --> Gated
+    Terrain --> World["One continuous MaltaWorld with static collision"]
+    Roads --> World
+    Bases --> World
+    Cities --> World
+    Gated --> World
+    Fields --> Map["MaltaGeography chart_uv / chart_to_world"]

@@ -3,8 +3,32 @@
 A single-player 3D **Godot 4 / GDScript** flight prototype set at a fictional RAF
 countryside airfield in 1940, or a continuous 1:1 Malta island world. Choose a **Spitfire Mk I** or **Gloster Sea
 Gladiator**, take off, bank over the fields, return, land and brake. Both have
-guns, component damage, health/damage effects, and a flying Ju 87-inspired opponent that shoots
-back. All aircraft are original procedural mesh placeholders. No paid assets.
+guns, component damage and health/damage effects. Countryside starts with a flying
+Ju 87-inspired opponent; Malta free roam starts peacefully until you request combat. All aircraft are original procedural mesh placeholders. No paid assets.
+
+## Development history and update boundary
+
+**Latest documented commit:** [`e13cef200ed63bc10efca04e0342e16efc3b1cbf`](https://github.com/zelenski3398/codexproj1/commit/e13cef200ed63bc10efca04e0342e16efc3b1cbf)
+
+Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
+[latest encounter/aircraft update](docs/development-updates/2026-10-16-random-encounters.md)
+and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
+The original report remains frozen at `588ac7b`; later changes are tracked in the
+[incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
+
+For the next documentation update, verify this boundary is an ancestor, then inspect
+only commits after it:
+
+```sh
+git merge-base --is-ancestor e13cef200ed63bc10efca04e0342e16efc3b1cbf HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' e13cef200ed63bc10efca04e0342e16efc3b1cbf..HEAD
+git diff --stat e13cef200ed63bc10efca04e0342e16efc3b1cbf..HEAD
+```
+
+Append a dated, evidence-linked update and advance this SHA to the newest inspected
+source commit. The commit publishing this README is naturally outside its own
+source boundary; review it as documentation maintenance next time. Do not restart
+the original full-history reconstruction unless earlier evidence changes.
 
 ## Browser version and free hosting
 
@@ -50,7 +74,11 @@ existing physics, components, projectiles, effects and wrecks. Each has its own
 editable configuration and procedural silhouette. The bomber follows a real
 flight route and fires defensively; its arrival begins a falling-bomb sequence.
 The CR.42 is available to the spawning roster and as a configurable escort
-variation. Existing modes still default to Stukas with unchanged stage counts.
+variation. Malta free roam randomly selects a Stuka, CR.42, C.200 or the new
+**Macchi C.202 Folgore** when you request an encounter. Survival and scripted
+missions retain their existing aircraft rosters and stage counts. The C.202 has
+a distinct inline-engine nose, enclosed canopy and radiator, with higher
+power/speed tuning than the C.200; these are original procedural placeholders.
 
 See [mission controls, definitions, timing, tests and approximations](docs/valletta-interception.md).
 
@@ -61,7 +89,15 @@ radio; returning to the menu stops it. See [radio audio and checks](docs/audio.m
 
 ## Continuous encounters and Malta Survival
 
-Destroy the Stuka, then click **Confirm / Spawn Next Enemy** or press **C**.
+Malta **Free Roam** starts with **no enemy aircraft**. Click **Spawn Random Enemy**
+or press **C** when you want combat. One hostile is chosen randomly from the
+**Ju 87 Stuka, Fiat CR.42 Falco, Macchi C.200 Saetta and Macchi C.202 Folgore**.
+After destroying it, click **Spawn Next Random Enemy** or press **C** again.
+Repeated presses cannot add another enemy while one is active. Full retry returns
+to peaceful free roam; aircraft boarding and map selection do not auto-spawn foes.
+
+The countryside retains its initial Stuka; after a kill, click
+**Confirm / Spawn Next Enemy** or press **C**.
 This keeps the same running world and aircraft, including damage, fuel, engine,
 velocity and projectiles. Confirmation does not pause flight; hold your normal
 flight controls while pressing C. R remains an explicit full restart.

@@ -1,0 +1,16 @@
+flowchart TD
+    W["WingGuns fires from actual ports"] --> P["ProjectilePool swept collision"]
+    P --> H["AircraftHitbox.receive_projectile_hit"]
+    H --> D["AircraftDamage.apply_damage and component multipliers"]
+    D --> C["Component integrity and optional fuel-hazard rolls"]
+    C --> Critical{"Mechanical degradation or tank hazard?"}
+    Critical -->|Yes| Failure["Reduced lift, drag balance, power or controls / fuel leakage or fire"]
+    Critical -->|No| Normal["Retain existing component performance"]
+    D --> Hull["AircraftHealth updates hull HP"]
+    Hull --> State{"HP depleted?"}
+    State -->|Yes| Dead["FlightAircraft._destroy disables engine commands and guns once"]
+    State -->|No| Live["Continue current aircraft life"]
+    Failure --> Physics["Next shared flight-force integration"]
+    Normal --> Physics
+    Live --> Physics
+    Dead --> Wreck["Passive physics and enemy ground-impact wreck lifecycle"]

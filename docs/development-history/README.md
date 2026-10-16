@@ -4,6 +4,10 @@
 
 This record follows all **50 reachable commits** from `64406b082d49576bf5c0ec8c95367530dab9ab2c` (7 October 2026, 16:24:09 UTC) to the snapshot (16 October 2026, 06:59:46 UTC). Git is the historical evidence; the snapshot source establishes current behaviour. The first commit already contains a playable prototype; no earlier design or coding history is available here.
 
+## Later documented changes
+
+See the [incremental updates](../development-updates/README.md) and [supplied reference diagrams](../development-updates/reference-diagrams.md). These supplements do not change the original 50-commit audit boundary. The root README records the newest inspected commit for subsequent updates.
+
 ## Read the document
 
 - [Consolidated master document](../WWII-Malta-Development-Complete.md): essential history and architecture, with links to deeper chapters.

@@ -1,5 +1,12 @@
 # Wings Over Malta: one continuous mission
 
+**Current free-roam spawning:** Malta starts peacefully. Press **C** or click
+**Spawn Random Enemy** for one Stuka, CR.42, C.200 or C.202. Further enemies
+require another confirmation after the current loss; retry starts peaceful again.
+Survival and authored missions retain their own initial spawns. See the
+[16 October encounter update](development-updates/2026-10-16-random-encounters.md).
+
+
 Choose **MAP: COUNTRYSIDE · CHOOSE MALTA** on the startup aircraft screen.
 The original countryside still uses **Fly** and its original immediate-flight
 controls. Malta opens a north-up chart with **RAF Ta' Qali**, **RAF Luqa**, and
@@ -102,7 +109,7 @@ water impact, buoyancy or ditching system.
 - Enemy AI retains its existing physical pilot and guns. Malta uses real
   terrain ray heights, safe airborne spawn, local patrol centre and no 5 km
   countryside boundary. Established pursuit can extend across the island
-  world. While the pilot is on foot it patrols with no active player target;
+  world. Once requested in free roam, an enemy patrols without an active player target while the pilot is on foot;
   boarding updates the target without respawning/resetting the enemy.
 
 Edit `assets/malta/world_data.json` for field coordinates, strip lengths,

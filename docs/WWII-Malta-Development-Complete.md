@@ -4,6 +4,8 @@
 
 This consolidated document gives the essential evolution, architecture and present limitations. The [chapter set](development-history/README.md) contains detailed system behaviour, diffs, formulas, source links and the full commit index; it is the maintained technical reference behind this overview.
 
+Current changes after this frozen snapshot are recorded in the [incremental update journal](development-updates/README.md), including the [four supplied diagram concepts](development-updates/reference-diagrams.md). The [root README](../README.md#development-history-and-update-boundary) records the latest documented source SHA.
+
 ## Contents
 
 1. [Evidence and coverage](#evidence-and-coverage)
