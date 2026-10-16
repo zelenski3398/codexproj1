@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "fae5faae1276630abf99fc70e06ad0596728be3e",
-  "last_documented_commit": "fbfab9dd1bf49bfdd61d893021a2e568f887c45d",
-  "update_document": "2026-10-16-enemy-flyby-audio.md",
-  "review_range": "e13cef200ed63bc10efca04e0342e16efc3b1cbf..fbfab9dd1bf49bfdd61d893021a2e568f887c45d",
+  "previous_documentation_publication": "b137fd85e16f7dd64271241e9186a13c2ca88e1d",
+  "last_documented_commit": "73344f14724c745f3fd822fad36f02bfe0926896",
+  "update_document": "2026-10-16-cottonera-supplied-data.md",
+  "review_range": "fbfab9dd1bf49bfdd61d893021a2e568f887c45d..73344f14724c745f3fd822fad36f02bfe0926896",
   "date": "2026-10-16",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }

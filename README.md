@@ -8,7 +8,7 @@ Ju 87-inspired opponent; Malta free roam starts peacefully until you request com
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`fbfab9dd1bf49bfdd61d893021a2e568f887c45d`](https://github.com/zelenski3398/codexproj1/commit/fbfab9dd1bf49bfdd61d893021a2e568f887c45d)
+**Latest documented commit:** [`73344f14724c745f3fd822fad36f02bfe0926896`](https://github.com/zelenski3398/codexproj1/commit/73344f14724c745f3fd822fad36f02bfe0926896)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
 [latest encounter/aircraft update](docs/development-updates/2026-10-16-random-encounters.md)
@@ -20,9 +20,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor fbfab9dd1bf49bfdd61d893021a2e568f887c45d HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' fbfab9dd1bf49bfdd61d893021a2e568f887c45d..HEAD
-git diff --stat fbfab9dd1bf49bfdd61d893021a2e568f887c45d..HEAD
+git merge-base --is-ancestor 73344f14724c745f3fd822fad36f02bfe0926896 HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' 73344f14724c745f3fd822fad36f02bfe0926896..HEAD
+git diff --stat 73344f14724c745f3fd822fad36f02bfe0926896..HEAD
 ```
 
 Append a dated, evidence-linked update and advance this SHA to the newest inspected
@@ -781,8 +781,8 @@ All Malta environments now include an original dense limestone city, courtyard s
 
 All Malta environments also include an original georeferenced Mdina hilltop city with battered bastions, narrow streets, a working gate passage and St Paul's Cathedral. Open **M** and head southwest from Ta' Qali toward **Mdina**. See the [placement, previews and validation guide](docs/mdina-city.md).
 
-## Cottonera preparation — geographic data pending
+## Cottonera — mapped 3D scenery
 
-The source-gated Three Cities region, local OSM/GeoJSON importer and original unplaced architectural templates are prepared. **Birgu, Senglea and Bormla are not yet reconstructed in the playable map:** the requested reference/data sites were blocked, and the task prohibits invented geography. See [Cottonera status, asset review and required datasets](docs/cottonera-region.md).
+Cottonera now uses the supplied OSM footprint dataset: 2,575 buildings, 38 fortification features, Fort St Angelo, churches and persistent collision across the continuous Malta world. See [previews, placement, provenance and historical limitations](docs/cottonera-region.md).
 
 Enemy aircraft now use [distance-dependent engine roar and bounded Doppler](docs/enemy-flyby-audio.md). The separate rushing-air layer is ready for a suitable mono loop; that recording is still needed.
