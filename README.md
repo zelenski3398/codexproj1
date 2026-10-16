@@ -6,6 +6,16 @@ Gladiator**, take off, bank over the fields, return, land and brake. Both have
 guns, component damage and health/damage effects. Countryside starts with a flying
 Ju 87-inspired opponent; Malta free roam starts peacefully until you request combat. All aircraft are original procedural mesh placeholders. No paid assets.
 
+## Aircraft crash effects and Spitfire appearance
+
+Fatal ground impacts break the aircraft's actual model into eight simulated fragments, with an explosion, smoke and positional impact sound. Sea impacts produce a splash and a force-driven plunge; the aircraft's wheels no longer rest on the Mediterranean collision plane. Safe landings retain the existing suspension and flight controls. Existing reset/retry clears wreckage and restores the aircraft.
+
+The Spitfire has reference-inspired dark green/grey paint, pale undersides, upper-wing red/blue roundels, fuselage roundels, code letters, framed canopy, six exhausts per side, panel lines, yellow leading edges and an aerial wire. Its eight wing guns and flight tuning are unchanged. This remains an original procedural game model.
+
+Tuning lives in `scripts/aircraft_impact.gd`: debris lifetime/speed, water resistance, sinking speed and crash audio. Fragments are cosmetic, capped at eight per aircraft and 64 across the world. They do not apply secondary damage. Water uses a simplified flooded-airframe model rather than fluid simulation.
+
+Checks: `godot --headless --path . --fixed-fps 120 --script tests/aircraft_impact_checks.gd`. Render fixtures: `godot --path . --script tests/aircraft_impact_capture.gd` (writes `/tmp/aircraft-previews`). After `bash tools/build_web.sh`, run `node tools/aircraft_impact_web_smoke.cjs` for actual browser breakup/reset checks.
+
 ## Development history and update boundary
 
 **Latest documented commit:** [`ace5393b3ebc4d37d0d9057ba4980a0df67b9711`](https://github.com/zelenski3398/codexproj1/commit/ace5393b3ebc4d37d0d9057ba4980a0df67b9711)

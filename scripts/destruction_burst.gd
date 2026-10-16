@@ -2,6 +2,9 @@ class_name DestructionBurst
 extends Node3D
 ## One cosmetic impact burst. CPU meshes/billboard smoke support Compatibility.
 ## Owned by the session, so it can linger after the wreck and clear on restart.
+@export var strength: float = 1.0
+var visual_enabled: bool = true
+var water_impact: bool = false
 var elapsed: float = 0
 var particles: Array[MeshInstance3D] = []
 var materials: Array[StandardMaterial3D] = []
@@ -10,7 +13,9 @@ var lifetimes: Array[float] = []
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 func _ready() -> void:
-	rng.seed = 1943
+	if not visual_enabled:
+		return
+	rng.randomize()
 	var gradient: Gradient = Gradient.new()
 	gradient.offsets = PackedFloat32Array([0, 0.3, 1])
 	gradient.colors = PackedColorArray([Color.WHITE, Color.WHITE, Color(1, 1, 1, 0)])
@@ -42,7 +47,7 @@ func _ready() -> void:
 		particle.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		particles.append(particle)
 		materials.append(mat)
-		velocities.append(Vector3(rng.randf_range(-6, 6), rng.randf_range(2, 10), rng.randf_range(-6, 6)))
+		velocities.append(Vector3(rng.randf_range(-6, 6), rng.randf_range(2, 10), rng.randf_range(-6, 6)) * strength)
 		lifetimes.append(rng.randf_range(1.5, 2.4) if smoke else rng.randf_range(0.3, 0.6))
 	add_to_group("session_impact_effects")
 
@@ -55,8 +60,11 @@ func _physics_process(delta: float) -> void:
 			continue
 		particles[i].position += velocities[i] * delta
 		velocities[i] *= exp(-delta * 2)
-		particles[i].scale = Vector3.ONE * lerpf(0.8, 4.5 if i >= 12 else 2.0, progress)
+		particles[i].scale = Vector3.ONE * lerpf(0.8, (4.5 if i >= 12 else 2.0) * strength, progress)
 		var color: Color = Color(0.12, 0.13, 0.14) if i >= 12 else Color(1, lerpf(0.8, 0.15, progress), 0.04)
+		if water_impact:
+			color = Color(0.68, 0.85, 0.89)
+			velocities[i].y -= delta * 12
 		color.a = (1 - progress) * 0.8
 		materials[i].albedo_color = color
 	if elapsed > 2.5:

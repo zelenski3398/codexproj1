@@ -164,6 +164,7 @@ func _show_player_impact(point: Vector3) -> void:
 	if phase == "CANCELLED" or is_queued_for_deletion():
 		return
 	var burst: DestructionBurst = DestructionBurst.new()
+	burst.visual_enabled = false
 	effects.add_child(burst)
 	burst.global_position = point
 	player_impact_count += 1

@@ -233,6 +233,7 @@ func _on_enemy_ground_impact(point: Vector3, source: EnemyAircraft) -> void:
 	if not encounters.wrecks.has(source) or _enemy_restart_queued:
 		return
 	var burst: DestructionBurst = DestructionBurst.new()
+	burst.visual_enabled = false
 	encounter_effects.add_child(burst)
 	burst.global_position = point
 

@@ -48,7 +48,7 @@ func integrate(state: PhysicsDirectBodyState3D, aircraft: RigidBody3D, brakes: b
 		var offset := basis * anchors[i]
 		var origin := state.transform.origin + offset
 		var reach := travel[i] + radii[i]
-		var query := PhysicsRayQueryParameters3D.create(origin + basis.y * 0.08, origin - basis.y * reach, 1, [aircraft.get_rid()])
+		var query := PhysicsRayQueryParameters3D.create(origin + basis.y * 0.08, origin - basis.y * reach, 1, [aircraft.get_rid()] + aircraft.impact_effects.water_rids)
 		var hit := space.intersect_ray(query)
 		if hit.is_empty():
 			continue

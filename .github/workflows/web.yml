@@ -24,6 +24,7 @@ jobs:
           godot --headless --path . --editor --import --quit
           godot --headless --path . --fixed-fps 120 --script res://tests/keyboard_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/weapons_checks.gd
+          godot --headless --path . --fixed-fps 120 --script res://tests/aircraft_impact_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/italian_aircraft_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/malta_encounter_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/interception_checks.gd

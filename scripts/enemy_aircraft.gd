@@ -3,7 +3,7 @@ extends FlightAircraft
 ## Separate visual, shared flight/health/guns, and a one-shot wreck lifecycle.
 signal ground_impact(point: Vector3)
 signal wreck_removed
-@export var wreck_remove_delay: float = 4.0
+@export var wreck_remove_delay: float = 12.0
 var aircraft_kind: String = "stuka"
 var marker_name: String = "STUKA"
 var encounter_ace: bool = false
@@ -93,7 +93,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	super._integrate_forces(state)
 	if not is_destroyed or impact_started:
 		return
-	var grounded: bool = gear.contact_count > 0
+	var grounded: bool = gear.contact_count > 0 or impact_effects.water
 	for i in range(state.get_contact_count()):
 		var collider: Object = state.get_contact_collider_object(i)
 		if collider is CollisionObject3D and (collider.collision_layer & 1) != 0:
@@ -107,7 +107,8 @@ func _finish_impact(point: Vector3) -> void:
 		return
 	impact_count += 1
 	damage_effects.clear()
-	freeze = true # after contact only; airborne wrecks remain force-driven
+	impact_effects.start(impact_effects.water)
+	freeze = not impact_effects.water # Water wrecks continue sinking under forces.
 	ground_impact.emit(point)
 
 func _physics_process(delta: float) -> void:

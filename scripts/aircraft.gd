@@ -44,6 +44,7 @@ var guns: WingGuns
 @export var damage_profile: AircraftDamageProfile
 var components: AircraftDamage
 var damage_effects: DamageEffects
+var impact_effects: AircraftImpact
 var aircraft_audio: AircraftAudio
 var is_destroyed: bool = false
 var airspeed: float = 0.0
@@ -112,6 +113,10 @@ func _ready() -> void:
 	aircraft_audio.name = "AircraftAudio"
 	aircraft_audio.aircraft = self
 	add_child(aircraft_audio)
+	impact_effects = AircraftImpact.new()
+	impact_effects.aircraft = self
+	impact_effects.name = "CrashAndWaterImpact"
+	add_child(impact_effects)
 	var collider := CollisionShape3D.new()
 	var shape := CapsuleShape3D.new()
 	shape.radius = 0.46
@@ -181,6 +186,8 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		gear.last_notice = ""
 		is_crashed = false
 		is_destroyed = false
+		impact_effects.reset()
+		freeze = false
 		components.reset()
 		health.reset()
 		guns.reset()
@@ -190,6 +197,8 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		airborne_time = 0.0
 		reset_pending = false
 		reset_completed.emit()
+		return
+	if impact_effects.integrate(state):
 		return
 	var dt := state.step
 	components.advance(dt)
@@ -219,6 +228,8 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 			if not gear.extended or impact > 9.0 or gear.contact_count == 0:
 				_crash("Airframe struck the ground" if gear.extended else "Landing gear was retracted")
 				break
+	if is_destroyed and not impact_effects.started and (gear.contact_count > 0 or state.get_contact_count() > 0):
+		impact_effects.start()
 	if is_crashed:
 		state.apply_central_force(-velocity * mass * 2.0)
 		state.apply_torque(-state.angular_velocity * 20000.0)
@@ -283,6 +294,7 @@ func _crash(reason: String) -> void:
 	is_crashed = true
 	crash_reason = reason
 	pilot.throttle = 0.0
+	impact_effects.start(impact_effects.water)
 	crashed.emit(reason)
 
 func _process(delta: float) -> void:

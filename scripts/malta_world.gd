@@ -34,6 +34,7 @@ func _ready() -> void:
 	# the display follows the active camera in XZ, leaving physics unrestricted.
 	var water: StaticBody3D = StaticBody3D.new()
 	water.name = "MediterraneanSea"
+	water.add_to_group("aircraft_water")
 	add_child(water)
 	var collision: CollisionShape3D = CollisionShape3D.new()
 	collision.shape = WorldBoundaryShape3D.new()
