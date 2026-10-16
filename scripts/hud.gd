@@ -21,6 +21,7 @@ var enemy_health_widget: VBoxContainer
 var enemy_hp_label: Label
 var enemy_hp_bar: ProgressBar
 var enemy_hp_fill: StyleBoxFlat
+var damage_display: AircraftDamageHUD
 var speed_label: Label
 var altitude_label: Label
 var throttle_label: Label
@@ -111,8 +112,8 @@ func _ready() -> void:
 	footer.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	footer.offset_left = 38
 	footer.offset_right = -38
-	footer.offset_top = -128
-	footer.offset_bottom = -30
+	footer.offset_top = -240
+	footer.offset_bottom = -142
 	root.add_child(footer)
 	var footer_box := VBoxContainer.new()
 	footer_box.add_theme_constant_override("separation", 12)
@@ -126,12 +127,21 @@ func _ready() -> void:
 	altitude_label = _instrument(instruments, "ABOVE GROUND", "0", "METRES")
 	throttle_label = _instrument(instruments, "ENGINE", "0", "% THROTTLE")
 	gear_label = _instrument(instruments, "UNDERCARRIAGE", "DOWN", "THREE WHEELS")
+	damage_display = AircraftDamageHUD.new()
+	damage_display.name = "AircraftComponentHealth"
+	damage_display.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	damage_display.offset_left = 38
+	damage_display.offset_right = -38
+	damage_display.offset_top = -124
+	damage_display.offset_bottom = -18
+	root.add_child(damage_display)
+	damage_display.refresh(aircraft.components)
 	var strip := PanelContainer.new()
 	strip.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
 	strip.offset_left = -402
 	strip.offset_right = -38
-	strip.offset_top = -355
-	strip.offset_bottom = -155
+	strip.offset_top = -467
+	strip.offset_bottom = -267
 	strip.add_theme_stylebox_override("panel", _style(PANEL))
 	root.add_child(strip)
 	var list := VBoxContainer.new()
@@ -257,6 +267,7 @@ func _process(delta: float) -> void:
 		return
 	if not get_tree().paused:
 		elapsed += delta
+	damage_display.refresh(aircraft.components)
 	speed_label.text = "%03d" % roundi(aircraft.airspeed * 3.6)
 	altitude_label.text = "%04d" % roundi(aircraft.altitude)
 	throttle_label.text = "%d" % roundi(aircraft.pilot.throttle * 100.0)

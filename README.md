@@ -6,6 +6,12 @@ Gladiator**, take off, bank over the fields, return, land and brake. Both have
 guns, component damage and health/damage effects. Countryside starts with a flying
 Ju 87-inspired opponent; Malta free roam starts peacefully until you request combat. All aircraft are original procedural mesh placeholders. No paid assets.
 
+## Live aircraft component health
+
+The bottom of the flight screen shows a colour-coded top-down aircraft diagram and individual integrity percentages/bars for the fuselage, left/right wings, engine, cockpit, rudder, elevator and fuel tank. Healthy parts are green, half-health parts amber, and failed parts red, with continuous colour changes between them. Values use each component's own maximum integrity, independently of the overall HP bar. Reset and aircraft switching refresh the display automatically. The panel does not capture flight input.
+
+For testing, use the existing F3 inspector to damage a selected part. H changes overall HP and does not simulate a specific component hit. Native checks: `godot --headless --path . --fixed-fps 120 --script tests/aircraft_damage_hud_checks.gd`.
+
 ## Aircraft crash effects and Spitfire appearance
 
 Fatal ground impacts break the aircraft's actual model into eight simulated fragments, with an explosion, smoke and positional impact sound. Sea impacts produce a splash and a force-driven plunge; the aircraft's wheels no longer rest on the Mediterranean collision plane. Safe landings retain the existing suspension and flight controls. Existing reset/retry clears wreckage and restores the aircraft.

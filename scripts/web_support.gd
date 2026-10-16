@@ -143,6 +143,9 @@ func _process(delta: float) -> void:
 		state.audio.gun_gain = aircraft.guns.weapon_audio.gain
 		state.audio.audible_salvos = aircraft.guns.weapon_audio.audible_salvos
 		state.merge({"throttle": aircraft.pilot.throttle, "hp": aircraft.health.hp, "shots": aircraft.guns.pool.statistics.shots, "speed": aircraft.airspeed, "altitude": aircraft.altitude, "gear": aircraft.gear.extended, "fixed_gear": not aircraft.gear.retractable, "destroyed": aircraft.is_destroyed, "crashed": aircraft.is_crashed, "debug_visible": session.component_debug.enabled if is_instance_valid(session.component_debug) else false, "fire_guide": session.hud.fire_key_label if is_instance_valid(session.hud) else "F", "smoke": aircraft.damage_effects.emitting})
+		state.component_hud = {"visible": session.hud.damage_display.is_visible_in_tree(), "parts": session.hud.damage_display.ratios, "colors": {}}
+		for id in session.hud.damage_display.ratios:
+			state.component_hud.colors[id] = session.hud.damage_display.fills[id].bg_color.to_html(false)
 		state.impact = {"started":aircraft.impact_effects.started,"water":aircraft.impact_effects.water,"fragments":aircraft.impact_effects.fragments.size(),"model_visible":aircraft.model.visible}
 		state.enemy_count = session.encounters.active.size()
 		state.enemy_hp = session.enemy.health.hp if is_instance_valid(session.enemy) else 0
