@@ -1,0 +1,39 @@
+{
+  "source": "GeoNames cities500, bundled in geonamescache 3.0.2",
+  "package_sha256": "b830e8942f2d58c7e68782dcf4dff2ffe8c4104a35ee881ed1ad4023cefcdba4",
+  "retrieval_date": "2026-10-16",
+  "places": [
+    {
+      "id": "birgu",
+      "geonameid": 2562966,
+      "name": "Vittoriosa",
+      "longitude": 14.51765,
+      "latitude": 35.89157,
+      "countrycode": "MT"
+    },
+    {
+      "id": "senglea",
+      "geonameid": 2562792,
+      "name": "Senglea",
+      "longitude": 14.51588,
+      "latitude": 35.88777,
+      "countrycode": "MT"
+    },
+    {
+      "id": "bormla",
+      "geonameid": 2563181,
+      "name": "Cospicua",
+      "longitude": 14.5275,
+      "latitude": 35.88556,
+      "countrycode": "MT"
+    },
+    {
+      "id": "kalkara",
+      "geonameid": 2562830,
+      "name": "Kalkara",
+      "longitude": 14.53278,
+      "latitude": 35.88917,
+      "countrycode": "MT"
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "status": "awaiting_geodata",
+  "crs": "EPSG:32633",
+  "projection_origin_lon_lat": [
+    14.4,
+    35.93
+  ],
+  "units": "metres",
+  "regions": [
+    {
+      "id": "birgu",
+      "name": "Birgu (Vittoriosa)",
+      "geonameid": 2562966,
+      "lon_lat": [
+        14.51765,
+        35.89157
+      ],
+      "position": [
+        10591.979753144202,
+        0.691039079310911,
+        4321.25686090719
+      ],
+      "on_land": true,
+      "status": "awaiting_geodata",
+      "chunks": []
+    },
+    {
+      "id": "senglea",
+      "name": "Isla (Senglea)",
+      "geonameid": 2562792,
+      "lon_lat": [
+        14.51588,
+        35.88777
+      ],
+      "position": [
+        10430.146243111521,
+        1.619542814262715,
+        4741.939510438591
+      ],
+      "on_land": true,
+      "status": "awaiting_geodata",
+      "chunks": []
+    },
+    {
+      "id": "bormla",
+      "name": "Bormla (Cospicua)",
+      "geonameid": 2563181,
+      "lon_lat": [
+        14.5275,
+        35.88556
+      ],
+      "position": [
+        11477.737667675363,
+        31.488627593123965,
+        4992.191263840068
+      ],
+      "on_land": true,
+      "status": "awaiting_geodata",
+      "chunks": []
+    },
+    {
+      "id": "kalkara",
+      "name": "Kalkara",
+      "geonameid": 2562830,
+      "lon_lat": [
+        14.53278,
+        35.88917
+      ],
+      "position": [
+        11956.217158925778,
+        32.19948074386588,
+        4594.083694118075
+      ],
+      "on_land": true,
+      "status": "awaiting_geodata",
+      "chunks": []
+    }
+  ],
+  "source_hashes": {
+    "terrain.glb": "4f5137ce21c038f1af815a853578b32e9501e5d382fb67ac74f6df169b2f39f8",
+    "world_data.json": "6bb3be486b754cb72b8afd785acc45f23fa32557c5e571ca412a384ff3618bc1",
+    "roads/world_paths.json": "72a6aefc3a6983ff7ebecfea80c47386ed1549e94caa3db1fd5130b48c659319",
+    "source/Malta-Coastline.geojson": "d1c45d33dc36936bc41f3c4cf69fd84f1a55ad7ced377c092db778c3c36d19c5"
+  },
+  "building_count": 0,
+  "fortification_count": 0,
+  "collision_chunks": 0,
+  "lod_levels": 3,
+  "missing_geometry": true
+}

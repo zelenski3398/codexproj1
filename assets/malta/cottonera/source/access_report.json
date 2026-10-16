@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-16",
+  "blocked": [
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:Santa_Margherita_%26_Cottonera_Lines_map.png",
+      "result": "HTTPS proxy CONNECT: 403 Forbidden"
+    },
+    {
+      "url": "https://www.kottonera.mt/history/",
+      "result": "HTTPS proxy CONNECT: 403 Forbidden"
+    },
+    {
+      "url": "https://overpass-api.de/api/interpreter",
+      "result": "HTTPS proxy CONNECT: 403 Forbidden"
+    },
+    {
+      "url": "https://overpass.kumi.systems/api/interpreter",
+      "result": "HTTPS proxy CONNECT: 403 Forbidden"
+    },
+    {
+      "url": "https://api.openstreetmap.org/api/0.6/map",
+      "result": "HTTPS proxy CONNECT: 403 Forbidden"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Cottonera_Lines",
+      "result": "HTTPS proxy CONNECT: 403 Forbidden"
+    },
+    {
+      "url": "https://commons.wikimedia.org/w/api.php",
+      "result": "HTTPS proxy CONNECT: 403 Forbidden"
+    }
+  ],
+  "available": [
+    "Existing supplied OSM coastline",
+    "Existing imported Malta terrain, including transformed road patches",
+    "Existing game road network",
+    "GeoNames named place points via PyPI package"
+  ],
+  "missing": [
+    "Historic/reference fortification map image and metadata",
+    "Building footprints",
+    "Local roads and pedestrian streets",
+    "Fort St Angelo footprint/terrace plan",
+    "Separate Cottonera and Santa Margherita alignments/gates",
+    "Historic dock/dockyard/quay plans",
+    "Landmark footprints and locations",
+    "Historical review of modern baseline"
+  ]
+}
