@@ -23,3 +23,12 @@ Landcover/coastal masks derive land coverage from the supplied terrain and retai
 the above DTM/coastline attribution and licenses. The complete derivation script
 and source data are included in the repository. These are not 1940 cadastral data,
 photographic textures or a verified reconstruction of Valletta's building layout.
+
+Cottonera urban geometry: derived from user-supplied Overpass Turbo GeoJSON,
+OpenStreetMap contributors, source timestamp 2026-10-16T17:43:36Z, ODbL 1.0.
+https://www.openstreetmap.org/copyright
+https://opendatacommons.org/licenses/odbl/1-0/
+Normalized source database, selection script and derivation are included in the
+repository under assets/malta/cottonera and tools/prepare_supplied_cottonera.py.
+Building/landmark details are original schematic interpretations; modern OSM
+footprints do not establish a verified 1942 reconstruction.

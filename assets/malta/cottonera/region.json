@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "status": "awaiting_geodata",
+  "status": "partial_geodata",
   "crs": "EPSG:32633",
   "projection_origin_lon_lat": [
     14.4,
@@ -22,8 +22,120 @@
         4321.25686090719
       ],
       "on_land": true,
-      "status": "awaiting_geodata",
-      "chunks": []
+      "status": "partial_geodata",
+      "chunks": [
+        {
+          "collision": "res://assets/malta/cottonera/birgu_56_24_collision.glb",
+          "far": "res://assets/malta/cottonera/birgu_56_24_far.glb",
+          "mid": "res://assets/malta/cottonera/birgu_56_24_mid.glb",
+          "near": "res://assets/malta/cottonera/birgu_56_24_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/birgu_57_24_collision.glb",
+          "far": "res://assets/malta/cottonera/birgu_57_24_far.glb",
+          "mid": "res://assets/malta/cottonera/birgu_57_24_mid.glb",
+          "near": "res://assets/malta/cottonera/birgu_57_24_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/birgu_58_23_collision.glb",
+          "far": "res://assets/malta/cottonera/birgu_58_23_far.glb",
+          "mid": "res://assets/malta/cottonera/birgu_58_23_mid.glb",
+          "near": "res://assets/malta/cottonera/birgu_58_23_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/birgu_58_24_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/birgu_58_25_collision.glb",
+          "far": "res://assets/malta/cottonera/birgu_58_25_far.glb",
+          "mid": "res://assets/malta/cottonera/birgu_58_25_mid.glb",
+          "near": "res://assets/malta/cottonera/birgu_58_25_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/birgu_59_23_collision.glb",
+          "far": "res://assets/malta/cottonera/birgu_59_23_far.glb",
+          "mid": "res://assets/malta/cottonera/birgu_59_23_mid.glb",
+          "near": "res://assets/malta/cottonera/birgu_59_23_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/birgu_59_24_collision.glb",
+          "far": "res://assets/malta/cottonera/birgu_59_24_far.glb",
+          "mid": "res://assets/malta/cottonera/birgu_59_24_mid.glb",
+          "near": "res://assets/malta/cottonera/birgu_59_24_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/birgu_59_25_collision.glb",
+          "far": "res://assets/malta/cottonera/birgu_59_25_far.glb",
+          "mid": "res://assets/malta/cottonera/birgu_59_25_mid.glb",
+          "near": "res://assets/malta/cottonera/birgu_59_25_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/birgu_60_24_collision.glb",
+          "far": "res://assets/malta/cottonera/birgu_60_24_far.glb",
+          "mid": "res://assets/malta/cottonera/birgu_60_24_mid.glb",
+          "near": "res://assets/malta/cottonera/birgu_60_24_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/birgu_60_25_collision.glb",
+          "far": "res://assets/malta/cottonera/birgu_60_25_far.glb",
+          "mid": "res://assets/malta/cottonera/birgu_60_25_mid.glb",
+          "near": "res://assets/malta/cottonera/birgu_60_25_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/birgu_60_26_collision.glb",
+          "far": "res://assets/malta/cottonera/birgu_60_26_far.glb",
+          "mid": "res://assets/malta/cottonera/birgu_60_26_mid.glb",
+          "near": "res://assets/malta/cottonera/birgu_60_26_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/birgu_61_23_collision.glb",
+          "far": "res://assets/malta/cottonera/birgu_61_23_far.glb",
+          "mid": "res://assets/malta/cottonera/birgu_61_23_mid.glb",
+          "near": "res://assets/malta/cottonera/birgu_61_23_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/birgu_61_24_collision.glb",
+          "far": "res://assets/malta/cottonera/birgu_61_24_far.glb",
+          "mid": "res://assets/malta/cottonera/birgu_61_24_mid.glb",
+          "near": "res://assets/malta/cottonera/birgu_61_24_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/birgu_61_25_collision.glb",
+          "far": "res://assets/malta/cottonera/birgu_61_25_far.glb",
+          "mid": "res://assets/malta/cottonera/birgu_61_25_mid.glb",
+          "near": "res://assets/malta/cottonera/birgu_61_25_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/birgu_61_26_collision.glb",
+          "far": "res://assets/malta/cottonera/birgu_61_26_far.glb",
+          "mid": "res://assets/malta/cottonera/birgu_61_26_mid.glb",
+          "near": "res://assets/malta/cottonera/birgu_61_26_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/birgu_62_22_collision.glb",
+          "far": "res://assets/malta/cottonera/birgu_62_22_far.glb",
+          "mid": "res://assets/malta/cottonera/birgu_62_22_mid.glb",
+          "near": "res://assets/malta/cottonera/birgu_62_22_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/birgu_62_23_collision.glb",
+          "far": "res://assets/malta/cottonera/birgu_62_23_far.glb",
+          "mid": "res://assets/malta/cottonera/birgu_62_23_mid.glb",
+          "near": "res://assets/malta/cottonera/birgu_62_23_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/birgu_62_24_collision.glb",
+          "far": "res://assets/malta/cottonera/birgu_62_24_far.glb",
+          "mid": "res://assets/malta/cottonera/birgu_62_24_mid.glb",
+          "near": "res://assets/malta/cottonera/birgu_62_24_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/birgu_62_25_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/birgu_63_23_near.glb"
+        }
+      ]
     },
     {
       "id": "senglea",
@@ -39,8 +151,273 @@
         4741.939510438591
       ],
       "on_land": true,
-      "status": "awaiting_geodata",
-      "chunks": []
+      "status": "partial_geodata",
+      "chunks": [
+        {
+          "near": "res://assets/malta/cottonera/senglea_54_27_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/senglea_54_28_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_54_29_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_54_29_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_54_29_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_54_29_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/senglea_54_30_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/senglea_54_31_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_55_27_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_55_27_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_55_27_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_55_27_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_55_28_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_55_28_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_55_28_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_55_28_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_55_29_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_55_29_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_55_29_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_55_29_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_55_30_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_55_30_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_55_30_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_55_30_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_55_31_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_55_31_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_55_31_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_55_31_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_56_24_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_56_24_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_56_24_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_56_24_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/senglea_56_25_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_56_27_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_56_27_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_56_27_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_56_27_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_56_28_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_56_28_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_56_28_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_56_28_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_56_29_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_56_29_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_56_29_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_56_29_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_56_30_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_56_30_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_56_30_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_56_30_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_56_31_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_56_31_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_56_31_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_56_31_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_57_24_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_57_24_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_57_24_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_57_24_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_57_25_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_57_25_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_57_25_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_57_25_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_57_26_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_57_26_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_57_26_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_57_26_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/senglea_57_27_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/senglea_57_28_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_57_29_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_57_29_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_57_29_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_57_29_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_57_30_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_57_30_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_57_30_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_57_30_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_57_31_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_57_31_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_57_31_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_57_31_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_57_32_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_57_32_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_57_32_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_57_32_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/senglea_58_24_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_58_25_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_58_25_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_58_25_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_58_25_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_58_26_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_58_26_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_58_26_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_58_26_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_58_27_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_58_27_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_58_27_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_58_27_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_58_28_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_58_28_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_58_28_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_58_28_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/senglea_58_29_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_58_30_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_58_30_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_58_30_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_58_30_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_58_31_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_58_31_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_58_31_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_58_31_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_58_32_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_58_32_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_58_32_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_58_32_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/senglea_59_24_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/senglea_59_25_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_59_26_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_59_26_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_59_26_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_59_26_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_59_27_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_59_27_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_59_27_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_59_27_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_59_28_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_59_28_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_59_28_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_59_28_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_59_29_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_59_29_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_59_29_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_59_29_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_59_30_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_59_30_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_59_30_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_59_30_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_59_31_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_59_31_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_59_31_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_59_31_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_59_32_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_59_32_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_59_32_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_59_32_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_60_25_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_60_25_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_60_25_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_60_25_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_60_26_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_60_26_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_60_26_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_60_26_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_60_27_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_60_27_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_60_27_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_60_27_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/senglea_60_28_collision.glb",
+          "far": "res://assets/malta/cottonera/senglea_60_28_far.glb",
+          "mid": "res://assets/malta/cottonera/senglea_60_28_mid.glb",
+          "near": "res://assets/malta/cottonera/senglea_60_28_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/senglea_60_29_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/senglea_60_30_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/senglea_60_31_near.glb"
+        }
+      ]
     },
     {
       "id": "bormla",
@@ -56,8 +433,372 @@
         4992.191263840068
       ],
       "on_land": true,
-      "status": "awaiting_geodata",
-      "chunks": []
+      "status": "partial_geodata",
+      "chunks": [
+        {
+          "near": "res://assets/malta/cottonera/bormla_58_31_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/bormla_58_32_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/bormla_59_30_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_59_31_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_59_31_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_59_31_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_59_31_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_59_32_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_59_32_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_59_32_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_59_32_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/bormla_59_33_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_60_25_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_60_25_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_60_25_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_60_25_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_60_26_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_60_26_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_60_26_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_60_26_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_60_27_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_60_27_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_60_27_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_60_27_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_60_28_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_60_28_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_60_28_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_60_28_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_60_29_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_60_29_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_60_29_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_60_29_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_60_30_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_60_30_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_60_30_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_60_30_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_60_31_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_60_31_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_60_31_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_60_31_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_60_32_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_60_32_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_60_32_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_60_32_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_60_33_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_60_33_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_60_33_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_60_33_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_61_25_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_61_25_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_61_25_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_61_25_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_61_26_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_61_26_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_61_26_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_61_26_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_61_27_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_61_27_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_61_27_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_61_27_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_61_28_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_61_28_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_61_28_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_61_28_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_61_29_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_61_29_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_61_29_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_61_29_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_61_30_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_61_30_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_61_30_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_61_30_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_61_31_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_61_31_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_61_31_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_61_31_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/bormla_61_32_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_61_33_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_61_33_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_61_33_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_61_33_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/bormla_62_23_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_62_24_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_62_24_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_62_24_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_62_24_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_62_25_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_62_25_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_62_25_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_62_25_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_62_26_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_62_26_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_62_26_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_62_26_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_62_27_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_62_27_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_62_27_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_62_27_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_62_28_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_62_28_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_62_28_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_62_28_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_62_29_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_62_29_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_62_29_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_62_29_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_62_30_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_62_30_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_62_30_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_62_30_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_62_31_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_62_31_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_62_31_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_62_31_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_62_32_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_62_32_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_62_32_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_62_32_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_63_24_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_63_24_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_63_24_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_63_24_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_63_25_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_63_25_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_63_25_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_63_25_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_63_26_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_63_26_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_63_26_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_63_26_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_63_27_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_63_27_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_63_27_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_63_27_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_63_28_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_63_28_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_63_28_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_63_28_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_63_29_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_63_29_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_63_29_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_63_29_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_63_30_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_63_30_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_63_30_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_63_30_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_63_31_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_63_31_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_63_31_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_63_31_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_63_32_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_63_32_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_63_32_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_63_32_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_63_33_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_63_33_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_63_33_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_63_33_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_64_25_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_64_25_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_64_25_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_64_25_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_64_26_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_64_26_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_64_26_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_64_26_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_64_27_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_64_27_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_64_27_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_64_27_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_64_28_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_64_28_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_64_28_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_64_28_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_64_29_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_64_29_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_64_29_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_64_29_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_64_30_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_64_30_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_64_30_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_64_30_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_64_31_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_64_31_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_64_31_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_64_31_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/bormla_64_32_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/bormla_64_33_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_65_27_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_65_27_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_65_27_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_65_27_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/bormla_65_28_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_65_29_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_65_29_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_65_29_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_65_29_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_65_30_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_65_30_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_65_30_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_65_30_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_65_31_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_65_31_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_65_31_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_65_31_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/bormla_65_32_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/bormla_66_27_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/bormla_66_29_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/bormla_66_30_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_66_31_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_66_31_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_66_31_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_66_31_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/bormla_66_32_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_67_29_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_67_29_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_67_29_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_67_29_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/bormla_67_30_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/bormla_67_31_collision.glb",
+          "far": "res://assets/malta/cottonera/bormla_67_31_far.glb",
+          "mid": "res://assets/malta/cottonera/bormla_67_31_mid.glb",
+          "near": "res://assets/malta/cottonera/bormla_67_31_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/bormla_67_32_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/bormla_68_30_near.glb"
+        }
+      ]
     },
     {
       "id": "kalkara",
@@ -73,8 +814,291 @@
         4594.083694118075
       ],
       "on_land": true,
-      "status": "awaiting_geodata",
-      "chunks": []
+      "status": "partial_geodata",
+      "chunks": [
+        {
+          "near": "res://assets/malta/cottonera/kalkara_62_22_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/kalkara_62_23_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/kalkara_62_24_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_63_20_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_63_20_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_63_20_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_63_20_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_63_21_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_63_21_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_63_21_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_63_21_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/kalkara_63_22_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_63_23_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_63_23_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_63_23_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_63_23_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_63_24_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_63_24_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_63_24_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_63_24_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_63_25_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_63_25_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_63_25_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_63_25_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_64_20_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_64_20_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_64_20_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_64_20_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_64_21_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_64_21_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_64_21_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_64_21_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_64_22_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_64_22_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_64_22_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_64_22_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_64_23_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_64_23_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_64_23_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_64_23_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_64_24_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_64_24_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_64_24_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_64_24_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_64_25_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_64_25_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_64_25_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_64_25_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/kalkara_64_26_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_65_21_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_65_21_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_65_21_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_65_21_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_65_22_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_65_22_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_65_22_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_65_22_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_65_23_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_65_23_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_65_23_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_65_23_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/kalkara_65_24_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_65_25_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_65_25_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_65_25_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_65_25_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/kalkara_65_26_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_65_27_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_65_27_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_65_27_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_65_27_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/kalkara_66_21_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_66_22_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_66_22_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_66_22_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_66_22_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_66_23_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_66_23_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_66_23_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_66_23_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_66_24_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_66_24_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_66_24_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_66_24_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_66_25_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_66_25_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_66_25_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_66_25_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_66_26_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_66_26_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_66_26_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_66_26_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_66_27_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_66_27_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_66_27_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_66_27_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_66_28_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_66_28_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_66_28_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_66_28_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/kalkara_66_29_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_67_21_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_67_21_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_67_21_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_67_21_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_67_22_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_67_22_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_67_22_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_67_22_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_67_23_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_67_23_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_67_23_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_67_23_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_67_24_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_67_24_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_67_24_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_67_24_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_67_25_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_67_25_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_67_25_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_67_25_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_67_26_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_67_26_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_67_26_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_67_26_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_67_27_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_67_27_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_67_27_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_67_27_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_67_28_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_67_28_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_67_28_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_67_28_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_67_29_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_67_29_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_67_29_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_67_29_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/kalkara_68_22_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_68_23_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_68_23_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_68_23_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_68_23_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_68_24_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_68_24_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_68_24_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_68_24_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_68_25_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_68_25_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_68_25_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_68_25_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_68_26_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_68_26_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_68_26_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_68_26_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_68_27_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_68_27_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_68_27_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_68_27_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_68_28_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_68_28_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_68_28_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_68_28_near.glb"
+        },
+        {
+          "collision": "res://assets/malta/cottonera/kalkara_68_29_collision.glb",
+          "far": "res://assets/malta/cottonera/kalkara_68_29_far.glb",
+          "mid": "res://assets/malta/cottonera/kalkara_68_29_mid.glb",
+          "near": "res://assets/malta/cottonera/kalkara_68_29_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/kalkara_69_23_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/kalkara_69_24_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/kalkara_69_25_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/kalkara_69_26_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/kalkara_69_27_near.glb"
+        },
+        {
+          "near": "res://assets/malta/cottonera/kalkara_69_28_near.glb"
+        }
+      ]
     }
   ],
   "source_hashes": {
@@ -83,22 +1107,168 @@
     "roads/world_paths.json": "72a6aefc3a6983ff7ebecfea80c47386ed1549e94caa3db1fd5130b48c659319",
     "source/Malta-Coastline.geojson": "d1c45d33dc36936bc41f3c4cf69fd84f1a55ad7ced377c092db778c3c36d19c5"
   },
-  "building_count": 0,
-  "fortification_count": 0,
-  "collision_chunks": 0,
+  "building_count": 2575,
+  "fortification_count": 38,
+  "collision_chunks": 145,
   "lod_levels": 3,
   "missing_geometry": true,
+  "missing_cities": [],
   "missing_roles": [
-    "building",
     "cottonera_lines",
     "dry_dock",
-    "fort_st_angelo",
-    "gardjola",
-    "immaculate_conception",
     "inquisitors_palace",
-    "road",
     "santa_margherita_lines",
-    "st_lawrence",
     "victories_basilica"
-  ]
+  ],
+  "source_triangles": 1550029,
+  "warnings": [
+    "way/329831645: no model inferred for role gate",
+    "way/907344138: no model inferred for role gate",
+    "way/1371352285: invalid or potentially modern building height requires review",
+    "way/691540426: wall alignment missing"
+  ],
+  "source_metadata": {
+    "source": "User-supplied Overpass Turbo OSM extract; source timestamp 2026-10-16T17:43:36Z",
+    "licence": "ODbL 1.0; \u00a9 OpenStreetMap contributors",
+    "source_epoch": "modern_baseline",
+    "notice": "Modern baseline is not proof of 1942 geometry",
+    "skipped": [
+      {
+        "id": "way/136730151",
+        "reason": "modern feature excluded"
+      },
+      {
+        "id": "way/377130188",
+        "reason": "context only; no construction inferred"
+      },
+      {
+        "id": "way/730175018",
+        "reason": "modern feature excluded"
+      },
+      {
+        "id": "way/904033218",
+        "reason": "context only; no construction inferred"
+      },
+      {
+        "id": "way/904768056",
+        "reason": "context only; no construction inferred"
+      },
+      {
+        "id": "way/907304151",
+        "reason": "context only; no construction inferred"
+      },
+      {
+        "id": "way/907336801",
+        "reason": "context only; no construction inferred"
+      },
+      {
+        "id": "way/907336804",
+        "reason": "context only; no construction inferred"
+      },
+      {
+        "id": "way/907336819",
+        "reason": "context only; no construction inferred"
+      },
+      {
+        "id": "way/907342000",
+        "reason": "context only; no construction inferred"
+      },
+      {
+        "id": "way/907342001",
+        "reason": "context only; no construction inferred"
+      },
+      {
+        "id": "way/1149651619",
+        "reason": "modern feature excluded"
+      },
+      {
+        "id": "way/1149660156",
+        "reason": "context only; no construction inferred"
+      },
+      {
+        "id": "way/1241681454",
+        "reason": "context only; no construction inferred"
+      },
+      {
+        "id": "way/1374911723",
+        "reason": "context only; no construction inferred"
+      },
+      {
+        "id": "way/1409747163",
+        "reason": "context only; no construction inferred"
+      },
+      {
+        "id": "way/1409747164",
+        "reason": "context only; no construction inferred"
+      },
+      {
+        "id": "way/1409747165",
+        "reason": "context only; no construction inferred"
+      },
+      {
+        "id": "way/1409747166",
+        "reason": "context only; no construction inferred"
+      },
+      {
+        "id": "way/548990524",
+        "reason": "context only; no construction inferred"
+      },
+      {
+        "id": "way/548990525",
+        "reason": "context only; no construction inferred"
+      },
+      {
+        "id": "way/966544805",
+        "reason": "context only; no construction inferred"
+      }
+    ],
+    "input_sha256": "ea459540d4ce8edbd77bd51f4b9ffb57353526654335253e85d02d8bdfa56ba0",
+    "input_features": 7551,
+    "excluded_outside_editorial_extent": 3320,
+    "selection_extent": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [
+            14.51,
+            35.88
+          ],
+          [
+            14.522,
+            35.876
+          ],
+          [
+            14.535,
+            35.878
+          ],
+          [
+            14.539,
+            35.887
+          ],
+          [
+            14.537,
+            35.895
+          ],
+          [
+            14.528,
+            35.897
+          ],
+          [
+            14.518,
+            35.895
+          ],
+          [
+            14.51,
+            35.891
+          ],
+          [
+            14.51,
+            35.88
+          ]
+        ]
+      ]
+    },
+    "grouping_notice": "Nearest gazetteer anchors are batching labels only, not city boundaries or reviewed historical assignments."
+  },
+  "source_geojson_sha256": "2b860d21d9376ef55a5ab7fd9a476de6fdda237038a09d57b00291b54c86aad2"
 }

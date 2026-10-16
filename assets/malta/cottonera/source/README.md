@@ -20,3 +20,15 @@ Planning Authority DTM 2012, CC BY 4.0. See `../../source/README.md`.
 Actual urban/fortification geometry must come from a supplied OSM/XML,
 Overpass JSON or WGS84 GeoJSON file, with source/licence metadata. Modern data
 are a baseline and do not establish wartime building or waterfront layouts.
+
+## Supplied dataset now integrated
+
+`supplied-cottonera.geojson` was provided by the user. Its metadata identifies
+Overpass Turbo / OpenStreetMap, timestamp 2026-10-16T17:43:36Z, ODbL.
+© OpenStreetMap contributors: https://www.openstreetmap.org/copyright
+The generated database and original data are distributed under ODbL 1.0:
+https://opendatacommons.org/licenses/odbl/1-0/
+The normalized features and selection/provenance metadata are in
+`../features.geojson`. This modern baseline is not proof of 1942 footprints.
+The older access report describes the previous blocked download attempt, not
+the status of this user-supplied file. See `docs/cottonera-region.md` for scope.
