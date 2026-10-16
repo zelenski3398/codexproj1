@@ -33,4 +33,8 @@ with tempfile.TemporaryDirectory() as temp:
  check(bool(m.near) and bool(m.far) and bool(m.collision),'Reusable source-footprint houses provide architectural detail and collider meshes')
  m=Models();m.gate([0,0],0)
  check(all(np.isfinite(x.vertices).all() for x in m.collision),'Gate template produces finite collision geometry')
+m=Models();m.dome(0,0,10,8,10)
+dome=m.mid[0];normal=dome.face_normals[0];radial=dome.triangles_center[0]-np.array([0,10,0])
+wall=Models();wall.battered_wall([0,0],[60,0],0,14)
+check(float(np.dot(normal,radial))>0 and wall.mid[0].is_volume,'Dome and battered-wall normals face outwards for native/web culling and collision')
 print(f'COTTONERA PIPELINE RESULT: {passed}/{passed} passed')

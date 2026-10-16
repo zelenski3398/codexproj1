@@ -744,3 +744,7 @@ All Malta environments now include an original dense limestone city, courtyard s
 ## Historic Mdina
 
 All Malta environments also include an original georeferenced Mdina hilltop city with battered bastions, narrow streets, a working gate passage and St Paul's Cathedral. Open **M** and head southwest from Ta' Qali toward **Mdina**. See the [placement, previews and validation guide](docs/mdina-city.md).
+
+## Cottonera preparation — geographic data pending
+
+The source-gated Three Cities region, local OSM/GeoJSON importer and original unplaced architectural templates are prepared. **Birgu, Senglea and Bormla are not yet reconstructed in the playable map:** the requested reference/data sites were blocked, and the task prohibits invented geography. See [Cottonera status, asset review and required datasets](docs/cottonera-region.md).

@@ -81,14 +81,17 @@ def build(features_path,output):
             if not np.isfinite(hh).all():warnings.append(f'{identifier}: terrain height unavailable');continue
             if role=='crane':m.crane(point,float(hh[0]),np.deg2rad(number(p.get('bearing'),0)))
             elif role=='gate':m.gate(point,float(hh[0]),number(p.get('opening_width'),7),bearing=np.deg2rad(number(p.get('bearing'),0)))
-            else:m.gardjola(point.buffer(2.5) if hasattr(point,'buffer') else Point(*point).buffer(2.5,resolution=2),float(hh[0]))
+            else:m.gardjola(Point(*point).buffer(2.5,resolution=2),float(hh[0]))
         elif is_polygon:
             if role in ['building','warehouse','church','st_lawrence','victories_basilica','immaculate_conception','inquisitors_palace']:geometry=geometry.difference(clearance)
             if geometry.is_empty:continue
-            coordinates=np.concatenate([np.asarray(poly.exterior.coords) for poly in polygons(geometry)])
+            source_polygons=polygons(geometry)
+            if not source_polygons:warnings.append(f'{identifier}: no valid land polygon remains');continue
+            coordinates=np.concatenate([np.asarray(poly.exterior.coords) for poly in source_polygons])
             hh=g.heights(coordinates)
             if not np.isfinite(hh).all():warnings.append(f'{identifier}: terrain has no surface');continue
             bottom=float(hh.min()-.5);top=float(hh.max());height=number(p.get('height'),number(p.get('building:levels'),3)*3.2)
+            if height<=0 or (role=='building' and height>30):warnings.append(f'{identifier}: invalid or potentially modern building height requires review');continue
             if role=='fort_st_angelo':m.fort_st_angelo(geometry,bottom,top)
             elif role in ['bastion','st_michael','quay']:m.bastion(geometry,bottom,top+number(p.get('platform_height'),3))
             elif role=='warehouse':m.warehouse(geometry,bottom,top+height)
@@ -118,7 +121,8 @@ def build(features_path,output):
             else:all_triangles+=len(mesh.faces)
         regions.append({**region,'status':'partial_geodata' if entries else 'awaiting_geodata','chunks':list(entries.values())})
     missing=sorted(REQUIRED-built_roles)
-    report={**alignment,'regions':regions,'status':'partial_geodata' if missing else 'source_baseline_built','missing_geometry':bool(missing),'missing_roles':missing,'building_count':buildings,'fortification_count':fortifications,'collision_chunks':collision_count,'source_triangles':all_triangles,'warnings':warnings,'source_metadata':data['metadata'],'source_geojson_sha256':hashlib.sha256(Path(features_path).read_bytes()).hexdigest()}
+    missing_cities=[city for city in ['birgu','senglea','bormla'] if not assets[city]]
+    report={**alignment,'regions':regions,'status':'partial_geodata' if missing or missing_cities else 'source_baseline_built','missing_geometry':bool(missing or missing_cities),'missing_cities':missing_cities,'missing_roles':missing,'building_count':buildings,'fortification_count':fortifications,'collision_chunks':collision_count,'source_triangles':all_triangles,'warnings':warnings,'source_metadata':data['metadata'],'source_geojson_sha256':hashlib.sha256(Path(features_path).read_bytes()).hexdigest()}
     (output/'region.json').write_text(json.dumps(report,indent=2,allow_nan=False)+'\n');return report
 
 def main():

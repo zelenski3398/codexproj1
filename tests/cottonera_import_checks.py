@@ -34,4 +34,11 @@ with tempfile.TemporaryDirectory() as temp:
  outer=[[14.52,35.88],[14.523,35.88],[14.523,35.883],[14.52,35.883],[14.52,35.88]];inner=[[14.521,35.881],[14.522,35.881],[14.522,35.882],[14.521,35.882],[14.521,35.881]]
  relation=dict(type='relation',id=3,tags={'type':'multipolygon','building':'yes'},members=[dict(type='way',ref=1,role='outer',geometry=[dict(lon=x,lat=y) for x,y in outer]),dict(type='way',ref=2,role='inner',geometry=[dict(lon=x,lat=y) for x,y in inner])])
  check(len(from_osm([relation])[0]['geometry']['coordinates'])==2,'Multipolygon courtyard holes survive import')
+for fixture,label in [
+ ([dict(type='way',id=2,tags={'building':'yes'},nodes=[1,2,3])], 'Missing OSM nodes cannot be joined into invented geometry'),
+ ([dict(type='way',id=2,tags={'building':'yes'},geometry=[dict(lon=14.52,lat=35.88),None,dict(lon=14.521,lat=35.881)])], 'Missing Overpass stations cannot be silently bridged'),
+ ([dict(type='relation',id=3,tags={'type':'multipolygon'},members=[dict(type='way',ref=1,role='outer',geometry=[dict(lon=14.52,lat=35.88),dict(lon=14.521,lat=35.88)])])], 'Unclosed fortification/footprint outlines are rejected')]:
+ try:from_osm(fixture);ok=False
+ except ValueError:ok=True
+ check(ok,label)
 print(f'COTTONERA IMPORT RESULT: {passed}/{passed} passed')

@@ -31,8 +31,11 @@ def from_osm(elements):
     ways={};features=[]
     for e in elements:
         if e['type']!='way':continue
-        coords=[(p['lon'],p['lat']) for p in e.get('geometry',[]) if p]
-        if not coords:coords=[nodes[n] for n in e.get('nodes',[]) if n in nodes]
+        if any(p is None or 'lon' not in p or 'lat' not in p for p in e.get('geometry',[])):raise ValueError('Incomplete way geometry: '+str(e['id']))
+        coords=[(p['lon'],p['lat']) for p in e.get('geometry',[])]
+        if not coords:
+            if any(n not in nodes for n in e.get('nodes',[])):raise ValueError('Unresolved way node: '+str(e['id']))
+            coords=[nodes[n] for n in e.get('nodes',[])]
         if len(coords)<2:continue
         ways[e['id']]=coords
     used=set()
@@ -41,12 +44,15 @@ def from_osm(elements):
         rings={'outer':[],'inner':[]}
         for member in e.get('members',[]):
             if member.get('type')!='way':continue
-            coords=[(p['lon'],p['lat']) for p in member.get('geometry',[]) if p] or ways.get(member['ref'],[])
+            if any(p is None or 'lon' not in p or 'lat' not in p for p in member.get('geometry',[])):raise ValueError('Incomplete relation geometry')
+            coords=[(p['lon'],p['lat']) for p in member.get('geometry',[])] or ways.get(member['ref'],[])
             if len(coords)<2:raise ValueError('Unresolved multipolygon member: '+str(member['ref']))
             rings['inner' if member.get('role')=='inner' else 'outer'].append(LineString(coords));used.add(member['ref'])
         shells=list(polygonize(unary_union(rings['outer'])))
         holes=list(polygonize(unary_union(rings['inner']))) if rings['inner'] else []
-        if not shells:raise ValueError('Unclosed multipolygon relation: '+str(e['id']))
+        if not shells or (rings['inner'] and not holes):raise ValueError('Unclosed multipolygon relation: '+str(e['id']))
+        if unary_union(rings['outer']).difference(unary_union([p.boundary for p in shells])).length>1e-9:raise ValueError('Incomplete outer ring')
+        if rings['inner'] and unary_union(rings['inner']).difference(unary_union([p.boundary for p in holes])).length>1e-9:raise ValueError('Incomplete courtyard ring')
         geom=unary_union(shells).difference(unary_union(holes))
         features.append(dict(type='Feature',id='relation/'+str(e['id']),properties=e.get('tags',{}),geometry=mapping(geom)))
     for e in elements:
@@ -91,7 +97,7 @@ def import_features(path,source,licence,epoch,city=None,review=None):
         if not all(__import__('math').isfinite(x) for x in geom.bounds) or minx<14.49 or maxx>14.56 or miny<35.86 or maxy>35.90:raise ValueError('Feature outside Cottonera study area or not WGS84: '+identifier)
         # Never mistake modern yacht marinas/new construction for wartime docks.
         date=re.search(r'\b(1[0-9]{3}|20[0-9]{2})\b',str(props.get('start_date','')))
-        if props.get('leisure')=='marina' or props.get('building') in ['construction'] or (date and int(date.group())>1942 and not props.get('historical_override')):
+        if props.get('leisure')=='marina' or props.get('building') in ['construction'] or (date and int(date.group())>1942 and props.get('historical_override') is not True):
             skipped.append(dict(id=identifier,reason='modern feature excluded'));continue
         assigned=CITIES.get(text(props.get('cottonera_city',props.get('addr:city',city or ''))))
         if assigned is None:skipped.append(dict(id=identifier,reason='city assignment requires source/review mapping'));continue

@@ -143,8 +143,8 @@ class Models:
                 a=col/sectors*2*np.pi;v.append([x+radius*np.cos(t)*np.cos(a),bottom+height*np.sin(t),z+radius*np.cos(t)*np.sin(a)])
         for row in range(rings):
             for col in range(sectors):
-                a=row*sectors+col;b=row*sectors+(col+1)%sectors;c=(row+1)*sectors+(col+1)%sectors;d=(row+1)*sectors+col;faces.extend([[a,b,c],[a,c,d]])
-        mesh=trimesh.Trimesh(v,faces,process=False);mesh.fix_normals();self.add(mesh,STONE,True,skyline=True)
+                a=row*sectors+col;b=row*sectors+(col+1)%sectors;c=(row+1)*sectors+(col+1)%sectors;d=(row+1)*sectors+col;faces.extend([[a,c,b],[a,d,c]])
+        mesh=trimesh.Trimesh(v,faces,process=False);self.add(mesh,STONE,True,skyline=True)
         self.cube(x,z,1,1,bottom+height,2,TRIM,False,True)
         self.rod([x,bottom+height+2,z],[x,bottom+height+3,z],.1,TRIM)
         self.rod([x-.4,bottom+height+2.65,z],[x+.4,bottom+height+2.65,z],.1,TRIM)

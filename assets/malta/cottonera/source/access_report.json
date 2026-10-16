@@ -28,6 +28,14 @@
     {
       "url": "https://commons.wikimedia.org/w/api.php",
       "result": "HTTPS proxy CONNECT: 403 Forbidden"
+    },
+    {
+      "url": "https://download.geofabrik.de/europe/malta-latest.osm.pbf",
+      "result": "HTTPS proxy CONNECT: 403 Forbidden"
+    },
+    {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Santa_Margherita_%26_Cottonera_Lines_map.png",
+      "result": "HTTPS proxy CONNECT: 403 Forbidden"
     }
   ],
   "available": [
