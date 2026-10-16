@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "b137fd85e16f7dd64271241e9186a13c2ca88e1d",
-  "last_documented_commit": "73344f14724c745f3fd822fad36f02bfe0926896",
-  "update_document": "2026-10-16-cottonera-supplied-data.md",
-  "review_range": "fbfab9dd1bf49bfdd61d893021a2e568f887c45d..73344f14724c745f3fd822fad36f02bfe0926896",
+  "previous_documentation_publication": "752fb4f8f0430a198adf90b54e247bed2c0f9e84",
+  "last_documented_commit": "ace5393b3ebc4d37d0d9057ba4980a0df67b9711",
+  "update_document": "2026-10-16-st-elmo-battery.md",
+  "review_range": "73344f14724c745f3fd822fad36f02bfe0926896..ace5393b3ebc4d37d0d9057ba4980a0df67b9711",
   "date": "2026-10-16",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }

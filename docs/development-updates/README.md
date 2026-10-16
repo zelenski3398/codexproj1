@@ -4,6 +4,7 @@
 
 The original report is a frozen 50-commit audit through `588ac7b`. Later changes are recorded here with explicit commit boundaries, avoiding a repeated reconstruction of unchanged history.
 
+- [16 October 2026: St Elmo battery, departure and ground travel](2026-10-16-st-elmo-battery.md).
 - [16 October 2026: supplied-footprint Cottonera model](2026-10-16-cottonera-supplied-data.md).
 - [16 October 2026: spatial enemy flyby audio](2026-10-16-enemy-flyby-audio.md).
 - [16 October 2026: manual random Malta encounters and Italian fighters](2026-10-16-random-encounters.md).

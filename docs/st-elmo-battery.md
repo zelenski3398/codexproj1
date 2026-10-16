@@ -137,10 +137,18 @@ battery alongside radio speech on real speakers. The views are schematic and
 can show existing Compatibility shadow/moire artifacts on close flat masonry.
 No frame-rate guarantee or fully surveyed historical reconstruction is claimed.
 
-Recorded native results: St Elmo **34/34**, original AA **114/114**, Malta
+Recorded native results: St Elmo **35/35**, original AA **114/114**, Malta
 flight/boarding/persistence **36/36**, Valletta **17/17**, heavy/light AA
-**55/55**, dive defence **47/47**, and mouse tracking **32/32** — **335 native
+**55/55**, dive defence **47/47**, and mouse tracking **32/32** — **336 native
 checks passed**. The mouse suite actually tracked a simulated Stuka in its
 approach, dive and pull-out through the existing mouse controller. Native
 Compatibility captures and protected Valletta building/grid/landmark comparisons
 also passed. The production web export reported no script/resource errors.
+
+The dedicated production Chromium/ANGLE suite passed **18/18**, including real
+pointer lock/LMB fire, individual/battery operation, seated crew restoration,
+on-foot travel preserving the world ID, and clean retry. No browser runtime or
+resource errors occurred. The final ramp correction closes its seam with the
+raised court; the added check uses the actual existing soldier controller to
+walk across that ramp onto the court. Full entrance/step/gun-platform traversal
+and fine hand placement remain manual checks.

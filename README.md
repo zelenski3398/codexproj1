@@ -8,7 +8,7 @@ Ju 87-inspired opponent; Malta free roam starts peacefully until you request com
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`73344f14724c745f3fd822fad36f02bfe0926896`](https://github.com/zelenski3398/codexproj1/commit/73344f14724c745f3fd822fad36f02bfe0926896)
+**Latest documented commit:** [`ace5393b3ebc4d37d0d9057ba4980a0df67b9711`](https://github.com/zelenski3398/codexproj1/commit/ace5393b3ebc4d37d0d9057ba4980a0df67b9711)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
 [latest encounter/aircraft update](docs/development-updates/2026-10-16-random-encounters.md)
@@ -20,9 +20,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor 73344f14724c745f3fd822fad36f02bfe0926896 HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' 73344f14724c745f3fd822fad36f02bfe0926896..HEAD
-git diff --stat 73344f14724c745f3fd822fad36f02bfe0926896..HEAD
+git merge-base --is-ancestor ace5393b3ebc4d37d0d9057ba4980a0df67b9711 HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' ace5393b3ebc4d37d0d9057ba4980a0df67b9711..HEAD
+git diff --stat ace5393b3ebc4d37d0d9057ba4980a0df67b9711..HEAD
 ```
 
 Append a dated, evidence-linked update and advance this SHA to the newest inspected
