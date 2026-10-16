@@ -109,6 +109,32 @@ class Models:
         self.add(mesh,STONE,True,skyline=True)
         cap=trimesh.creation.box(extents=[width+7,1,depth+1]);cap.apply_translation([0,12,0]);cap.apply_transform(trimesh.transformations.rotation_matrix(bearing,[0,1,0]));cap.apply_translation([centre[0],bottom,centre[1]])
         self.add(cap,TRIM,True)
+    def warehouse(self,outline,base,roof):
+        self.prism(outline,base,roof,[131,132,120,255],True,skyline=True)
+        self.prism(outline,roof+.05,roof+.45,METAL,False,True)
+        for poly in polygons(outline):
+            a,b=np.asarray(poly.exterior.coords)[:2];direction=(b-a)/np.linalg.norm(b-a);mid=(a+b)/2
+            self.pane(mid-direction*1.7,mid+direction*1.7,base+.1,min(4,roof-base-1),DARK)
+    def crane(self,point,base,bearing=0):
+        x,z=point;self.cube(x,z,3.5,3.5,base,1.4,METAL)
+        self.cube(x,z,1.5,1.5,base+1.4,16,METAL,True,skyline=True)
+        self.cube(x,z,4,3,base+14.5,3,METAL,True)
+        direction=np.array([np.sin(bearing),np.cos(bearing)])
+        start=np.array([x,base+17,z]);end=np.array([x+direction[0]*19,base+22,z+direction[1]*19])
+        self.rod(start,end,.4);self.rod(start+[0,4,0],end,.15)
+        self.rod(end,end-[0,12,0],.07)
+        # Cheap far boom; it is still geometry, not an explosion/marker sprite.
+        boom=trimesh.creation.cylinder(radius=.45,segment=np.array([start,end]),sections=6);self.add(boom,METAL,False,skyline=True)
+    def dry_dock(self,outline,quay_top=4):
+        # Compiler permits this only over a supplied existing WATER footprint.
+        # Floor above the unchanged sea prevents water bleeding into the dock;
+        # depth is deliberately schematic until historical section data exist.
+        self.prism(outline,.06,.18,[106,110,105,255],True,skyline=True)
+        ring=outline.difference(outline.buffer(-1.1,join_style=2))
+        self.prism(ring,.18,quay_top,STONE,True,skyline=True)
+        for inset in [1.2,2.0]:
+            edge=outline.buffer(-inset).difference(outline.buffer(-inset-.35))
+            self.prism(edge,quay_top-1,quay_top-.7,TRIM,False,True)
     def scene(self,meshes):
         scene=trimesh.Scene()
         if meshes:scene.add_geometry(trimesh.util.concatenate(meshes))
