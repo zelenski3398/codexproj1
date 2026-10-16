@@ -9,6 +9,7 @@ var mesh_count: int = 0
 var bounds: AABB
 var sea: MeshInstance3D
 var aa_battery: AirfieldAABattery
+var cottonera_region: CottoneraRegion
 var mdina_city: MdinaCity
 var valletta_city: VallettaCity
 var landscape_details: MaltaLandscapeDetails
@@ -59,6 +60,8 @@ func _ready() -> void:
 		label.pixel_size = 0.25
 		label.visibility_range_end = 7000
 		add_child(label)
+	cottonera_region = CottoneraRegion.new()
+	add_child(cottonera_region)
 	mdina_city = MdinaCity.new()
 	add_child(mdina_city)
 	valletta_city = VallettaCity.new()
@@ -69,7 +72,8 @@ func _ready() -> void:
 	terrain_appearance.debug_mode_changed.connect(func(enabled: bool):
 		landscape_details.visible = not enabled
 		valletta_city.visible = not enabled
-		mdina_city.visible = not enabled)
+		mdina_city.visible = not enabled
+		cottonera_region.visible = not enabled)
 
 func _prepare_terrain(node: Node) -> void:
 	if node is MeshInstance3D:

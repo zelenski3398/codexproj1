@@ -12,6 +12,10 @@ static func data() -> Dictionary:
 		var origin: Array = mdina.origin_world.duplicate()
 		origin[1] = mdina.reference_terrain_height
 		_data.landmarks.append({"name":"Mdina", "position":origin})
+		# Gazetteer labels only; no city boundaries or landmark locations inferred.
+		var cottonera: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://assets/malta/cottonera/alignment.json"))
+		for place in cottonera.regions:
+			_data.landmarks.append({"name":place.name,"position":place.position})
 	return _data
 
 static func vector(value: Array) -> Vector3:

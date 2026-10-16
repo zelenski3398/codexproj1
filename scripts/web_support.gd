@@ -79,6 +79,8 @@ func _process(delta: float) -> void:
 		state.valletta = {"ready":city.ready_for_flight,"buildings":city.layout.building_count,"structures":city.structure_count,"details":city.detail_count,"collision_chunks":city.collision_count,"visible":city.visible,"landmarks":city.layout.landmarks.size()}
 		var mdina: MdinaCity = session.malta_mission.world.mdina_city
 		state.mdina = {"ready":mdina.ready_for_flight,"buildings":mdina.layout.building_count,"structures":mdina.structure_count,"details":mdina.detail_count,"collision_chunks":mdina.collision_count,"visible":mdina.visible,"walls":mdina.layout.wall_segments,"x":mdina.position.x,"z":mdina.position.z,"elevation":mdina.layout.reference_terrain_height}
+		var cottonera: CottoneraRegion = session.malta_mission.world.cottonera_region
+		state.cottonera = {"status":cottonera.status,"regions":cottonera.regions.size(),"visuals":cottonera.visual_count,"collisions":cottonera.collision_count,"visible":cottonera.visible}
 		var access_fields: Array=session.malta_mission.world.fields.values()
 		state.base_access_count=access_fields.filter(func(f):return not f.access_record.is_empty()).size()
 		state.base_access_widths=access_fields.map(func(f):return f.access_record.width)

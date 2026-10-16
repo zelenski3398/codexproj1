@@ -1,0 +1,110 @@
+{
+  "status": "unplaced_templates_only",
+  "notice": "Schematic asset review, not a mapped or surveyed Cottonera reconstruction",
+  "templates": [
+    {
+      "name": "FortStAngeloTemplate",
+      "display_xz": [
+        0,
+        0
+      ],
+      "not_a_geographic_location": true
+    },
+    {
+      "name": "GardjolaTemplate",
+      "display_xz": [
+        170,
+        0
+      ],
+      "not_a_geographic_location": true
+    },
+    {
+      "name": "HouseTemplate",
+      "display_xz": [
+        205,
+        0
+      ],
+      "not_a_geographic_location": true
+    },
+    {
+      "name": "CottoneraLineTemplate",
+      "display_xz": [
+        0,
+        205
+      ],
+      "not_a_geographic_location": true
+    },
+    {
+      "name": "SantaMargheritaLineTemplate",
+      "display_xz": [
+        0,
+        245
+      ],
+      "not_a_geographic_location": true
+    },
+    {
+      "name": "GateTemplate",
+      "display_xz": [
+        210,
+        120
+      ],
+      "not_a_geographic_location": true
+    },
+    {
+      "name": "NavalDockTemplate",
+      "display_xz": [
+        -80,
+        -170
+      ],
+      "not_a_geographic_location": true
+    },
+    {
+      "name": "WarehouseTemplate",
+      "display_xz": [
+        0,
+        -170
+      ],
+      "not_a_geographic_location": true
+    },
+    {
+      "name": "CraneTemplate",
+      "display_xz": [
+        50,
+        -130
+      ],
+      "not_a_geographic_location": true
+    },
+    {
+      "name": "StLawrenceTemplate",
+      "display_xz": [
+        180,
+        -120
+      ],
+      "not_a_geographic_location": true
+    },
+    {
+      "name": "VictoriesTemplate",
+      "display_xz": [
+        250,
+        -120
+      ],
+      "not_a_geographic_location": true
+    },
+    {
+      "name": "ImmaculateConceptionTemplate",
+      "display_xz": [
+        320,
+        -120
+      ],
+      "not_a_geographic_location": true
+    },
+    {
+      "name": "PalaceTemplate",
+      "display_xz": [
+        300,
+        10
+      ],
+      "not_a_geographic_location": true
+    }
+  ]
+}
