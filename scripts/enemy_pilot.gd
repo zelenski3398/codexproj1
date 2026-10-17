@@ -42,8 +42,16 @@ extends Node
 @export var measured_terrain: bool = false
 @export_group("Damage compensation through pilot commands")
 @export var damage_trim_gain: float = 0.45
+@export var damage_decision_interval: float = 0.5
+@export var engine_out_threshold: float = 0.30
+@export var emergency_power_threshold: float = 0.70
+@export var emergency_fuel_threshold: float = 0.15
+@export var emergency_wing_threshold: float = 0.25
+@export var emergency_bank_limit: float = 20.0
 @export_range(0, 1, 0.01) var maximum_damage_trim: float = 0.55
 @export_range(0.05, 1, 0.01) var compensation_authority_floor: float = 0.25
+var damage_decision_clock: float = 0
+var damage_emergency: String = ""
 var aircraft: FlightAircraft
 var target: FlightAircraft
 var mode: String = "PATROL"
@@ -73,6 +81,8 @@ func _ready() -> void:
 	reset()
 
 func reset() -> void:
+	damage_emergency = ""
+	damage_decision_clock = 0
 	mode = "PATROL"
 	tactic = "PATROL"
 	combat_unlocked = false
@@ -133,6 +143,7 @@ func _physics_process(delta: float) -> void:
 		return
 	# Speed is no longer an acquisition gate: slow climbs and damaged fighters
 	# should not make the AI forget them. The grace unlock stays for this life.
+	if _handle_damage(delta): return
 	var can_engage: bool = _player_airborne()
 	airborne_timer = airborne_timer + delta if can_engage else 0.0
 	combat_unlocked = combat_unlocked or (can_engage and airborne_timer >= grace_period)
@@ -269,6 +280,7 @@ func _fly_toward(point: Vector3, delta: float) -> void:
 	var heading_error: float = wrapf(desired_heading - heading, -PI, PI)
 	var bank: float = asin(clampf(aircraft.global_basis.x.y, -1.0, 1.0))
 	var bank_limit: float = maximum_tactical_bank_degrees if mode in ["ENGAGE", "EVADE"] and not terrain_avoiding else maximum_bank_degrees
+	if not damage_emergency.is_empty(): bank_limit = minf(bank_limit,emergency_bank_limit)
 	var desired_bank: float = clampf(heading_error * 1.4, -deg_to_rad(bank_limit), deg_to_rad(bank_limit))
 	var damage: AircraftDamage = aircraft.components
 	var impaired: bool = damage.lift_factor() < 0.999 or damage.cockpit_factor() < 0.999 or damage.elevator_factor() < 0.999
@@ -351,3 +363,29 @@ func _terrain_height(point: Vector3) -> float:
 	var ray: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(Vector3(point.x, 2000, point.z), Vector3(point.x, -100, point.z), 1)
 	var hit: Dictionary = aircraft.get_world_3d().direct_space_state.intersect_ray(ray)
 	return float(hit.position.y) if not hit.is_empty() else 0.0
+
+func _handle_damage(delta: float) -> bool:
+	damage_decision_clock -= delta
+	if damage_decision_clock <= 0:
+		damage_decision_clock = maxf(damage_decision_interval,0.05)
+		damage_emergency = ""
+		var damage := aircraft.components
+		if damage.power_factor() < engine_out_threshold: damage_emergency = "ENGINE-OUT GLIDE"
+		elif damage.power_factor() < emergency_power_threshold: damage_emergency = "REDUCED-POWER WITHDRAWAL"
+		elif not damage.fires.is_empty(): damage_emergency = "FIRE ESCAPE"
+		elif damage.fuel_leaking and damage.fuel_remaining < emergency_fuel_threshold: damage_emergency = "LOW FUEL WITHDRAWAL"
+		elif minf(damage.integrity_ratio(&"left_wing"),damage.integrity_ratio(&"right_wing")) < emergency_wing_threshold: damage_emergency = "STRUCTURAL EMERGENCY"
+	if damage_emergency.is_empty(): return false
+	mode = "EVADE"
+	tactic = damage_emergency
+	aircraft.pilot.fire = false
+	aircraft.guns.use_assisted_aim = false
+	# Conservative straight escape/glide, not a promised autonomous landing.
+	var point: Vector3 = aircraft.global_position-aircraft.global_basis.z*900
+	point.y = maxf(_terrain_height(point)+minimum_agl,aircraft.global_position.y-75)
+	scan_clock -= delta
+	if scan_clock <= 0:
+		_scan_terrain()
+		scan_clock = 0.15
+	_fly_toward(avoidance_point if terrain_avoiding else point,delta)
+	return true

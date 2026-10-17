@@ -19,7 +19,7 @@ func run() -> void:
 	game.aircraft.pilot.automated = true
 	await frames(4)
 	var display: AircraftDamageHUD = game.hud.damage_display
-	check(display.labels.size() == 8 and display.diagram.SHAPES.size() == 8, "All eight components have a diagram segment and numeric readout")
+	check(display.labels.size() == 12 and display.diagram.SHAPES.size() == 12, "All twelve components have a diagram segment and numeric readout")
 	check(display.mouse_filter == Control.MOUSE_FILTER_IGNORE and display.diagram.mouse_filter == Control.MOUSE_FILTER_IGNORE, "Damage display leaves flight mouse input untouched")
 	for id in AircraftDamage.IDS:
 		check(display.ratios[id] == 1 and display.labels[id].text.ends_with("100%"), String(id) + " starts at full independent component health")
@@ -41,7 +41,7 @@ func run() -> void:
 	await frames(3)
 	game.start_flight("sea_gladiator")
 	await frames(3)
-	check(game.hud.damage_display.ratios.size() == 8 and game.hud.damage_display.ratios.values().all(func(v):return v == 1), "Aircraft switching binds the Gladiator's own component health")
+	check(game.hud.damage_display.ratios.size() == 12 and game.hud.damage_display.ratios.values().all(func(v):return v == 1), "Aircraft switching binds the Gladiator's own component health")
 	game.queue_free()
 	await frames(3)
 	print("AIRCRAFT DAMAGE HUD RESULT: ", checks - failures, "/", checks, " passed")

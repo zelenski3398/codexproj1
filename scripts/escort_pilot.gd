@@ -12,6 +12,7 @@ var mission_elapsed: float = 0
 var last_formation_position: Vector3 = Vector3.ZERO
 
 func _physics_process(delta: float) -> void:
+	if not aircraft.reset_pending and not aircraft.is_destroyed and not aircraft.is_crashed and _handle_damage(delta): return
 	if not mission_active:
 		super._physics_process(delta)
 		return

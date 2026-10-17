@@ -12,6 +12,7 @@ var departed: bool = false
 var takeoff_direction: Vector3 = Vector3.FORWARD
 
 func _physics_process(delta: float) -> void:
+	if not aircraft.reset_pending and not aircraft.is_destroyed and not aircraft.is_crashed and _handle_damage(delta): return
 	age += delta
 	if aircraft.reset_pending or aircraft.is_destroyed or aircraft.is_crashed: return
 	if not departed and aircraft.gear.contact_count == 0 and aircraft.altitude > 25: departed = true

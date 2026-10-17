@@ -10,6 +10,7 @@ var labels: Dictionary = {}
 var bars: Dictionary = {}
 var fills: Dictionary = {}
 var ratios: Dictionary = {}
+var grid: GridContainer
 var diagram: Diagram
 
 static func health_color(ratio: float) -> Color:
@@ -34,34 +35,39 @@ func _ready() -> void:
 	diagram.custom_minimum_size = Vector2(190, 90)
 	diagram.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(diagram)
-	var grid := GridContainer.new()
+	grid = GridContainer.new()
 	grid.columns = 4
 	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	grid.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	grid.add_theme_constant_override("h_separation", 16)
 	grid.add_theme_constant_override("v_separation", 6)
 	row.add_child(grid)
-	for id in AircraftDamage.IDS:
+	_build_cells(AircraftDamage.IDS)
+
+func _build_cells(ids: Array[StringName]) -> void:
+	for cell in grid.get_children():
+		grid.remove_child(cell)
+		cell.queue_free()
+	labels.clear()
+	bars.clear()
+	fills.clear()
+	ratios.clear()
+	grid.columns = 4 if ids.size() <= 8 else 6
+	for id in ids:
 		var cell := VBoxContainer.new()
 		cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		cell.add_theme_constant_override("separation", 3)
 		grid.add_child(cell)
 		var label := Label.new()
-		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		label.add_theme_font_size_override("font_size", 12)
+		label.add_theme_font_size_override("font_size",11)
 		cell.add_child(label)
 		labels[id] = label
 		var bar := ProgressBar.new()
-		bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		bar.show_percentage = false
 		bar.custom_minimum_size.y = 6
 		bar.max_value = 1
-		var background := StyleBoxFlat.new()
-		background.bg_color = Color("293c35")
-		bar.add_theme_stylebox_override("background", background)
 		var fill := StyleBoxFlat.new()
-		bar.add_theme_stylebox_override("fill", fill)
+		bar.add_theme_stylebox_override("fill",fill)
 		cell.add_child(bar)
 		bars[id] = bar
 		fills[id] = fill
@@ -69,14 +75,15 @@ func _ready() -> void:
 func refresh(damage: AircraftDamage) -> void:
 	if not is_instance_valid(damage):
 		return
+	if labels.keys() != damage.definitions.keys(): _build_cells(damage.component_ids())
 	var changed := false
-	for id in AircraftDamage.IDS:
+	for id in damage.definitions:
 		var ratio := damage.integrity_ratio(id)
 		if ratios.has(id) and is_equal_approx(ratios[id], ratio):
 			continue
 		ratios[id] = ratio
 		var color := health_color(ratio)
-		labels[id].text = "%s  %d%%" % [LABELS[id], ceili(ratio * 100)]
+		labels[id].text = "%s  %d%%" % [LABELS.get(id,damage.definitions[id].display_name.to_upper()), ceili(ratio * 100)]
 		labels[id].add_theme_color_override("font_color", color)
 		bars[id].value = ratio
 		fills[id].bg_color = color
@@ -90,6 +97,10 @@ class Diagram extends Control:
 	# Top-down silhouette, nose up. Separate patches avoid a single hull colour
 	# concealing a failed engine, control surface or one damaged wing.
 	const SHAPES := {
+		&"tail": [[Vector2(91,61),Vector2(99,61),Vector2(99,72),Vector2(91,72)]],
+		&"left_aileron": [[Vector2(12,57),Vector2(50,57),Vector2(50,60),Vector2(12,60)]],
+		&"right_aileron": [[Vector2(140,57),Vector2(178,57),Vector2(178,60),Vector2(140,60)]],
+		&"landing_gear": [[Vector2(70,62),Vector2(76,62),Vector2(76,69),Vector2(70,69)], [Vector2(114,62),Vector2(120,62),Vector2(120,69),Vector2(114,69)]],
 		&"engine": [[Vector2(86, 16), Vector2(95, 5), Vector2(104, 16), Vector2(104, 31), Vector2(86, 31)]],
 		&"cockpit": [[Vector2(86, 33), Vector2(104, 33), Vector2(104, 44), Vector2(86, 44)]],
 		&"fuselage": [[Vector2(82, 32), Vector2(84, 32), Vector2(84, 58), Vector2(92, 74), Vector2(88, 74), Vector2(81, 57)], [Vector2(106, 32), Vector2(108, 32), Vector2(109, 57), Vector2(102, 74), Vector2(98, 74), Vector2(106, 58)]],

@@ -33,6 +33,7 @@ func assign_route(start: Vector3, end: Vector3, seconds: float) -> void:
 	evade_on_damage = false # bomber crew prioritises its assigned bombing course
 
 func _physics_process(delta: float) -> void:
+	if not aircraft.reset_pending and not aircraft.is_destroyed and not aircraft.is_crashed and _handle_damage(delta): return
 	if aircraft.reset_pending:
 		return
 	if not assigned_route:

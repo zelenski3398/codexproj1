@@ -56,6 +56,7 @@ func _change(next: String) -> void:
 	state_time=0
 
 func _physics_process(delta: float) -> void:
+	if not aircraft.reset_pending and not aircraft.is_destroyed and not aircraft.is_crashed and _handle_damage(delta): return
 	aircraft.pilot.fire=false
 	aircraft.guns.use_assisted_aim=false
 	if aircraft.reset_pending or aircraft.is_destroyed or director==null or director.is_finished():return
