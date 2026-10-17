@@ -90,6 +90,12 @@ func _fire_salvo() -> void:
 	var emitted: int = 0
 	for i in range(firing_ports.size()):
 		var port: Marker3D = firing_ports[i]
+		# Fixed wing guns leave with their wing. Flexible defensive mounts and
+		# fuselage/nose guns keep their own existing control and clearance rules.
+		if port in aircraft.model.gun_ports:
+			var local_x: float = aircraft.model.to_local(port.global_position).x
+			var side: StringName = &"left_wing" if local_x < 0 else &"right_wing"
+			if absf(local_x) > 1.0 and aircraft.components.detached.has(side): continue
 		var direction: Vector3 = shot_direction(port)
 		if spread_degrees > 0:
 			var shot_right: Vector3 = direction.cross(aircraft.global_basis.y).normalized()

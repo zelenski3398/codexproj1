@@ -85,6 +85,12 @@ func run() -> void:
 		damage.evaluate_structure(.25,Vector3(0,0,-120),Vector3.ZERO)
 		await frames(3)
 		check(damage.detached.has(&"left_wing") and damage.wing_efficiency(&"left_wing")==0 and plane.impact_effects.component_debris_count==1,kind+": loaded critical wing separates actual geometry with lift loss")
+		plane.guns.pool.clear()
+		plane.guns._fire_salvo()
+		var available_ports: int = 0
+		for port in plane.model.gun_ports:
+			if plane.model.to_local(port.global_position).x >= -1.0: available_ports += 1
+		check(plane.guns.pool.statistics.shots == available_ports,kind+": separated wing guns stop while remaining fixed guns retain physical projectiles")
 		var count := plane.impact_effects.component_debris_count
 		damage.detach(&"left_wing")
 		await frames(2)
