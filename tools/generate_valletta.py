@@ -223,10 +223,11 @@ fort_layout=build_st_elmo(fort_centre,land,heights,h,world,prism,cube,emit,STONE
 
 scene=trimesh.Scene();collision_scene=trimesh.Scene();total_triangles=0
 for (cx,cz,solid),meshes in sorted(chunks.items()):
-    combined=trimesh.util.concatenate(meshes)
+    visible_meshes=[mesh for mesh in meshes if not mesh.metadata.get("collision_only",False)]
+    combined=trimesh.util.concatenate(visible_meshes)
     name=f'City_{cx+10}_{cz+10}_'+('Structure' if solid else 'Detail')
     scene.add_geometry(combined,geom_name=name,node_name=name)
-    if solid:collision_scene.add_geometry(combined,geom_name=name,node_name=name)
+    if solid:collision_scene.add_geometry(trimesh.util.concatenate(meshes),geom_name=name,node_name=name)
     total_triangles+=len(combined.faces)
 (OUT/'city.glb').write_bytes(scene.export(file_type='glb'))
 (OUT/'collision.glb').write_bytes(collision_scene.export(file_type='glb'))

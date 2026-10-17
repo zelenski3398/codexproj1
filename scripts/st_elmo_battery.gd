@@ -5,6 +5,7 @@ extends Node3D
 @export var staggering_seconds: float=.07
 @export var aim_distance: float=1500
 @export var firing_volume_db: float=-16
+var reference_camera: Camera3D
 var guns: Array[BritishAAGun]=[]
 var lead: StElmoBofors
 var orders: Dictionary={}
@@ -16,6 +17,18 @@ var fire_since: float=-1
 func _ready() -> void:
 	name="StElmoBoforsBattery"
 	var layout:=StElmoLocations.data()
+	if layout.has("reference_camera"):
+		var view: Dictionary=layout.reference_camera
+		reference_camera=Camera3D.new()
+		reference_camera.name="FortStElmoReferenceCamera"
+		reference_camera.fov=float(view.fov)
+		reference_camera.near=.5 # Preserve wall/deck depth precision at aerial distances.
+		reference_camera.far=12000
+		add_child(reference_camera)
+		reference_camera.global_position=MaltaGeography.vector(view.position)
+		reference_camera.look_at(MaltaGeography.vector(view.target))
+		reference_camera.current=false # Debug/Remote inspector only; never steals play.
+
 	for i in range(3):
 		var gun:=StElmoBofors.new()
 		gun.name="StElmo_Bofors_%d"%(i+1)

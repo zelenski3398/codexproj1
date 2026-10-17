@@ -45,7 +45,9 @@ the player. Existing gun health persists through mounting and travel.
 
 ## Fort and placement
 
-![Reference-inspired fort](previews/st-elmo-overview.png)
+The current northern-view reconstruction, assumptions and latest native checks are documented in [the reconstruction guide](st-elmo-reconstruction.md).
+
+![North-side reference view](previews/st-elmo-north-reference.png)
 ![Walkable courtyard and open portico](previews/st-elmo-courtyard.png)
 ![Reused light emplacement with seated operator](previews/st-elmo-bofors.png)
 
@@ -131,11 +133,15 @@ remote destruction, occupied destruction and clean retry. Existing AA, Malta,
 Valletta, heavy/light and dive-defence/mouse checks cover regressions. Captures
 above were actually rendered with native Compatibility.
 
-Manual checks still needed: walk the full entrance/steps/ramps route, inspect
+The revised entrance, stairs and all gun ramps now have physical walking checks in the reconstruction guide. Manual checks still needed: inspect
 crew hands and interrupted handoffs from every angle, and listen to a three-gun
 battery alongside radio speech on real speakers. The views are schematic and
 can show existing Compatibility shadow/moire artifacts on close flat masonry.
 No frame-rate guarantee or fully surveyed historical reconstruction is claimed.
+
+### Earlier battery implementation validation (before the 17 October reshape)
+
+The following recorded results apply to the earlier geometry; see the reconstruction guide for current native checks.
 
 Recorded native results: St Elmo **35/35**, original AA **114/114**, Malta
 flight/boarding/persistence **36/36**, Valletta **17/17**, heavy/light AA

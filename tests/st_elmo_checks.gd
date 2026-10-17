@@ -25,14 +25,69 @@ func run() -> void:
 	var right:=Vector3(-forward.z,0,forward.x)
 	var layout:=StElmoLocations.data()
 	var center:=Vector3(layout.center_world[0],layout.deck,layout.center_world[1])
-	mission.pilot.global_position=center+right*(-36)+forward*(-47)+Vector3.UP*1.05
+	var route:Dictionary=layout.courtyard_ramp
+	mission.pilot.global_position=fort_point(route.start)+Vector3.UP*1.05
 	mission.pilot.velocity=Vector3.ZERO
 	mission.pilot.yaw=atan2(-forward.x,-forward.z)
 	Input.action_press("throttle_up")
 	await frames(430)
 	Input.action_release("throttle_up")
 	await frames(3)
-	check(mission.pilot.global_position.y>float(layout.deck)+2 and (mission.pilot.global_position-center).dot(forward)>-31,"Existing soldier physics walks up the courtyard ramp onto the raised floor")
+	check(mission.pilot.global_position.y>float(route.end[2])+.8 and mission.pilot.global_position.distance_to(fort_point(route.end)+Vector3.UP*1.05)<3,"Existing soldier physics walks up the revised courtyard ramp onto the raised floor")
+	# The treads use a baked smooth collider, preserving the soldier controller.
+	var stairs:Dictionary=layout.courtyard_steps
+	mission.pilot.global_position=fort_point(stairs.start)+Vector3.UP*1.05
+	mission.pilot.velocity=Vector3.ZERO
+	mission.pilot.yaw=atan2(-forward.x,-forward.z)
+	Input.action_press("throttle_up")
+	await frames(200)
+	Input.action_release("throttle_up")
+	await frames(3)
+	check(mission.pilot.global_position.distance_to(fort_point(stairs.end)+Vector3.UP*1.05)<2 and mission.pilot.global_position.y>float(stairs.end[2])+.8,"Soldier can climb the eight courtyard treads via their baked ramp collision without jumping")
+	# Actual controller walks the complete road/gate/upper-court route. Only
+	# the initial scenario pose is assigned; every leg uses normal movement.
+	var approach:Array=layout.approach_route
+	mission.pilot.global_position=fort_point(approach[0])+Vector3.UP*1.05
+	mission.pilot.velocity=Vector3.ZERO
+	await frames(4)
+	var reached:bool=true
+	Input.action_press("throttle_up")
+	for i in range(1,approach.size()):
+		var target:Vector3=fort_point(approach[i])
+		var budget:int=ceili(Vector2(target.x-mission.pilot.global_position.x,target.z-mission.pilot.global_position.z).length()/mission.pilot.walking_speed*120*1.5)+180
+		var arrived:bool=false
+		for tick in range(budget):
+			var delta:Vector3=target-mission.pilot.global_position
+			if Vector2(delta.x,delta.z).length()<.65:
+				arrived=true;break
+			mission.pilot.yaw=atan2(-delta.x,-delta.z)
+			await physics_frame
+		if not arrived:
+			print("BLOCKED ROUTE LEG ",i," position=",mission.pilot.global_position," target=",target)
+			reached=false;break
+	Input.action_release("throttle_up")
+	check(reached and mission.pilot.global_position.y>float(layout.inner_deck)+1.9,"Soldier can walk from the existing road through both gates to the upper courtyard")
+	check(layout.version==2 and layout.outline_grid.size()>14 and layout.inner_outline_grid.size()>12,"Fort uses separate irregular outer and inner photographic massing")
+	check(fort.reference_camera!=null and not fort.reference_camera.current and fort.reference_camera.global_position.z<center.z and (-fort.reference_camera.global_basis.z).dot(-forward)>.25,"Optional reference camera sits north and looks toward Valletta without stealing player view")
+	var supported:bool=true
+	for item in fort.guns:
+		var ray:=PhysicsRayQueryParameters3D.create(item.global_position+Vector3.UP,item.global_position+Vector3.DOWN*2,1)
+		var hit:=world.get_world_3d().direct_space_state.intersect_ray(ray)
+		supported=supported and not hit.is_empty() and absf(hit.position.y-item.global_position.y)<.1 and world.valletta_city.is_ancestor_of(hit.collider)
+	check(supported,"All three relocated gun pads have matching structural collision at their feet")
+	for i in range(layout.gun_approaches.size()):
+		var access:Dictionary=layout.gun_approaches[i]
+		mission.pilot.global_position=fort_point(access.start)+Vector3.UP*1.05
+		mission.pilot.velocity=Vector3.ZERO
+		var direction:Vector3=fort_point(access.end)-fort_point(access.start)
+		mission.pilot.yaw=atan2(-direction.x,-direction.z)
+		Input.action_press("throttle_up")
+		await frames(595)
+		Input.action_release("throttle_up")
+		await frames(3)
+		var expected:Vector3=fort_point(access.end)+Vector3.UP*1.05
+		print("GUN WALK ",i+1," position=",mission.pilot.global_position," expected=",expected)
+		check(mission.pilot.global_position.distance_to(expected)<2,"Normal soldier controls reach gun platform %d up its access ramp"%(i+1))
 	var identity: int=world.get_instance_id()
 	var aircraft: FlightAircraft=mission.initial_aircraft
 	aircraft.take_damage(10)
@@ -130,3 +185,6 @@ func run() -> void:
 	await frames(6)
 	print("ST ELMO RESULT: ",passed,"/",passed+failed," passed")
 	quit(0 if failed==0 else 1)
+
+func fort_point(value:Array) -> Vector3:
+	return Vector3(value[0],value[2],value[1])
