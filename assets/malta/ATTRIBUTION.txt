@@ -39,3 +39,11 @@ editorial harbour/dockyard closure. Agricultural plots and dry-stone rubble-wall
 meshes are original inferred artwork, not mapped parcels or surveyed wartime
 boundaries. Seed, source IDs, closure and footprint decisions are retained in
 assets/malta/cottonera/landscape_rules.json and the generator source.
+
+Island-wide countryside addition (17 October 2026): original deterministic inferred
+field layouts, soil skins, dirt tracks and rubble-wall art, read-only draped onto
+the existing attributed island terrain. These are not surveyed cadastral parcels
+or a verified 1940-42 agricultural reconstruction. Urban exclusion buffers are
+conservative editorial masks. Existing bundled procedural surface_detail.png is
+reused. The supplied comparison informed field-shape principles only; no photo,
+watermark or third-party image texture was embedded. See docs/malta-countryside.md.

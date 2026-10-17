@@ -814,3 +814,7 @@ Confirmed hits now produce varied positional impact audio. Healthy sea crashes p
 ## Cottonera enclosure and rubble field walls
 
 Cottonera buildings now follow the reviewed outer defensive enclosure, with explicit decisions for crossing footprints. Inferred agricultural plots outside it have terrain-fitted Maltese rubble walls, shared edges and road/gate openings. [Boundary, files, screenshots, generation and checks](docs/cottonera-fields.md).
+
+## Procedural Maltese countryside
+
+The Malta world now includes clustered irregular fields, red/brown soil, dirt access lanes and physical rubble walls, with conservative exclusions for towns, roads, airfields and installations. Detailed rocks load near the active camera. [Current screenshots, geography, settings, generation and validation](docs/malta-countryside.md). Layouts are explicitly inferred; the original terrain elevations and existing Cottonera environment are preserved.

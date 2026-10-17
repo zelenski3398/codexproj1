@@ -13,6 +13,7 @@ var fort_battery: StElmoBattery
 var cottonera_region: CottoneraRegion
 var mdina_city: MdinaCity
 var valletta_city: VallettaCity
+var countryside: MaltaCountryside
 var landscape_details: MaltaLandscapeDetails
 
 func _ready() -> void:
@@ -71,10 +72,13 @@ func _ready() -> void:
 	fort_battery = StElmoBattery.new()
 	fort_battery.world = self
 	add_child(fort_battery)
+	countryside = MaltaCountryside.new()
+	add_child(countryside)
 	landscape_details = MaltaLandscapeDetails.new()
 	landscape_details.world = self
 	add_child(landscape_details)
 	terrain_appearance.debug_mode_changed.connect(func(enabled: bool):
+		countryside.visible = not enabled
 		landscape_details.visible = not enabled
 		valletta_city.visible = not enabled
 		mdina_city.visible = not enabled

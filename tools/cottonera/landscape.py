@@ -105,9 +105,12 @@ FACES=np.array([[0,2,1],[0,3,2],[4,5,6],[4,6,7],[0,1,5],[0,5,4],[1,2,6],[1,6,5],
 ROCK=trimesh.creation.icosphere(subdivisions=0)
 ROCK_VERTICES=ROCK.vertices/np.max(np.abs(ROCK.vertices),axis=0)/2
 ROCK_FACES=ROCK.faces[:, ::-1] # Local along-wall/up/normal basis reverses handedness.
+ROCK_VARIANTS=[ROCK_VERTICES+np.random.default_rng(i+45).uniform(-.06,.06,ROCK_VERTICES.shape) for i in range(4)]
 def stone_batch(sections,config,rng):
     arrays={level:[[],[],[]] for level in ('mid','near','far','collision')}
-    colours=np.array([[184,177,156,255],[164,161,146,255],[198,188,161,255],[176,169,147,255],[190,184,164,255]])
+    colours=np.array(config.get("palette_rgba",[[184,177,156,255],[164,161,146,255],[198,188,161,255],[176,169,147,255],[190,184,164,255]]))
+    rural=config.get("rural_style",False)
+    tone=colours[0].copy()
     def add(level,a,b,ya,yb,base,top,width0,width1,rough=False):
         direction=b-a;length=np.linalg.norm(direction)
         if length<.02:return
@@ -117,7 +120,12 @@ def stone_batch(sections,config,rng):
         if level=='near':
             # Twelve-vertex irregular rock, with broken/sloping faces instead of
             # a cut rectangular front. Shared reusable topology is only 20 tris.
-            template=ROCK_VERTICES
+            template=ROCK_VARIANTS[rng.integers(4)] if rural else ROCK_VERTICES
+            if rural:
+                template=template.copy()
+                rotation=rng.uniform(-.16,.16)
+                template[:,[0,2]]=template[:,[0,2]]@np.array([[np.cos(rotation),-np.sin(rotation)],[np.sin(rotation),np.cos(rotation)]])
+                template*=rng.uniform([.9,.92,.88],[1.03,1.02,1.08])
             t=template[:,0]+.5
             rise=template[:,1]+.5
             width=width0+(width1-width0)*rise
@@ -129,10 +137,21 @@ def stone_batch(sections,config,rng):
             faces=FACES
         if rough:vertices+=rng.uniform(-.025,.025,vertices.shape)
         v,f,c=arrays[level];offset=len(v)*(12 if level=='near' else 8)
-        v.append(vertices);f.append(faces+offset);c.append(np.tile(colours[rng.integers(len(colours))],(len(faces),1)))
+        v.append(vertices);f.append(faces+offset)
+        colour=colours[rng.integers(len(colours))]
+        if rural:
+            colour=.7*tone+.3*colour
+            if base<.2 and rng.random()<.4:colour[:3]*=.86
+            colour[:3]=np.clip(colour[:3]+rng.uniform(-6,6),0,255)
+        c.append(np.tile(np.uint8(np.clip(colour,0,255)),(len(faces),1)))
     for a,b,hh in sections:
         height=rng.uniform(config['height_min_m'],config['height_max_m'])
         w0=config['base_width_m'];w1=config['top_width_m']
+        if rural:
+            tone=colours[rng.choice(len(colours),p=[.28,.25,.23,.13,.08,.03])].copy()
+            w0*=rng.uniform(.85,1.1);w1*=rng.uniform(.85,1.1)
+            if rng.random()<config.get("low_wall_probability",.1):height=rng.uniform(*config.get("low_height_m",[.42,.68]))
+            if rng.random()<config.get("collapsed_probability",.035):height=rng.uniform(*config.get("collapsed_height_m",[.25,.42]))
         add('collision',a,b,hh[0],hh[2],-.16,height,w0,w1)
         add('far',a,b,hh[0],hh[2],-.12,height,w0,w1,True)
         # Mid-distance silhouette has three irregular wider-base courses.
@@ -143,11 +162,15 @@ def stone_batch(sections,config,rng):
         courses=[0,rng.uniform(.23,.36),rng.uniform(.59,.73),1]
         for row in range(3):
             t=courses[row];positions=[0.0]
-            while positions[-1]<1:positions.append(min(1,positions[-1]+rng.uniform(.2,.48)))
+            while positions[-1]<1:positions.append(min(1,positions[-1]+rng.uniform(.3,.62) if rural and row==0 else positions[-1]+rng.uniform(.2,.48)))
             for left,right in zip(positions[:-1],positions[1:]):
                 start=a+(b-a)*left;end=a+(b-a)*right
                 ya=hh[0]+(hh[2]-hh[0])*left;yb=hh[0]+(hh[2]-hh[0])*right
                 add('near',start,end,ya,yb,-.1+t*height,courses[row+1]*height,w0+(w1-w0)*t,w0+(w1-w0)*courses[row+1],True)
+        if rural and rng.random()<config.get("loose_stone_probability",.07):
+            offset_side=rng.choice([-1,1])*.56
+            normal=np.array([(b-a)[1],-(b-a)[0]])/np.linalg.norm(b-a)
+            add('near',a+normal*offset_side,a+(b-a)*.3+normal*offset_side,hh[0],hh[0],-.03,.18,.22,.18,True)
     model=Models()
     for level,(vertices,faces,colours_array) in arrays.items():
         if not vertices:continue

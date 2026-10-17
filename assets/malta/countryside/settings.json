@@ -1,0 +1,213 @@
+{
+  "seed": 1942,
+  "cluster_spacing_m": 650,
+  "cluster_size_m": [
+    190,
+    285
+  ],
+  "maximum_clusters": 115,
+  "cluster_probability": 0.72,
+  "coast_guard_m": 70,
+  "maximum_plot_slope": 0.28,
+  "maximum_cluster_slope": 0.2,
+  "road_field_margin_m": 7,
+  "maximum_wall_length_m": 15000,
+  "wall_probability": 0.22,
+  "section_length_m": 1.6,
+  "minimum_plot_area_m2": 170,
+  "small_width_m": [
+    12,
+    25
+  ],
+  "medium_width_m": [
+    25,
+    55
+  ],
+  "large_width_m": [
+    55,
+    90
+  ],
+  "urban_buffers_lon_lat_m": [
+    [
+      14.426,
+      35.9093,
+      480,
+      "Mosta"
+    ],
+    [
+      14.443,
+      35.914,
+      450,
+      "Naxxar"
+    ],
+    [
+      14.461,
+      35.8972,
+      650,
+      "Birkirkara"
+    ],
+    [
+      14.441,
+      35.8718,
+      430,
+      "Zebbug"
+    ],
+    [
+      14.472,
+      35.876,
+      480,
+      "Qormi"
+    ],
+    [
+      14.475,
+      35.831,
+      380,
+      "Zurrieq"
+    ],
+    [
+      14.436,
+      35.8556,
+      400,
+      "Siggiewi"
+    ],
+    [
+      14.398,
+      35.8815,
+      550,
+      "Rabat"
+    ],
+    [
+      14.533,
+      35.855,
+      500,
+      "Zejtun"
+    ],
+    [
+      14.536,
+      35.876,
+      500,
+      "Zabbar"
+    ],
+    [
+      14.367,
+      35.9197,
+      320,
+      "Mgarr"
+    ],
+    [
+      14.362,
+      35.958,
+      420,
+      "Mellieha"
+    ],
+    [
+      14.4,
+      35.949,
+      450,
+      "St Pauls Bay"
+    ],
+    [
+      14.504,
+      35.912,
+      600,
+      "Sliema"
+    ],
+    [
+      14.544,
+      35.841,
+      400,
+      "Marsaxlokk"
+    ],
+    [
+      14.239,
+      36.044,
+      550,
+      "Victoria"
+    ],
+    [
+      14.264,
+      36.05,
+      350,
+      "Xaghra"
+    ],
+    [
+      14.295,
+      36.038,
+      320,
+      "Nadur"
+    ],
+    [
+      14.31,
+      36.035,
+      300,
+      "Qala"
+    ],
+    [
+      14.259,
+      36.032,
+      350,
+      "Xewkija"
+    ]
+  ],
+  "wall": {
+    "rural_style": true,
+    "height_min_m": 0.7,
+    "height_max_m": 1.4,
+    "base_width_m": 0.68,
+    "top_width_m": 0.38,
+    "palette_rgba": [
+      [
+        221,
+        216,
+        200,
+        255
+      ],
+      [
+        191,
+        192,
+        184,
+        255
+      ],
+      [
+        201,
+        179,
+        139,
+        255
+      ],
+      [
+        184,
+        148,
+        103,
+        255
+      ],
+      [
+        166,
+        123,
+        101,
+        255
+      ],
+      [
+        137,
+        98,
+        79,
+        255
+      ]
+    ],
+    "low_wall_probability": 0.1,
+    "low_height_m": [
+      0.42,
+      0.68
+    ],
+    "collapsed_probability": 0.035,
+    "collapsed_height_m": [
+      0.25,
+      0.42
+    ],
+    "loose_stone_probability": 0.07
+  },
+  "dirt_track_width_m": 3.3,
+  "access_gap_m": [
+    2.6,
+    4.8
+  ]
+}
