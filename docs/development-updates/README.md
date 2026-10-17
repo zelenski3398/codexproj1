@@ -4,6 +4,7 @@
 
 The original report is a frozen 50-commit audit through `588ac7b`. Later changes are recorded here with explicit commit boundaries, avoiding a repeated reconstruction of unchanged history.
 
+- [17 October 2026: aircraft impact audio, sea plunge and airborne destruction](2026-10-17-aircraft-impact-audio.md).
 - [17 October 2026: northern-reference Fort St Elmo reconstruction](2026-10-17-st-elmo-reconstruction.md).
 - [16 October 2026: live aircraft component health HUD](2026-10-16-component-health-hud.md).
 - [16 October 2026: aircraft breakup, sea impacts and Spitfire details](2026-10-16-aircraft-crashes.md).
