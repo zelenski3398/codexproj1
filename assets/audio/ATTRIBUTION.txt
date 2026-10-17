@@ -52,3 +52,10 @@ These are illustrative placeholders, not recordings of real aircraft or water
 impacts. Replace the AudioStream slots in audio_profiles/aircraft_impacts.tres
 with licensed mono metallic hits, a heavy structural hit and a layered water
 plunge recording when available. Explosion reuses aircraft_crash.ogg above.
+
+Harbour Interception commander:
+User-supplied "Faith hope and charity mission intro.mp3" and
+"Faith hope and charity mission congratz.mp3", prepared as harbour/intro.ogg
+and harbour/congratulations.ogg using tools.prepare_radio.prepare.
+Source hashes and processing metadata: harbour/*.json. Supplied speech retained;
+no generated dialogue. Ownership/licensing is not inferred from the filenames.

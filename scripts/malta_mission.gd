@@ -166,6 +166,7 @@ func nearest_serviceable() -> FlightAircraft:
 	var nearest: FlightAircraft
 	var distance: float = boarding_range
 	for aircraft in fleet:
+		if session.game_mode == "harbour" and aircraft != initial_aircraft: continue
 		if not is_instance_valid(aircraft) or aircraft.is_destroyed or aircraft.is_crashed or aircraft.airspeed > maximum_exit_speed or aircraft.gear.contact_count == 0:
 			continue
 		var current: float = pilot.global_position.distance_to(aircraft.global_position)

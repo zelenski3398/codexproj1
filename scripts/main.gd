@@ -5,6 +5,7 @@ var environment_id: String = "countryside"
 var field: Node3D
 var missions_menu: MissionsMenu
 var aa_defence: DiveDefenceMission
+var harbour: HarbourInterception
 var interception: VallettaInterception
 var malta_menu: MaltaDepartureMenu
 var malta_mission: MaltaMission
@@ -47,6 +48,11 @@ func _ready() -> void:
 	show_selection()
 
 func show_selection() -> void:
+	if is_instance_valid(harbour):
+		harbour.cancel()
+		remove_child(harbour)
+		harbour.queue_free()
+	harbour = null
 	GameAudioMixer.instance.set_menu_active(true)
 	_remember_difficulty()
 	if is_instance_valid(aa_defence):
@@ -285,7 +291,7 @@ func start_malta(field_id: String, kind: String, selected_mode: String = "encoun
 	if StElmoLocations.is_fort(field_id):
 		if selected_mode not in ["encounter","survival"]:return
 		field_id="luqa"
-	if selected_mode not in ["encounter", "survival", "interception", "aa_defence"]:
+	if selected_mode not in ["encounter", "survival", "interception", "aa_defence", "harbour"]:
 		return
 	if MaltaGeography.field(field_id).is_empty() or kind not in ["spitfire", "sea_gladiator"]:
 		return
@@ -323,7 +329,15 @@ func start_malta(field_id: String, kind: String, selected_mode: String = "encoun
 	malta_mission.initial_kind = kind
 	add_child(malta_mission)
 	aircraft = malta_mission.initial_aircraft
-	if game_mode == "aa_defence":
+	if game_mode == "harbour":
+		session_number += 1
+		defeat_notifications = 0
+		enemy_defeated = false
+		encounters.begin_external()
+		harbour = HarbourInterception.new()
+		harbour.session = self
+		add_child(harbour)
+	elif game_mode == "aa_defence":
 		session_number+=1
 		defeat_notifications=0
 		enemy_defeated=false
@@ -386,6 +400,7 @@ func show_missions() -> void:
 	selector = null
 	missions_menu = MissionsMenu.new()
 	missions_menu.launch_requested.connect(start_interception, CONNECT_DEFERRED)
+	missions_menu.harbour_requested.connect(start_harbour, CONNECT_DEFERRED)
 	missions_menu.aa_requested.connect(start_aa_defence,CONNECT_DEFERRED)
 	missions_menu.back_requested.connect(show_selection, CONNECT_DEFERRED)
 	add_child(missions_menu)
@@ -399,3 +414,6 @@ func return_to_missions() -> void:
 
 func start_aa_defence() -> void:
 	start_malta("luqa","spitfire","aa_defence")
+
+func start_harbour() -> void:
+	start_malta("hal_far", "sea_gladiator", "harbour")

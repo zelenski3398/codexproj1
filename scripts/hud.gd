@@ -318,6 +318,8 @@ func _process(delta: float) -> void:
 		state_label.text = "PAUSED · DAMAGE INSPECTION"
 	if mission != null and is_instance_valid(mission.session.interception) and mission.session.interception.phase in ["SUCCESS", "FAILED"]:
 		overlay.visible = false
+	if mission != null and is_instance_valid(mission.session.harbour) and mission.session.harbour.is_finished():
+		overlay.visible = false
 	resume_button.disabled = aircraft.is_crashed or aircraft.is_destroyed
 	if overlay.visible:
 		overlay_title.text = "DESTROYED" if aircraft.is_destroyed else ("AIRCRAFT LOST" if aircraft.is_crashed else "PAUSED")

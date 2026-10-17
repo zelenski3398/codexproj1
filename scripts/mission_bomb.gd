@@ -9,6 +9,9 @@ var velocity: Vector3
 @export var damage_pilots: bool = false
 @export var pilot_blast_damage: float = 130
 @export var sandbag_transmission: float = 0.35
+## Opt-in fort receivers used only by harbour defence.
+@export var fort_blast_radius: float = 0
+@export var fort_blast_damage: float = 520
 var age: float = 0
 var impact_effects: Node3D
 var resolved: bool = false
@@ -66,6 +69,11 @@ func explode(point: Vector3) -> void:
 		var ray:=PhysicsRayQueryParameters3D.create(point+Vector3.UP*.2,gun.global_position+Vector3.UP,1)
 		var hit:=get_world_3d().direct_space_state.intersect_ray(ray)
 		if hit.is_empty() or hit.collider==gun:receivers.append([gun,aa_blast_damage*(1-d/aa_blast_radius)])
+	if fort_blast_radius > 0:
+		for fort in get_tree().get_nodes_in_group("mission_forts"):
+			var distance: float = fort.blast_distance(point)
+			if distance < fort_blast_radius:
+				receivers.append([fort, fort_blast_damage * (1 - distance / fort_blast_radius)])
 	for entry in receivers:
 		if is_instance_valid(entry[0]):entry[0].take_damage(entry[1])
 	impacted.emit(point)

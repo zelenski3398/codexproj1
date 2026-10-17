@@ -15,6 +15,7 @@ var ages: Array[float] = []
 var lifetimes: Array[float] = []
 var damage: Array[float] = []
 var excluded: Array[RID] = []
+var source_ids: Array[int] = [] # Snapshot at fire time; shooter RID may expire in flight.
 var excluded_hitboxes: Array[Array] = []
 var shot_distances: Array[float] = []
 var statistic_generations: Array[int] = []
@@ -45,6 +46,7 @@ func _ready() -> void:
 		lifetimes.append(0.0)
 		damage.append(0.0)
 		excluded.append(RID())
+		source_ids.append(0)
 		excluded_hitboxes.append([])
 		shot_distances.append(-1)
 		statistic_generations.append(0)
@@ -73,8 +75,10 @@ func spawn(origin: Vector3, velocity: Vector3, life: float, hit_damage: float, s
 	damage[index] = hit_damage
 	excluded[index] = shooter
 	excluded_hitboxes[index] = []
+	source_ids[index] = 0
 	if shooter.is_valid():
 		var owner_id: int = PhysicsServer3D.body_get_object_instance_id(shooter)
+		source_ids[index] = owner_id
 		var body: Object = instance_from_id(owner_id) if owner_id != 0 else null
 		if body is FlightAircraft:
 			excluded_hitboxes[index] = body.components.hitbox_rids
@@ -119,6 +123,9 @@ func _physics_process(delta: float) -> void:
 			var component_before:float = float(collider.damage_system.integrity[collider.definition.id]) if collider is AircraftHitbox else 0
 			var hp_before: float = hit_aircraft.health.hp if hit_aircraft != null else 0
 			if is_instance_valid(collider) and collider.has_method("take_damage") and CombatTeams.can_damage(teams[index], collider):
+				if hit_aircraft != null and not hit_aircraft.is_destroyed and source_ids[index] != 0:
+					hit_aircraft.set_meta("last_hostile_shooter_id", source_ids[index])
+					hit_aircraft.set_meta("last_hostile_hit_frame", Engine.get_physics_frames())
 				if collider.has_method("receive_projectile_hit"):
 					if shell_definition != null and collider is AircraftHitbox:
 						var id: StringName = collider.definition.id

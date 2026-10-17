@@ -6,6 +6,10 @@ Gladiator**, take off, bank over the fields, return, land and brake. Both have
 guns, component damage and health/damage effects. Countryside starts with a flying
 Ju 87-inspired opponent; Malta free roam starts peacefully until you request combat. All aircraft are original procedural mesh placeholders. No paid assets.
 
+## Faith, Hope and Charity — Harbour Interception
+
+Choose **Missions → Faith, Hope and Charity → Depart from Ħal Far**. Fly Faith, a Sea Gladiator, with persistent friendly wingmen Hope and Charity. Stop three SM.79 / CR.42 formations before bomb release on Fort St Elmo or Fort St Angelo. The final formation has two ace escorts. Both supplied commander recordings play as the introduction and success message, with radio mixing and summary captions. See the [mission guide, tuning and validation](docs/harbour-interception.md).
+
 ## Live aircraft component health
 
 The bottom of the flight screen shows a colour-coded top-down aircraft diagram and individual integrity percentages/bars for the fuselage, left/right wings, engine, cockpit, rudder, elevator and fuel tank. Healthy parts are green, half-health parts amber, and failed parts red, with continuous colour changes between them. Values use each component's own maximum integrity, independently of the overall HP bar. Reset and aircraft switching refresh the display automatically. The panel does not capture flight input.

@@ -1,6 +1,7 @@
 class_name MissionsMenu
 extends CanvasLayer
 signal launch_requested(kind: String)
+signal harbour_requested
 signal aa_requested
 signal back_requested
 var mission_picker: OptionButton
@@ -36,6 +37,7 @@ func _ready() -> void:
 	mission_picker=OptionButton.new()
 	mission_picker.add_item("Defend Valletta — Ta’ Qali Interception")
 	mission_picker.add_item("Under Dive-Bomber Attack — Ħal Luqa")
+	mission_picker.add_item("Faith, Hope and Charity — Harbour Interception")
 	mission_picker.custom_minimum_size.y=44
 	column.add_child(mission_picker)
 	mission_picker.item_selected.connect(_choose_mission)
@@ -79,7 +81,8 @@ func _launch() -> void:
 	if launch_button.disabled:
 		return
 	launch_button.disabled = true
-	if mission_picker.selected==1:aa_requested.emit()
+	if mission_picker.selected==2:harbour_requested.emit()
+	elif mission_picker.selected==1:aa_requested.emit()
 	else:launch_requested.emit("sea_gladiator" if aircraft_picker.selected == 1 else "spitfire")
 
 func _input(event: InputEvent) -> void:
@@ -93,6 +96,19 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 
 func _choose_mission(index: int) -> void:
+	if index == 2:
+		var harbour: HarbourDefinition = preload("res://mission_definitions/harbour.tres")
+		title.text = harbour.title
+		briefing.text = harbour.briefing
+		guide.text = "RAF ĦAL FAR · FAITH / HOPE / CHARITY\nE board · I engine · W power · arrows fly · F guns\nFriendly wingmen follow after takeoff. Three waves."
+		mission_note.text = "Fictional defence inspired by Malta, 1940 · SM.79 / CR.42"
+		mission_chart.home = "hal_far"
+		aircraft_picker.set_item_text(1, "Sea Gladiator · Faith (assigned)")
+		aircraft_picker.select(1)
+		aircraft_picker.disabled = true
+		launch_button.text = "DEPART FROM ĦAL FAR · FLY FAITH"
+		return
+	aircraft_picker.set_item_text(1, "Sea Gladiator · slower, more challenging")
 	var aa: bool=index==1
 	title.text="Under Dive-Bomber Attack" if aa else DEFINITION.title
 	briefing.text=DiveDefenceMission.BRIEFING if aa else DEFINITION.briefing

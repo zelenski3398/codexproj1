@@ -1,0 +1,14 @@
+{
+  "source": "Faith hope and charity mission congratz.mp3",
+  "source_sha256": "abcae9a58aba04f8f13af73e4e40c3130307d3307b612a35ac1e6cc0f846ac50",
+  "seconds": 14.645714285714286,
+  "mono": true,
+  "bandpass_hz": [
+    180,
+    3800
+  ],
+  "voice_loudness_lufs": -16,
+  "static_relative_rms_db": -36,
+  "click_seconds": 0.018,
+  "speech_generated": false
+}

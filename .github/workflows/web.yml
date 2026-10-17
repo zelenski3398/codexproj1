@@ -29,6 +29,10 @@ jobs:
           godot --headless --path . --fixed-fps 120 --script res://tests/aircraft_damage_hud_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/italian_aircraft_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/malta_encounter_checks.gd
+          godot --headless --path . --fixed-fps 120 --script res://tests/harbour_checks.gd
+          godot --headless --path . --fixed-fps 120 --script res://tests/harbour_radio_checks.gd
+          godot --headless --path . --fixed-fps 120 --script res://tests/harbour_flight_checks.gd
+          godot --headless --path . --fixed-fps 120 --script res://tests/harbour_departure_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/interception_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/interception_combat_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/interception_departure_checks.gd
