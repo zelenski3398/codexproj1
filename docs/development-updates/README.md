@@ -4,6 +4,7 @@
 
 The original report is a frozen 50-commit audit through `588ac7b`. Later changes are recorded here with explicit commit boundaries, avoiding a repeated reconstruction of unchanged history.
 
+- [17 October 2026: interactive wingman radio, live sightings and supplied pilot voices](2026-10-17-wingman-radio.md).
 - [17 October 2026: Faith, Hope and Charity harbour interception, wingmen and supplied commander audio](2026-10-17-harbour-interception.md).
 - [17 October 2026: clustered Maltese countryside, dirt tracks and rural rubble walls](2026-10-17-malta-countryside.md).
 - [17 October 2026: Cottonera outer enclosure and inferred rubble field walls](2026-10-17-cottonera-fields.md).
