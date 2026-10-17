@@ -165,6 +165,7 @@ func _run() -> void:
 	check(get_nodes_in_group("enemy_flyby_audio").size() == old_voice_count - 1, "Removing aircraft removes its voices and shared budget contribution")
 	print("FLYBY NATIVE MEASUREMENTS: ", JSON.stringify(measurements))
 	AudioServer.remove_bus_effect(bus, AudioServer.get_bus_effect_count(bus)-1)
+	if is_instance_valid(AircraftImpactService.instance): AircraftImpactService.instance.clear_all()
 	stage.queue_free()
 	await frames(4)
 	# Let the actual audio thread retire stopped Ogg playbacks before quitting.

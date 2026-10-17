@@ -33,6 +33,10 @@ func run() -> void:
 	camera.make_current()
 	await frames(4)
 	await capture("spitfire-reference")
+	plane.gear.contact_count = 0 # Frozen airborne presentation fixture has no wheel contacts.
+	plane.take_damage(999)
+	await frames(8)
+	await capture("airborne-explosion")
 	plane.freeze = false
 	plane.request_reset()
 	plane.pending_reset_pose = Transform3D(Basis.IDENTITY, Vector3(0, 5, 500))
@@ -66,6 +70,8 @@ func run() -> void:
 			break
 	await frames(12)
 	await capture("water-plunge")
+	AircraftImpactService.instance.clear_all()
+	OS.delay_msec(100) # Allow the native mixer to retire stopped Ogg playbacks.
 	game.queue_free()
 	await frames(3)
 	quit()

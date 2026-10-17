@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="AircraftImpactProfile" load_steps=8 format=3]
+[ext_resource type="Script" path="res://scripts/aircraft_impact_profile.gd" id="1"]
+[ext_resource type="AudioStream" path="res://assets/audio/impacts/metal_hit_1_placeholder.ogg" id="2"]
+[ext_resource type="AudioStream" path="res://assets/audio/impacts/metal_hit_2_placeholder.ogg" id="3"]
+[ext_resource type="AudioStream" path="res://assets/audio/impacts/metal_hit_3_placeholder.ogg" id="4"]
+[ext_resource type="AudioStream" path="res://assets/audio/impacts/heavy_hit_placeholder.ogg" id="5"]
+[ext_resource type="AudioStream" path="res://assets/audio/impacts/sea_plunge_placeholder.ogg" id="6"]
+[ext_resource type="AudioStream" path="res://assets/audio/aircraft_crash.ogg" id="7"]
+[resource]
+script = ExtResource("1")
+metal_hits = Array[AudioStream]([ExtResource("2"), ExtResource("3"), ExtResource("4")])
+heavy_hit = ExtResource("5")
+water_impact = ExtResource("6")
+explosion = ExtResource("7")

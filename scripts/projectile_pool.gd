@@ -116,6 +116,7 @@ func _physics_process(delta: float) -> void:
 				statistics.impacts += 1
 			var collider: Object = hit.collider
 			var hit_aircraft: FlightAircraft = collider.damage_system.aircraft if collider is AircraftHitbox else (collider if collider is FlightAircraft else null)
+			var component_before:float = float(collider.damage_system.integrity[collider.definition.id]) if collider is AircraftHitbox else 0
 			var hp_before: float = hit_aircraft.health.hp if hit_aircraft != null else 0
 			if is_instance_valid(collider) and collider.has_method("take_damage") and CombatTeams.can_damage(teams[index], collider):
 				if collider.has_method("receive_projectile_hit"):
@@ -131,6 +132,9 @@ func _physics_process(delta: float) -> void:
 			if hit_aircraft != null and hit_aircraft.health.hp < hp_before and statistic_generations[index] == statistics.generation:
 				var component: StringName = collider.definition.id if collider is AircraftHitbox else &"fuselage"
 				statistics.record_aircraft_hit(component, hp_before - hit_aircraft.health.hp, shot_distances[index], ages[index])
+			var component_damaged:bool = collider is AircraftHitbox and float(collider.damage_system.integrity[collider.definition.id])<component_before
+			if hit_aircraft!=null and (hit_aircraft.health.hp<hp_before or component_damaged):
+				AircraftImpactService.obtain().aircraft_hit(hit_aircraft,hit.position,shell_definition!=null)
 			_impact(hit.position)
 			round_finished.emit(hit.position, collider, teams[index])
 			_release(slot)

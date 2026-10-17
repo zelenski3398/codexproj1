@@ -3,6 +3,7 @@ extends Node3D
 ## One cosmetic impact burst. CPU meshes/billboard smoke support Compatibility.
 ## Owned by the session, so it can linger after the wreck and clear on restart.
 @export var strength: float = 1.0
+@export var duration: float = 2.5
 var visual_enabled: bool = true
 var water_impact: bool = false
 var elapsed: float = 0
@@ -67,5 +68,5 @@ func _physics_process(delta: float) -> void:
 			velocities[i].y -= delta * 12
 		color.a = (1 - progress) * 0.8
 		materials[i].albedo_color = color
-	if elapsed > 2.5:
+	if elapsed > duration:
 		queue_free()

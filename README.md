@@ -806,3 +806,7 @@ Enemy aircraft now use [distance-dependent engine roar and bounded Doppler](docs
 ## Fort St Elmo ground battery
 
 Choose St Elmo or any of its three Bofors positions in Malta departure selection. Use **M → destination → Travel** on foot to teleport between the fort and all airfields without resetting the world. **E** mounts, **B** toggles individual/battery control, and **LMB** fires. [Controls, previews, placement and validation](docs/st-elmo-battery.md). The [17 October northern-reference reconstruction](docs/st-elmo-reconstruction.md) replaces the fort geometry while preserving its geographic anchor, three guns and travel options; it includes a matching debug camera and ground-level previews.
+
+## Aircraft impact audio and immediate airborne destruction
+
+Confirmed hits now produce varied positional impact audio. Healthy sea crashes plunge with one speed-scaled splash at the real water surface; zero HP in flight creates one immediate explosion, with an optional later splash from the actual wreck crossing. [Implementation, assets, tuning, previews and checks](docs/aircraft-impact-audio.md). Sounds added for this feature are explicitly labelled synthesized placeholders. Tune `audio_profiles/aircraft_impacts.tres`.

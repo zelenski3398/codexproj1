@@ -168,6 +168,8 @@ func _destroy() -> void:
 	is_destroyed = true
 	pilot.reset_commands()
 	guns.reset(false) # Clear rounds/flashes, retain this life's combat telemetry.
+	aircraft_audio.clear()
+	impact_effects.on_destroyed()
 	destroyed.emit()
 
 func request_reset() -> void:

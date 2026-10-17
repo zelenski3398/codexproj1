@@ -238,6 +238,7 @@ func _on_enemy_ground_impact(point: Vector3, source: EnemyAircraft) -> void:
 	burst.global_position = point
 
 func _clear_encounter_effects() -> void:
+	if is_instance_valid(AircraftImpactService.instance):AircraftImpactService.instance.clear_all()
 	if not is_instance_valid(encounter_effects):
 		return
 	for effect in encounter_effects.get_children():

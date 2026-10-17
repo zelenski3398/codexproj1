@@ -81,12 +81,14 @@ func _destroy() -> void:
 	ai.mode = "DESTROYED"
 	ai.set_physics_process(false)
 	rear_gunner.cease_fire()
+	rear_gunner.guns.reset(false)
 	rear_gunner.set_physics_process(false)
 	super._destroy()
 
 func _crash(_reason: String) -> void:
 	# Fatal airframe/terrain contact enters the same single destroyed life.
 	if not is_destroyed:
+		impact_effects.start(impact_effects.water)
 		take_damage(health.max_hp)
 
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
