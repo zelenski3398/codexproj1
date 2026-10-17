@@ -23,7 +23,10 @@ func run() -> void:
 	root.add_child(session)
 	await frames(6)
 	session.show_missions()
-	check(session.missions_menu.mission_picker.item_count==2,"Missions menu includes dedicated AA option and original interception")
+	var mission_names: Array[String] = []
+	for index in session.missions_menu.mission_picker.item_count:
+		mission_names.append(session.missions_menu.mission_picker.get_item_text(index))
+	check(mission_names == ["Defend Valletta — Ta’ Qali Interception", "Under Dive-Bomber Attack — Ħal Luqa", "Faith, Hope and Charity — Harbour Interception"], "Missions menu preserves interception and AA choices and includes harbour interception")
 	session.missions_menu.mission_picker.select(1)
 	session.missions_menu._choose_mission(1)
 	check(session.missions_menu.briefing.text==DiveDefenceMission.BRIEFING and session.missions_menu.aircraft_picker.disabled,"AA briefing and ground departure selection")
