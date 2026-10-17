@@ -17,6 +17,7 @@ var chase: ChaseCamera
 var hud: FlightHUD
 var enemy: EnemyAircraft
 var component_debug: ComponentDamageDebug
+var startup_intro: GameIntro
 var selector: AircraftSelector
 var selected_aircraft: String = "spitfire"
 @export var enemy_spawn_position: Vector3 = Vector3(-450, 160, 0)
@@ -46,8 +47,27 @@ func _ready() -> void:
 	encounters.session = self
 	add_child(encounters)
 	show_selection()
+	if DisplayServer.get_name() != "headless" and "--skip-intro" not in OS.get_cmdline_user_args():
+		show_intro()
+
+func show_intro() -> void:
+	if is_instance_valid(startup_intro):
+		return
+	selector.active = false
+	startup_intro = GameIntro.new()
+	startup_intro.completed.connect(_dismiss_intro)
+	add_child(startup_intro)
+
+func _dismiss_intro() -> void:
+	if is_instance_valid(startup_intro):
+		remove_child(startup_intro)
+		startup_intro.queue_free()
+	startup_intro = null
+	if is_instance_valid(selector):
+		selector.active = true
 
 func show_selection() -> void:
+	_dismiss_intro()
 	if is_instance_valid(harbour):
 		harbour.cancel()
 		remove_child(harbour)
@@ -95,6 +115,7 @@ func show_selection() -> void:
 	selector.missions_requested.connect(show_missions, CONNECT_DEFERRED)
 
 func start_flight(kind: String) -> void:
+	_dismiss_intro()
 	if is_instance_valid(aircraft) or kind not in ["spitfire", "sea_gladiator"]:
 		return
 	GameAudioMixer.instance.set_menu_active(false)
@@ -252,6 +273,7 @@ func _clear_encounter_effects() -> void:
 		effect.queue_free()
 
 func show_malta_selection() -> void:
+	_dismiss_intro()
 	if is_instance_valid(malta_menu) or is_instance_valid(malta_mission):
 		return
 	GameAudioMixer.instance.set_menu_active(true)
@@ -287,6 +309,7 @@ func _clear_malta() -> void:
 	environment_id = "countryside"
 
 func start_malta(field_id: String, kind: String, selected_mode: String = "encounter") -> void:
+	_dismiss_intro()
 	var spawn_id: String=field_id
 	if StElmoLocations.is_fort(field_id):
 		if selected_mode not in ["encounter","survival"]:return
@@ -392,6 +415,7 @@ func restart_malta() -> void:
 	start_malta(saved_home, saved_kind, saved_mode)
 
 func show_missions() -> void:
+	_dismiss_intro()
 	if is_instance_valid(missions_menu) or is_instance_valid(malta_mission):
 		return
 	if is_instance_valid(selector):

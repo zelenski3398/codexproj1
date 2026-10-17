@@ -1,5 +1,7 @@
 # First Sortie
 
+
+Startup now dissolves into the supplied live poster, with **Play integrated into the artwork**. Play fades into the existing main menu. See the [startup guide and previews](docs/startup-poster.md).
 A single-player 3D **Godot 4 / GDScript** flight prototype set at a fictional RAF
 countryside airfield in 1940, or a continuous 1:1 Malta island world. Choose a **Spitfire Mk I** or **Gloster Sea
 Gladiator**, take off, bank over the fields, return, land and brake. Both have

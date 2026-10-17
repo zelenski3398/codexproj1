@@ -22,6 +22,7 @@ jobs:
       - name: Check controls, combat, interception, Survival, Malta terrain and audio
         run: |
           godot --headless --path . --editor --import --quit
+          godot --headless --path . --fixed-fps 120 --script res://tests/intro_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/keyboard_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/weapons_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/impact_audio_checks.gd
