@@ -142,6 +142,13 @@ func run() -> void:
 	check(successes <= service.profile.maximum_smoke_particles,"Global smoke particle reservations cannot exceed configured cap")
 	service.release_particles(123)
 	check(service.smoke_reservations.all(func(r): return r.owner != 123),"Owner cleanup releases particle reservations")
+	var rudder_definition = damage.definitions[&"rudder"]
+	var elevator_definition = damage.definitions[&"elevator"]
+	damage.definitions.erase(&"rudder")
+	damage.definitions.erase(&"elevator")
+	check(damage.rudder_factor()==1 and damage.elevator_factor()==1,"Optional control definitions retain configured flight defaults without missing-key errors")
+	damage.definitions[&"rudder"] = rudder_definition
+	damage.definitions[&"elevator"] = elevator_definition
 	damage.reset();plane.health.reset()
 	damage.catastrophic_failure("Debug catastrophic ignition")
 	await frames(3)

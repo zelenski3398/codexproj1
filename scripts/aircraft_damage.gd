@@ -275,6 +275,7 @@ func detach(id: StringName) -> void:
 				component_changed.emit(neighbour,0,definitions[neighbour].max_integrity)
 	if id == &"tail":
 		for control in [&"rudder", &"elevator"]:
+			if not definitions.has(control): continue
 			integrity[control] = 0
 			detached[control] = true
 	if id in [&"left_wing", &"right_wing", &"tail"]:
@@ -339,9 +340,11 @@ func power_factor() -> float:
 	return power / maxf(weight,0.001)
 
 func rudder_factor() -> float:
+	if not definitions.has(&"rudder"): return 1.0
 	return 0.0 if detached.has(&"tail") or integrity_ratio(&"rudder") <= definitions[&"rudder"].jam_threshold else lerpf(profile.minimum_rudder_authority, 1, integrity_ratio(&"rudder"))
 
 func elevator_factor() -> float:
+	if not definitions.has(&"elevator"): return 1.0
 	return 0.0 if detached.has(&"tail") or integrity_ratio(&"elevator") <= definitions[&"elevator"].jam_threshold else lerpf(profile.minimum_elevator_authority, 1, integrity_ratio(&"elevator"))
 
 func cockpit_factor() -> float:
