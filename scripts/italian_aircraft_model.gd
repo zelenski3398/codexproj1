@@ -208,6 +208,6 @@ func _tail_cross(at: Vector3) -> void:
 func animate(delta: float, throttle: float, gear: LandingGear, broken: bool) -> void:
 	for rotor in propellers:
 		if not broken:
-			rotor.rotation.z += delta * (3 + throttle * 95)
+			rotor.rotation.z += delta * (3 + throttle * 95) * float(engine_factors.get(propellers.find(rotor), 1))
 	for part in gear_parts:
 		part.visible = gear.extended or kind == "cr42"

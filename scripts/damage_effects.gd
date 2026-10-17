@@ -20,6 +20,8 @@ var ages: Array[float] = []
 var lifetimes: Array[float] = []
 var is_smoke: Array[bool] = []
 var materials: Array[StandardMaterial3D] = []
+var particle_tints: Array[Color] = []
+var component_clock: float = 0
 var cursor: int = 0
 var emission_clock: float = 0.0
 var fire_clock: float = 0.0
@@ -65,6 +67,7 @@ func _ready() -> void:
 		ages.append(0.0)
 		lifetimes.append(0.0)
 		is_smoke.append(true)
+		particle_tints.append(Color(0.11,0.12,0.13))
 
 func set_health(hp: float, _maximum: float) -> void:
 	# Strict inequality is intentional: exactly 50 HP produces NO new effects.
@@ -97,9 +100,10 @@ func _physics_process(delta: float) -> void:
 		velocities[i].y += delta * (1.4 if is_smoke[i] else 0.5)
 		var radius := lerpf(0.25, 2.2, progress) if is_smoke[i] else lerpf(0.26, 0.08, progress)
 		particles[i].scale = Vector3.ONE * radius
-		var color := Color(0.11, 0.12, 0.13) if is_smoke[i] else Color(1.0, lerpf(0.75, 0.18, progress), 0.03)
+		var color := particle_tints[i] if is_smoke[i] else Color(1.0, lerpf(0.75, 0.18, progress), 0.03)
 		color.a = (1.0 - progress) * (0.55 if is_smoke[i] else 0.95)
 		materials[i].albedo_color = color
+	_emit_component_effects(delta)
 	if emitting:
 		var strength: float = 0.12 + intensity
 		emission_clock += delta * smoke_rate * strength
@@ -120,15 +124,16 @@ func _physics_process(delta: float) -> void:
 			fuel_flame_clock -= 1
 			_emit(false, fuel_source)
 
-func _emit(smoke: bool, source: Vector3 = Vector3(0, 0.32, -2.7)) -> void:
+func _emit(smoke: bool, source: Vector3 = Vector3(0, 0.32, -2.7), tint: Color = Color(0.11,0.12,0.13), custom_lifetime: float = -1.0) -> void:
 	var i := cursor
 	cursor = (cursor + 1) % particles.size()
 	var jitter := Vector3(rng.randf_range(-0.25, 0.25), rng.randf_range(-0.05, 0.35), rng.randf_range(-0.35, 0.35))
 	particles[i].position = aircraft.to_global(source + jitter)
 	# Partial inherited velocity lets smoke fall behind, then slow and linger.
 	velocities[i] = aircraft.linear_velocity * (0.2 if smoke else 0.8) + Vector3.UP * 1.5
+	particle_tints[i] = tint
 	ages[i] = 0.0
-	lifetimes[i] = smoke_lifetime if smoke else 0.35
+	lifetimes[i] = custom_lifetime if custom_lifetime > 0 else (smoke_lifetime if smoke else 0.35)
 	is_smoke[i] = smoke
 	particles[i].mesh = smoke_mesh if smoke else flame_mesh
 	materials[i].billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED if smoke else BaseMaterial3D.BILLBOARD_DISABLED
@@ -156,3 +161,28 @@ func active_count() -> int:
 		if particle.visible:
 			count += 1
 	return count
+
+func _emit_component_effects(delta: float) -> void:
+	if aircraft.components == null or (aircraft.impact_effects != null and aircraft.impact_effects.started): return
+	component_clock += delta
+	if component_clock < 0.08: return
+	component_clock = 0
+	var damage := aircraft.components
+	var smoke_count: int = 0
+	var fire_count: int = 0
+	for id in damage.component_ids():
+		if damage.detached.has(id): continue
+		var definition: AircraftComponentDefinition = damage.definitions[id]
+		var ratio: float = damage.integrity_ratio(id)
+		var source := damage.source_position(id)
+		if smoke_count < damage.profile.maximum_smoke_emitters and definition.role == "engine" and ratio < 0.75:
+			_emit(true,source,Color(0.58,0.59,0.62) if ratio > 0.5 else Color(0.13,0.14,0.16))
+			smoke_count += 1
+		if smoke_count < damage.profile.maximum_smoke_emitters and damage.leaking_tanks.has(id) and damage.fuel_remaining > 0:
+			_emit(true,source,Color(0.63,0.72,0.73),0.7)
+			smoke_count += 1
+		if damage.fires.has(id) and fire_count < damage.profile.maximum_fire_emitters:
+			_emit(true,source,Color(0.045,0.045,0.045))
+			_emit(false,source)
+			if float(damage.fires[id]) > 0.65: _emit(false,source)
+			fire_count += 1

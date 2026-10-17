@@ -51,8 +51,8 @@ func get_team_id() -> int:
 func take_damage(amount: float) -> void:
 	damage_system.apply_damage(definition.id, amount)
 
-func receive_projectile_hit(amount: float, point: Vector3) -> void:
-	damage_system.apply_damage(definition.id, amount, point)
+func receive_projectile_hit(amount: float, point: Vector3, source: String = "bullet") -> void:
+	damage_system.apply_damage(definition.id, amount, point, false, source)
 
 func update_debug(enabled: bool, selected: bool = false) -> void:
 	for wire in wires:

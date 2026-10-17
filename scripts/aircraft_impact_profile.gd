@@ -30,3 +30,5 @@ extends Resource
 @export var cluster_headroom_db: float = 3.0
 @export_range(4,24,1) var audio_voices: int = 12
 @export_range(4,32,1) var maximum_effects: int = 24
+@export_group("Optional component event recordings (silent when unassigned)")
+@export var event_sounds: Dictionary[StringName, AudioStream] = {}

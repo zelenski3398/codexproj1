@@ -96,7 +96,7 @@ func _burst(point: Vector3, direct: Object, _team: int) -> void:
 		if closest == null: continue
 		var query := PhysicsRayQueryParameters3D.create(point, closest_point, 1)
 		if get_world_3d().direct_space_state.intersect_ray(query).is_empty():
-			closest.receive_projectile_hit(damage_at_distance(distance) / maxf(closest.definition.airframe_multiplier,.001), point)
+			closest.receive_projectile_hit(damage_at_distance(distance) / maxf(closest.definition.airframe_multiplier,.001), point,"flak")
 
 func damage_at_distance(distance: float) -> float:
 	return heavy_definition.damage_at_distance(distance)

@@ -85,11 +85,10 @@ func _destroy() -> void:
 	rear_gunner.set_physics_process(false)
 	super._destroy()
 
-func _crash(_reason: String) -> void:
-	# Fatal airframe/terrain contact enters the same single destroyed life.
-	if not is_destroyed:
-		impact_effects.start(impact_effects.water)
-		take_damage(health.max_hp)
+func _crash(reason: String) -> void:
+	if is_crashed: return
+	super._crash(reason)
+	if not is_destroyed: take_damage(health.max_hp)
 
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	super._integrate_forces(state)
@@ -109,7 +108,8 @@ func _finish_impact(point: Vector3) -> void:
 		return
 	impact_count += 1
 	damage_effects.clear()
-	impact_effects.start(impact_effects.water)
+	if not impact_effects.started:
+		impact_effects.ground_contact(linear_velocity, Vector3.UP)
 	freeze = not impact_effects.water # Water wrecks continue sinking under forces.
 	ground_impact.emit(point)
 

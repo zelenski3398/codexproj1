@@ -58,7 +58,7 @@ func _run() -> void:
 		await frames(4)
 		var enemy: EnemyAircraft = session.enemy
 		check(director.active.size() == 1 and enemy.aircraft_kind == kind, kind + " can actually spawn from the configurable roster")
-		check(enemy.team_id == CombatTeams.ENEMY and enemy.components.hitboxes.size() == 8 and enemy.guns.pool != null, kind + " retains existing faction, localized damage and swept weapons")
+		check(enemy.team_id == CombatTeams.ENEMY and enemy.components.hitboxes.size() == 12 and enemy.guns.pool != null, kind + " retains existing faction, localized damage and swept weapons")
 		check(enemy.altitude > director.spawn_clearance and enemy.global_position.distance_to(player.global_position) >= director.minimum_spawn_distance, kind + " spawns airborne with player/terrain clearance")
 		if kind == "stuka":
 			check(enemy.guns.rounds_per_second == 6 and enemy.guns.bullet_damage == 2 and enemy.ai.cruise_speed == 58, "Italian encounters do not contaminate subsequent Stuka difficulty")

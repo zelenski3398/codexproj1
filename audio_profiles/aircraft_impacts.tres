@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="AircraftImpactProfile" load_steps=8 format=3]
+[gd_resource type="Resource" script_class="AircraftImpactProfile" load_steps=18 format=3]
 [ext_resource type="Script" path="res://scripts/aircraft_impact_profile.gd" id="1"]
 [ext_resource type="AudioStream" path="res://assets/audio/impacts/metal_hit_1_placeholder.ogg" id="2"]
 [ext_resource type="AudioStream" path="res://assets/audio/impacts/metal_hit_2_placeholder.ogg" id="3"]
@@ -6,9 +6,31 @@
 [ext_resource type="AudioStream" path="res://assets/audio/impacts/heavy_hit_placeholder.ogg" id="5"]
 [ext_resource type="AudioStream" path="res://assets/audio/impacts/sea_plunge_placeholder.ogg" id="6"]
 [ext_resource type="AudioStream" path="res://assets/audio/aircraft_crash.ogg" id="7"]
+[ext_resource type="AudioStream" path="res://assets/audio/failures/metal_tear_placeholder.ogg" id="event_metal_tear"]
+[ext_resource type="AudioStream" path="res://assets/audio/failures/fabric_tear_placeholder.ogg" id="event_fabric_tear"]
+[ext_resource type="AudioStream" path="res://assets/audio/failures/engine_misfire_placeholder.ogg" id="event_engine_misfire"]
+[ext_resource type="AudioStream" path="res://assets/audio/failures/engine_seizure_placeholder.ogg" id="event_engine_seizure"]
+[ext_resource type="AudioStream" path="res://assets/audio/failures/fuel_ignition_placeholder.ogg" id="event_fuel_ignition"]
+[ext_resource type="AudioStream" path="res://assets/audio/failures/structural_breakup_placeholder.ogg" id="event_structural_breakup"]
+[ext_resource type="AudioStream" path="res://assets/audio/failures/propeller_impact_placeholder.ogg" id="event_propeller_impact"]
+[ext_resource type="AudioStream" path="res://assets/audio/failures/hard_landing_placeholder.ogg" id="event_hard_landing"]
+[ext_resource type="AudioStream" path="res://assets/audio/failures/ground_crash_placeholder.ogg" id="event_ground_crash"]
+[ext_resource type="AudioStream" path="res://assets/audio/failures/secondary_impact_placeholder.ogg" id="event_secondary_impact"]
 [resource]
 script = ExtResource("1")
 metal_hits = Array[AudioStream]([ExtResource("2"), ExtResource("3"), ExtResource("4")])
 heavy_hit = ExtResource("5")
 water_impact = ExtResource("6")
 explosion = ExtResource("7")
+event_sounds = {
+&"metal_tear": ExtResource("event_metal_tear"),
+&"fabric_tear": ExtResource("event_fabric_tear"),
+&"engine_misfire": ExtResource("event_engine_misfire"),
+&"engine_seizure": ExtResource("event_engine_seizure"),
+&"fuel_ignition": ExtResource("event_fuel_ignition"),
+&"structural_breakup": ExtResource("event_structural_breakup"),
+&"propeller_impact": ExtResource("event_propeller_impact"),
+&"hard_landing": ExtResource("event_hard_landing"),
+&"ground_crash": ExtResource("event_ground_crash"),
+&"secondary_impact": ExtResource("event_secondary_impact")
+}

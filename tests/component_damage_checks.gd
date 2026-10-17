@@ -21,7 +21,7 @@ func _run() -> void:
 		await _frames(6)
 		target.freeze = true
 		await _frames(3)
-		_check(target.components.hitboxes.size() == 8 and target.components.integrity.size() == 8 and target.components.hitbox_rids.size() == 8, kind + ": eight independently damageable components")
+		_check(target.components.hitboxes.size() == 12 and target.components.integrity.size() == 12 and target.components.hitbox_rids.size() == 12, kind + ": twelve independently damageable components")
 		var safe: bool = true
 		for hitbox in target.components.hitboxes:
 			safe = safe and hitbox.collision_layer == AircraftHitbox.LAYER and hitbox.collision_mask == 0 and not hitbox.monitoring

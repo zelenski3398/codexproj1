@@ -137,5 +137,5 @@ func _cross(pos: Vector3, on_side: bool) -> void:
 func animate(delta: float, throttle: float, _gear: LandingGear, broken: bool) -> void:
 	# Ju 87 gear is fixed, so there is no inherited retract/suspension animation.
 	if not broken:
-		propeller.rotation.z += delta * (3.0 + throttle * 95.0)
+		propeller.rotation.z += delta * (3.0 + throttle * 95.0) * float(engine_factors.get(0, 1))
 

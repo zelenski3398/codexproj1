@@ -43,6 +43,7 @@ var health: AircraftHealth
 var guns: WingGuns
 @export var damage_profile: AircraftDamageProfile
 var components: AircraftDamage
+var component_visuals: ComponentDamageVisuals
 var damage_effects: DamageEffects
 var impact_effects: AircraftImpact
 var aircraft_audio: AircraftAudio
@@ -59,6 +60,7 @@ var reset_pending: bool = false
 var pending_reset_pose: Transform3D
 var pending_reset_velocity: Vector3 = Vector3.ZERO
 var airborne_time: float = 0.0
+var previous_contact_velocity: Vector3 = Vector3.ZERO
 var seated_pilot: RafPilotAvatar
 
 func _ready() -> void:
@@ -104,6 +106,11 @@ func _ready() -> void:
 	components.aircraft = self
 	components.profile = damage_profile if damage_profile != null else default_damage_profile()
 	add_child(components)
+	gear.damage_system = components
+	component_visuals = ComponentDamageVisuals.new()
+	component_visuals.aircraft = self
+	component_visuals.name = "ComponentDamageVisuals"
+	add_child(component_visuals)
 	components.fuel_fire_changed.connect(damage_effects.set_fuel_fire)
 	guns = WingGuns.new()
 	guns.aircraft = self
@@ -166,6 +173,7 @@ func _destroy() -> void:
 	if is_destroyed:
 		return
 	is_destroyed = true
+	damage_effects.emitting = false
 	pilot.reset_commands()
 	guns.reset(false) # Clear rounds/flashes, retain this life's combat telemetry.
 	aircraft_audio.clear()
@@ -182,6 +190,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	if reset_pending:
 		state.transform = pending_reset_pose
 		state.linear_velocity = pending_reset_velocity
+		previous_contact_velocity = pending_reset_velocity
 		state.angular_velocity = Vector3.ZERO
 		gear.extended = true
 		gear.contact_count = 0
@@ -204,6 +213,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		return
 	var dt := state.step
 	components.advance(dt)
+	components.evaluate_structure(dt, state.linear_velocity, state.angular_velocity)
 	pilot.sample(dt)
 	if engine_running and not is_destroyed and not is_crashed:
 		components.fuel_remaining = maxf(components.fuel_remaining - fuel_consumption_rate * pilot.throttle * dt, 0)
@@ -211,6 +221,8 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		pilot.reset_commands()
 	var basis := state.transform.basis.orthonormalized()
 	var velocity := state.linear_velocity
+	var before_contact: Vector3 = previous_contact_velocity
+	previous_contact_velocity = velocity
 	airspeed = velocity.length()
 	var local_velocity := basis.transposed() * velocity
 	var forward_speed := maxf(-local_velocity.z, 0.0)
@@ -221,6 +233,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		airborne_time += dt
 	else:
 		if sink < -gear.fatal_sink_speed and airborne_time > 0.25:
+			impact_effects.ground_contact(state.linear_velocity, Vector3.UP)
 			_crash("Hard landing · excessive sink rate")
 		airborne_time = 0.0
 	# Body and wing collision catch belly landings, terrain, and buildings.
@@ -228,10 +241,17 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		for i in range(state.get_contact_count()):
 			var impact := state.get_contact_local_velocity_at_position(i).length()
 			if not gear.extended or impact > 9.0 or gear.contact_count == 0:
+				var normal: Vector3 = state.transform.basis * state.get_contact_local_normal(i)
+				var collider_object: Object = state.get_contact_collider_object(i)
+				var surface: String = "hard" if collider_object is StaticBody3D and not collider_object.is_in_group("terrain") else "terrain"
+				# The collision solver may already have removed normal velocity. Use
+				# the immediately preceding physical sample for impact energy.
+				var contact_velocity: Vector3 = before_contact if absf(before_contact.dot(normal)) > absf(velocity.dot(normal)) else velocity
+				impact_effects.ground_contact(contact_velocity, normal, surface)
 				_crash("Airframe struck the ground" if gear.extended else "Landing gear was retracted")
 				break
 	if is_destroyed and not impact_effects.started and (gear.contact_count > 0 or state.get_contact_count() > 0):
-		impact_effects.start()
+		impact_effects.ground_contact(velocity, Vector3.UP)
 	if is_crashed:
 		state.apply_central_force(-velocity * mass * 2.0)
 		state.apply_torque(-state.angular_velocity * 20000.0)
@@ -259,11 +279,13 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	# direct transform movement is used in normal flight.
 	var thrust := engine_thrust * components.power_factor() * pilot.throttle / (1.0 + forward_speed / 130.0) if engine_running and not is_destroyed else 0.0
 	state.apply_central_force(-basis.z * thrust)
+	var available_thrust: float = engine_thrust * pilot.throttle / (1.0 + forward_speed / 130.0) if engine_running and not is_destroyed else 0
+	state.apply_torque(components.asymmetry_torque(available_thrust, basis))
 	# Vertical fin resists sideslip. Forces change the actual travel direction.
 	state.apply_central_force(-basis.x * local_velocity.x * (180.0 + forward_speed * 22.0) * components.rudder_factor())
 	var authority := clampf(forward_speed / 45.0, 0.12, 1.5)
 	var local_omega := basis.transposed() * state.angular_velocity
-	var torque := Vector3(pilot.pitch * pitch_torque * components.elevator_factor(), pilot.rudder * rudder_torque * components.rudder_factor(), pilot.roll * roll_torque) * authority * components.cockpit_factor()
+	var torque := Vector3(pilot.pitch * pitch_torque * components.elevator_factor(), pilot.rudder * rudder_torque * components.rudder_factor(), pilot.roll * roll_torque * components.roll_factor(pilot.roll)) * authority * components.cockpit_factor()
 	if is_destroyed:
 		# Dead engine/controls, but passive lift, drag, gravity and angular
 		# stability still act. Do not freeze or scripted-translate the wreck.
@@ -282,6 +304,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		torque.y += pilot.rudder * 14000.0 * clampf(airspeed / 8.0, 0.0, 1.0) * components.rudder_factor() * components.cockpit_factor()
 		torque.z *= 0.15
 	var damping := Vector3(inertia.x, inertia.y, inertia.z) * angular_response
+	damping *= Vector3(maxf(components.elevator_factor(),0.2),maxf(components.rudder_factor(),0.2),maxf(components.lift_factor(),0.2))
 	torque -= local_omega * damping
 	state.apply_torque(basis * torque)
 
@@ -296,8 +319,13 @@ func _crash(reason: String) -> void:
 	is_crashed = true
 	crash_reason = reason
 	pilot.throttle = 0.0
-	impact_effects.start(impact_effects.water)
+	if not impact_effects.started and not impact_effects.water:
+		impact_effects.ground_contact(linear_velocity, Vector3.UP)
 	crashed.emit(reason)
 
 func _process(delta: float) -> void:
-	model.animate(delta, pilot.throttle * components.power_factor() if engine_running else 0.0, gear, is_crashed or is_destroyed)
+	var running: bool = engine_running and not is_crashed and not is_destroyed
+	model.engine_factors.clear()
+	for id in components.component_ids("engine"):
+		model.engine_factors[components.definitions[id].propeller_index] = components.engine_power(id) if running else 0.0
+	model.animate(delta, pilot.throttle * components.power_factor() if running else 0.0, gear, is_crashed or is_destroyed)

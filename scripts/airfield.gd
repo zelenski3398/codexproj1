@@ -39,6 +39,8 @@ func _terrain() -> void:
 	mat.vertex_color_use_as_albedo = true
 	var ground := MeshKit.mesh(self, surface.commit(), mat)
 	ground.create_trimesh_collision()
+	for collider in ground.get_children():
+		if collider is StaticBody3D: collider.add_to_group("terrain")
 
 func _static_box(size: Vector3, pos: Vector3, mat: Material) -> MeshInstance3D:
 	var body := StaticBody3D.new()

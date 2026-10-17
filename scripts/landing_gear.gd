@@ -15,12 +15,16 @@ var contact_count: int = 0
 var compression: Array[float] = [0.0, 0.0, 0.0]
 var last_notice: String = ""
 var notice_time: float = 0.0
+var damage_system: AircraftDamage
 var anchors: Array[Vector3] = [Vector3(-1.25, -0.68, -1.05), Vector3(1.25, -0.68, -1.05), Vector3(0.0, -0.25, 3.75)]
 var travel: Array[float] = [0.43, 0.43, 0.36]
 var radii: Array[float] = [0.32, 0.32, 0.18]
 
 func toggle() -> bool:
 	notice_time = 3.0
+	if damage_system != null and damage_system.integrity_ratio(&"landing_gear") < 0.5:
+		last_notice = "GEAR DAMAGED · mechanism jammed"
+		return false
 	if not retractable:
 		last_notice = "FIXED LANDING GEAR · cannot retract"
 		return false
@@ -43,6 +47,8 @@ func integrate(state: PhysicsDirectBodyState3D, aircraft: RigidBody3D, brakes: b
 	var space := aircraft.get_world_3d().direct_space_state
 	for i in range(3):
 		compression[i] = 0.0
+		if damage_system != null and damage_system.integrity_ratio(&"landing_gear") <= damage_system.profile.gear_collapse_ratio:
+			continue
 		if not extended:
 			continue
 		var offset := basis * anchors[i]

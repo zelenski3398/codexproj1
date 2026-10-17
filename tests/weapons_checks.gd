@@ -150,7 +150,7 @@ func _run() -> void:
 	_check(aircraft.global_position.y < destroyed_y - 3 and aircraft.linear_velocity.y < -5 and not aircraft.freeze, "Destroyed aircraft falls under existing rigid-body physics")
 	_check(world.hud.overlay.visible and world.hud.overlay_title.text == "DESTROYED" and world.hud.hp_bar.value == 0, "Destruction displays 0 HP, destroyed message and reset controls")
 	await _frames(30)
-	_check(aircraft.impact_effects.explosion_count == 1 and not aircraft.damage_effects.emitting, "Zero-HP airborne explosion replaces engine fire with its one-shot destruction effect")
+	_check(aircraft.impact_effects.explosion_count == 0 and not aircraft.damage_effects.emitting and aircraft.model.visible, "Zero-HP combat loss disables the aircraft without an automatic fireball")
 	# Reset while Ctrl is held clears shots and does not immediately refire.
 	aircraft.pilot.automated = false
 	_key(KEY_CTRL, true)

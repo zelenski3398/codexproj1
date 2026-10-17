@@ -3,6 +3,7 @@ extends Node3D
 ## Recognisable, original mesh placeholder: elliptical wings, tapered fuselage,
 ## framed early canopy, RAF roundels, fin, tailplane, propeller and three wheels.
 var reference_finish: bool = false
+var engine_factors: Dictionary = {}
 var propeller: Node3D
 var wheel_roots: Array[Node3D] = []
 var struts: Array[MeshInstance3D] = []
@@ -230,7 +231,7 @@ func _reference_details() -> void:
 
 func animate(delta: float, throttle: float, gear: LandingGear, broken: bool) -> void:
 	if not broken:
-		propeller.rotation.z += delta * (3.0 + throttle * 95.0)
+		propeller.rotation.z += delta * (3.0 + throttle * 95.0) * float(engine_factors.get(0, 1))
 	for i in range(3):
 		wheel_roots[i].visible = gear.extended
 		struts[i].visible = gear.extended

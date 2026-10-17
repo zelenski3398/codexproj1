@@ -74,8 +74,9 @@ func run() -> void:
 	var own_dead_count:=deaths
 	plane.take_damage(999)
 	plane.take_damage(999)
-	check(plane.is_destroyed and plane.impact_effects.explosion_count==1 and deaths==own_dead_count+1,"Zero HP in flight immediately creates one authoritative explosion and death")
+	check(plane.is_destroyed and plane.impact_effects.explosion_count==0 and deaths==own_dead_count+1,"Zero HP in flight creates one combat loss without an automatic explosion")
 	check(not plane.aircraft_audio.idle.playing and not plane.guns.weapon_audio.player.playing,"Destruction immediately stops engine and gun loops")
+	plane.components.catastrophic_failure("Explicit fuel ignition fixture")
 	await frames(2)
 	check(plane.impact_effects.fragments.size()==8 and not plane.model.visible,"Airborne explosion releases bounded real model fragments")
 	var explosion:DestructionBurst=plane.impact_effects.burst
@@ -85,7 +86,7 @@ func run() -> void:
 	foe.take_damage(999)
 	foe.take_damage(999)
 	await frames(2)
-	check(enemy_deaths==1 and foe.impact_effects.explosion_count==1 and not foe.ai.is_physics_processing() and not foe.rear_gunner.guns.weapon_audio.player.playing,"Enemy uses the same one-shot airborne explosion with AI and rear-gun audio disabled")
+	check(enemy_deaths==1 and foe.impact_effects.explosion_count==0 and not foe.ai.is_physics_processing() and not foe.rear_gunner.guns.weapon_audio.player.playing,"Enemy loss disables AI and audio without a forced explosion")
 	# A raised sea plane proves contact effects do not assume world Y=0.
 	var sea:=StaticBody3D.new()
 	sea.add_to_group("aircraft_water")
@@ -108,7 +109,7 @@ func run() -> void:
 	await frames(20)
 	check(plane.impact_effects.last_water_strength>gentle*1.5,"Fast water impact has substantially stronger intensity than gentle contact")
 	await fixture(plane,Vector3(20000,50,0),Vector3(0,-30,-20))
-	plane.take_damage(999)
+	plane.components.catastrophic_failure("Explicit burning wreck fixture")
 	var air_point:Vector3=plane.impact_effects.burst.global_position
 	var after_air:=deaths
 	await frames(90)

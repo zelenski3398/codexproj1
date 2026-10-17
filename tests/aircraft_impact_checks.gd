@@ -29,9 +29,9 @@ func _run() -> void:
 	check(plane.model.gun_ports.size() == 8, "Reference redesign preserves all eight wing gun origins")
 	plane.request_reset()
 	plane.pending_reset_pose = Transform3D(Basis.IDENTITY, Vector3(0, 9, 500))
-	plane.pending_reset_velocity = Vector3(0, -30, -45)
+	plane.pending_reset_velocity = Vector3(0, -80, -70)
 	await frames(100)
-	check(plane.is_crashed and plane.impact_effects.started, "Actual hard impact enters crash presentation")
+	check(plane.is_crashed and plane.impact_effects.started, "Actual high-energy impact enters crash presentation")
 	check(not plane.model.visible, "Intact aircraft hidden after ground breakup")
 	check(plane.impact_effects.fragments.size() == 8, "Actual model is split into eight physical fragments")
 	var moving: bool = false
@@ -51,7 +51,7 @@ func _run() -> void:
 	gladiator.pilot.automated = true
 	gladiator.request_reset()
 	gladiator.pending_reset_pose = Transform3D(Basis.IDENTITY, gladiator.reset_position)
-	gladiator.pending_reset_velocity = Vector3(0, -30, -35)
+	gladiator.pending_reset_velocity = Vector3(0, -80, -70)
 	await frames(100)
 	check(gladiator.is_crashed and gladiator.impact_effects.fragments.size() == 8, "Sea Gladiator uses the same physical breakup framework")
 	gladiator.queue_free()

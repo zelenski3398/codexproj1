@@ -4,8 +4,11 @@ extends Node3D
 ## Owned by the session, so it can linger after the wreck and clear on restart.
 @export var strength: float = 1.0
 @export var duration: float = 2.5
+@export var random_seed: int = -1
 var visual_enabled: bool = true
 var water_impact: bool = false
+var dust_only: bool = false
+var hard_surface: bool = false
 var elapsed: float = 0
 var particles: Array[MeshInstance3D] = []
 var materials: Array[StandardMaterial3D] = []
@@ -16,7 +19,8 @@ var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 func _ready() -> void:
 	if not visual_enabled:
 		return
-	rng.randomize()
+	if random_seed >= 0: rng.seed = random_seed
+	else: rng.randomize()
 	var gradient: Gradient = Gradient.new()
 	gradient.offsets = PackedFloat32Array([0, 0.3, 1])
 	gradient.colors = PackedColorArray([Color.WHITE, Color.WHITE, Color(1, 1, 1, 0)])
@@ -63,6 +67,8 @@ func _physics_process(delta: float) -> void:
 		velocities[i] *= exp(-delta * 2)
 		particles[i].scale = Vector3.ONE * lerpf(0.8, (4.5 if i >= 12 else 2.0) * strength, progress)
 		var color: Color = Color(0.12, 0.13, 0.14) if i >= 12 else Color(1, lerpf(0.8, 0.15, progress), 0.04)
+		if dust_only:
+			color = Color(0.52, 0.45, 0.33) if not hard_surface else Color(0.35, 0.34, 0.32)
 		if water_impact:
 			color = Color(0.68, 0.85, 0.89)
 			velocities[i].y -= delta * 12

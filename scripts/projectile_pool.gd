@@ -131,7 +131,7 @@ func _physics_process(delta: float) -> void:
 						var id: StringName = collider.definition.id
 						var amount: float = shell_definition.direct_damage if shell_definition.heavy else float(shell_definition.location_damage.get(String(id),shell_definition.direct_damage))
 						# Convert final hull HP into existing component input exactly once.
-						collider.receive_projectile_hit(amount / maxf(collider.definition.airframe_multiplier,.001),hit.position)
+						collider.receive_projectile_hit(amount / maxf(collider.definition.airframe_multiplier,.001),hit.position,"shell")
 					else:
 						collider.call("receive_projectile_hit", damage[index], hit.position)
 				else:

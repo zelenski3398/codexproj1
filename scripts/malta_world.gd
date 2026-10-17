@@ -95,6 +95,8 @@ func _prepare_terrain(node: Node) -> void:
 		mesh.lod_bias = 128.0 if (String(mesh.name).begins_with("RoadGround") or String(mesh.name) == "Malta") else 0.6
 		mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		mesh.create_trimesh_collision()
+		for collider in mesh.get_children():
+			if collider is StaticBody3D and not String(mesh.name).begins_with("RoadGround"): collider.add_to_group("terrain")
 	for child in node.get_children():
 		_prepare_terrain(child)
 
