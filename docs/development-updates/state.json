@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "6ad8321507a22cf1a10f051cf4eb46f326cec93c",
-  "last_documented_commit": "802bc8d4dfde4e94dd5d94e38cf79433a9c4988e",
-  "update_document": "2026-10-17-live-poster.md",
-  "review_range": "4da446d8a3f3946a26bd43b4b35cf90ef75aa24e..802bc8d4dfde4e94dd5d94e38cf79433a9c4988e",
+  "previous_documentation_publication": "55b024c44d5ffc4990e190a966a8d2c8378b4f7c",
+  "last_documented_commit": "5724cd4597c6caba77f6dcb027af84bc82a498b2",
+  "update_document": "2026-10-17-publishing-check.md",
+  "review_range": "802bc8d4dfde4e94dd5d94e38cf79433a9c4988e..5724cd4597c6caba77f6dcb027af84bc82a498b2",
   "date": "2026-10-17",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }
