@@ -23,6 +23,7 @@ var leaking_tanks: Dictionary = {}
 var fires: Dictionary = {}
 var detached: Dictionary = {}
 var fatigue: Dictionary = {}
+var structural_hits: Dictionary = {}
 var engine_seized: Dictionary = {}
 var engine_temperature: Dictionary = {}
 var catastrophic: bool = false
@@ -48,6 +49,7 @@ var fuel_remaining: float = 1.0:
 			tank_fuel[id] = clampf(value, 0, 1) * definitions[id].tank_capacity
 var fuel_leaking: bool = false
 var fuel_burning: bool = false
+var fuel_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 func _ready() -> void:
@@ -69,6 +71,7 @@ func reset() -> void:
 	fires.clear()
 	detached.clear()
 	fatigue.clear()
+	structural_hits.clear()
 	engine_seized.clear()
 	engine_temperature.clear()
 	catastrophic = false
@@ -90,6 +93,7 @@ func reset() -> void:
 	fuel_leaking = false
 	fuel_burning = false
 	rng.seed = profile.damage_seed
+	fuel_rng.seed = profile.fuel_random_seed
 	fuel_fire_changed.emit(false, fuel_source())
 	_refresh_debug()
 
@@ -126,14 +130,16 @@ func apply_damage(id: StringName, amount: float, point: Vector3 = Vector3.ZERO, 
 	last_hit = id
 	last_hit_point = point
 	last_source = source
+	if source in ["shell","flak","explosion"] and amount > 25: structural_hits[id] = true
 	if definition.role == "fuel" and float(tank_fuel.get(id, 0)) > 0:
-		if not leaking_tanks.has(id) and (force_fuel_hazards or rng.randf() < profile.fuel_leak_probability): leaking_tanks[id] = true
+		if not leaking_tanks.has(id) and (force_fuel_hazards or fuel_rng.randf() < profile.fuel_leak_probability): leaking_tanks[id] = true
 		# Incendiary/explosive projectiles can ignite fuel; ordinary bullets retain
 		# the configurable legacy small ignition chance, never certain ignition.
-		if force_fuel_hazards or rng.randf() < profile.fuel_fire_probability: ignite(id)
+		if force_fuel_hazards or fuel_rng.randf() < profile.fuel_fire_probability: ignite(id)
 	if definition.role == "engine" and integrity_ratio(id) < 0.25 and source in ["shell", "explosion"] and rng.randf() < profile.tank_ignition_probability: ignite(id)
 	if previous > 0 and integrity[id] <= 0:
 		if definition.role == "engine": engine_seized[id] = true
+		if definition.role == "fuel": leaking_tanks[id] = true
 		component_failed.emit(id)
 	component_changed.emit(id, integrity[id], definition.max_integrity)
 	component_hit.emit(id, point, clampf(amount / definition.max_integrity, 0, 1))
@@ -178,6 +184,7 @@ func advance(delta: float) -> void:
 			misfire_clock = 1.8
 	for id in tank_fuel:
 		var rate: float = profile.fuel_leak_rate * (1 - integrity_ratio(id)) if leaking_tanks.has(id) else 0.0
+		if integrity_ratio(id) <= 0: rate *= profile.destroyed_tank_loss_multiplier
 		if fires.has(id): rate += profile.fuel_burn_rate
 		var loss: float = minf(float(tank_fuel[id]), rate * delta)
 		tank_fuel[id] = maxf(float(tank_fuel[id]) - loss, 0)
@@ -206,7 +213,8 @@ func _fire_step(delta: float) -> void:
 			fires[id] = maxf(float(fires[id]) - delta * 0.12, 0)
 			if fires[id] <= 0: fires.erase(id); continue
 		else: fires[id] = minf(float(fires[id]) + delta * 0.06, 1)
-		var burn: float = profile.fire_damage_per_second * float(fires[id]) * delta
+		var burn_rate: float = profile.fuel_component_burn_per_second if definition.role == "fuel" else profile.fire_damage_per_second
+		var burn: float = burn_rate * float(fires[id]) * delta
 		integrity[id] = maxf(float(integrity[id]) - burn, 0)
 		component_changed.emit(id, integrity[id], definition.max_integrity)
 		for neighbour in definition.adjacent:
@@ -236,6 +244,7 @@ func evaluate_structure(delta: float, velocity: Vector3, angular: Vector3) -> vo
 		var definition: AircraftComponentDefinition = definitions[id]
 		var ratio := integrity_ratio(id)
 		if not definition.detachable or detached.has(id): continue
+		if definition.role == "engine" and not structural_hits.has(id): continue
 		# Destroyed sections separate; critically weakened sections accumulate
 		# fatigue only under excess load or speed. Random draws occur per event.
 		var load_ratio: float = structural_load / maxf(definition.structural_limit_g * maxf(ratio,0.18),0.1)
@@ -255,6 +264,15 @@ func detach(id: StringName) -> void:
 	fires.erase(id)
 	component_changed.emit(id, 0, definitions[id].max_integrity)
 	aircraft.impact_effects.detach_component(id)
+	if id in [&"left_wing", &"right_wing"]:
+		for neighbour in definitions[id].adjacent:
+			if definitions.has(neighbour) and definitions[neighbour].role in ["engine","fuel","control"]:
+				integrity[neighbour] = 0
+				detached[neighbour] = true
+				if definitions[neighbour].role == "engine": engine_seized[neighbour] = true
+				if tank_fuel.has(neighbour): tank_fuel[neighbour] = 0
+				fires.erase(neighbour)
+				component_changed.emit(neighbour,0,definitions[neighbour].max_integrity)
 	if id == &"tail":
 		for control in [&"rudder", &"elevator"]:
 			integrity[control] = 0
@@ -263,9 +281,25 @@ func detach(id: StringName) -> void:
 		aircraft.set_meta("failure_reason", String(id)+" separated")
 	_refresh_debug()
 
+func consume_fuel(full_capacity_fraction: float) -> void:
+	if full_capacity_fraction <= 0 or fuel_remaining <= 0: return
+	var total: float = 0
+	var capacity: float = 0
+	for id in tank_fuel:
+		if integrity_ratio(id) > 0: total += tank_fuel[id]
+		capacity += definitions[id].tank_capacity
+	var factor: float = maxf(1-full_capacity_fraction*capacity/maxf(total,0.0001),0)
+	for id in tank_fuel:
+		if integrity_ratio(id) > 0: tank_fuel[id] *= factor
+
 func engine_power(id: StringName) -> float:
 	if detached.has(id) or engine_seized.has(id) or integrity_ratio(id) <= 0: return 0
-	var pressure: float = clampf(fuel_remaining / maxf(profile.low_fuel_pressure_threshold,0.0001),0,1)
+	var available: float = 0
+	var capacity: float = 0
+	for tank in tank_fuel:
+		capacity += definitions[tank].tank_capacity
+		if integrity_ratio(tank) > 0: available += tank_fuel[tank]
+	var pressure: float = clampf(available / maxf(capacity * profile.low_fuel_pressure_threshold,0.0001),0,1)
 	var power: float = pow(integrity_ratio(id),profile.engine_power_exponent)*pressure
 	if integrity_ratio(id) < 0.25:
 		# Continuous rough running, independent of rendered frame rate.
@@ -323,6 +357,8 @@ func balance_torque(lift: float, q: float, lift_direction: Vector3, direction: V
 	return moment
 
 func fuel_source() -> Vector3:
+	for id in fires:
+		if definitions[id].role == "fuel": return source_position(id)
 	var definition: AircraftComponentDefinition = definitions.get(&"fuel_tank")
 	return definition.hitboxes[0].position if definition != null and not definition.hitboxes.is_empty() else Vector3(0, 0, -1)
 

@@ -26,7 +26,7 @@ func _run() -> void:
 		var def: EnemyAircraftDefinition = (foe as ItalianEnemy).definition
 		_check(foe.model is ItalianAircraftModel and foe.aircraft_kind == def.id and foe.marker_name == def.marker, def.id + " factory uses its own visual/identity")
 		_check(foe.mass == def.mass_kg and foe.wing_area == def.wing_area and foe.engine_thrust == def.thrust and foe.health.hp == def.maximum_hp, def.id + " uses configured flight/health")
-		_check(foe.components.definitions.size() == (18 if def.bomber else 12) and foe.components.profile == def.damage, def.id + " reuses model-specific shared component damage sensors")
+		_check(foe.components.definitions.size() == (19 if def.bomber else 12) and foe.components.profile == def.damage, def.id + " reuses model-specific shared component damage sensors")
 		_check(foe.guns.pool != null and foe.collision_layer == 4 and foe.team_id == CombatTeams.ENEMY, def.id + " retains shared swept projectiles and enemy team")
 		if def.bomber:
 			_check((foe.model as ItalianAircraftModel).propellers.size() == 3 and (foe as ItalianEnemy).additional_gunners.size() == 1 and foe.guns.rounds_per_second == 0, "SM79 has three engines, dorsal/ventral mounts and route-first forward fire disabled")

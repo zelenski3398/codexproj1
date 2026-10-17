@@ -88,6 +88,7 @@ func burst_at(point:Vector3,normal:Vector3,water:bool,strength:float,owner_id:in
 		effect.quaternion=Quaternion(Vector3.UP,normal)
 	return effect
 func clear_owner(owner_id:int) -> void:
+	release_particles(owner_id)
 	for i in range(voices.size()):
 		if voice_owners[i]==owner_id:
 			voices[i].stop();remaining[i]=0;voices[i].stream=null
@@ -95,6 +96,8 @@ func clear_owner(owner_id:int) -> void:
 		if is_instance_valid(effect) and int(effect.get_meta("impact_owner"))==owner_id:effect.queue_free()
 	last_hits.erase(owner_id)
 func clear_all() -> void:
+	smoke_reservations.clear()
+	flame_reservations.clear()
 	for i in range(voices.size()):
 		voices[i].stop();voices[i].stream=null;remaining[i]=0
 	for effect in effects:
@@ -102,6 +105,12 @@ func clear_all() -> void:
 	effects.clear();last_hits.clear()
 func _physics_process(delta:float) -> void:
 	clock+=delta
+	reservation_clock += delta
+	if reservation_clock >= 0.1:
+		reservation_clock = 0
+		for reservations in [smoke_reservations,flame_reservations]:
+			for i in range(reservations.size()-1,-1,-1):
+				if reservations[i].expires<=clock: reservations.remove_at(i)
 	var active_count:int=remaining.filter(func(value):return value>0).size()
 	var headroom:float=profile.cluster_headroom_db*log(maxi(active_count,1))/log(2.0)
 	for id in last_hits.keys():
@@ -116,3 +125,20 @@ func _physics_process(delta:float) -> void:
 		if not is_instance_valid(effect):effects.remove_at(i)
 		elif clock>=float(effect.get_meta("impact_expiry")):
 			effect.queue_free();effects.remove_at(i)
+
+# Conservative lifetimes include particles overwritten early in local pools.
+# Reservation limits bound emission across all aircraft without per-frame
+# searches over every aircraft's particle meshes.
+var smoke_reservations: Array[Dictionary] = []
+var reservation_clock: float = 0
+var flame_reservations: Array[Dictionary] = []
+func reserve_particle(smoke: bool, lifetime: float, owner_id: int) -> bool:
+	var reservations: Array[Dictionary] = smoke_reservations if smoke else flame_reservations
+	var maximum: int = profile.maximum_smoke_particles if smoke else profile.maximum_flame_particles
+	if reservations.size() >= maximum: return false
+	reservations.append({"expires":clock+lifetime,"owner":owner_id})
+	return true
+func release_particles(owner_id: int) -> void:
+	for reservations in [smoke_reservations,flame_reservations]:
+		for i in range(reservations.size()-1,-1,-1):
+			if reservations[i].owner == owner_id: reservations.remove_at(i)

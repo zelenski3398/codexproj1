@@ -24,6 +24,7 @@ extends Node
 @export var bullet_lifetime: float = 1.15
 @export var spread_degrees: float = 0.15
 var mount_model: Node3D
+@export var crew_component: StringName = &"cockpit"
 var aircraft: EnemyAircraft
 var guns: WingGuns
 var yaw: float = 0
@@ -161,7 +162,7 @@ func _physics_process(delta: float) -> void:
 	if not enabled or aircraft.is_destroyed or aircraft.is_crashed or aircraft.reset_pending:
 		status = "OFFLINE"
 		return
-	if aircraft.components.integrity_ratio(&"cockpit") <= 0:
+	if aircraft.components.integrity_ratio(crew_component) <= 0:
 		status = "CREW DISABLED"
 		return
 	if not aircraft.ai.engagement_ready():

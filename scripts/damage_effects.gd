@@ -20,6 +20,7 @@ var ages: Array[float] = []
 var lifetimes: Array[float] = []
 var is_smoke: Array[bool] = []
 var materials: Array[StandardMaterial3D] = []
+var has_reservations: bool = false
 var particle_tints: Array[Color] = []
 var component_clock: float = 0
 var cursor: int = 0
@@ -125,6 +126,9 @@ func _physics_process(delta: float) -> void:
 			_emit(false, fuel_source)
 
 func _emit(smoke: bool, source: Vector3 = Vector3(0, 0.32, -2.7), tint: Color = Color(0.11,0.12,0.13), custom_lifetime: float = -1.0) -> void:
+	var requested_lifetime: float = custom_lifetime if custom_lifetime > 0 else (smoke_lifetime if smoke else 0.35)
+	if not AircraftImpactService.obtain().reserve_particle(smoke,requested_lifetime,aircraft.get_instance_id()): return
+	has_reservations = true
 	var i := cursor
 	cursor = (cursor + 1) % particles.size()
 	var jitter := Vector3(rng.randf_range(-0.25, 0.25), rng.randf_range(-0.05, 0.35), rng.randf_range(-0.35, 0.35))
@@ -133,7 +137,7 @@ func _emit(smoke: bool, source: Vector3 = Vector3(0, 0.32, -2.7), tint: Color = 
 	velocities[i] = aircraft.linear_velocity * (0.2 if smoke else 0.8) + Vector3.UP * 1.5
 	particle_tints[i] = tint
 	ages[i] = 0.0
-	lifetimes[i] = custom_lifetime if custom_lifetime > 0 else (smoke_lifetime if smoke else 0.35)
+	lifetimes[i] = requested_lifetime
 	is_smoke[i] = smoke
 	particles[i].mesh = smoke_mesh if smoke else flame_mesh
 	materials[i].billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED if smoke else BaseMaterial3D.BILLBOARD_DISABLED
@@ -145,6 +149,8 @@ func _emit(smoke: bool, source: Vector3 = Vector3(0, 0.32, -2.7), tint: Color = 
 	particles[i].visible = true
 
 func clear() -> void:
+	if has_reservations and is_instance_valid(AircraftImpactService.instance): AircraftImpactService.instance.release_particles(aircraft.get_instance_id())
+	has_reservations = false
 	fuel_emitting = false
 	fuel_smoke_clock = 0
 	fuel_flame_clock = 0
@@ -175,6 +181,7 @@ func _emit_component_effects(delta: float) -> void:
 		var definition: AircraftComponentDefinition = damage.definitions[id]
 		var ratio: float = damage.integrity_ratio(id)
 		var source := damage.source_position(id)
+		if not definition.hitboxes.is_empty(): source.y += definition.hitboxes[0].size.y*0.55
 		if smoke_count < damage.profile.maximum_smoke_emitters and definition.role == "engine" and ratio < 0.75:
 			_emit(true,source,Color(0.58,0.59,0.62) if ratio > 0.5 else Color(0.13,0.14,0.16))
 			smoke_count += 1

@@ -216,7 +216,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	components.evaluate_structure(dt, state.linear_velocity, state.angular_velocity)
 	pilot.sample(dt)
 	if engine_running and not is_destroyed and not is_crashed:
-		components.fuel_remaining = maxf(components.fuel_remaining - fuel_consumption_rate * pilot.throttle * dt, 0)
+		components.consume_fuel(fuel_consumption_rate * pilot.throttle * dt)
 	if is_destroyed:
 		pilot.reset_commands()
 	var basis := state.transform.basis.orthonormalized()
@@ -304,7 +304,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		torque.y += pilot.rudder * 14000.0 * clampf(airspeed / 8.0, 0.0, 1.0) * components.rudder_factor() * components.cockpit_factor()
 		torque.z *= 0.15
 	var damping := Vector3(inertia.x, inertia.y, inertia.z) * angular_response
-	damping *= Vector3(maxf(components.elevator_factor(),0.2),maxf(components.rudder_factor(),0.2),maxf(components.lift_factor(),0.2))
+	damping *= Vector3(0.25,0.25,1) if components.detached.has(&"tail") else Vector3.ONE
 	torque -= local_omega * damping
 	state.apply_torque(basis * torque)
 
@@ -328,4 +328,4 @@ func _process(delta: float) -> void:
 	model.engine_factors.clear()
 	for id in components.component_ids("engine"):
 		model.engine_factors[components.definitions[id].propeller_index] = components.engine_power(id) if running else 0.0
-	model.animate(delta, pilot.throttle * components.power_factor() if running else 0.0, gear, is_crashed or is_destroyed)
+	model.animate(delta, pilot.throttle if running else 0.0, gear, is_crashed or is_destroyed)

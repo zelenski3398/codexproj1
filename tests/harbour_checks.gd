@@ -29,8 +29,12 @@ func _activate(m: HarbourInterception) -> void:
 	for friend in m.wingmen: friend.ai.set_physics_process(false)
 func _fire_at(shooter: FlightAircraft, victim: EnemyAircraft) -> void:
 	var hitbox: AircraftHitbox = victim.components.hitboxes[0]
-	var start: Vector3 = hitbox.global_position + Vector3.UP * 60
-	shooter.guns.pool.spawn(start, Vector3.DOWN * 900, .2, 1000, shooter.get_rid(), true, shooter.team_id)
+	# Aim at the actual fuselage sensor, clear of the upper wing and crew.
+	# Match target velocity during this short swept-hit fixture. An engine
+	# failure alone is deliberately no longer a guaranteed aircraft kill.
+	var point: Vector3 = victim.to_global(hitbox.definition.hitboxes[0].position)
+	var start: Vector3 = point + victim.global_basis.x * 8
+	shooter.guns.pool.spawn(start, victim.linear_velocity - victim.global_basis.x * 900, .2, 1000, shooter.get_rid(), true, shooter.team_id)
 	await _frames(25)
 func _run() -> void:
 	var m := await _fresh()

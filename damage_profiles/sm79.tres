@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="AircraftDamageProfile" load_steps=45 format=3]
+[gd_resource type="Resource" script_class="AircraftDamageProfile" load_steps=47 format=3]
 
 [ext_resource type="Script" path="res://scripts/aircraft_damage_profile.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/aircraft_component_definition.gd" id="2"]
@@ -31,7 +31,7 @@ size = Vector3(9.116, 0.26, 2.6)
 [sub_resource type="Resource" id="left_wing"]
 script = ExtResource("2")
 role = "wing"
-adjacent = Array[StringName]([&"fuselage", &"left_aileron"])
+adjacent = Array[StringName]([&"fuselage", &"left_aileron", &"engine_left", &"fuel_left"])
 combustible = true
 detachable = true
 fragment_region = &"left_wing"
@@ -49,7 +49,7 @@ size = Vector3(9.116, 0.26, 2.6)
 [sub_resource type="Resource" id="right_wing"]
 script = ExtResource("2")
 role = "wing"
-adjacent = Array[StringName]([&"fuselage", &"right_aileron"])
+adjacent = Array[StringName]([&"fuselage", &"right_aileron", &"engine_right", &"fuel_right"])
 combustible = true
 detachable = true
 fragment_region = &"right_wing"
@@ -303,8 +303,8 @@ hitboxes = Array[ExtResource("3")]([SubResource("bomb_bay_spec")])
 combustible = true
 [sub_resource type="Resource" id="rear_gunner_spec"]
 script = ExtResource("3")
-position = Vector3(0, 1.5, 0.4)
-size = Vector3(1, 0.6, 0.8)
+position = Vector3(0, 1.25, -0.6)
+size = Vector3(0.75, 0.55, 0.65)
 [sub_resource type="Resource" id="rear_gunner"]
 script = ExtResource("2")
 id = &"rear_gunner"
@@ -315,7 +315,22 @@ airframe_multiplier = 0.2
 adjacent = Array[StringName]([&"fuselage"])
 hitboxes = Array[ExtResource("3")]([SubResource("rear_gunner_spec")])
 
+[sub_resource type="Resource" id="ventral_gunner_spec"]
+script = ExtResource("3")
+position = Vector3(0, -0.85, 1.4)
+size = Vector3(0.7, 0.55, 0.7)
+
+[sub_resource type="Resource" id="ventral_gunner"]
+script = ExtResource("2")
+id = &"ventral_gunner"
+display_name = "Ventral Gunner"
+role = "crew"
+max_integrity = 60.0
+airframe_multiplier = 0.2
+adjacent = Array[StringName]([&"fuselage"])
+hitboxes = Array[ExtResource("3")]([SubResource("ventral_gunner_spec")])
+
 [resource]
 script = ExtResource("1")
-components = Array[ExtResource("2")]([SubResource("fuselage"), SubResource("left_wing"), SubResource("right_wing"), SubResource("engine"), SubResource("cockpit"), SubResource("rudder"), SubResource("elevator"), SubResource("fuel_tank"), SubResource("tail"), SubResource("left_aileron"), SubResource("right_aileron"), SubResource("landing_gear"), SubResource("engine_left"), SubResource("fuel_left"), SubResource("engine_right"), SubResource("fuel_right"), SubResource("bomb_bay"), SubResource("rear_gunner")])
+components = Array[ExtResource("2")]([SubResource("fuselage"), SubResource("left_wing"), SubResource("right_wing"), SubResource("engine"), SubResource("cockpit"), SubResource("rudder"), SubResource("elevator"), SubResource("fuel_tank"), SubResource("tail"), SubResource("left_aileron"), SubResource("right_aileron"), SubResource("landing_gear"), SubResource("engine_left"), SubResource("fuel_left"), SubResource("engine_right"), SubResource("fuel_right"), SubResource("bomb_bay"), SubResource("rear_gunner"), SubResource("ventral_gunner")])
 lift_lever_arm = 5

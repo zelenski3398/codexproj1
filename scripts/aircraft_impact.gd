@@ -149,6 +149,10 @@ func _present(expected_generation:int) -> void:
 	debris_root.name="AircraftFragments"
 	service.register_effect(debris_root,aircraft.get_instance_id(),debris_lifetime)
 	_break_meshes(aircraft.model)
+	for i in range(fragments.size()-1,-1,-1):
+		if not fragments[i].get_children().any(func(child): return child is MeshInstance3D):
+			fragments[i].queue_free()
+			fragments.remove_at(i)
 	for body in fragments:
 		var bounds:=AABB()
 		var first:=true
@@ -202,7 +206,8 @@ func _break_meshes(node: Node) -> void:
 						body.impact_owner = aircraft.get_instance_id()
 						body.add_to_group("aircraft_fragments")
 						body.mass = aircraft.mass / 12
-						body.burning = explosion_count > 0 and fragments.size() < aircraft.components.profile.maximum_fire_emitters
+						body.maximum_burning_emitters = aircraft.components.profile.maximum_fire_emitters
+						body.burning = (explosion_count > 0 or not aircraft.components.fires.is_empty()) and fragments.size() < aircraft.components.profile.maximum_fire_emitters
 						body.collision_layer = 0
 						body.collision_mask = 1
 						body.top_level = true
@@ -293,6 +298,9 @@ func _detach_now(id: StringName, expected_generation: int) -> void:
 	var body := AircraftDebrisPiece.new()
 	body.impact_owner = aircraft.get_instance_id()
 	body.add_to_group("aircraft_major_debris")
+	body.buoyant = aircraft.components.definitions[id].material_kind == "fabric"
+	body.float_seconds = config.debris_float_seconds
+	body.maximum_burning_emitters = config.maximum_fire_emitters
 	body.burning = aircraft.components.fires.has(id)
 	body.mass = aircraft.mass * (0.08 if String(id).contains("wing") else 0.025)
 	body.collision_layer = 0

@@ -77,6 +77,7 @@ func _ready() -> void:
 	if definition.bomber:
 		var ventral: RearGunner = RearGunner.new()
 		ventral.aircraft = self
+		ventral.crew_component = &"ventral_gunner"
 		ventral.mount_model = (model as ItalianAircraftModel).defensive_mounts[1]
 		ventral.minimum_elevation_degrees = -55
 		ventral.maximum_elevation_degrees = -5

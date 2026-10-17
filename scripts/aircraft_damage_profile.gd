@@ -53,3 +53,5 @@ extends Resource
 @export var engine_heat_rate: float = 0.12
 @export var engine_cooling_rate: float = 0.06
 @export var engine_seizure_temperature: float = 1.0
+@export var destroyed_tank_loss_multiplier: float = 8.0
+@export var debris_float_seconds: float = 8.0

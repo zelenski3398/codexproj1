@@ -57,6 +57,7 @@ func run() -> void:
 	plane.components.apply_damage(&"engine_left",1000,Vector3.ZERO,false,"mechanical")
 	await frames(120)
 	check(not plane.is_destroyed and plane.global_position.y>500 and is_equal_approx(plane.components.power_factor(),2.0/3.0),"SM.79 continues airborne with two engines after real single-engine failure")
+	check(not plane.components.detached.has(&"engine_left"),"Mechanical engine failure retains nacelle until actual structural damage")
 	check(absf(plane.angular_velocity.y)>0.01,"Single SM.79 wing-engine loss produces actual asymmetric yaw")
 	plane.components.apply_damage(&"engine",1000,Vector3.ZERO,false,"mechanical")
 	plane.components.apply_damage(&"engine_right",1000,Vector3.ZERO,false,"mechanical")
@@ -77,6 +78,7 @@ func run() -> void:
 	var colliding: int = 0
 	for fragment in fragments:
 		if fragment.collision_mask != 0: colliding+=1
+	check(fragments.all(func(f):return f.linear_velocity.is_finite() and f.angular_velocity.is_finite()),"Simultaneous fragments retain finite physical velocities")
 	check(fragments.size()<=64 and colliding<=32,"Ten simultaneous losses respect global fragment and collision budgets")
 	check(pieces.all(func(a):return a.is_destroyed and a.impact_effects.explosion_count==1),"Concurrent losses each notify and explode once")
 	world.show_selection()

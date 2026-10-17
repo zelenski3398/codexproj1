@@ -7,13 +7,19 @@ var water_rids: Array[RID] = []
 var age: float = 0
 var burning: bool = false
 var previous_speed: float = 0
+var maximum_burning_emitters: int = 4
+var buoyant: bool = false
+var float_seconds: float = 8
+var in_water: bool = false
+var surface_point: Vector3 = Vector3.ZERO
+var surface_normal: Vector3 = Vector3.UP
 func _ready() -> void:
 	contact_monitor = true
 	max_contacts_reported = 2
 	if burning:
 		var active: int = 0
 		for piece in get_tree().get_nodes_in_group("burning_aircraft_debris"): active += 1
-		if active < 4:
+		if active < maximum_burning_emitters:
 			add_to_group("burning_aircraft_debris")
 			var smoke := CPUParticles3D.new()
 			smoke.amount = 12
@@ -52,7 +58,17 @@ func _physics_process(delta: float) -> void:
 		var hit := get_world_3d().direct_space_state.intersect_ray(ray)
 		if not hit.is_empty() and hit.collider.is_in_group("aircraft_water") and global_position.y < hit.position.y+0.3:
 			secondary_done = true
+			in_water = true
+			surface_point = hit.position
+			surface_normal = hit.normal
 			AircraftImpactService.obtain().burst_at(hit.position,hit.normal,true,0.3,impact_owner)
 			linear_damp = 2
 			angular_damp = 2
 			# Flooded metal chunks sink. Foam/splashes provide the surface trace.
+
+func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
+	if not in_water: return
+	state.apply_central_force(-state.linear_velocity*mass*2)
+	if buoyant and age < float_seconds:
+		var depth: float = (surface_point-state.transform.origin).dot(surface_normal)
+		state.apply_central_force(surface_normal*mass*9.81*clampf((depth+0.1)*4,0,1.4))

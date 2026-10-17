@@ -35,7 +35,7 @@ func run() -> void:
 		await frames(5)
 		plane.freeze = true
 		var damage := plane.components
-		check(damage.definitions.size() == (18 if kind=="sm79" else 12),kind+": model-specific component set with actual sensors")
+		check(damage.definitions.size() == (19 if kind=="sm79" else (13 if kind=="stuka" else 12)),kind+": model-specific component set with actual sensors")
 		check(damage.component_ids("engine").size() == (3 if kind=="sm79" else 1),kind+": correct independent engine count")
 		damage.apply_damage(&"engine",10000,Vector3.ZERO,false,"mechanical")
 		check(damage.engine_power(&"engine") == 0 and not plane.is_destroyed and plane.health.hp > 85,kind+": engine fails without airframe explosion or combat-loss event")
@@ -45,9 +45,18 @@ func run() -> void:
 			check(is_equal_approx(damage.power_factor(),2.0/3.0),"SM.79: remaining two engines retain 2/3 available thrust")
 			damage.apply_damage(&"engine_left",1000,Vector3.ZERO,false,"mechanical")
 			check(is_equal_approx(damage.power_factor(),1.0/3.0) and absf(damage.asymmetry_torque(10000,Basis.IDENTITY).y)>1000,"SM.79: independent wing-engine failure creates force-derived asymmetric yaw")
+			damage.tank_fuel[&"fuel_left"] = 0
+			damage.consume_fuel(0.01)
+			check(damage.tank_fuel[&"fuel_left"]==0 and damage.tank_fuel[&"fuel_right"]>0.9,"SM.79: fuel consumption preserves independent emptied tank")
 			check(damage.integrity_ratio(&"engine_right")==1 and not plane.is_destroyed,"SM.79: third engine and bomber remain operational")
 			damage.apply_damage(&"rear_gunner",10000)
 			check(damage.integrity_ratio(&"cockpit")==1,"SM.79: gunner damage is independent of pilot cockpit")
+			check(plane.rear_gunner.crew_component==&"rear_gunner" and plane.additional_gunners[0].crew_component==&"ventral_gunner","SM.79: defensive mounts have independent configured operators")
+			plane.rear_gunner._physics_process(0.01)
+			plane.additional_gunners[0]._physics_process(0.01)
+			check(plane.rear_gunner.status=="CREW DISABLED" and plane.additional_gunners[0].status!="CREW DISABLED","SM.79: losing dorsal operator does not disable ventral crew")
+			damage.apply_damage(&"bomb_bay",10000)
+			check(plane.impact_effects.explosion_count==0 and not damage.catastrophic,"SM.79: bomb-bay damage is not automatic payload detonation")
 		damage.reset();plane.health.reset()
 		damage.apply_damage(&"fuel_tank",20,Vector3.ZERO,false,"mechanical")
 		damage.leaking_tanks[&"fuel_tank"] = true
@@ -114,6 +123,25 @@ func run() -> void:
 	damage.fuel_remaining=0
 	damage.advance(1)
 	check(not damage.fires.has(&"fuel_tank"),"Fuel exhaustion extinguishes tank fire")
+	damage.reset();plane.health.reset()
+	damage.profile.engine_heat_rate = 10
+	plane.engine_running = true
+	plane.pilot.throttle = 1
+	damage.apply_damage(&"engine",45,Vector3.ZERO,false,"mechanical")
+	damage.advance(1)
+	check(damage.engine_seized.has(&"engine") and damage.integrity_ratio(&"engine")>0 and damage.engine_power(&"engine")==0,"Critical overworked engine can seize before component HP reaches zero")
+	damage.reset();plane.health.reset()
+	check(damage.engine_temperature.is_empty() and damage.engine_seized.is_empty(),"Reset clears heat and seizures")
+	damage.integrity[&"engine"] = damage.definitions[&"engine"].max_integrity * 0.5
+	check(damage.component_state(&"engine")=="moderate","Component state follows configurable inclusive thresholds")
+	var service := AircraftImpactService.obtain()
+	service.release_particles(123)
+	var successes: int = 0
+	for i in range(service.profile.maximum_smoke_particles+1):
+		if service.reserve_particle(true,1,123): successes += 1
+	check(successes <= service.profile.maximum_smoke_particles,"Global smoke particle reservations cannot exceed configured cap")
+	service.release_particles(123)
+	check(service.smoke_reservations.all(func(r): return r.owner != 123),"Owner cleanup releases particle reservations")
 	damage.reset();plane.health.reset()
 	damage.catastrophic_failure("Debug catastrophic ignition")
 	await frames(3)

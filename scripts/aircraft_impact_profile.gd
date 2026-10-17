@@ -32,3 +32,6 @@ extends Resource
 @export_range(4,32,1) var maximum_effects: int = 24
 @export_group("Optional component event recordings (silent when unassigned)")
 @export var event_sounds: Dictionary[StringName, AudioStream] = {}
+@export_group("Global aircraft particle reservations")
+@export var maximum_smoke_particles: int = 512
+@export var maximum_flame_particles: int = 192

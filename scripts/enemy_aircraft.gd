@@ -56,6 +56,7 @@ func _ready() -> void:
 	ai.name = "EnemyPilot"
 	add_child(ai)
 	rear_gunner = create_gunner()
+	if components.definitions.has(&"rear_gunner"): rear_gunner.crew_component = &"rear_gunner"
 	rear_gunner.name = "RearGunner"
 	rear_gunner.aircraft = self
 	add_child(rear_gunner)
