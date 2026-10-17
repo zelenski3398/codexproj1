@@ -1,0 +1,10 @@
+{
+  "speaker": "FAITH",
+  "source": "ElevenLabs_2026-10-17T18_35_14_RAF Pilot 2_gen_sp100_s50_sb75_v4.mp3",
+  "source_sha256": "a56ac61662a3169480d3a169ed2b7ddc21c2f3bab375354760a3bb7316eaa904",
+  "identification_seconds": 1.7,
+  "identification_text": "Control, this is Faith.",
+  "processing": "Mono; -16 LUFS normalization; 15/45 ms fades. Existing treatment retained; no added band-pass/static.",
+  "speech_generated": false,
+  "transcription_note": "Role and prefix checked with local automatic recognition; full take is not used as a universal status report."
+}

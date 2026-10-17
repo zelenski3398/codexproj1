@@ -1,0 +1,10 @@
+{
+  "speaker": "CHARITY",
+  "source": "ElevenLabs_2026-10-17T18_36_35_RAF Pilot voice_gen_sp100_s50_sb75_v4.mp3",
+  "source_sha256": "93d4caed1512878448674d5810850016151d26e03ea87e97b381e7fe6e6a7df3",
+  "identification_seconds": 1.88,
+  "identification_text": "Control, this is Charity.",
+  "processing": "Mono; -16 LUFS normalization; 15/45 ms fades. Existing treatment retained; no added band-pass/static.",
+  "speech_generated": false,
+  "transcription_note": "Role and prefix checked with local automatic recognition; full take is not used as a universal status report."
+}

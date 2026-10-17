@@ -59,3 +59,12 @@ User-supplied "Faith hope and charity mission intro.mp3" and
 and harbour/congratulations.ogg using tools.prepare_radio.prepare.
 Source hashes and processing metadata: harbour/*.json. Supplied speech retained;
 no generated dialogue. Ownership/licensing is not inferred from the filenames.
+
+Interactive wingman radio (three user-supplied recordings, 17 October 2026):
+- RAF Pilot 2, 18:35:14: spoken identification Faith (player).
+- Walke Talkie Commander Dude, 18:37:16: spoken identification Hope.
+- RAF Pilot voice, 18:36:35: spoken identification Charity.
+assets/audio/harbour/status/*_identification.ogg are neutral opening extracts;
+*_full.ogg retain the supplied fixed dialogue, not used universally at runtime.
+status/*.json record the complete supplied filenames and source SHA-256 hashes.
+Preparation: tools/prepare_wingman_radio.py; speech is not synthesized.

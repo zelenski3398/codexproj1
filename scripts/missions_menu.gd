@@ -100,7 +100,7 @@ func _choose_mission(index: int) -> void:
 		var harbour: HarbourDefinition = preload("res://mission_definitions/harbour.tres")
 		title.text = harbour.title
 		briefing.text = harbour.briefing
-		guide.text = "RAF ĦAL FAR · FAITH / HOPE / CHARITY\nE board · I engine · W power · arrows fly · F guns\nFriendly wingmen follow after takeoff. Three waves."
+		guide.text = "RAF ĦAL FAR · FAITH / HOPE / CHARITY\nE board · I engine · W power · arrows fly · F guns\nFriendly wingmen follow after takeoff.\n%s: request wingman status. Three waves." % WingmanRadio.binding_text()
 		mission_note.text = "Fictional defence inspired by Malta, 1940 · SM.79 / CR.42"
 		mission_chart.home = "hal_far"
 		aircraft_picker.set_item_text(1, "Sea Gladiator · Faith (assigned)")

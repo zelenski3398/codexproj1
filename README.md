@@ -10,6 +10,8 @@ Ju 87-inspired opponent; Malta free roam starts peacefully until you request com
 
 Choose **Missions → Faith, Hope and Charity → Depart from Ħal Far**. Fly Faith, a Sea Gladiator, with persistent friendly wingmen Hope and Charity. Stop three SM.79 / CR.42 formations before bomb release on Fort St Elmo or Fort St Angelo. The final formation has two ace escorts. Both supplied commander recordings play as the introduction and success message, with radio mixing and summary captions. See the [mission guide, tuning and validation](docs/harbour-interception.md).
 
+Press **T** in Faith to request live wingman status without pausing. Faith uses the supplied RAF Pilot 2 voice; Hope uses Walkie Talkie Commander Dude and Charity uses RAF Pilot voice. Short recorded identifications accompany live, sighting-limited report subtitles. Full dynamic speech is not generated. See the [wingman radio guide and recording inventory](docs/wingman-radio.md).
+
 ## Live aircraft component health
 
 The bottom of the flight screen shows a colour-coded top-down aircraft diagram and individual integrity percentages/bars for the fuselage, left/right wings, engine, cockpit, rudder, elevator and fuel tank. Healthy parts are green, half-health parts amber, and failed parts red, with continuous colour changes between them. Values use each component's own maximum integrity, independently of the overall HP bar. Reset and aircraft switching refresh the display automatically. The panel does not capture flight input.

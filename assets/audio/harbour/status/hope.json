@@ -1,0 +1,10 @@
+{
+  "speaker": "HOPE",
+  "source": "ElevenLabs_2026-10-17T18_37_16_Walke Talkie Commander Dude_gen_sp100_s50_sb75_v4.mp3",
+  "source_sha256": "850fc2bf853a955f9f75b10c6f4a1f1e1112db3967dee4531beee7e15cafabfa",
+  "identification_seconds": 1.78,
+  "identification_text": "Control, this is Hope.",
+  "processing": "Mono; -16 LUFS normalization; 15/45 ms fades. Existing treatment retained; no added band-pass/static.",
+  "speech_generated": false,
+  "transcription_note": "Role and prefix checked with local automatic recognition; full take is not used as a universal status report."
+}

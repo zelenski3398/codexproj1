@@ -15,6 +15,7 @@ var bomber_stopped: bool = false
 var wingman_states: Dictionary = {"Hope":"OPERATIONAL", "Charity":"OPERATIONAL"}
 var forts: Array[FortObjective] = []
 var target_fort: FortObjective
+var wingman_radio: WingmanRadio
 var radio: MissionRadioQueue
 var effects: Node3D
 var canvas: CanvasLayer
@@ -92,6 +93,9 @@ func _prepare() -> void:
 		friend.tree_exiting.connect(_wingman_retired.bind(i))
 		wingmen.append(friend)
 		friendly_ids.append(friend.get_instance_id())
+	wingman_radio = WingmanRadio.new()
+	wingman_radio.director = self
+	add_child(wingman_radio)
 	_cue("intro", "Faith, Hope and Charity: take off from Ħal Far. Protect St Elmo and St Angelo; intercept bombers before release.", definition.intro_voice, true)
 	session.malta_mission._message("Faith · E board your Sea Gladiator · I engine · W power · Hope and Charity follow after takeoff")
 
@@ -396,7 +400,10 @@ func _resolve() -> void:
 
 func _cue(id: String, text: String, voice: AudioStream = null, summary: bool = false) -> void:
 	if voice == null: voice = definition.cue_voices.get(id)
-	radio.cue(id, text, voice, summary)
+	if id.begins_with("attack_") or id.begins_with("lost_"):
+		radio.urgent_cue(id, text, voice)
+	else:
+		radio.cue(id, text, voice, summary)
 
 func _finish(won: bool, reason: String) -> void:
 	if is_finished(): return

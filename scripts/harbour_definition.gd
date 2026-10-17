@@ -29,3 +29,21 @@ extends Resource
 @export var cue_voices: Dictionary[String, AudioStream] = {}
 @export var voice_volume_db: float = 0
 @export var radio_duck_db: float = -4
+
+@export_group("Wingman radio")
+@export var faith_status_voice: AudioStream
+@export var hope_status_ack: AudioStream
+@export var charity_status_ack: AudioStream
+## Short identity/condition recordings only: sound / minor / significant /
+## critical / engine_damage / controls_damage / fuel_empty / fuel_leak / fire.
+## Do not record fixed bearings or enemy counts in these condition slots.
+@export var hope_status_variants: Dictionary[String, AudioStream] = {}
+@export var charity_status_variants: Dictionary[String, AudioStream] = {}
+@export_range(-24, 6, .5) var wingman_radio_volume_db: float = 0
+@export var radio_subtitle_seconds: float = 9
+@export var radio_request_cooldown: float = 20
+@export var radio_reply_gap: float = .45
+@export var radio_spotting_distance: float = 3000
+@export_range(30, 360, 1) var radio_spotting_fov: float = 220
+@export var radio_spotting_interval: float = .35
+@export var radio_memory_seconds: float = 15

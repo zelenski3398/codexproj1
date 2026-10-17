@@ -50,6 +50,10 @@ Surviving escorts remain alive after a bomber kill. After 110 seconds they recei
 
 The end panel reports bombers intercepted, escorts destroyed/withdrawn, player/friendly/other losses, surviving wingmen and both forts' HP. Success requires all three bombers intercepted before release, every wave resolved, and both forts alive. Retry rebuilds this mission and clears its aircraft, bombs, effects, health receivers and radio queue. Leaving returns to the existing mission selection.
 
+## Interactive pilot radio
+
+Press **T** while flying Faith to request surviving wingmen's live status and observed contacts. Three additional supplied pilot recordings provide truthful identification calls, with detailed speaker-labelled subtitles and shared commander queue priority. See the [interactive radio guide](wingman-radio.md) for voice assignments, spotting rules, controls, settings, missing dialogue and validation.
+
 ## Commander recordings
 
 Both supplied MP3s are integrated as prepared mono Ogg assets:

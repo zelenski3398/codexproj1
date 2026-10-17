@@ -150,6 +150,8 @@ func _ready() -> void:
 	list.add_child(_label("ARROWS  Pitch / bank     A / D  Rudder\nW / S  Throttle     G  Gear     SPACE  Brakes\n%s (hold)  %s\nH  DEBUG: −10 HP     R  Reset     ESC  Pause" % [fire_key_label, aircraft.gun_description], 13, INK))
 	if mission != null:
 		list.add_child(_label("E Board / leave · I Engine · M Navigation", 13, GOLD))
+		if mission.session.game_mode == "harbour":
+			list.add_child(_label(WingmanRadio.binding_text() + "  Radio: request wingman status", 13, GOLD))
 	list.add_child(_label("APPROACH  %s km/h · %s\nFlare gently · aim for less than 3 m/s sink" % [aircraft.approach_speed_hint, "gear down" if aircraft.gear.retractable else "fixed gear"], 12, MUTED))
 	notice_label = _label("", 16, GOLD)
 	notice_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
