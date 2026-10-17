@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "075ae79bae472096aa437b6b668f428fce67ddfd",
-  "last_documented_commit": "32595641c83dbcfa746320ce149c74dc0545b60b",
-  "update_document": "2026-10-17-aircraft-impact-audio.md",
-  "review_range": "452833a2b98f9d37950470ca5cb24ad11ee33245..32595641c83dbcfa746320ce149c74dc0545b60b",
+  "previous_documentation_publication": "ddc8aa69a0e94bd4841f2a87dddd8e2ad2abf639",
+  "last_documented_commit": "8c4d9307c0e6e1e96151e3c68761022cd570687c",
+  "update_document": "2026-10-17-cottonera-fields.md",
+  "review_range": "32595641c83dbcfa746320ce149c74dc0545b60b..8c4d9307c0e6e1e96151e3c68761022cd570687c",
   "date": "2026-10-17",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }
