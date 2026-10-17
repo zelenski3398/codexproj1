@@ -31,11 +31,26 @@ func _ready() -> void:
 			smoke.gravity = Vector3(0,0.3,0)
 			smoke.scale_amount_min = 0.4
 			smoke.scale_amount_max = 1.2
-			var ball := SphereMesh.new()
-			ball.radial_segments = 6
-			ball.rings = 3
-			ball.material = MeshKit.material(Color(0.10,0.10,0.10))
-			smoke.mesh = ball
+			var gradient := Gradient.new()
+			gradient.offsets = PackedFloat32Array([0,0.4,1])
+			gradient.colors = PackedColorArray([Color.WHITE,Color(1,1,1,0.55),Color(1,1,1,0)])
+			var texture := GradientTexture2D.new()
+			texture.gradient = gradient
+			texture.width = 32
+			texture.height = 32
+			texture.fill = GradientTexture2D.FILL_RADIAL
+			texture.fill_from = Vector2(0.5,0.5)
+			texture.fill_to = Vector2(1,0.5)
+			var material := MeshKit.material(Color(0.10,0.10,0.10,0.45))
+			material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			material.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+			material.albedo_texture = texture
+			var quad := QuadMesh.new()
+			quad.size = Vector2(2,2)
+			quad.material = material
+			smoke.mesh = quad
+			smoke.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			add_child(smoke)
 func _physics_process(delta: float) -> void:
 	age += delta
