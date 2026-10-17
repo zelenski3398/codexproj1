@@ -1,0 +1,42 @@
+# 17 October 2026 — Universal aircraft failure and crash system
+
+Documented source: [`aea836f41aa952a3ed41c88d31808b1804d68b49`](https://github.com/zelenski3398/codexproj1/commit/aea836f41aa952a3ed41c88d31808b1804d68b49). Reviewed increment: `5724cd4597c6caba77f6dcb027af84bc82a498b2..aea836f41aa952a3ed41c88d31808b1804d68b49`, on `work`. The previous publishing-check documentation publication `7749042` is maintenance within this range. The original full-history report remains frozen; this is its evidence-linked continuation.
+
+## Evidence and implementation phases
+
+| Commit | Observable change |
+|---|---|
+| [31b899e](https://github.com/zelenski3398/codexproj1/commit/31b899e) | Audit of existing shared damage, force model, geometry breakup, audio and missing bomber capabilities. |
+| [0de07c4](https://github.com/zelenski3398/codexproj1/commit/0de07c4) | Reusable component roles/states, independent engines/tanks, adjacency fire/fatigue, actual geometry separation, normalized crash severity, component visuals and synthesized failure SFX. |
+| [71782fb](https://github.com/zelenski3398/codexproj1/commit/71782fb) | Independent defensive crews, fuel-delivery correctness, particle reservations, bounded secondary effects, water-debris approximation and regression fixes. |
+| [bfe54a7](https://github.com/zelenski3398/codexproj1/commit/bfe54a7) | Shared AI damage emergencies, configurable response thresholds, expanded HUD/scrolling developer inspector, scenario controls and release debug gating. |
+| [147cfcc](https://github.com/zelenski3398/codexproj1/commit/147cfcc) | Safe neutral factors when optional rudder/elevator definitions are omitted; no invented component entries. |
+| [2947be8](https://github.com/zelenski3398/codexproj1/commit/2947be8) | Fixed guns stop firing when their supporting wing detaches; surviving fixed/nose and separately controlled defensive guns retain existing behaviour. |
+| [28332c2](https://github.com/zelenski3398/codexproj1/commit/28332c2) | Native/release-browser validation, isolated WebGL fixture, screenshots, tuning guide, current README corrections and per-suite evidence inventory. |
+| [aea836f](https://github.com/zelenski3398/codexproj1/commit/aea836f) | Soft alpha/billboard smoke for burning debris, verified by refreshed Compatibility captures. |
+
+Previously, hull depletion requested an immediate airborne fireball and dry crashes shared one presentation. SM.79's three engine hitboxes shared one integrity value. Now local failures can precede hull loss; ordinary engine failure stops its thrust/propeller while permitting gliding, and zero hull HP disables an intact aircraft without a mandatory explosion. Catastrophe is explicitly evaluated through fire/structure or impact conditions. Existing one-shot `destroyed` signals still drive missions, counts, credit and restart. No missions were replaced or scene reloads added by damage.
+
+Aircraft-specific resources provide 12 parts for the single-seat types, 13 for Stuka and 19 for SM.79. The bomber has three independent engines, three tanks, separate dorsal/ventral crews and a damageable bomb-bay sensor. The seven actual aircraft types are Spitfire, Sea Gladiator, Stuka, CR.42, C.200, C.202 and SM.79. A Ju 88 is not present and has not been invented or claimed tested. Profiles can configure additional engines/tanks/crew, but each future model still needs fitted sensors, joints/region aliases, mass and tuning.
+
+The existing rigid-body force integrator consumes damage factors, off-centre engine forces, wing moments and lost control authority; no damage/AI code teleports live aircraft. Fire uses adjacency and fixed event intervals, fuel delivery respects unavailable tanks, severe load/speed can detach weakened surfaces, and actual mesh triangles become independent pieces with inherited motion. Impact severity uses normal/tangential energy, aircraft mass, structure, alignment and surface; fuel/fire influence conditional ignition. A previous-tick velocity sample prevents collision-solver braking from disguising a fast crash as a gentle one. Terrain changes are classification tags only.
+
+## Validation
+
+The [machine-readable inventory](validation/universal-damage-2026-10-17.json) records **48 native suites / 1,636 assertions**, using latest successful results after targeted fixes, plus **9 production-release browser checks and 22 isolated release-WebGL checks: 1,667 assertions**, excluding repetitions and inherited duplicate summaries. The initial sweep exposed problems; it was not a clean successful run. Those failures were corrected and affected suites rerun. The inventory lists every suite and modified file.
+
+New targeted suites cover engine-out gliding, all seven model configurations, independent bomber engines/crew/tanks, fuel starvation without premature power loss, overheating/seizure, adjacency fire, critical-versus-loaded wings, actual separated geometry, source-specific overkill, stopped wing guns, different impact angles, empty-fuel crashes, single catastrophes, ten concurrent physical losses, finite fragment velocities and cleanup. Regressions cover component sweeps/forces, landing/takeoff, mission timing/outcomes/retry, hostile gunfire, manual AA/flak, aircraft switching, map/airfield/city geometry and ground/vehicle controls.
+
+Testing also caught a new dorsal-crew volume enclosing its own muzzle; its placement was corrected behind the muzzle, preserving the safety ray rather than bypassing own-airframe obstruction. The harbour kill-credit fixture now deliberately hits the actual fuselage with a target-velocity-matched sweep instead of depending on an engine/upper-wing hit being an instant hull kill. Older mandatory-zero-HP-explosion assertions now test non-explosive loss and an explicitly requested catastrophe separately.
+
+The official Godot 4.6.3 templates were downloaded and SHA-512 verified, enabling actual Web release exports in this environment. Chromium/ANGLE/SwiftShader verified the normal poster-to-menu transition, 12-part HUD, release debug gating, hull loss and reset. A separately exported fixture tested actual engine failure, retained SM.79 engine power, wing mesh separation and reset on all seven types. Both browser runs report zero script/resource/WebGL errors. Native Compatibility/llvmpipe screenshots show localized fire, a separated wing, bomber engine loss and explicit burning breakup after an earlier wing separation; that last case produced seven remaining fragments and one explosion. The capture hides the HUD only for the final comparison frame and exits cleanly apart from the graphics driver's unsupported V-Sync warning.
+
+Known validation limitations: Keyboard and native battery UI suites pass/exit 0 while retaining resource-teardown diagnostics. Native sound output was Dummy and no audio-quality listening is claimed. No full human dogfight or production-hardware FPS benchmark was performed. Water debris buoyancy and each category's cosmetic tuning need interactive review. The earlier web-template limitation is resolved for this update; GitHub deployment success remains a separate remote workflow outcome.
+
+## Scope and guide
+
+See [the full implementation/tuning/manual test guide](../universal-aircraft-damage.md) for code ownership, diagrams, all exported parameters, screenshots and an acceptance procedure per damage type. The [source snapshot inventory](validation/universal-damage-2026-10-17.json) lists modified files; core extensions are `AircraftDamage`, `FlightAircraft`, `AircraftImpact`, `DamageEffects` and existing profiles. New modules include `AircraftCrashSolver`, `AircraftDebrisPiece` and `ComponentDamageVisuals`.
+
+Fine surface marks are cosmetic geometry rather than volumetric bullet tunnels; full-crash fragmentation retains simplified spatial buckets rather than engineering joints. Payload sympathetic detonation/release failures, advanced water simulation, a new AI emergency-landing planner and a Ju 88 model are not implemented. Ten new failure sounds are labelled original synthesized placeholders with regeneration code, not historical recordings. Existing mission crash-failure rules still apply to belly-contact crash states; physically intact does not guarantee mission survival.
+
+README/source-boundary metadata now points to this inspected source commit. The following documentation publication commit is intentionally outside its own boundary and should be treated as maintenance in the next incremental review.

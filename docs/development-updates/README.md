@@ -4,6 +4,7 @@
 
 The original report is a frozen 50-commit audit through `588ac7b`. Later changes are recorded here with explicit commit boundaries, avoiding a repeated reconstruction of unchanged history.
 
+- [17 October 2026: universal component failures, independent engines/crew and severity-based crashes](2026-10-17-universal-damage.md).
 - [17 October 2026: stale mission-menu assertion blocking publication](2026-10-17-publishing-check.md).
 - [17 October 2026: live poster startup and integrated Play](2026-10-17-live-poster.md).
 - [17 October 2026: interactive wingman radio, live sightings and supplied pilot voices](2026-10-17-wingman-radio.md).

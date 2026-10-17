@@ -410,5 +410,6 @@
     "tools/build_damage_web_fixture.py",
     "tools/generate_failure_audio.py",
     "tools/universal_damage_web_smoke.cjs"
-  ]
+  ],
+  "source_commit": "aea836f41aa952a3ed41c88d31808b1804d68b49"
 }
