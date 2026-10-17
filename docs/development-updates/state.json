@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "23042f95396c332056d9f4a15c0010ae22fb9cdf",
-  "last_documented_commit": "00eb8e7e53c16bbcf4abf202132979c7192edb23",
-  "update_document": "2026-10-17-malta-countryside.md",
-  "review_range": "8c4d9307c0e6e1e96151e3c68761022cd570687c..00eb8e7e53c16bbcf4abf202132979c7192edb23",
+  "previous_documentation_publication": "85d145233c31f51b55d7b3d7b0af96b22fe2c4ee",
+  "last_documented_commit": "a189c4b666a3b890215a7ae6b4a995015558cd90",
+  "update_document": "2026-10-17-harbour-interception.md",
+  "review_range": "00eb8e7e53c16bbcf4abf202132979c7192edb23..a189c4b666a3b890215a7ae6b4a995015558cd90",
   "date": "2026-10-17",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }
