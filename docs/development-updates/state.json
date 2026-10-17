@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "9b3c6fa9ad3cc914a46d580c5fbdbc1c1cf70489",
-  "last_documented_commit": "3fee516556e501ef93d4768b1d3f5f555d048b14",
-  "update_document": "2026-10-16-component-health-hud.md",
-  "review_range": "edd402ff336f611eac20cbd37917d68a5cb68325..3fee516556e501ef93d4768b1d3f5f555d048b14",
-  "date": "2026-10-16",
+  "previous_documentation_publication": "53e2fffa25e921cda8a058f15330dbf3d586b226",
+  "last_documented_commit": "452833a2b98f9d37950470ca5cb24ad11ee33245",
+  "update_document": "2026-10-17-st-elmo-reconstruction.md",
+  "review_range": "3fee516556e501ef93d4768b1d3f5f555d048b14..452833a2b98f9d37950470ca5cb24ad11ee33245",
+  "date": "2026-10-17",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }
