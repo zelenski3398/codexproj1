@@ -6,21 +6,24 @@ roads, airfields and mission coordinates remain unchanged. Fly southeast across
 Grand Harbour from Valletta, or use **M** and the Birgu, Isla and Bormla labels.
 This is a source-based, historically inspired model, **not a verified 1942 survey**.
 
+The [outer-enclosure and inferred field-wall update](cottonera-fields.md) removes exterior generated buildings and adds terrain-fitted agricultural walls.
+
 ## What is built
 
-- **2,575 buildings** derived from actual supplied OSM footprints, with flat
+- **2,230 buildings** derived from actual supplied OSM footprints, with flat
   roofs, parapets, windows, doors, balconies and retained courtyard holes.
-- **38 mapped fortification features**, using limestone walls and battered faces.
+- **39 mapped fortification features**, using limestone walls and battered faces.
 - Fort St Angelo on its supplied polygon, with schematic terraces and batteries.
 - Saint Lawrence, Immaculate Conception, a Gardjola lookout and other source
   churches; their architectural details remain original schematic templates.
 - Mapped street/footway surfaces and reserved clearance around existing game roads.
-- **145 persistent collision chunks** and three distance-based visual tiers.
+- **130 persistent collision chunks** and three distance-based visual tiers.
   Buildings and walls block existing physical bodies and swept projectile rays.
 
-![Cottonera aerial preview](previews/cottonera-aerial.png)
-![Harbour-facing preview](previews/cottonera-harbour.png)
-![Closer urban preview](previews/cottonera-streets.png)
+![Current Cottonera enclosure and exterior fields](previews/cottonera-walled-fields-aerial.png)
+![Current rubble walls at walking height](previews/cottonera-rubble-wall-ground.png)
+
+The original unfiltered city captures remain as historical previews; the images above show the current revision.
 
 ## Data selection and projection
 
@@ -62,7 +65,7 @@ The compiler uses the existing reusable template library and emits 180 m mesh
 batches. `CottoneraRegion` loads one region inside the same `MaltaWorld`, with no
 travel transitions. Detailed facade meshes appear below 700 m, structure meshes
 below 5 km and simplified skyline masses from 5–16 km. Collision remains loaded
-across visual LOD changes. Compiled visual tiers total approximately 1.55 million
+across visual LOD changes. Compiled visual tiers total approximately 3.05 million
 triangles; this counts alternative representations together, not simultaneous
 on-screen triangles. Static batching, visibility culling and imported mesh LODs
 limit rendering cost. Full-region frame-rate guarantees are not established.
@@ -77,12 +80,7 @@ Cottonera region, preventing accumulated geometry/collision duplicates.
 Modern OSM footprints do not prove wartime layouts. Explicitly dated post-1942
 construction is filtered, but undated modern buildings may remain. There are no
 fabricated bomb ruins, yachts or arbitrary replacement docks. The two historic
-defensive lines are not yet individually identified by sufficient source tags;
-mapped unnamed walls remain generic fortifications. The dockyard/dry-dock
-reconstruction and Inquisitor's Palace identification remain incomplete. Two
-polygon gate features are reported as unsupported rather than filled with solid
-blocks or guessed openings. One excessive building height and one unsupported
-wall geometry are skipped and listed in `region.json` warnings.
+defensive systems are distinguished in the [reviewed enclosure and rubble-wall update](cottonera-fields.md). The outer source line is now rendered even where the old selection produced multi-part geometry. Generic unnamed walls retain their existing classification. The dockyard/dry-dock reconstruction and Inquisitor's Palace identification remain incomplete. Two polygon gate features are still reported as unsupported rather than filled with solid blocks. One excessive building height remains skipped.
 
 Fort St Angelo and church exteriors are recognizable procedural interpretations
 inside their mapped footprints, not measured facade replicas. Buildings do not
@@ -100,10 +98,6 @@ visibility, LOD distances, gate-template ray collision, existing airfield/AA
 counts and clean region recreation. Native captures above render the real Malta
 world through Compatibility. Detailed results are recorded with the final change.
 
-Recorded validation: source dataset **15 assertions**, importer **14/14**,
-compiler **10/10**, native populated-region **15/15**, and existing Malta
-flight/boarding/persistence **36/36** passed. The native Compatibility previews
-above were actually rendered. The production web export completed without
-script/resource errors; production Chromium/ANGLE world/render/retry checks passed **28/28**, with no
-shader, resource, JavaScript or HTTP errors.
-Manual full-city traversal and a sustained browser city flyover remain unverified.
+Current enclosure/field-wall revision: **160 checks/assertions passed**, including 20 native Cottonera checks, protected-world hashes, actual collision rays and surrounding-city/airfield regressions. Full regeneration matches all 622 compiled GLBs and landscape metadata. The [current guide](cottonera-fields.md) has the complete boundary, test counts and limitations. Native Compatibility screenshots above show this revision.
+
+Historical supplied-data baseline validation included a web export and Chromium/ANGLE checks (28/28). Those results predate the enclosure/field changes and do not establish current browser behaviour. Web export/runtime was not retested for this revision because this environment has no web templates. Full-city walking/driving and device-specific performance remain unverified.

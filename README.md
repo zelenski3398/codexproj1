@@ -810,3 +810,7 @@ Choose St Elmo or any of its three Bofors positions in Malta departure selection
 ## Aircraft impact audio and immediate airborne destruction
 
 Confirmed hits now produce varied positional impact audio. Healthy sea crashes plunge with one speed-scaled splash at the real water surface; zero HP in flight creates one immediate explosion, with an optional later splash from the actual wreck crossing. [Implementation, assets, tuning, previews and checks](docs/aircraft-impact-audio.md). Sounds added for this feature are explicitly labelled synthesized placeholders. Tune `audio_profiles/aircraft_impacts.tres`.
+
+## Cottonera enclosure and rubble field walls
+
+Cottonera buildings now follow the reviewed outer defensive enclosure, with explicit decisions for crossing footprints. Inferred agricultural plots outside it have terrain-fitted Maltese rubble walls, shared edges and road/gate openings. [Boundary, files, screenshots, generation and checks](docs/cottonera-fields.md).

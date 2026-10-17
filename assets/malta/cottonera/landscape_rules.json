@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "outer_wall_source": "way/691540426",
+  "harbour_landfront_source": "way/397742452",
+  "harbour_landfront_end_vertex": 55,
+  "inner_wall_sources_excluded_from_boundary": ["way/47325460", "way/47325522", "way/148709248", "way/154154764"],
+  "closure_lon_lat": [[14.5228,35.8910],[14.5212,35.8940],[14.5169,35.8940],[14.5110,35.8913],[14.5100,35.8840],[14.5162,35.8820]],
+  "closure_note": "Outer landward line follows supplied wall vertices. Birgu harbour-facing landfront follows its outer northbound edge up to source vertex 55; the source doubles back after this. Remaining seaward/harbour closure is an editorial enclosure, not a claim that a wall spans the water or dockyard.",
+  "crossing_reviews": {
+    "way/85258354": {"action":"remove", "reason":"Long mapped shed straddles the western dockyard closure; retain no cut half-shed across the enclosure."},
+    "way/138441490": {"action":"remove", "reason":"Large western dockyard footprint lies predominantly outside the enclosure; whole structure removed rather than slicing roof and facade."},
+    "way/397967726": {"action":"remove", "reason":"Mapped building overlaps the southern Birgu junction/bastion alignment; keep the defensive geometry and clearance, not this intersecting structure."},
+    "way/399234883": {"action":"remove", "reason":"Western structure has only a tiny interior sliver; remove the whole building and its details/collision."}
+  },
+  "fields": {"inferred":true, "seed":1942, "spacing_m":125, "outer_wall_distance_m":260, "minimum_plot_area_m2":650, "road_margin_m":3.5, "fortification_margin_m":12, "coast_margin_m":12, "section_length_m":1.6, "height_min_m":0.8, "height_max_m":1.2, "base_width_m":0.68, "top_width_m":0.38}
+}

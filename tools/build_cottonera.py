@@ -9,6 +9,7 @@ from shapely.geometry import shape,LineString,Point,box
 from shapely.ops import unary_union
 from cottonera.geography import Geography,ASSET
 from cottonera.models import Models,polygons,STONE
+from cottonera.landscape import Landscape,lines
 REQUIRED={'fort_st_angelo','gardjola','st_lawrence','inquisitors_palace','victories_basilica','immaculate_conception','cottonera_lines','santa_margherita_lines','dry_dock','road','building'}
 def number(value,default):
     try:return float(str(value).split()[0])
@@ -29,6 +30,7 @@ def build(features_path,output):
         geometry=g.geometry(shape(f['geometry']))
         if geometry.is_empty or not geometry.is_valid:raise ValueError('Invalid imported geometry')
         records.append((f['id'],city,role,p,geometry));roles.add(role)
+    landscape=Landscape(g,records) if not data.get("metadata",{}).get("synthetic") else None
     # Source roads plus existing protected roads are physical clearance corridors.
     roads=[]
     for _,_,role,p,geometry in records:
@@ -41,6 +43,10 @@ def build(features_path,output):
     gates=unary_union([geom.buffer(number(p.get('opening_width'),7)/2+2) for _,_,role,p,geom in records if role=='gate'])
     assets={r['id']:[] for r in alignment['regions']};built_roles=set();buildings=0;fortifications=0
     for identifier,city,role,p,original in records:
+        if landscape and not landscape.keep(identifier,role,original):continue
+        # Preserve/render the complete outer alignment, formerly skipped after
+        # AOI clipping converted it to a MultiLineString. Source remains intact.
+        if landscape and identifier==landscape.rules["outer_wall_source"]:original=landscape.outer
         m=Models();geometry=original;is_polygon=geometry.geom_type in ['Polygon','MultiPolygon']
         if role not in ['dry_dock','crane']:
             if is_polygon:geometry=geometry.intersection(g.land.buffer(-.4))
@@ -65,9 +71,9 @@ def build(features_path,output):
                             if mesh.face_normals[0,1]<0:mesh.invert()
                             m.add(mesh,[135,131,114,255],False,True)
         elif role in ['cottonera_lines','santa_margherita_lines','fortification','birgu_landfront','senglea_waterfront']:
-            if not is_polygon and geometry.geom_type!='LineString':warnings.append(f'{identifier}: wall alignment missing');continue
-            lines=[poly.exterior for poly in polygons(geometry)] if is_polygon else [geometry]
-            for line in lines:
+            if not is_polygon and geometry.geom_type not in ['LineString','MultiLineString']:warnings.append(f'{identifier}: wall alignment missing');continue
+            wall_lines=[poly.exterior for poly in polygons(geometry)] if is_polygon else lines(geometry)
+            for line in wall_lines:
                 stations=np.array([line.interpolate(t).coords[0] for t in np.linspace(0,line.length,max(2,int(line.length/12)+1))])
                 for a,b in zip(stations[:-1],stations[1:]):
                     segment=LineString([a,b]);width=number(p.get('thickness'),6)
@@ -102,30 +108,43 @@ def build(features_path,output):
             else:warnings.append(f'{identifier}: no model inferred for role {role}');continue
         else:warnings.append(f'{identifier}: actual footprint required for {role}');continue
         if m.mid or m.near:assets[city].append((identifier,role,m));built_roles.add(role)
+    field_report={}
+    if landscape:
+        field_assets,field_report=landscape.fields(clearance,gates)
+        for identifier,city,role,m in field_assets:assets[city].append((identifier,role,m))
     # Separate coarse collision remains loaded across all visual LOD switches.
-    regions=[];all_triangles=0;collision_count=0
+    regions=[];all_triangles=0;collision_count=0;generated=set()
     for region in alignment['regions']:
         anchor=np.array(region['position']);anchor[1]=0;chunks={}
         for identifier,role,m in assets[region['id']]:
             for level,meshes in [('mid',m.mid),('near',m.near),('far',m.far),('collision',m.collision)]:
                 for mesh in meshes:
-                    centre=mesh.bounds.mean(axis=0);key=(int(centre[0]//180),int(centre[2]//180),level)
+                    centre=mesh.bounds.mean(axis=0);key=(int(centre[0]//180),int(centre[2]//180),'fields' if role=='rubble_field_wall' else 'city',level)
                     chunks.setdefault(key,[]).append(mesh)
         entries={}
-        for (x,z,level),meshes in sorted(chunks.items()):
+        for (x,z,kind,level),meshes in sorted(chunks.items()):
             mesh=trimesh.util.concatenate(meshes);mesh.apply_translation(-anchor)
-            name=f'{region["id"]}_{x}_{z}_{level}.glb';scene=trimesh.Scene(mesh);(output/name).write_bytes(scene.export(file_type='glb'))
+            name=f'{region["id"]}_{x}_{z}_{"fields_" if kind=="fields" else ""}{level}.glb';generated.add(name);scene=trimesh.Scene(mesh);(output/name).write_bytes(scene.export(file_type='glb'))
             path='res://'+str((output/name).resolve().relative_to(ASSET.parent.parent)) if (output/name).resolve().is_relative_to(ASSET.parent.parent) else str(output/name)
-            entries.setdefault((x,z),{})[level]=path
+            entry=entries.setdefault((x,z,kind),{});entry[level]=path
+            if kind=="fields":entry["detail_type"]="fields"
             if level=='collision':collision_count+=1
             else:all_triangles+=len(mesh.faces)
         regions.append({**region,'status':'partial_geodata' if entries else 'awaiting_geodata','chunks':list(entries.values())})
+    # Purge only stale generated chunk files, including orphaned import metadata.
+    for region in alignment['regions']:
+        for stale in output.glob(region['id']+'_*.glb'):
+            if stale.name not in generated:
+                stale.unlink()
+                imported=Path(str(stale)+'.import')
+                if imported.exists():imported.unlink()
     missing=sorted(REQUIRED-built_roles)
     missing_cities=[city for city in ['birgu','senglea','bormla'] if not assets[city]]
     report={**alignment,'regions':regions,'status':'partial_geodata' if missing or missing_cities else 'source_baseline_built','missing_geometry':bool(missing or missing_cities),'missing_cities':missing_cities,'missing_roles':missing,'building_count':buildings,'fortification_count':fortifications,'collision_chunks':collision_count,'source_triangles':all_triangles,'warnings':warnings,'source_metadata':data['metadata'],'source_geojson_sha256':hashlib.sha256(Path(features_path).read_bytes()).hexdigest()}
+    if landscape:report['landscape']={**landscape.metadata(),'fields':field_report}
     (output/'region.json').write_text(json.dumps(report,indent=2,allow_nan=False)+'\n');return report
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--features',type=Path,default=ASSET/'cottonera/features.geojson');p.add_argument('--output',type=Path,default=ASSET/'cottonera');a=p.parse_args()
-    report=build(a.features,a.output);print(json.dumps({k:v for k,v in report.items() if k not in ['regions','source_hashes']},indent=2))
+    report=build(a.features,a.output);print(json.dumps({k:v for k,v in report.items() if k not in ['regions','source_hashes','landscape']},indent=2))
 if __name__=='__main__':main()

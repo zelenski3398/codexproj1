@@ -32,3 +32,10 @@ Normalized source database, selection script and derivation are included in the
 repository under assets/malta/cottonera and tools/prepare_supplied_cottonera.py.
 Building/landmark details are original schematic interpretations; modern OSM
 footprints do not establish a verified 1942 reconstruction.
+
+Cottonera landscape update (17 October 2026): the outer defensive enclosure uses
+supplied OSM wall alignments (ways 691540426 and 397742452) plus an explicitly
+editorial harbour/dockyard closure. Agricultural plots and dry-stone rubble-wall
+meshes are original inferred artwork, not mapped parcels or surveyed wartime
+boundaries. Seed, source IDs, closure and footprint decisions are retained in
+assets/malta/cottonera/landscape_rules.json and the generator source.
