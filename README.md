@@ -1,6 +1,8 @@
 # First Sortie
 
 
+Aircraft now have [universal component failures, progressive fires and severity-based crashes](docs/universal-aircraft-damage.md), including independent SM.79 engines and non-explosive engine-out gliding.
+
 Startup now dissolves into the supplied live poster, with **Play integrated into the artwork**. Play fades into the existing main menu. See the [startup guide and previews](docs/startup-poster.md).
 A single-player 3D **Godot 4 / GDScript** flight prototype set at a fictional RAF
 countryside airfield in 1940, or a continuous 1:1 Malta island world. Choose a **Spitfire Mk I** or **Gloster Sea
@@ -415,8 +417,9 @@ approximation rather than a historical ballistic model.
 
 ## Component damage and testing
 
-All three aircraft use the same `AircraftDamage` runtime component and eight
-independent integrity values, alongside the existing **100-HP hull**. Projectile
+See the [universal damage guide](docs/universal-aircraft-damage.md) for current component sets, independent engines/crew, progressive fire, structural loads, crash categories, tuning and previews.
+
+All seven implemented aircraft types use the same `AircraftDamage` runtime component: 12 independent parts on the single-seat fighters, 13 on Stuka and 19 on SM.79, alongside the existing **100-HP hull**. The table below describes the original eight core components; aircraft-specific resources add tail, ailerons, landing gear, engines, tanks and crew. Projectile
 rays hit model-local **Area3D sensors on layer 8** and apply the first component
 hit. The existing rigid-body collision shapes still handle landing/crashes;
 they are skipped by bullet rays so a coarse wing or fuselage collider cannot
@@ -431,13 +434,13 @@ triangle-level detection or armour penetration.
 | Fuselage | 140 | 1.00 | 1.00 | Up to +0.035 parasite drag |
 | Left wing | 80 | 1.25 | 0.65 | Lower left lift, extra drag, roll/yaw imbalance |
 | Right wing | 80 | 1.25 | 0.65 | Lower right lift, extra drag, opposite imbalance |
-| Engine | 80 | 1.60 | 1.00 | Available thrust scales with integrity ratio to power 1.3; zero integrity means zero thrust |
+| Engine | 80 | 1.60 | 0.15 | Available thrust scales with integrity ratio to power 1.3; zero integrity means zero thrust |
 | Cockpit | 60 | 1.50 | 1.50 | Simplified pilot impairment: pitch/roll/rudder authority falls toward 45% |
-| Rudder | 45 | 1.25 | 0.50 | Rudder, fin/sideslip damping and coordinated yaw fall toward 10% authority |
-| Elevator | 55 | 1.25 | 0.60 | Pitch control/passive elevator stability fall toward 10% authority |
+| Rudder | 45 | 1.25 | 0.50 | Rudder, fin/sideslip damping and coordinated yaw fall toward 10% while damaged; failed/detached controls have zero authority |
+| Elevator | 55 | 1.25 | 0.60 | Pitch control/passive elevator stability fall toward 10% while damaged; failed/detached controls have zero authority |
 | Fuel tank | 60 | 1.20 | 0.80 | Per hit: 40% leak probability, 12% ignition probability; leakage/fire drain fuel |
 
-Raw projectile damage is multiplied separately for local integrity and hull HP.
+Raw projectile damage is multiplied separately for local integrity and hull HP. Ordinary component overkill is capped to remaining integrity; AA shell/blast damage retains its calibrated final hull damage. Engine loss can leave an otherwise serviceable gliding aircraft, and zero hull HP is a one-shot combat loss without an automatic fireball.
 Mechanical failure can therefore occur while hull HP remains positive. Wing
 integrity scales the existing central lift force, adds drag and computes the
 moment of unequal half-wing lift/drag at fixed spanwise arms. The stall warning
@@ -446,7 +449,7 @@ undamaged flight tuning. No damage component changes body transforms or velociti
 
 Fuel leak rate defaults to **0.02 tank fraction/s at full tank damage**, scaled
 by tank damage. Burning consumes another **0.03/s**, removes **2 hull HP/s** and
-**4 tank integrity/s**. Empty fuel cuts engine power and ends fuel emission.
+up to **4 tank integrity/s**. Destroyed tanks drain faster and become unavailable for fuel delivery; intact tanks keep independent quantities. Empty deliverable fuel cuts engine power and ends fuel emission.
 Normal undamaged flying has no added fuel consumption in this prototype.
 Fuel ignition is independent of hull HP and can emit above 50 HP at the tank;
 the existing **engine** smoke/fire still uses its strict **below 50 HP** rule.
@@ -815,9 +818,9 @@ Enemy aircraft now use [distance-dependent engine roar and bounded Doppler](docs
 
 Choose St Elmo or any of its three Bofors positions in Malta departure selection. Use **M → destination → Travel** on foot to teleport between the fort and all airfields without resetting the world. **E** mounts, **B** toggles individual/battery control, and **LMB** fires. [Controls, previews, placement and validation](docs/st-elmo-battery.md). The [17 October northern-reference reconstruction](docs/st-elmo-reconstruction.md) replaces the fort geometry while preserving its geographic anchor, three guns and travel options; it includes a matching debug camera and ground-level previews.
 
-## Aircraft impact audio and immediate airborne destruction
+## Aircraft impact audio and severity-based destruction
 
-Confirmed hits now produce varied positional impact audio. Healthy sea crashes plunge with one speed-scaled splash at the real water surface; zero HP in flight creates one immediate explosion, with an optional later splash from the actual wreck crossing. [Implementation, assets, tuning, previews and checks](docs/aircraft-impact-audio.md). Sounds added for this feature are explicitly labelled synthesized placeholders. Tune `audio_profiles/aircraft_impacts.tres`.
+Confirmed hits produce varied positional audio. Hull depletion now disables the aircraft without automatically exploding it; mechanical engine failure permits gliding. Actual impacts use normal/tangential energy, mass, structure, surface, fuel and fire to select intact, partial or major breakup, with conditional ignition. Sea crashes retain real-surface splashes and sinking. See the [current universal damage implementation, controls and previews](docs/universal-aircraft-damage.md); [the earlier impact-audio guide](docs/aircraft-impact-audio.md) describes the superseded uniform-explosion milestone. Added failure sounds are synthesized placeholders. Tune `damage_profiles/*.tres` and `audio_profiles/aircraft_impacts.tres`.
 
 ## Cottonera enclosure and rubble field walls
 

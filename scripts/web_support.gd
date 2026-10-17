@@ -30,6 +30,10 @@ func _process(delta: float) -> void:
 		return
 	sample_clock = 0.2
 	var state: Dictionary = {"selecting": session.selector != null, "selected": session.selected_aircraft, "paused": get_tree().paused, "environment": session.environment_id, "airfield_selecting": is_instance_valid(session.malta_menu), "on_foot": is_instance_valid(session.malta_mission) and session.malta_mission.pilot.active}
+	state.startup_intro = {"active":is_instance_valid(session.startup_intro)}
+	if is_instance_valid(session.startup_intro):
+		state.startup_intro.phase = session.startup_intro.phase
+		state.startup_intro.play_button = _center(session.startup_intro.play_button)
 	state.missions_selecting = is_instance_valid(session.missions_menu)
 	if is_instance_valid(session.missions_menu):
 		state.mission_picker = _center(session.missions_menu.mission_picker)

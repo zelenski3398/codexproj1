@@ -1,5 +1,7 @@
 # Aircraft impacts, sea crashes and airborne destruction
 
+**Superseded behaviour:** the [universal damage update](universal-aircraft-damage.md) replaces the automatic zero-HP explosion described below with non-explosive combat loss, conditional fire/structural catastrophe and severity-based impacts. Historical audio assets remain in use.
+
 This update adds confirmed-hit audio and immediate airborne destruction to the existing shared aircraft health, collision and crash system. Player and enemy aircraft use the same implementation; weapons still apply damage exactly once.
 
 ## Behaviour and architecture

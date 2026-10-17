@@ -1,0 +1,414 @@
+{
+  "date": "2026-10-17",
+  "godot": "4.6.3",
+  "method": "Publishing workflow sweep followed by targeted reruns after fixes; latest nonduplicated result per suite. Inherited duplicate summary lines counted once.",
+  "native_assertions": 1636,
+  "native_suites": [
+    {
+      "suite": "aa",
+      "passed": 114,
+      "total": 114,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "aa_mouse",
+      "passed": 32,
+      "total": 32,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "aa_presentation",
+      "passed": 14,
+      "total": 14,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "aircraft_choice",
+      "passed": 31,
+      "total": 31,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "aircraft_damage_hud",
+      "passed": 26,
+      "total": 26,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "aircraft_failure_ai",
+      "passed": 8,
+      "total": 8,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "aircraft_failure_flight",
+      "passed": 14,
+      "total": 14,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "aircraft_impact",
+      "passed": 20,
+      "total": 20,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "airfield_controls",
+      "passed": 61,
+      "total": 61,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "airfield_ground",
+      "passed": 39,
+      "total": 39,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "audio",
+      "passed": 37,
+      "total": 37,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "base_access",
+      "passed": 27,
+      "total": 27,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "battery_command",
+      "passed": 36,
+      "total": 36,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "battery_command_ui",
+      "passed": 8,
+      "total": 8,
+      "shutdown_diagnostics": true
+    },
+    {
+      "suite": "battery_engagement",
+      "passed": 17,
+      "total": 17,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "component_damage",
+      "passed": 148,
+      "total": 148,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "cottonera",
+      "passed": 20,
+      "total": 20,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "countryside",
+      "passed": 10,
+      "total": 10,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "defence_sound",
+      "passed": 20,
+      "total": 20,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "dive_attack",
+      "passed": 6,
+      "total": 6,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "dive_defence",
+      "passed": 47,
+      "total": 47,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "flak_damage",
+      "passed": 9,
+      "total": 9,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "flyby_audio",
+      "passed": 32,
+      "total": 32,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "harbour",
+      "passed": 48,
+      "total": 48,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "harbour_departure",
+      "passed": 9,
+      "total": 9,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "harbour_flight",
+      "passed": 7,
+      "total": 7,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "harbour_radio",
+      "passed": 13,
+      "total": 13,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "impact_audio",
+      "passed": 25,
+      "total": 25,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "interception",
+      "passed": 77,
+      "total": 77,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "interception_combat",
+      "passed": 7,
+      "total": 7,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "interception_departure",
+      "passed": 19,
+      "total": 19,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "intro",
+      "passed": 18,
+      "total": 18,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "italian_aircraft",
+      "passed": 47,
+      "total": 47,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "keyboard",
+      "passed": 24,
+      "total": 24,
+      "shutdown_diagnostics": true
+    },
+    {
+      "suite": "layered_aa",
+      "passed": 55,
+      "total": 55,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "malta",
+      "passed": 36,
+      "total": 36,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "malta_encounter",
+      "passed": 33,
+      "total": 33,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "malta_roads",
+      "passed": 11,
+      "total": 11,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "malta_terrain",
+      "passed": 30,
+      "total": 30,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "mdina",
+      "passed": 24,
+      "total": 24,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "mission_radio",
+      "passed": 22,
+      "total": 22,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "pilot_character",
+      "passed": 22,
+      "total": 22,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "st_elmo",
+      "passed": 43,
+      "total": 43,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "survival",
+      "passed": 84,
+      "total": 84,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "universal_damage",
+      "passed": 113,
+      "total": 113,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "valletta",
+      "passed": 17,
+      "total": 17,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "weapons",
+      "passed": 36,
+      "total": 36,
+      "shutdown_diagnostics": false
+    },
+    {
+      "suite": "wingman_radio",
+      "passed": 40,
+      "total": 40,
+      "shutdown_diagnostics": false
+    }
+  ],
+  "web": {
+    "export": "Web release exported successfully with official SHA-512-verified 4.6.3 templates",
+    "browser": "Chromium ANGLE/SwiftShader",
+    "production_release": {
+      "passed": 9,
+      "total": 9,
+      "browser_errors": 0
+    },
+    "isolated_damage_fixture": {
+      "passed": 22,
+      "total": 22,
+      "browser_errors": 0
+    }
+  },
+  "limitations": [
+    "Native audio output was Dummy; sound quality not listened to.",
+    "Keyboard and battery UI suites pass with shutdown resource diagnostics.",
+    "No Ju 88 model or scene exists.",
+    "No production hardware FPS or full human combat flight validation."
+  ],
+  "modified_files": [
+    ".github/workflows/web.yml",
+    "README.md",
+    "assets/audio/ATTRIBUTION.txt",
+    "assets/audio/failures/engine_misfire_placeholder.ogg",
+    "assets/audio/failures/engine_misfire_placeholder.ogg.import",
+    "assets/audio/failures/engine_seizure_placeholder.ogg",
+    "assets/audio/failures/engine_seizure_placeholder.ogg.import",
+    "assets/audio/failures/fabric_tear_placeholder.ogg",
+    "assets/audio/failures/fabric_tear_placeholder.ogg.import",
+    "assets/audio/failures/fuel_ignition_placeholder.ogg",
+    "assets/audio/failures/fuel_ignition_placeholder.ogg.import",
+    "assets/audio/failures/ground_crash_placeholder.ogg",
+    "assets/audio/failures/ground_crash_placeholder.ogg.import",
+    "assets/audio/failures/hard_landing_placeholder.ogg",
+    "assets/audio/failures/hard_landing_placeholder.ogg.import",
+    "assets/audio/failures/metal_tear_placeholder.ogg",
+    "assets/audio/failures/metal_tear_placeholder.ogg.import",
+    "assets/audio/failures/propeller_impact_placeholder.ogg",
+    "assets/audio/failures/propeller_impact_placeholder.ogg.import",
+    "assets/audio/failures/secondary_impact_placeholder.ogg",
+    "assets/audio/failures/secondary_impact_placeholder.ogg.import",
+    "assets/audio/failures/structural_breakup_placeholder.ogg",
+    "assets/audio/failures/structural_breakup_placeholder.ogg.import",
+    "audio_profiles/aircraft_impacts.tres",
+    "damage_profiles/c200.tres",
+    "damage_profiles/c202.tres",
+    "damage_profiles/cr42.tres",
+    "damage_profiles/sea_gladiator.tres",
+    "damage_profiles/sm79.tres",
+    "damage_profiles/spitfire.tres",
+    "damage_profiles/stuka.tres",
+    "docs/aircraft-impact-audio.md",
+    "docs/development-updates/validation/universal-damage-2026-10-17.json",
+    "docs/previews/damage-bomber-engine.png",
+    "docs/previews/damage-catastrophic.png",
+    "docs/previews/damage-engine-fire.png",
+    "docs/previews/damage-wing-separated.png",
+    "docs/universal-aircraft-damage.md",
+    "scripts/aircraft.gd",
+    "scripts/aircraft_component_definition.gd",
+    "scripts/aircraft_crash_solver.gd",
+    "scripts/aircraft_crash_solver.gd.uid",
+    "scripts/aircraft_damage.gd",
+    "scripts/aircraft_damage_hud.gd",
+    "scripts/aircraft_damage_profile.gd",
+    "scripts/aircraft_debris_piece.gd",
+    "scripts/aircraft_debris_piece.gd.uid",
+    "scripts/aircraft_hitbox.gd",
+    "scripts/aircraft_impact.gd",
+    "scripts/aircraft_impact_profile.gd",
+    "scripts/aircraft_impact_service.gd",
+    "scripts/airfield.gd",
+    "scripts/airfield_aa_battery.gd",
+    "scripts/bomber_pilot.gd",
+    "scripts/component_damage_debug.gd",
+    "scripts/component_damage_visuals.gd",
+    "scripts/component_damage_visuals.gd.uid",
+    "scripts/damage_effects.gd",
+    "scripts/destruction_burst.gd",
+    "scripts/dive_attack_pilot.gd",
+    "scripts/enemy_aircraft.gd",
+    "scripts/enemy_pilot.gd",
+    "scripts/escort_pilot.gd",
+    "scripts/harbour_combat_pilot.gd",
+    "scripts/italian_aircraft_model.gd",
+    "scripts/italian_enemy.gd",
+    "scripts/landing_gear.gd",
+    "scripts/malta_world.gd",
+    "scripts/projectile_pool.gd",
+    "scripts/rear_gunner.gd",
+    "scripts/spitfire_model.gd",
+    "scripts/stuka_model.gd",
+    "scripts/web_support.gd",
+    "scripts/wing_guns.gd",
+    "tests/aircraft_damage_hud_checks.gd",
+    "tests/aircraft_failure_ai_checks.gd",
+    "tests/aircraft_failure_ai_checks.gd.uid",
+    "tests/aircraft_failure_flight_checks.gd",
+    "tests/aircraft_failure_flight_checks.gd.uid",
+    "tests/aircraft_impact_checks.gd",
+    "tests/component_damage_checks.gd",
+    "tests/harbour_checks.gd",
+    "tests/impact_audio_checks.gd",
+    "tests/italian_aircraft_checks.gd",
+    "tests/malta_encounter_checks.gd",
+    "tests/universal_damage_capture.gd",
+    "tests/universal_damage_capture.gd.uid",
+    "tests/universal_damage_checks.gd",
+    "tests/universal_damage_checks.gd.uid",
+    "tests/universal_damage_web_fixture.gd",
+    "tests/universal_damage_web_fixture.gd.uid",
+    "tests/weapons_checks.gd",
+    "tools/aircraft_impact_web_smoke.cjs",
+    "tools/build_damage_web_fixture.py",
+    "tools/generate_failure_audio.py",
+    "tools/universal_damage_web_smoke.cjs"
+  ]
+}

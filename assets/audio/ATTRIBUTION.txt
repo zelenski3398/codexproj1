@@ -68,3 +68,13 @@ assets/audio/harbour/status/*_identification.ogg are neutral opening extracts;
 *_full.ogg retain the supplied fixed dialogue, not used universally at runtime.
 status/*.json record the complete supplied filenames and source SHA-256 hashes.
 Preparation: tools/prepare_wingman_radio.py; speech is not synthesized.
+
+Universal aircraft failure SFX (17 October 2026): failures/*_placeholder.ogg
+are original deterministic mono synthesized placeholders, generated without
+recorded samples by tools/generate_failure_audio.py (Python standard library
+plus FFmpeg for encoding). Distinct temporary timbres cover metal/fabric tearing,
+misfire/seizure, ignition, structural breakup, propeller impact, hard landing,
+ground crash and secondary impacts. These are not historical aircraft recordings.
+Replace event_sounds slots in audio_profiles/aircraft_impacts.tres with licensed
+recordings for production. Existing penetration/cannon-like heavy-hit, water
+impact and explosion sounds remain in that same profile and capped audio pool.
