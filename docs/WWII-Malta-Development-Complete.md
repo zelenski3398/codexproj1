@@ -131,3 +131,6 @@ The snapshot contains **81 runtime + 56 test GDScripts**, two Python test script
 ![Actual Git development activity](development-history/diagrams/development-activity.svg)
 
 The audit provides **17 unique Mermaid diagrams**, 23 milestones, a per-commit evidence manifest, historical size samples and UTC activity data. [Validation report](development-history/validation.md) records exact fresh checks, link/diagram validation, source/history coverage and docs-only diff review. Historical gameplay/audio/browser reports are attributed rather than re-labelled as current tests. Full interactive flight, combat balance and browser/native acceptance were not rerun for this documentation-only task.
+
+
+Current scenery addition: [18 October 2026 — open steel-truss aircraft hangars](development-updates/2026-10-18-aircraft-hangars.md). The historical report above remains frozen at its original source boundary.

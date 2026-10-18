@@ -1,0 +1,110 @@
+{
+  "date": "2026-10-18",
+  "godot": "4.6.3.stable.official.7d41c59c4",
+  "native": [
+    {
+      "script": "tests/hangar_checks.gd",
+      "passed": 89,
+      "failed": 0,
+      "renderer": "headless",
+      "fixed_fps": 120
+    },
+    {
+      "script": "tests/airfield_ground_checks.gd",
+      "passed": 39,
+      "failed": 0,
+      "renderer": "headless",
+      "fixed_fps": 120
+    },
+    {
+      "script": "tests/base_access_checks.gd",
+      "passed": 27,
+      "failed": 0,
+      "renderer": "headless",
+      "fixed_fps": 120
+    },
+    {
+      "script": "tests/airfield_controls_checks.gd",
+      "passed": 61,
+      "failed": 0,
+      "renderer": "headless",
+      "fixed_fps": 120
+    },
+    {
+      "script": "tests/malta_checks.gd",
+      "passed": 36,
+      "failed": 0,
+      "renderer": "headless",
+      "fixed_fps": 120
+    },
+    {
+      "script": "tests/malta_roads_checks.gd",
+      "passed": 11,
+      "failed": 0,
+      "renderer": "headless",
+      "fixed_fps": 120
+    },
+    {
+      "script": "tests/dive_defence_checks.gd",
+      "passed": 47,
+      "failed": 0,
+      "renderer": "headless",
+      "fixed_fps": 120
+    },
+    {
+      "script": "tests/harbour_departure_checks.gd",
+      "passed": 9,
+      "failed": 0,
+      "renderer": "headless",
+      "fixed_fps": 120
+    },
+    {
+      "script": "tests/interception_departure_checks.gd",
+      "passed": 19,
+      "failed": 0,
+      "renderer": "headless",
+      "fixed_fps": 120
+    }
+  ],
+  "native_total": 338,
+  "browser": {
+    "script": "tools/hangar_web_smoke.cjs",
+    "checks": 7,
+    "errors": [],
+    "renderer": "Chromium WebGL 2 / ANGLE SwiftShader",
+    "target": "production release export",
+    "verified": [
+      "poster-to-menu",
+      "three test-runway hangars",
+      "six Malta hangars with intended dimensions and HP",
+      "shared roof mesh",
+      "six parked aircraft and eighteen airfield AA guns",
+      "clean retry",
+      "no observed browser/resource/shader/HTTP errors"
+    ]
+  },
+  "visual_capture": {
+    "script": "tests/hangar_capture.gd",
+    "renderer": "Compatibility OpenGL / Mesa llvmpipe",
+    "images": [
+      "hangar-front",
+      "hangar-interior",
+      "hangar-ta_qali-aerial",
+      "hangar-luqa-aerial",
+      "hangar-hal_far-aerial"
+    ],
+    "warnings": [
+      "Dummy display cannot set V-Sync mode"
+    ]
+  },
+  "web_export": {
+    "command": "bash tools/build_web.sh",
+    "result": "passed",
+    "templates": "official 4.6.3, SHA-512 verified by tools/install_godot_web.sh"
+  },
+  "not_verified": [
+    "Manual human playthrough at all nine hangars",
+    "Manual browser taxi manoeuvres",
+    "Mobile or large-battle performance benchmark"
+  ]
+}
