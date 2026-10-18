@@ -84,11 +84,11 @@ func _buildings() -> void:
 	var roof := MeshKit.material(Color("4d5959"))
 	var window := MeshKit.material(Color("9ab0b2"), 0.25)
 	for i in range(3):
-		var pos := Vector3(133.0, 0.0, 455.0 + i * 90.0)
-		_static_box(Vector3(42.0, 13.0, 48.0), pos + Vector3.UP * 6.5, roof)
-		MeshKit.box(self, Vector3(0.1, 10.0, 39.0), pos + Vector3(-21.1, 5.0, 0.0), MeshKit.material(Color("303a37")))
-		for line in range(5):
-			MeshKit.box(self, Vector3(0.15, 10.0, 0.2), pos + Vector3(-21.2, 5.0, -18.0 + line * 9.0), metal_color())
+		var hangar := AircraftHangar.new()
+		hangar.position = Vector3(133,0,455+i*90)
+		hangar.rotation.y = PI*.5
+		hangar.display_name = "Test airfield hangar " + str(i+1)
+		add_child(hangar)
 	_static_box(Vector3(16.0, 13.0, 18.0), Vector3(100.0, 6.5, 300.0), brick)
 	_static_box(Vector3(19.0, 4.0, 21.0), Vector3(100.0, 15.0, 300.0), roof)
 	MeshKit.box(self, Vector3(19.1, 2.0, 21.1), Vector3(100.0, 15.5, 300.0), window)

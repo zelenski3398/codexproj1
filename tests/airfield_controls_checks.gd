@@ -100,7 +100,7 @@ func run() -> void:
 	# Isolated solid-contact fixtures: all movement after each initial pose is
 	# normal W input and CharacterBody collision, not transform-based driving.
 	var collision_checks: Array[Dictionary] = [
-		{"name":"hangar","position":Vector3(78,0.04,field.runway_length*.31-45),"yaw":-PI/2,"minimum":78.0},
+		{"name":"hangar","position":Vector3(78,0.04,field.runway_length*.31-45+23.85),"yaw":-PI/2,"minimum":78.0},
 		{"name":"parked aircraft","position":Vector3(70,0.04,field.runway_length*.31-35),"yaw":PI/2,"minimum":61.5},
 		{"name":"AA emplacement","position":Vector3(45,0.04,field.runway_length*.31-90),"yaw":PI/2,"minimum":39.8}
 	]

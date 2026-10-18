@@ -36,14 +36,14 @@ func _ready() -> void:
 		parking.append(global_transform * local_pose)
 	pilot_spawn = to_global(Vector3(64, 1.1, runway_length * 0.31 + 2))
 	for i in range(2):
-		var building: AirfieldInstallation = AirfieldInstallation.new()
-		building.position = Vector3(93, 5, runway_length * 0.31 - 45 - i * 80)
-		building.size = Vector3(22, 10, 32)
-		building.display_name = String(record.name) + " hangar"
+		var building := AircraftHangar.new()
+		# Preserve the existing sites and 82 m apron-facing frontage. Larger,
+		# open sheds extend away from all parking, AA and x=78 access lanes.
+		var ground := to_global(Vector3(100,0,runway_length*.31-45-i*80))
+		building.transform = global_transform.affine_inverse() * Transform3D(Basis(Vector3.UP,-heading+PI*.5),ground)
+		building.floor_grade_x = float(record.slope)
+		building.display_name = String(record.name) + " hangar " + str(i+1)
 		add_child(building)
-		var ground := to_global(Vector3(93,0,runway_length*.31-45-i*80))
-		building.global_basis = Basis(Vector3.UP,-heading)
-		building.global_position = ground+Vector3.UP*4.85
 		installations.append(building)
 	var label: Label3D = Label3D.new()
 	label.text = String(record.name) + "\nDISPERSAL · E TO BOARD"

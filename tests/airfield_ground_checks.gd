@@ -8,7 +8,11 @@ func check(value: bool,label: String) -> void:
 func frames(n: int) -> void:
 	for i in range(n): await physics_frame
 func ground(world: Node3D,point: Vector3) -> Dictionary:
-	return world.get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(point+Vector3.UP*100,point-Vector3.UP*100,1))
+	var exclude: Array[RID] = []
+	# Expanded roofs legitimately cover former outdoor samples. This check
+	# measures underlying terrain grading, not the top of the new building.
+	for hangar in get_nodes_in_group("aircraft_hangars"): exclude.append(hangar.get_rid())
+	return world.get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(point+Vector3.UP*100,point-Vector3.UP*100,1,exclude))
 func run() -> void:
 	var world := MaltaWorld.new()
 	root.add_child(world)

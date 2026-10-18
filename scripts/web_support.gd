@@ -30,6 +30,9 @@ func _process(delta: float) -> void:
 		return
 	sample_clock = 0.2
 	var state: Dictionary = {"selecting": session.selector != null, "selected": session.selected_aircraft, "paused": get_tree().paused, "environment": session.environment_id, "airfield_selecting": is_instance_valid(session.malta_menu), "on_foot": is_instance_valid(session.malta_mission) and session.malta_mission.pilot.active}
+	state.hangars = []
+	for hangar in get_tree().get_nodes_in_group("aircraft_hangars"):
+		state.hangars.append({"id":str(hangar.get_instance_id()),"width":hangar.width,"depth":hangar.depth,"door_width":hangar.entrance_width,"trusses":hangar.truss_count,"hp":hangar.hp,"meshes":hangar._visuals.size(),"roof_mesh":str(hangar._visuals[1].mesh.get_instance_id())})
 	state.startup_intro = {"active":is_instance_valid(session.startup_intro)}
 	if is_instance_valid(session.startup_intro):
 		state.startup_intro.phase = session.startup_intro.phase

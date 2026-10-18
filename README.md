@@ -829,3 +829,7 @@ Cottonera buildings now follow the reviewed outer defensive enclosure, with expl
 ## Procedural Maltese countryside
 
 The Malta world now includes clustered irregular fields, red/brown soil, dirt access lanes and physical rubble walls, with conservative exclusions for towns, roads, airfields and installations. Detailed rocks load near the active camera. [Current screenshots, geography, settings, generation and validation](docs/malta-countryside.md). Layouts are explicitly inferred; the original terrain elevations and existing Cottonera environment are preserved.
+
+## Open aircraft hangars
+
+Each existing runway now has usable pitched-roof hangars based on the supplied sketch, with broad open entrances and visible steel trusses. Malta retains two per airfield; the original test runway retains three. [Placement, screenshots, configuration and checks](docs/aircraft-hangars.md).
