@@ -4,6 +4,7 @@
 
 The original report is a frozen 50-commit audit through `588ac7b`. Later changes are recorded here with explicit commit boundaries, avoiding a repeated reconstruction of unchanged history.
 
+- [20 October 2026: hangar departures, independent pilot survival, recovery transport and reliable poster playback](2026-10-20-pilot-recovery.md).
 - [18 October 2026: open steel-truss hangars at every runway](2026-10-18-aircraft-hangars.md).
 - [17 October 2026: universal component failures, independent engines/crew and severity-based crashes](2026-10-17-universal-damage.md).
 - [17 October 2026: stale mission-menu assertion blocking publication](2026-10-17-publishing-check.md).

@@ -1,0 +1,435 @@
+{
+  "date": "2026-10-20",
+  "godot": "4.6.3.stable.official.7d41c59c4",
+  "native_suites": [
+    {
+      "suite": "universal_damage_checks.gd",
+      "exit": 0,
+      "passed": 113,
+      "failures": 0,
+      "seconds": 1.5
+    },
+    {
+      "suite": "aircraft_failure_flight_checks.gd",
+      "exit": 0,
+      "passed": 14,
+      "failures": 0,
+      "seconds": 2.2
+    },
+    {
+      "suite": "aircraft_failure_ai_checks.gd",
+      "exit": 0,
+      "passed": 8,
+      "failures": 0,
+      "seconds": 4.4
+    },
+    {
+      "suite": "component_damage_checks.gd",
+      "exit": 0,
+      "passed": 148,
+      "failures": 0,
+      "seconds": 8.8
+    },
+    {
+      "suite": "intro_checks.gd",
+      "exit": 0,
+      "passed": 18,
+      "failures": 0,
+      "seconds": 4.2
+    },
+    {
+      "suite": "keyboard_checks.gd",
+      "exit": 0,
+      "passed": 24,
+      "failures": 0,
+      "seconds": 4.8
+    },
+    {
+      "suite": "weapons_checks.gd",
+      "exit": 0,
+      "passed": 36,
+      "failures": 0,
+      "seconds": 3.2
+    },
+    {
+      "suite": "impact_audio_checks.gd",
+      "exit": 0,
+      "passed": 25,
+      "failures": 0,
+      "seconds": 6.9
+    },
+    {
+      "suite": "aircraft_impact_checks.gd",
+      "exit": 0,
+      "passed": 20,
+      "failures": 0,
+      "seconds": 6.5
+    },
+    {
+      "suite": "aircraft_damage_hud_checks.gd",
+      "exit": 0,
+      "passed": 26,
+      "failures": 0,
+      "seconds": 4.4
+    },
+    {
+      "suite": "italian_aircraft_checks.gd",
+      "exit": 0,
+      "passed": 47,
+      "failures": 0,
+      "seconds": 9.5
+    },
+    {
+      "suite": "malta_encounter_checks.gd",
+      "exit": 0,
+      "passed": 33,
+      "failures": 0,
+      "seconds": 11.4
+    },
+    {
+      "suite": "harbour_checks.gd",
+      "exit": 0,
+      "passed": 50,
+      "failures": 0,
+      "seconds": 19.2
+    },
+    {
+      "suite": "harbour_radio_checks.gd",
+      "exit": 0,
+      "passed": 13,
+      "failures": 0,
+      "seconds": 3.6
+    },
+    {
+      "suite": "wingman_radio_checks.gd",
+      "exit": 0,
+      "passed": 40,
+      "failures": 0,
+      "seconds": 10.7
+    },
+    {
+      "suite": "harbour_flight_checks.gd",
+      "exit": 0,
+      "passed": 7,
+      "failures": 0,
+      "seconds": 196.8
+    },
+    {
+      "suite": "harbour_departure_checks.gd",
+      "exit": 0,
+      "passed": 9,
+      "failures": 0,
+      "seconds": 46.5
+    },
+    {
+      "suite": "interception_checks.gd",
+      "exit": 0,
+      "passed": 78,
+      "failures": 0,
+      "seconds": 105.7
+    },
+    {
+      "suite": "interception_combat_checks.gd",
+      "exit": 0,
+      "passed": 7,
+      "failures": 0,
+      "seconds": 12.7
+    },
+    {
+      "suite": "interception_departure_checks.gd",
+      "exit": 0,
+      "passed": 19,
+      "failures": 0,
+      "seconds": 104.2
+    },
+    {
+      "suite": "survival_checks.gd",
+      "exit": 0,
+      "passed": 84,
+      "failures": 0,
+      "seconds": 16.5
+    },
+    {
+      "suite": "malta_checks.gd",
+      "exit": 0,
+      "passed": 36,
+      "failures": 0,
+      "seconds": 20.2
+    },
+    {
+      "suite": "malta_terrain_checks.gd",
+      "exit": 0,
+      "passed": 30,
+      "failures": 0,
+      "seconds": 7.7
+    },
+    {
+      "suite": "st_elmo_checks.gd",
+      "exit": 0,
+      "passed": 43,
+      "failures": 0,
+      "seconds": 24.6
+    },
+    {
+      "suite": "valletta_checks.gd",
+      "exit": 0,
+      "passed": 17,
+      "failures": 0,
+      "seconds": 7.7
+    },
+    {
+      "suite": "mdina_checks.gd",
+      "exit": 0,
+      "passed": 24,
+      "failures": 0,
+      "seconds": 8.2
+    },
+    {
+      "suite": "cottonera_checks.gd",
+      "exit": 0,
+      "passed": 20,
+      "failures": 0,
+      "seconds": 7.7
+    },
+    {
+      "suite": "countryside_checks.gd",
+      "exit": 0,
+      "passed": 10,
+      "failures": 0,
+      "seconds": 7.8
+    },
+    {
+      "suite": "pilot_recovery_checks.gd",
+      "exit": 0,
+      "passed": 70,
+      "failures": 0,
+      "renderer": "headless"
+    },
+    {
+      "suite": "hangar_checks.gd",
+      "exit": 0,
+      "passed": 89,
+      "failures": 0,
+      "seconds": 8.7
+    },
+    {
+      "suite": "airfield_ground_checks.gd",
+      "exit": 0,
+      "passed": 39,
+      "failures": 0,
+      "seconds": 6.2
+    },
+    {
+      "suite": "malta_roads_checks.gd",
+      "exit": 0,
+      "passed": 11,
+      "failures": 0,
+      "seconds": 7.4
+    },
+    {
+      "suite": "base_access_checks.gd",
+      "exit": 0,
+      "passed": 27,
+      "failures": 0,
+      "seconds": 73.9
+    },
+    {
+      "suite": "dive_defence_checks.gd",
+      "exit": 0,
+      "passed": 47,
+      "failures": 0,
+      "seconds": 14.5
+    },
+    {
+      "suite": "dive_attack_checks.gd",
+      "exit": 0,
+      "passed": 6,
+      "failures": 0,
+      "seconds": 27.2
+    },
+    {
+      "suite": "audio_checks.gd",
+      "exit": 0,
+      "passed": 37,
+      "failures": 0,
+      "seconds": 6.4
+    },
+    {
+      "suite": "flyby_audio_checks.gd",
+      "exit": 0,
+      "passed": 32,
+      "failures": 0,
+      "seconds": 6.4
+    },
+    {
+      "suite": "mission_radio_checks.gd",
+      "exit": 0,
+      "passed": 22,
+      "failures": 0,
+      "seconds": 16.5
+    },
+    {
+      "suite": "pilot_character_checks.gd",
+      "exit": 0,
+      "passed": 22,
+      "failures": 0,
+      "seconds": 6.7
+    },
+    {
+      "suite": "aa_mouse_checks.gd",
+      "exit": 0,
+      "passed": 32,
+      "failures": 0,
+      "seconds": 34.7
+    },
+    {
+      "suite": "battery_command_ui_checks.gd",
+      "exit": 0,
+      "passed": 8,
+      "failures": 0,
+      "seconds": 4.8
+    },
+    {
+      "suite": "battery_command_checks.gd",
+      "exit": 0,
+      "passed": 36,
+      "failures": 0,
+      "seconds": 16.5
+    },
+    {
+      "suite": "battery_engagement_checks.gd",
+      "exit": 0,
+      "passed": 17,
+      "failures": 0,
+      "seconds": 29.3
+    },
+    {
+      "suite": "defence_sound_checks.gd",
+      "exit": 0,
+      "passed": 20,
+      "failures": 0,
+      "seconds": 10.3
+    },
+    {
+      "suite": "layered_aa_checks.gd",
+      "exit": 0,
+      "passed": 55,
+      "failures": 0,
+      "seconds": 11.3
+    },
+    {
+      "suite": "aa_checks.gd",
+      "exit": 0,
+      "passed": 114,
+      "failures": 0,
+      "seconds": 9.7
+    },
+    {
+      "suite": "aa_presentation_checks.gd",
+      "exit": 0,
+      "passed": 14,
+      "failures": 0,
+      "seconds": 7.0
+    },
+    {
+      "suite": "flak_damage_checks.gd",
+      "exit": 0,
+      "passed": 9,
+      "failures": 0,
+      "seconds": 6.4
+    },
+    {
+      "suite": "airfield_controls_checks.gd",
+      "exit": 0,
+      "passed": 61,
+      "failures": 0,
+      "seconds": 28.0
+    },
+    {
+      "suite": "aircraft_choice_checks.gd",
+      "exit": 0,
+      "passed": 32,
+      "failures": 0,
+      "seconds": 29.7
+    },
+    {
+      "suite": "recovery_wreck_checks.gd",
+      "exit": 0,
+      "passed": 13,
+      "failures": 0,
+      "renderer": "headless"
+    },
+    {
+      "suite": "countryside_departure_checks.gd",
+      "exit": 0,
+      "passed": 12,
+      "failures": 0,
+      "renderer": "headless"
+    },
+    {
+      "suite": "intro_playback_checks.gd",
+      "exit": 0,
+      "passed": 9,
+      "failures": 0,
+      "renderer": "Compatibility OpenGL / llvmpipe"
+    }
+  ],
+  "native_suite_count": 53,
+  "native_assertions": 1833,
+  "browser": {
+    "script": "tools/pilot_recovery_web_smoke.cjs",
+    "renderer": "Chromium / ANGLE SwiftShader",
+    "passed": 14,
+    "errors": [],
+    "input": "Real pointer/keyboard input; read-only smoke telemetry",
+    "flows": [
+      "Moving poster before user gesture",
+      "Loop without decoder restart",
+      "Main-menu Malta departure without submenu",
+      "Six hangar-parked aircraft, engines stopped",
+      "Hull zero while pilot alive",
+      "E wreck exit",
+      "V duplicate-request latch",
+      "One truck, no arrival teleport",
+      "Walking to pickup",
+      "Explicit E return to same world",
+      "Pilot health and fleet identity persistence",
+      "Board replacement",
+      "Moving title poster after gameplay return"
+    ]
+  },
+  "assets": {
+    "video_streams": [
+      "theora"
+    ],
+    "audio_streams_in_video": 0,
+    "unchanged_decoded_frames": 121,
+    "soundtrack": "assets/intro/malta_poster_audio.ogg; stream-copied from existing supplied clip"
+  },
+  "capture": {
+    "script": "tests/recovery_capture.gd",
+    "images": [
+      "recovery-hangar-departure",
+      "recovery-truck-pickup",
+      "recovery-sea-pontoon"
+    ],
+    "warnings": [
+      "Dummy display cannot set V-Sync",
+      "Four llvmpipe texture cleanup errors at capture-process shutdown"
+    ]
+  },
+  "limitations": [
+    "No full human-flown recovery sortie in every mode",
+    "No dedicated swimming animation",
+    "Functional placeholder sea pontoon",
+    "Finite pickup/exit search, no universal reachability proof",
+    "No mobile/hardware performance benchmark"
+  ],
+  "native_diagnostics": {
+    "keyboard_checks.gd": "Assertions pass; ObjectDB/resources/PagedAllocator cleanup diagnostics at shutdown",
+    "aa_checks.gd": "Colinear target/up look-at warnings",
+    "mission_radio_checks.gd": "Expected warning from deliberate missing-voice negative test",
+    "native_rendered_checks": "Dummy display cannot set V-Sync"
+  },
+  "source_snapshot": "8f01e46f43ed77c33847f5bc0c2e6456a8333a14"
+}

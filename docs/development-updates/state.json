@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "6fb32bb9b8198092e885ca599206a3730817f548",
-  "last_documented_commit": "632470873e456728cf44d0b90af3bc7ade5dd6b2",
-  "update_document": "2026-10-18-aircraft-hangars.md",
-  "review_range": "aea836f41aa952a3ed41c88d31808b1804d68b49..632470873e456728cf44d0b90af3bc7ade5dd6b2",
-  "date": "2026-10-18",
+  "previous_documentation_publication": "c316e39f454943922eef4a69e428906ec8e40c64",
+  "last_documented_commit": "8f01e46f43ed77c33847f5bc0c2e6456a8333a14",
+  "update_document": "2026-10-20-pilot-recovery.md",
+  "review_range": "632470873e456728cf44d0b90af3bc7ade5dd6b2..8f01e46f43ed77c33847f5bc0c2e6456a8333a14",
+  "date": "2026-10-20",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }

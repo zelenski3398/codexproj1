@@ -134,3 +134,5 @@ The audit provides **17 unique Mermaid diagrams**, 23 milestones, a per-commit e
 
 
 Current scenery addition: [18 October 2026 — open steel-truss aircraft hangars](development-updates/2026-10-18-aircraft-hangars.md). The historical report above remains frozen at its original source boundary.
+
+Current gameplay integration: [20 October 2026 — hangar departures, independent pilot survival and recovery](development-updates/2026-10-20-pilot-recovery.md). The original historical audit remains frozen.
