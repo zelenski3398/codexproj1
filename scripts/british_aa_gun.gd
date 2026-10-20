@@ -5,6 +5,7 @@ signal destroyed
 @export var weapon: AAWeaponDefinition
 var command_station: Node3D
 var mouse_controls: AAMouseControls
+var aim_assist: BoforsAimAssist
 var trigger_held: bool = false
 var fuze_seconds: float = 1.14
 var breech: MeshInstance3D
@@ -106,6 +107,8 @@ func _ready() -> void:
 	mouse_controls = AAMouseControls.new()
 	mouse_controls.gun = self
 	add_child(mouse_controls)
+	aim_assist = BoforsAimAssist.new()
+	aim_assist.gun = self
 
 func get_team_id() -> int:
 	return CombatTeams.PLAYER
@@ -192,4 +195,4 @@ func _cull_visuals(node: Node) -> void:
 	for child in node.get_children(): _cull_visuals(child)
 
 func status_text() -> String:
-	return "%s · HP %d/%d · AMMO ∞ · %s\n%s" % [weapon.display_name,hp,max_hp,("AUTO RELOAD %.1fs"%cooldown) if cooldown > 0 else "READY",("FUZE %.2fs · W/S adjust · LMB single shot"%fuze_seconds) if weapon.heavy else "HOLD LMB · 2 shots/sec"]
+	return "%s · HP %d/%d · AMMO ∞ · %s\n%s" % [weapon.display_name,hp,max_hp,("AUTO RELOAD %.1fs"%cooldown) if cooldown > 0 else "READY",("FUZE %.2fs · W/S adjust · LMB single shot"%fuze_seconds) if weapon.heavy else "HOLD LMB · 2 shots/sec · Aim assist %s (ESC settings)" % ("ON" if AAMouseControls.bofors_assist else "OFF")]

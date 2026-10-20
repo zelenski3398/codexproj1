@@ -3,6 +3,7 @@ extends Node
 ## Scoped to one occupied gun; never binds mouse buttons to aircraft fire.
 static var sensitivity: float = 1.0
 static var settings_loaded: bool = false
+static var bofors_assist: bool = false
 var gun: BritishAAGun
 var target_yaw: float
 var target_elevation: float
@@ -14,13 +15,23 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	if not settings_loaded:
 		var config := ConfigFile.new()
-		if config.load("user://aa_controls.cfg") == OK:sensitivity = clampf(config.get_value("aa","sensitivity",1.0),.2,3)
+		if config.load("user://aa_controls.cfg") == OK:
+			sensitivity = clampf(config.get_value("aa","sensitivity",1.0),.2,3)
+			bofors_assist = bool(config.get_value("aa","bofors_assist",false))
 		settings_loaded = true
 
 static func set_sensitivity(value: float) -> void:
 	sensitivity = clampf(value,.2,3)
+	save_settings()
+
+static func set_bofors_assist(value: bool) -> void:
+	bofors_assist = value
+	save_settings()
+
+static func save_settings() -> void:
 	var config := ConfigFile.new()
 	config.set_value("aa","sensitivity",sensitivity)
+	config.set_value("aa","bofors_assist",bofors_assist)
 	config.save("user://aa_controls.cfg")
 
 func reset_target() -> void:
@@ -88,6 +99,8 @@ func sample(delta: float) -> bool:
 	if gun.weapon.arrow_aim_enabled:
 		target_yaw -= Input.get_axis("roll_left","roll_right") * deg_to_rad(gun.traverse_degrees) * delta * fine
 		target_elevation += Input.get_axis("pitch_up","pitch_down") * deg_to_rad(gun.elevation_degrees) * delta * fine
+	# The battery predictor reuses mouse controls but has no Bofors barrel.
+	if gun.aim_assist != null: gun.aim_assist.update(delta)
 	limit_target()
 	var blend: float = 1-exp(-gun.weapon.mouse_response*delta)
 	gun.yaw.rotation.y += clampf(wrapf(target_yaw-gun.yaw.rotation.y,-PI,PI)*blend,-deg_to_rad(gun.traverse_degrees)*delta,deg_to_rad(gun.traverse_degrees)*delta)

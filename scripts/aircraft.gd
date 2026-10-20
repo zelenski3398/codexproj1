@@ -256,6 +256,8 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 				break
 	if is_destroyed and not impact_effects.started and (gear.contact_count > 0 or state.get_contact_count() > 0):
 		impact_effects.ground_contact(velocity, Vector3.UP)
+	if is_destroyed and (gear.contact_count > 0 or state.get_contact_count() > 0):
+		impact_effects.start_ground_fire(state.transform.origin)
 	if is_crashed:
 		state.apply_central_force(-velocity * mass * 2.0)
 		state.apply_torque(-state.angular_velocity * 20000.0)

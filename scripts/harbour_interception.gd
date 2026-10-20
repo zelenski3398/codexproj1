@@ -187,7 +187,7 @@ func _spawn_wave() -> void:
 	escorts.clear()
 	for i in composition.size():
 		var item: Dictionary = composition[i]
-		# Ace parameters applied explicitly here; normal pilots remain unchanged.
+		# Mission-local normal assistance; the separate ace branch is unchanged.
 		var foe: EnemyAircraft = session.create_encounter_enemy(planned[i], false, item.kind)
 		foe.encounter_ace = item.ace
 		foe.marker_name = "SM.79 BOMBER" if i == 0 else ("ACE CR.42" if item.ace else "CR.42 ESCORT")
@@ -195,6 +195,9 @@ func _spawn_wave() -> void:
 		foe.pending_reset_velocity = direction * definition.bomber_speed
 		if i == 0:
 			bomber = foe
+			bomber.rear_gunner.set_skill(definition.normal_bomber_gunner_skill)
+			if bomber is ItalianEnemy:
+				for gunner in bomber.additional_gunners: gunner.set_skill(definition.normal_bomber_gunner_skill)
 			var route: BomberPilot = bomber.ai
 			# Inherited-velocity ballistic release point: aim the falling payload at the fort.
 			var fall: float = sqrt(2 * maxf(start.y - target_fort.global_position.y, 1) / 9.81)
@@ -222,6 +225,12 @@ func _spawn_wave() -> void:
 				ai.aim_error_degrees *= definition.ace_aim_scale
 				ai.pursuit_prediction_seconds = 5
 				foe.guns.spread_degrees *= definition.ace_dispersion_scale
+			else:
+				ai.aim_error_degrees *= definition.normal_aim_error_scale
+				ai.burst_duration = definition.normal_burst_seconds
+				ai.burst_rest = definition.normal_burst_rest
+				ai.grace_period = definition.normal_reaction_seconds
+				foe.guns.spread_degrees *= definition.normal_dispersion_scale
 			foe.ai = ai
 			foe.add_child(ai)
 			escorts.append(foe)

@@ -26,6 +26,8 @@ Totals: **3 bombers, 6 normal escorts, 2 ace escorts**. These use the game's exi
 
 Wingmen distribute targets, increasingly prioritising the bomber within 2,300 m of its target fort. Escorts select threats near their bomber and return to formation outside the protection area. Ace escorts have less aim error and dispersion, longer navigation prediction and stronger target distribution. Projectile speed, damage, gun rate, swept collision and component multipliers remain those of the normal CR.42. Fire still requires alignment and line of sight. Formation and pursuit separation steer through normal control inputs; they do not move aircraft transforms.
 
+**20 October balance revision:** normal escorts have 4× their former aim error and 1.6× dispersion, with 0.5-second bursts, 2-second rests and 3 seconds of initial tracking grace. Normal SM.79 defensive gunners use the existing Cadet human-aiming profile. The two final-wave aces keep their previous aim error, dispersion, burst timings and prediction. No projectile damage, aircraft health, flight physics or mission counts were changed. All normal tuning is exposed in `HarbourDefinition`.
+
 ## Wave and outcome rules
 
 ```mermaid

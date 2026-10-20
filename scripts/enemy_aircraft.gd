@@ -108,6 +108,7 @@ func _finish_impact(point: Vector3) -> void:
 	if is_queued_for_deletion():
 		return
 	impact_count += 1
+	impact_effects.start_ground_fire(point)
 	damage_effects.clear()
 	if not impact_effects.started:
 		impact_effects.ground_contact(linear_velocity, Vector3.UP)

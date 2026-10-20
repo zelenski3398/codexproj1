@@ -9,6 +9,11 @@ extends Resource
 @export var mouse_response: float = 24
 @export var zoom_fov: float = 30
 @export var arrow_aim_enabled: bool = true
+@export_group("Optional Bofors aim assistance")
+@export var assist_cone_degrees: float = 8.0
+@export var assist_degrees_per_second: float = 12.0
+@export var assist_strength: float = 3.0
+@export_group("Weapon")
 @export var traverse: float = 60
 @export var elevation: float = 45
 @export var recoil_metres: float = .5

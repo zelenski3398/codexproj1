@@ -23,6 +23,13 @@ extends Resource
 @export var bomber_watchdog_seconds: float = 300
 @export var ace_aim_scale: float = 0.20
 @export var ace_dispersion_scale: float = 0.25
+@export_group("Normal escorts only")
+@export var normal_aim_error_scale: float = 4.0
+@export var normal_dispersion_scale: float = 1.6
+@export var normal_burst_seconds: float = .5
+@export var normal_burst_rest: float = 2.0
+@export var normal_reaction_seconds: float = 3.0
+@export_enum("Cadet", "Pilot", "Ace") var normal_bomber_gunner_skill: int = 0
 @export var intro_voice: AudioStream
 @export var success_voice: AudioStream
 ## Optional recordings for every other cue. Unassigned entries use subtitles.

@@ -26,8 +26,11 @@ const delay=ms=>new Promise(r=>setTimeout(r,ms));
   const [x,y]=(await state()).startup_intro.play_button;await page.mouse.click(x,y);
   await wait(()=>window.firstSortieState?.startup_intro?.active===false);
   await click('missions_button');await wait(()=>window.firstSortieState.missions_selecting);
-  await click('mission_picker');await delay(500);
-  await page.keyboard.press('End');await delay(500);await page.keyboard.press('Enter');
+  await click('mission_picker');await delay(3000);
+  // Mouse-opened Godot popup initially has no keyboard-focused item:
+  // the first Down focuses item zero, then two more reach Harbour.
+  for(let i=0;i<3;i++){await page.keyboard.press('ArrowDown',{delay:100});await delay(1000);}
+  await page.keyboard.press('Enter');
   await wait(()=>window.firstSortieState.mission_selected===2);
   check((await state()).mission_selected===2,'Harbour mission selected through production menu');
   await click('mission_depart_button');await wait(()=>window.firstSortieState.on_foot&&window.firstSortieState.fleet_count===7);

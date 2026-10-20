@@ -25,6 +25,7 @@ var chart_panel: PanelContainer
 var aa_settings: PanelContainer
 var aa_sensitivity: HSlider
 var aa_sensitivity_label: Label
+var bofors_assist_option: CheckBox
 var chart: MaltaChart
 var notice: String = ""
 var notice_time: float = 0
@@ -137,6 +138,11 @@ func _build_ui() -> void:
 	aa_sensitivity.value = AAMouseControls.sensitivity
 	aa_sensitivity.value_changed.connect(AAMouseControls.set_sensitivity)
 	settings_column.add_child(aa_sensitivity)
+	bofors_assist_option = CheckBox.new()
+	bofors_assist_option.text = "Bofors aim assist"
+	bofors_assist_option.button_pressed = AAMouseControls.bofors_assist
+	bofors_assist_option.toggled.connect(AAMouseControls.set_bofors_assist)
+	settings_column.add_child(bofors_assist_option)
 	var help := Label.new()
 	help.text = "Mouse aims · LMB fire · RMB sight zoom\nESC resumes · click view to recapture mouse"
 	settings_column.add_child(help)
@@ -261,6 +267,7 @@ func _process(delta: float) -> void:
 	var show_settings: bool = get_tree().paused and interaction.occupied_gun != null
 	if show_settings and not aa_settings.visible:aa_sensitivity.set_value_no_signal(AAMouseControls.sensitivity)
 	aa_settings.visible = show_settings
+	bofors_assist_option.set_pressed_no_signal(AAMouseControls.bofors_assist)
 	aa_sensitivity_label.text = "AA mouse sensitivity: %.2f×"%AAMouseControls.sensitivity
 	chart.show_objective = is_instance_valid(session.interception) and session.interception.phase == "CHECKPOINT"
 	if chart.show_objective:

@@ -35,3 +35,6 @@ extends Resource
 @export_group("Global aircraft particle reservations")
 @export var maximum_smoke_particles: int = 512
 @export var maximum_flame_particles: int = 192
+@export_group("Lingering land wrecks")
+@export var wreck_fire_seconds: float = 75
+@export var maximum_wreck_fires: int = 4

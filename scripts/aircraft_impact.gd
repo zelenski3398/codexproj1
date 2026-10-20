@@ -28,6 +28,7 @@ var impact_pose:Transform3D
 var impact_velocity:Vector3
 var debris_root:Node3D
 var crash_result: Dictionary = {}
+var wreck_fire_started: bool = false
 var original_meshes: Dictionary = {}
 var original_visibility: Dictionary = {}
 var removed_regions: Dictionary = {}
@@ -50,6 +51,7 @@ func ground_contact(velocity: Vector3, normal: Vector3, surface: String = "terra
 	crash_result = AircraftCrashSolver.assess(aircraft,velocity,normal,surface)
 	aircraft.impact_assessed.emit(crash_result)
 	impact_speed = velocity.length()
+	start_ground_fire(aircraft.global_position)
 	if crash_result.category in ["controlled","moderate"]:
 		started = true
 		var effect := DestructionBurst.new()
@@ -255,6 +257,7 @@ func _physics_process(delta: float) -> void:
 		aircraft.model.hide()
 
 func reset() -> void:
+	wreck_fire_started = false
 	if is_instance_valid(persistent_remnant):persistent_remnant.queue_free()
 	persistent_remnant=null
 	generation+=1
@@ -416,6 +419,26 @@ func _limit_debris() -> void:
 					proxy.size = bounds.size.max(Vector3.ONE*0.1)
 					geometry.position += bounds.get_center()
 					geometry.mesh = proxy
+
+func start_ground_fire(point: Vector3) -> void:
+	if water or wreck_fire_started or aircraft.components.fuel_remaining <= .05: return
+	if not aircraft.is_destroyed and float(crash_result.get("severity",0)) < aircraft.components.profile.moderate_crash_limit and aircraft.components.fires.is_empty(): return
+	wreck_fire_started = true
+	call_deferred("_create_ground_fire", point, generation)
+
+func _create_ground_fire(point: Vector3, expected_generation: int) -> void:
+	if generation != expected_generation or water: return
+	var service := AircraftImpactService.obtain()
+	if service.profile.wreck_fire_seconds <= 5: return
+	if get_tree().get_nodes_in_group("land_wreck_fires").size() >= service.profile.maximum_wreck_fires: return
+	var ray := PhysicsRayQueryParameters3D.create(point+Vector3.UP*5, point+Vector3.DOWN*100,1,[aircraft.get_rid()])
+	var hit := get_world_3d().direct_space_state.intersect_ray(ray)
+	if hit.is_empty() or hit.collider.is_in_group("aircraft_water"): return
+	var effect := WreckFire.new()
+	effect.duration = service.profile.wreck_fire_seconds
+	effect.aircraft = weakref(aircraft)
+	service.register_effect(effect,aircraft.get_instance_id(),effect.duration)
+	effect.global_position = hit.position + Vector3.UP * .15
 
 func _preserve_remnant() -> void:
 	# Keep two recognizable central sections after short-lived dynamic debris
