@@ -1,0 +1,100 @@
+{
+  "date": "2026-10-20",
+  "source_commit": "eb17dfe2b8e60c92d08386c33d84b83afe291743",
+  "godot": "4.6.3.stable.official.7d41c59c4",
+  "suites": [
+    {
+      "script": "tests/harbour_hangar_checks.gd",
+      "passed": 24,
+      "total": 24,
+      "rendered_input": false
+    },
+    {
+      "script": "tests/harbour_checks.gd",
+      "passed": 50,
+      "total": 50,
+      "rendered_input": false
+    },
+    {
+      "script": "tests/harbour_departure_checks.gd",
+      "passed": 9,
+      "total": 9,
+      "rendered_input": false
+    },
+    {
+      "script": "tests/pilot_recovery_checks.gd",
+      "passed": 70,
+      "total": 70,
+      "rendered_input": false
+    },
+    {
+      "script": "tests/aircraft_impact_checks.gd",
+      "passed": 20,
+      "total": 20,
+      "rendered_input": false
+    },
+    {
+      "script": "tests/universal_damage_checks.gd",
+      "passed": 113,
+      "total": 113,
+      "rendered_input": false
+    },
+    {
+      "script": "tests/dive_defence_checks.gd",
+      "passed": 47,
+      "total": 47,
+      "rendered_input": false
+    },
+    {
+      "script": "tests/flak_damage_checks.gd",
+      "passed": 9,
+      "total": 9,
+      "rendered_input": false
+    },
+    {
+      "script": "tests/layered_aa_checks.gd",
+      "passed": 55,
+      "total": 55,
+      "rendered_input": false
+    },
+    {
+      "script": "tests/battery_command_checks.gd",
+      "passed": 36,
+      "total": 36,
+      "rendered_input": false
+    },
+    {
+      "script": "tests/aa_mouse_checks.gd",
+      "passed": 32,
+      "total": 32,
+      "rendered_input": true
+    },
+    {
+      "script": "tests/harbour_support_checks.gd",
+      "passed": 24,
+      "total": 24,
+      "rendered_input": false
+    },
+    {
+      "script": "tests/flight_checks.gd",
+      "passed": 35,
+      "total": 35,
+      "rendered_input": false
+    }
+  ],
+  "total_passed": 524,
+  "browser": {
+    "passed": 5,
+    "total": 5,
+    "script": "tools/harbour_hangar_web_smoke.cjs",
+    "renderer": "Chromium ANGLE SwiftShader",
+    "scope": "Production menu, boarding, dismount, same-world state, errors; screenshot inspected"
+  },
+  "web_export": "passed",
+  "limitations": [
+    "No manually flown full three-wave combat sortie or human balance evaluation",
+    "New assisted firing tested in native fixtures, not interactively in browser",
+    "Isolated native wreck-fire fixture, not a recorded live battle",
+    "Earlier native hangar capture reported llvmpipe texture cleanup diagnostics on exit"
+  ]
+}

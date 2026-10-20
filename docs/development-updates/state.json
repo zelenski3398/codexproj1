@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "c316e39f454943922eef4a69e428906ec8e40c64",
-  "last_documented_commit": "8f01e46f43ed77c33847f5bc0c2e6456a8333a14",
-  "update_document": "2026-10-20-pilot-recovery.md",
-  "review_range": "632470873e456728cf44d0b90af3bc7ade5dd6b2..8f01e46f43ed77c33847f5bc0c2e6456a8333a14",
+  "previous_documentation_publication": "2d1866c48c6819cfc41b08ea2f7c16693927a1ba",
+  "last_documented_commit": "eb17dfe2b8e60c92d08386c33d84b83afe291743",
+  "update_document": "2026-10-20-harbour-hangar-camera.md",
+  "review_range": "8f01e46f43ed77c33847f5bc0c2e6456a8333a14..eb17dfe2b8e60c92d08386c33d84b83afe291743",
   "date": "2026-10-20",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }
