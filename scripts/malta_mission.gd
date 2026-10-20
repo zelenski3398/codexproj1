@@ -34,6 +34,9 @@ func _ready() -> void:
 	for id in world.fields:
 		var field: MaltaAirfield = world.fields[id]
 		var kinds: Array = field.record.stationed_aircraft.duplicate()
+		# Mission-local roster: leave the shared airfield/free-roam records intact.
+		if session.game_mode == "harbour" and id == home:
+			kinds = ["sea_gladiator", "sea_gladiator", "sea_gladiator"]
 		if id == home and kinds.has(initial_kind):
 			kinds.erase(initial_kind)
 			kinds.push_front(initial_kind)
@@ -41,6 +44,7 @@ func _ready() -> void:
 			var aircraft: FlightAircraft = SeaGladiator.new() if kinds[i] == "sea_gladiator" else FlightAircraft.new()
 			aircraft.process_mode = Node.PROCESS_MODE_PAUSABLE
 			aircraft.name = id + "_" + kinds[i]
+			if kinds.count(kinds[i]) > 1: aircraft.name += "_" + str(i + 1)
 			aircraft.reset_position = field.parking[i].origin
 			aircraft.input_enabled = false
 			aircraft.engine_running = false

@@ -41,7 +41,7 @@ The contact-normal calculation was corrected: this engine's returned contact nor
 | Fire exposure | 9 HP/s at source, falling with distance |
 | Close explosive ignition | Up to 110 HP, falling within 15 m |
 
-All mission-specific aircraft-loss failure shortcuts were removed. The encounter director and Survival use pilot life for loss/spawn blocking. Interception still resolves at its 90-second deadline and fails immediately on pilot death; losing a recoverable airframe does not reset or stop its timer. Harbour defence retains fort loss and formation/wave rules. The dive-defence mission retains loss of all six emplacements as a separate failure condition. A surviving operator can use the parked aircraft; no automatic gun crew or firing was added.
+The encounter director and Survival use pilot life for loss/spawn blocking. Interception still resolves at its 90-second deadline and fails immediately on pilot death; losing a recoverable airframe does not reset or stop its timer. Harbour defence retains fort loss and formation/wave rules, with one explicit mission-specific exception added on 20 October: a sea crash in the currently occupied aircraft fails harbour defence even if the pilot survives. Survivable land losses remain recoverable. The dive-defence mission retains loss of all six emplacements as a separate failure condition. A surviving operator can use the parked aircraft; no automatic gun crew or firing was added.
 
 Pilot death triggers one shared death panel and blocks boarding, leaving, transport and further enemy/stage confirmations. Mission result handlers remain idempotent. Full restart is explicit.
 
@@ -64,7 +64,7 @@ flowchart TD
 
 Exit searches use horizontal directions even if the aircraft is inverted, expanding out to 24 m. Downward terrain/water rays and capsule overlap checks reject obstructed points. The wreck is excluded only from the floor ray; its collision and other live obstacles still block the final capsule. Exiting a high airborne wreck is refused until a nearby safe surface exists, but V can request help while the pilot waits.
 
-At sea the pilot can leave a sinking wreck and use buoyancy/swimming movement to reach pickup. This uses the existing avatar and controls; a dedicated swimming animation has not been added. Sea crashes keep their splash and sinking physics.
+Where the mode permits continuing after a sea loss, the pilot can leave a sinking wreck and use buoyancy/swimming movement to reach pickup. Faith, Hope and Charity instead ends on the player's sea crash. This uses the existing avatar and controls; a dedicated swimming animation has not been added. Sea crashes keep their splash and sinking physics.
 
 Mission-owned player wrecks preserve up to two central geometry sections after short-lived dynamic fragments expire, with at most 64 retained mesh instances and distance culling. Intact/moderate wrecks already retain their original model. Central remnants persist until full retry/menu teardown; sea wrecks continue sinking. This does not retain endless emitters or resurrect an aircraft.
 

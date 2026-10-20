@@ -5,6 +5,7 @@ signal finished(success: bool, reason: String)
 @export var definition: HarbourDefinition = preload("res://mission_definitions/harbour.tres")
 var session: Node3D
 var phase: String = "TAKEOFF"
+var player_sea_crash: bool = false
 var wave: int = 0
 var roster: AircraftWaveRoster
 var bomber: EnemyAircraft
@@ -73,7 +74,8 @@ func _prepare() -> void:
 	var faith: FlightAircraft = session.aircraft
 	faith.display_name = "Faith · Sea Gladiator"
 	faith.destroyed.connect(_queue_resolution)
-	faith.crashed.connect(func(_reason: String): _queue_resolution())
+	for aircraft in session.malta_mission.fleet:
+		aircraft.crashed.connect(_player_crashed.bind(aircraft))
 	session.malta_mission.pilot.combat_enabled = true
 	session.malta_mission.pilot.health.depleted.connect(_queue_resolution)
 	var field: MaltaAirfield = session.field.fields.hal_far
@@ -379,6 +381,13 @@ func _drop_bomb() -> void:
 func _player_alive() -> bool:
 	return session.malta_mission.pilot.health.hp > 0
 
+func _player_crashed(_reason: String, aircraft: FlightAircraft) -> void:
+	# Only the currently occupied aircraft can cause the mission's sea loss.
+	# Water is set by the real swept surface check before crashed is emitted.
+	if session.malta_mission.occupied == aircraft and aircraft.impact_effects.water:
+		player_sea_crash = true
+	_queue_resolution()
+
 func _queue_resolution() -> void:
 	if _resolution_queued or is_finished(): return
 	_resolution_queued = true
@@ -388,6 +397,7 @@ func _resolve() -> void:
 	_resolution_queued = false
 	if is_finished(): return
 	if not _player_alive(): _finish(false, "Faith lost — harbour defence failed"); return
+	if player_sea_crash: _finish(false, "Aircraft lost at sea — harbour defence failed"); return
 	if forts.any(func(f): return f.hp <= 0): _finish(false, "A defended fort has been destroyed"); return
 	if phase != "ACTIVE" or roster == null or not roster.active.is_empty(): return
 	if not bomber_stopped: return

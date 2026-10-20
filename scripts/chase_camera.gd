@@ -32,8 +32,9 @@ func _physics_process(delta: float) -> void:
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
 	if not hit.is_empty():
 		next = hit.position + hit.normal * 1.0
-	# Also clear the terrain under the interpolated camera position.
-	var down := PhysicsRayQueryParameters3D.create(next + Vector3.UP * 200.0, next + Vector3.DOWN * 500.0, 1, [aircraft.get_rid()])
+	# Probe BELOW the resolved eye, never down through a hangar roof. The
+	# target-to-eye sweep above already handles a destination below terrain.
+	var down := PhysicsRayQueryParameters3D.create(next, next + Vector3.DOWN * 500.0, 1, [aircraft.get_rid()])
 	var floor_hit := get_world_3d().direct_space_state.intersect_ray(down)
 	if not floor_hit.is_empty():
 		next.y = maxf(next.y, floor_hit.position.y + 1.5)
