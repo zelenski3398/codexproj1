@@ -6,9 +6,9 @@ Original WWII-style hangars based on the user's hand-drawn reference replace the
 
 There are **two hangars at each Malta runway**: Ta' Qali, Luqa and Ħal Far (six in the continuous world). All Malta modes use this same world construction. The original test runway retains its three building sites, now also using the new hangars. No previous box hangar remains inside a replacement.
 
-Entrances face the adjacent runway/apron. Malta footprints extend from field-local X=82 to 118 m, away from the X=78 driving lane, X=59 aircraft parking and X=37 AA line. Their centres use the existing field transform and Z offsets of −45 and −125 m from the apron centre. Their larger widths are along the runway. Geographic airfield positions, runway geometry, roads and aircraft spawn transforms are unchanged.
+Entrances face the adjacent runway/apron. Malta footprints extend from field-local X=82 to 118 m, away from the X=78 driving lane, the former X=59 dispersal lane and X=37 AA line. Their centres use the existing field transform and Z offsets of −45 and −125 m from the apron centre. Their larger widths are along the runway. Geographic airfield positions, runway geometry and roads are unchanged. Available aircraft now use designated interior stands; see [the 20 October update](pilot-survival-and-recovery.md).
 
-The soldier can walk inside, vehicles can drive inside, and aircraft can taxi through the entrance. **Existing mission aircraft remain at their original dispersal positions**; the three aircraft in the close previews below are preview-only scale references.
+The soldier can walk inside, vehicles can drive inside, and aircraft can taxi through the entrance. **Available player aircraft now spawn inside the hangars at designated interior stands**; the three aircraft in the close previews below are preview-only scale references.
 
 ## Geometry and structure
 
@@ -65,4 +65,4 @@ Additional regression checks cover Malta flight/boarding/landing, road driving, 
 
 For manual review: depart from each airfield, walk along the apron into both hangars, look up at the seven trusses, drive through the opening and park, then taxi a fighter inside and back out. Verify the runway remains clear. Repeat after mission retry. Native previews use `tests/hangar_capture.gd`; the production-browser smoke uses `tools/hangar_web_smoke.cjs` after `bash tools/build_web.sh`.
 
-The visual design is illustrative, not an engineering-certified structure. No moving doors, repair/refuelling service, automatic indoor parking, extra aircraft or hangar-collapse simulation are introduced. Browser mouse-driven taxi manoeuvres are not part of the automated smoke test.
+The visual design is illustrative, not an engineering-certified structure. No moving doors, repair/refuelling service, automatic indoor repair/refuelling, extra aircraft or hangar-collapse simulation are introduced. Browser mouse-driven taxi manoeuvres are not part of the automated smoke test.

@@ -27,7 +27,7 @@ func is_operating() -> bool:
 	return is_instance_valid(occupied_gun) or is_instance_valid(occupied_vehicle)
 
 func nearest() -> Node3D:
-	if is_operating() or mission.occupied != null or not mission.pilot.active: return null
+	if is_operating() or mission.occupied != null or not mission.pilot.active or mission.pilot.health.hp<=0: return null
 	var best: Node3D = mission.nearest_serviceable()
 	var distance := mission.pilot.global_position.distance_to(best.global_position) if best != null else INF
 	for gun in mission.world.aa_battery.guns + mission.world.fort_battery.guns:
@@ -37,6 +37,7 @@ func nearest() -> Node3D:
 			distance = d
 	for truck in mission.world.trucks:
 		var d := mission.pilot.global_position.distance_to(truck.global_position + Vector3.UP)
+		if truck.get_meta("recovery",false) and mission.recovery.state!="READY":continue
 		if not truck.occupied and absf(truck.speed) < mission.maximum_exit_speed and d < truck_enter_range and d < distance:
 			best = truck
 			distance = d
@@ -88,6 +89,7 @@ func mount_gun(gun: BritishAAGun) -> bool:
 	return true
 
 func enter_vehicle(truck: MilitaryTruck) -> bool:
+	if truck.get_meta("recovery",false):return mission.recovery.enter(truck)
 	if is_operating() or mission.occupied != null or not mission.pilot.active or truck != nearest(): return false
 	occupied_vehicle = truck
 	_hide_pilot()
@@ -178,7 +180,7 @@ func prompt() -> String:
 	if nearest_command()!=null:return "F Enter Heavy AA Battery Command · mouse target designation"
 	var object := nearest()
 	if object is BritishAAGun: return "E Mount AA Gun"
-	if object is MilitaryTruck: return "E Enter Military Truck"
+	if object is MilitaryTruck: return "E Enter recovery truck · return to departure airfield" if object.get_meta("recovery",false) else "E Enter Military Truck"
 	if object is FlightAircraft: return "E Board " + object.display_name
 	return "Approach a truck, AA gun or aircraft · E to enter"
 

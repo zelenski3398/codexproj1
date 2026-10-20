@@ -3,7 +3,9 @@
 
 Aircraft now have [universal component failures, progressive fires and severity-based crashes](docs/universal-aircraft-damage.md), including independent SM.79 engines and non-explosive engine-out gliding.
 
-Startup now dissolves into the supplied live poster, with **Play integrated into the artwork**. Play fades into the existing main menu. See the [startup guide and previews](docs/startup-poster.md).
+Startup and return to the title now show the supplied looping live poster, with **Play integrated into the artwork**. Play fades into the existing main menu. See the [startup guide and previews](docs/startup-poster.md).
+The primary **Free Roam** action opens Malta on foot beside the selected aircraft inside a hangar. **E** boards/exits; **V** requests recovery after an aircraft loss. Pilot health is independent of aircraft HP. [Hangar departures, survival, recovery and poster fixes](docs/pilot-survival-and-recovery.md).
+
 A single-player 3D **Godot 4 / GDScript** flight prototype set at a fictional RAF
 countryside airfield in 1940, or a continuous 1:1 Malta island world. Choose a **Spitfire Mk I** or **Gloster Sea
 Gladiator**, take off, bank over the fields, return, land and brake. Both have

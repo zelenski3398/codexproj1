@@ -4,6 +4,7 @@ extends Node3D
 ## exist until Fly is chosen. Keyboard navigation works in embedded game views.
 signal chosen(kind: String)
 signal missions_requested
+signal test_requested(kind: String)
 signal malta_requested
 var missions_button: Button
 var malta_button: Button
@@ -65,7 +66,7 @@ func _build_ui() -> void:
 	stack.add_theme_constant_override("separation", 16)
 	panel.add_child(stack)
 	malta_button = Button.new()
-	malta_button.text = "MAP: COUNTRYSIDE  ·  CHOOSE MALTA →"
+	malta_button.text = "MALTA · AIRFIELD / MODE OPTIONS →"
 	malta_button.custom_minimum_size.y = 36
 	malta_button.pressed.connect(func(): malta_requested.emit())
 	stack.add_child(malta_button)
@@ -98,6 +99,11 @@ func _build_ui() -> void:
 	fly_button.add_theme_stylebox_override("hover", _style(Color("f1d499")))
 	fly_button.pressed.connect(_fly)
 	stack.add_child(fly_button)
+	var test := Button.new()
+	test.text="COUNTRYSIDE FLIGHT TEST"
+	test.pressed.connect(func():
+		if active:active=false;test_requested.emit(selected))
+	stack.add_child(test)
 	stack.add_child(_label("Click an aircraft, then Fly.\n← / → or 1 / 2 select · ENTER starts", 14, Color("abb8ad")))
 	preview_title = _label("", 22, INK)
 	preview_title.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
@@ -155,11 +161,11 @@ func select(kind: String) -> void:
 	preview.animate(0, 0, preview_gear, false)
 	if kind == "spitfire":
 		details.text = "Higher speed and stronger climb\nRetractable landing gear\nEight wing guns · 100 HP\nTakeoff: 160–180 km/h"
-		fly_button.text = "FLY THE SPITFIRE"
+		fly_button.text = "FREE ROAM MALTA · SPITFIRE"
 		preview_title.text = "SPITFIRE Mk I\nRAF fighter · 1940"
 	else:
 		details.text = "Lower speed and reduced climb\nFixed landing gear · lower stall speed\nFour machine guns · 100 HP\nTakeoff: 115–135 km/h"
-		fly_button.text = "FLY THE SEA GLADIATOR"
+		fly_button.text = "FREE ROAM MALTA · GLADIATOR"
 		preview_title.text = "GLOSTER SEA GLADIATOR\nFAITH · late-1930s naval biplane"
 
 func _input(event: InputEvent) -> void:

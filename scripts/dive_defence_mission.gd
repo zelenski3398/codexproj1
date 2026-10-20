@@ -52,8 +52,6 @@ func _prepare() -> void:
 	pilot.combat_enabled=true
 	pilot.health.depleted.connect(_queue_resolution)
 	pilot.add_to_group("damageable_ground_pilots")
-	pilot.global_position=session.malta_mission.interaction.find_exit(guns[0],5)
-	if not pilot.global_position.is_finite():pilot.global_position=guns[0].global_position+Vector3(7,1.1,0)
 	pilot.velocity=Vector3.ZERO
 	session.malta_mission._message("E Mount AA Gun · defend all six emplacements through six waves")
 

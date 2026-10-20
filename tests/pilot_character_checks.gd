@@ -32,7 +32,7 @@ func _run() -> void:
 		await _frames(30)
 		var aircraft: FlightAircraft = mission.occupied
 		var seated: RafPilotAvatar = aircraft.seated_pilot
-		_check(not pilot.active and not pilot.visible and pilot.collision_layer == 0 and seated.visible and seated.pose == "Seated", "Boarding swaps walking geometry for one seated pilot")
+		_check(not pilot.active and not pilot.visible and pilot.collision_layer == 16 and seated.visible and seated.pose == "Seated", "Boarding hides walking geometry while retaining a damageable seat capsule and one visible pilot")
 		var points: Dictionary = {}
 		for index in range(seated.skeleton.get_bone_count()):
 			var name: String = seated.skeleton.get_bone_name(index)

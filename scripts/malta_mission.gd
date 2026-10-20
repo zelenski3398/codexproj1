@@ -14,7 +14,10 @@ var travel_button: Button
 var fleet: Array[FlightAircraft] = []
 var pilot: GroundPilot
 var occupied: FlightAircraft
+var survival: PilotSurvival
+var recovery: TransportRecovery
 var interaction: AirfieldInteraction
+var last_abandoned: FlightAircraft
 var initial_aircraft: FlightAircraft
 var canvas: CanvasLayer
 var status: Label
@@ -47,6 +50,7 @@ func _ready() -> void:
 			aircraft.pilot.automated = true
 			aircraft.pilot.brakes = true
 			aircraft.collision_mask = 7
+			aircraft.impact_effects.preserve_wreck_remains = true
 			aircraft.destroyed.connect(session.encounters.player_destroyed.bind(aircraft))
 			fleet.append(aircraft)
 			if id == home and i == 0:
@@ -62,6 +66,12 @@ func _ready() -> void:
 	interaction = AirfieldInteraction.new()
 	interaction.mission = self
 	add_child(interaction)
+	survival=PilotSurvival.new()
+	survival.mission=self
+	add_child(survival)
+	recovery=TransportRecovery.new()
+	recovery.mission=self
+	add_child(recovery)
 	set_process_input(true)
 
 func _build_ui() -> void:
@@ -131,7 +141,14 @@ func _build_ui() -> void:
 func _input(event: InputEvent) -> void:
 	if event.is_echo():
 		return
+	if event.is_action_pressed("call_transport"):
+		recovery.request()
+		get_viewport().set_input_as_handled()
+		return
+	if event.is_action_pressed("reset") and not survival.alive():session.call_deferred("restart_malta");get_viewport().set_input_as_handled();return
+	if not survival.alive() or recovery.state in ["RETURNING","FADING_IN"]:return
 	if event.is_action_pressed("navigation_map"):
+		if world is CountrysideWorld:_message("Countryside test map · Malta navigation is available from Malta departures");return
 		chart_panel.visible = not chart_panel.visible
 		if chart_panel.visible:Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
 		get_viewport().set_input_as_handled()
@@ -162,11 +179,9 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func nearest_serviceable() -> FlightAircraft:
-	if session.game_mode=="aa_defence":return null
 	var nearest: FlightAircraft
 	var distance: float = boarding_range
 	for aircraft in fleet:
-		if session.game_mode == "harbour" and aircraft != initial_aircraft: continue
 		if not is_instance_valid(aircraft) or aircraft.is_destroyed or aircraft.is_crashed or aircraft.airspeed > maximum_exit_speed or aircraft.gear.contact_count == 0:
 			continue
 		var current: float = pilot.global_position.distance_to(aircraft.global_position)
@@ -183,13 +198,13 @@ func board_nearest() -> bool:
 	return board_aircraft(aircraft)
 
 func board_aircraft(aircraft: FlightAircraft) -> bool:
-	if session.game_mode=="aa_defence":
-		_message("This mission requires the six AA emplacements; no aircraft fallback")
-		return false
 	# Keep the same validation for calls from UI and tests; no remote boarding.
-	if occupied != null or interaction.is_operating() or not pilot.active or aircraft != nearest_serviceable():
+	if not survival.alive() or recovery.state in ["RETURNING","FADING_IN"] or occupied != null or interaction.is_operating() or not pilot.active or aircraft != nearest_serviceable():
 		return false
+	recovery.cancel_pending()
 	occupied = aircraft
+	for id in world.fields:
+		if world.fields[id].contains(aircraft.global_position):survival.departure_airfield=id;break
 	pilot.set_active(false)
 	aircraft.input_enabled = true
 	aircraft.seated_pilot.visible = true
@@ -203,41 +218,25 @@ func board_aircraft(aircraft: FlightAircraft) -> bool:
 func leave_aircraft() -> bool:
 	if not is_instance_valid(occupied):
 		return false
-	if occupied.is_destroyed or occupied.is_crashed or occupied.airspeed > maximum_exit_speed or occupied.gear.contact_count == 0:
-		_message("Stop on the ground before leaving · R restarts a lost mission")
+	if not survival.alive():return false
+	var wreck: bool=occupied.is_destroyed or occupied.is_crashed
+	if not wreck and (occupied.airspeed>maximum_exit_speed or occupied.gear.contact_count==0):
+		_message("Stop on the ground before leaving")
 		return false
-	if occupied.engine_running or occupied.pilot.throttle > 0.01:
+	if not wreck and (occupied.engine_running or occupied.pilot.throttle>.01):
 		_message("Reduce throttle with S and stop the engine with I before leaving")
 		return false
-	# Find a clear ground position on either side, never in a wing/building.
-	var exit: Vector3
-	var found: bool = false
-	for side in [1.0, -1.0]:
-		var point: Vector3 = occupied.global_position + occupied.global_basis.x * side * 6.5 + occupied.global_basis.z * 2
-		var space: PhysicsDirectSpaceState3D = occupied.get_world_3d().direct_space_state
-		var floor_query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(point + Vector3.UP * 10, point + Vector3.DOWN * 20, 1)
-		var floor_hit: Dictionary = space.intersect_ray(floor_query)
-		if floor_hit.is_empty():
-			continue
-		exit = floor_hit.position + Vector3.UP * 1.05
-		var shape: CapsuleShape3D = CapsuleShape3D.new()
-		shape.radius = 0.4
-		shape.height = 1.9
-		var query: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
-		query.shape = shape
-		query.transform = Transform3D(Basis.IDENTITY, exit)
-		query.collision_mask = 7
-		if space.intersect_shape(query).is_empty():
-			found = true
-			break
-	if not found:
-		_message("No safe exit beside the aircraft; taxi to open ground")
+	var exit: Vector3=safe_aircraft_exit(occupied)
+	if not exit.is_finite():
+		_message("No safe nearby exit yet · V requests transport while you wait for the wreck to settle")
 		return false
+	if wreck:last_abandoned=occupied
 	occupied.input_enabled = false
 	occupied.seated_pilot.visible = false
 	occupied.pilot.automated = true
 	occupied.pilot.reset_commands()
 	occupied.pilot.brakes = true
+	occupied.engine_running = false
 	occupied = null
 	pilot.global_position = exit
 	pilot.velocity = Vector3.ZERO
@@ -246,7 +245,7 @@ func leave_aircraft() -> bool:
 		session.hud.visible = false
 		session.hud.flight_input_enabled = false
 	session.encounters.set_target(null)
-	_message("Aircraft parked; damage and fuel retained. Walk to another aircraft and press E.")
+	_message("Wreck abandoned · V call transport assistance" if wreck else "Aircraft parked; damage and fuel retained. Walk to another aircraft and press E.")
 	return true
 
 func _message(value: String) -> void:
@@ -291,11 +290,14 @@ func _process(delta: float) -> void:
 			status.text = "WINGS OVER MALTA · ON FOOT\nWASD Walk · Arrows Turn · M Map / travel · ESC Pause · R Full restart\n" + status.text
 	if get_tree().paused and not is_instance_valid(occupied):
 		status.text += "\nPAUSED · ESC resumes"
+	if world is CountrysideWorld:status.text=status.text.replace("MALTA ·", "COUNTRYSIDE TEST ·")
+	status.text += "\nPILOT HP %d/100"%ceili(pilot.health.hp)
+	if serviceable_count()==0:status.text+=" · No usable aircraft remain · pilot survival is independent"
 	if notice_time > 0:
 		status.text += "\n" + notice
 
 func can_travel() -> bool:
-	return occupied==null and not interaction.is_operating() and pilot.active and pilot.health.hp>0 and not get_tree().paused and not interaction.mission_ended()
+	return not world is CountrysideWorld and occupied==null and not interaction.is_operating() and pilot.active and pilot.health.hp>0 and not get_tree().paused and not interaction.mission_ended()
 
 func teleport_to(id: String) -> bool:
 	if not can_travel():
@@ -321,6 +323,7 @@ func teleport_to(id: String) -> bool:
 		query.exclude=[pilot.get_rid()]
 		if space.intersect_shape(query).is_empty():target=point;found=true;break
 	if not found:_message("Destination obstructed; choose another spawn");return false
+	recovery.cancel_pending()
 	pilot.global_position=target
 	pilot.velocity=Vector3.ZERO
 	pilot.camera.make_current()
@@ -328,3 +331,61 @@ func teleport_to(id: String) -> bool:
 	get_viewport().gui_release_focus()
 	_message("Travel complete · aircraft, damage and the running battle preserved")
 	return true
+
+func serviceable_count(field_id: String = "") -> int:
+	return fleet.filter(func(a):return is_instance_valid(a) and not a.is_destroyed and not a.is_crashed and (field_id.is_empty() or world.fields[field_id].contains(a.global_position))).size()
+
+func clear_pilot_point(point: Vector3, exclude: Array[RID]=[]) -> Vector3:
+	var space:=world.get_world_3d().direct_space_state
+	var floor_query:=PhysicsRayQueryParameters3D.create(point+Vector3.UP*3,point-Vector3.UP*80,1,exclude)
+	var hit:=space.intersect_ray(floor_query)
+	if hit.is_empty() or hit.normal.y<.7:return Vector3.INF
+	var water: bool=hit.collider.is_in_group("aircraft_water")
+	var centre: Vector3=hit.position+Vector3.UP*(.5 if water else 1.05)
+	var capsule:=CapsuleShape3D.new()
+	capsule.height=1.9;capsule.radius=.4
+	var query:=PhysicsShapeQueryParameters3D.new()
+	query.shape=capsule;query.transform=Transform3D(Basis.IDENTITY,centre);query.collision_mask=31
+	var exclusions: Array[RID]=[pilot.get_rid()]
+	# The sea plane intersects a swimmer's capsule by design; all other
+	# live wreck, debris, aircraft, wall and gun shapes still block the exit.
+	if water:exclusions.append(hit.collider.get_rid())
+	query.exclude=exclusions
+	if not space.intersect_shape(query).is_empty():return Vector3.INF
+	return centre
+
+func safe_aircraft_exit(aircraft: FlightAircraft) -> Vector3:
+	var centre:=aircraft.global_position
+	var right: Vector3=aircraft.global_basis.x*Vector3(1,0,1)
+	if right.length_squared()<.01:right=Vector3.RIGHT
+	right=right.normalized()
+	for radius in [6.7,9.0,13.0,18.0,24.0]:
+		for step in 16:
+			var point: Vector3=centre+right.rotated(Vector3.UP,step*TAU/16)*radius
+			if aircraft.impact_effects.water:point.y=maxf(point.y,.1)
+			var exit:=clear_pilot_point(point,[aircraft.get_rid()])
+			if not exit.is_finite():continue
+			# Never turn leaving a high airborne wreck into ground teleportation.
+			if centre.y-exit.y>8 and not aircraft.impact_effects.water:continue
+			if absf(exit.y-centre.y)>20 and not aircraft.impact_effects.water:continue
+			return exit
+	return Vector3.INF
+
+func safe_base_point(id: String) -> Vector3:
+	if not world.fields.has(id):id=home
+	var field: MaltaAirfield=world.fields[id]
+	# Prefer a living replacement at this base; the original stand may now
+	# be empty, obstructed by a wreck, or too far from the next fighter.
+	for aircraft in fleet:
+		if not is_instance_valid(aircraft) or aircraft.is_destroyed or aircraft.is_crashed or not field.contains(aircraft.global_position):continue
+		for side in [1.0,-1.0]:
+			var next: Vector3=aircraft.global_position+aircraft.global_basis.x*side*6.7+aircraft.global_basis.z*2
+			var result:=clear_pilot_point(next)
+			if result.is_finite():return result
+	var base: Vector3=field.pilot_spawn
+	for radius in [0.0,3.0,7.0,12.0,20.0]:
+		for step in 12:
+			var point: Vector3=base+Vector3(cos(step*TAU/12),0,sin(step*TAU/12))*radius
+			var result:=clear_pilot_point(point)
+			if result.is_finite():return result
+	return Vector3.INF

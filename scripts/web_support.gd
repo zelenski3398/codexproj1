@@ -36,6 +36,9 @@ func _process(delta: float) -> void:
 	state.startup_intro = {"active":is_instance_valid(session.startup_intro)}
 	if is_instance_valid(session.startup_intro):
 		state.startup_intro.phase = session.startup_intro.phase
+		state.startup_intro.video_position = session.startup_intro.movie.stream_position
+		state.startup_intro.video_playing = session.startup_intro.movie.is_playing()
+		state.startup_intro.video_restarts = session.startup_intro.video_restarts
 		state.startup_intro.play_button = _center(session.startup_intro.play_button)
 	state.missions_selecting = is_instance_valid(session.missions_menu)
 	if is_instance_valid(session.missions_menu):
@@ -91,20 +94,31 @@ func _process(delta: float) -> void:
 		state.travel_picker=_center(session.malta_mission.travel_picker)
 		state.travel_button=_center(session.malta_mission.travel_button)
 		state.travel_enabled=session.malta_mission.can_travel()
-		state.terrain = session.malta_mission.world.terrain_appearance.diagnostic_state()
-		var city: VallettaCity = session.malta_mission.world.valletta_city
-		state.valletta = {"ready":city.ready_for_flight,"buildings":city.layout.building_count,"structures":city.structure_count,"details":city.detail_count,"collision_chunks":city.collision_count,"visible":city.visible,"landmarks":city.layout.landmarks.size()}
-		var mdina: MdinaCity = session.malta_mission.world.mdina_city
-		state.mdina = {"ready":mdina.ready_for_flight,"buildings":mdina.layout.building_count,"structures":mdina.structure_count,"details":mdina.detail_count,"collision_chunks":mdina.collision_count,"visible":mdina.visible,"walls":mdina.layout.wall_segments,"x":mdina.position.x,"z":mdina.position.z,"elevation":mdina.layout.reference_terrain_height}
-		var cottonera: CottoneraRegion = session.malta_mission.world.cottonera_region
-		state.cottonera = {"status":cottonera.status,"regions":cottonera.regions.size(),"visuals":cottonera.visual_count,"collisions":cottonera.collision_count,"visible":cottonera.visible}
+		if not session.field is CountrysideWorld:
+			state.terrain = session.malta_mission.world.terrain_appearance.diagnostic_state()
+			var city: VallettaCity = session.malta_mission.world.valletta_city
+			state.valletta = {"ready":city.ready_for_flight,"buildings":city.layout.building_count,"structures":city.structure_count,"details":city.detail_count,"collision_chunks":city.collision_count,"visible":city.visible,"landmarks":city.layout.landmarks.size()}
+			var mdina: MdinaCity = session.malta_mission.world.mdina_city
+			state.mdina = {"ready":mdina.ready_for_flight,"buildings":mdina.layout.building_count,"structures":mdina.structure_count,"details":mdina.detail_count,"collision_chunks":mdina.collision_count,"visible":mdina.visible,"walls":mdina.layout.wall_segments,"x":mdina.position.x,"z":mdina.position.z,"elevation":mdina.layout.reference_terrain_height}
+			var cottonera: CottoneraRegion = session.malta_mission.world.cottonera_region
+			state.cottonera = {"status":cottonera.status,"regions":cottonera.regions.size(),"visuals":cottonera.visual_count,"collisions":cottonera.collision_count,"visible":cottonera.visible}
 		var access_fields: Array=session.malta_mission.world.fields.values()
 		state.base_access_count=access_fields.filter(func(f):return not f.access_record.is_empty()).size()
-		state.base_access_widths=access_fields.map(func(f):return f.access_record.width)
-		state.base_apron_lane_counts=access_fields.map(func(f):return int(f.apron_surface.material_override.get_shader_parameter("access_count")))
+		state.base_access_widths=access_fields.map(func(f):return f.access_record.get("width",4.5))
+		state.base_apron_lane_counts=access_fields.map(func(f):return int(f.apron_surface.material_override.get_shader_parameter("access_count")) if f.apron_surface!=null else 0)
 		state.corrected_access_segments=int(MaltaTerrainAppearance.LANDSCAPE.get_shader_parameter("new_access_count"))
 		state.world_id = session.malta_mission.world.get_instance_id()
 		state.fleet_count = session.malta_mission.fleet.size()
+		state.fleet = session.malta_mission.fleet.map(func(a):return {"id":str(a.get_instance_id()),"hp":a.health.hp,"destroyed":a.is_destroyed,"engine":a.engine_running})
+		var mission: MaltaMission=session.malta_mission
+		state.pilot_hp=mission.pilot.health.hp
+		state.recovery={"state":mission.recovery.state,"requests":mission.recovery.requests,"returns":mission.recovery.returns,"truck":is_instance_valid(mission.recovery.truck),"destination":mission.recovery.destination,"truck_position":[mission.recovery.truck.global_position.x,mission.recovery.truck.global_position.y,mission.recovery.truck.global_position.z] if is_instance_valid(mission.recovery.truck) else []}
+		state.hangar_parked=mission.fleet.filter(func(a):
+			for field in mission.world.fields.values():
+				for hangar in field.installations:
+					var local: Vector3=hangar.to_local(a.global_position)
+					if absf(local.x)<18 and absf(local.z)<13:return true
+			return false).size()
 		var aa: AirfieldAABattery = session.malta_mission.world.aa_battery
 		state.command_posts=[]
 		for post in aa.command_stations:

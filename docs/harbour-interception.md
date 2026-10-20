@@ -1,5 +1,7 @@
 # Faith, Hope and Charity — Harbour Interception
 
+**20 October update:** available player aircraft now depart from hangar stands. Pilot health is independent from hull HP; a surviving pilot can exit a wreck and use **V → E truck entry** recovery without resetting this mission. Aircraft loss alone no longer fails the attempt. [Current survival/recovery rules](pilot-survival-and-recovery.md).
+
 A **fictional** three-wave mission inspired by Malta's early air defence, not a reconstruction of a documented engagement. Launch it from **Main menu → Missions → Faith, Hope and Charity → Depart from Ħal Far**. The existing continuous Malta world, terrain, cities, military installations and flight controllers are retained.
 
 ![Mission selection](previews/harbour-mission-menu.png)

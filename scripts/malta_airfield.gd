@@ -2,6 +2,7 @@ class_name MaltaAirfield
 extends Node3D
 ## Terrain-supported graded strip/apron. Only the island mesh collides under
 ## these visual surfaces; buildings retain their own solid collision.
+var existing_hangars: Array[AircraftHangar] = []
 var record: Dictionary
 var parking: Array[Transform3D] = []
 var access_record: Dictionary
@@ -11,6 +12,14 @@ var installations: Array[AirfieldInstallation] = []
 var runway_length: float
 
 func _ready() -> void:
+	if not existing_hangars.is_empty():
+		name="CountrysideAirfieldLayout"
+		runway_length=float(record.length)
+		for hangar in existing_hangars:
+			installations.append(hangar)
+			for slot in hangar.parking_points.size():parking.append(hangar.global_transform*hangar.parking_pose(slot))
+		pilot_spawn=parking[0].origin+parking[0].basis.x*6.7+parking[0].basis.z*2
+		return
 	name = String(record.id).to_pascal_case()
 	runway_length = float(record.length)
 	var origin: Vector3 = MaltaGeography.vector(record.position)
@@ -30,11 +39,6 @@ func _ready() -> void:
 		MeshKit.box(self, Vector3(1.2, 0.025, 24), Vector3(0, 0.025, z), paint)
 	for side in [-1, 1]:
 		MeshKit.box(self, Vector3(0.5, 0.025, runway_length - 30), Vector3(side * 25, 0.025, 0), paint)
-	# Dispersal slots face the departure direction; 35 m prevents wing overlaps.
-	for i in range(record.stationed_aircraft.size()):
-		var local_pose: Transform3D = Transform3D(Basis(Vector3.RIGHT, 0.117), Vector3(59, 1.18, runway_length * 0.31 - i * 35))
-		parking.append(global_transform * local_pose)
-	pilot_spawn = to_global(Vector3(64, 1.1, runway_length * 0.31 + 2))
 	for i in range(2):
 		var building := AircraftHangar.new()
 		# Preserve the existing sites and 82 m apron-facing frontage. Larger,
@@ -45,6 +49,12 @@ func _ready() -> void:
 		building.display_name = String(record.name) + " hangar " + str(i+1)
 		add_child(building)
 		installations.append(building)
+	# Consume designated interior stands, then the next hangar, never overlap.
+	for building in installations:
+		for slot in building.parking_points.size():
+			parking.append(building.global_transform*building.parking_pose(slot))
+	assert(record.stationed_aircraft.size()<=parking.size(),"Insufficient hangar parking")
+	pilot_spawn=parking[0].origin+parking[0].basis.x*6.7+parking[0].basis.z*2
 	var label: Label3D = Label3D.new()
 	label.text = String(record.name) + "\nDISPERSAL · E TO BOARD"
 	label.position = Vector3(72, 12, runway_length * 0.31 + 24)
@@ -62,4 +72,4 @@ func _surface(size: Vector2,pos: Vector3,material: Material) -> MeshInstance3D:
 
 func contains(point: Vector3) -> bool:
 	var local: Vector3 = to_local(point)
-	return absf(local.x) < 125 and absf(local.z) < runway_length * 0.5 + 30 and absf(local.y) < 10
+	return absf(local.x) < (190 if not existing_hangars.is_empty() else 125) and absf(local.z) < runway_length * 0.5 + 30 and absf(local.y) < 10

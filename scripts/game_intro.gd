@@ -8,6 +8,7 @@ signal completed
 @export var menu_fade_seconds: float = 1.6
 @export var decode_video: bool = true
 const POSTER = preload("res://assets/intro/malta_poster.png")
+const POSTER_AUDIO = preload("res://assets/intro/malta_poster_audio.ogg")
 const MOVIE = preload("res://assets/intro/malta_poster.ogv")
 enum Phase { OPENING, POSTER, LEAVING, MENU, DONE }
 var phase: Phase = Phase.OPENING
@@ -15,6 +16,10 @@ var elapsed: float = 0.0
 var surface: Control
 var artwork: Control
 var still: TextureRect
+var poster_audio: AudioStreamPlayer
+var video_last_position: float = -1
+var video_stalled: float = 0
+var video_restarts: int = 0
 var movie: VideoStreamPlayer
 var play_button: Button
 var opening: Label
@@ -23,6 +28,7 @@ var poster_rect: Rect2
 var _audio_button_visible: bool = true
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	layer = 100
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	GameAudioMixer.instance.set_menu_active(false)
@@ -53,8 +59,14 @@ func _ready() -> void:
 	movie.volume_db = -80
 	movie.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	artwork.add_child(movie)
-	if decode_video and DisplayServer.get_name() != "headless":
-		movie.play()
+	movie.process_mode = Node.PROCESS_MODE_ALWAYS
+	movie.finished.connect(_video_finished)
+	poster_audio=AudioStreamPlayer.new()
+	poster_audio.stream=POSTER_AUDIO.duplicate()
+	poster_audio.stream.loop=true
+	poster_audio.bus=&"Music"
+	poster_audio.volume_db=-80
+	add_child(poster_audio)
 	play_button = Button.new()
 	play_button.text = "P L A Y"
 	play_button.add_theme_color_override("font_color", Color("722c1e"))
@@ -85,6 +97,7 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_layout)
 	_layout()
 	_update_visuals()
+	call_deferred("_start_video")
 
 func _layout() -> void:
 	var viewport_size := get_viewport().get_visible_rect().size
@@ -116,6 +129,16 @@ func begin_play() -> void:
 
 func _process(delta: float) -> void:
 	elapsed += delta
+	if decode_video and phase in [Phase.OPENING,Phase.POSTER] and DisplayServer.get_name()!="headless":
+		var position:=movie.stream_position
+		video_stalled=video_stalled+delta if is_equal_approx(position,video_last_position) else 0
+		video_last_position=position
+		if video_stalled>2.0:
+			# Restart only an actually stalled decoder, never on every frame.
+			movie.stop();movie.play()
+			video_stalled=0
+			video_last_position=-1
+			video_restarts+=1
 	if phase == Phase.OPENING and elapsed >= opening_seconds + poster_fade_seconds:
 		phase = Phase.POSTER
 		elapsed = 0.0
@@ -123,6 +146,7 @@ func _process(delta: float) -> void:
 		phase = Phase.MENU
 		elapsed = 0.0
 		movie.stop()
+		poster_audio.stop()
 		surface.hide()
 		GameAudioMixer.instance.set_menu_active(true)
 	elif phase == Phase.MENU and elapsed >= menu_fade_seconds:
@@ -142,9 +166,18 @@ func _update_visuals() -> void:
 	elif phase == Phase.MENU:
 		shade = 1.0 - smoothstep(0.0, menu_fade_seconds, elapsed)
 	blackout.color.a = shade
-	movie.volume_db = linear_to_db(maxf(0.0001, reveal * (1.0 - shade) * 0.7))
+	poster_audio.volume_db = linear_to_db(maxf(0.0001, reveal * (1.0 - shade) * 0.7))
+
+func _start_video() -> void:
+	if not is_inside_tree() or phase not in [Phase.OPENING,Phase.POSTER] or not decode_video or DisplayServer.get_name()=="headless":return
+	if not movie.is_playing():movie.play()
+	if GameAudioMixer.instance.playback_enabled and not poster_audio.playing:poster_audio.play()
+
+func _video_finished() -> void:
+	if phase in [Phase.OPENING,Phase.POSTER]:call_deferred("_start_video")
 
 func _exit_tree() -> void:
+	if is_instance_valid(poster_audio):poster_audio.stop();poster_audio.stream=null
 	if is_instance_valid(movie):
 		movie.stop()
 		movie.stream = null

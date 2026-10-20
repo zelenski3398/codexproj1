@@ -35,6 +35,11 @@ func _run() -> void:
 	_key(KEY_ENTER, true, true)
 	_key(KEY_ENTER, false, true)
 	await _frames(6)
+	_check(world.environment_id=="malta" and world.malta_mission!=null and world.malta_mission.pilot.active,"Main-menu Enter now opens Malta on foot beside the chosen aircraft")
+	# Remaining checks isolate the retained countryside flight-test API.
+	world.show_selection(false)
+	world.start_flight("sea_gladiator")
+	await _frames(6)
 	player = world.aircraft
 	_check(player is SeaGladiator and player.model is SeaGladiatorModel and world.selector == null, "Enter starts the chosen Sea Gladiator through the real input pipeline")
 	_check(player.health.hp == 100 and player.pilot.throttle == 0 and world.enemy.target == player and root.gui_get_focus_owner() == null, "Selection starts a clean life, points the enemy at it and releases GUI focus")

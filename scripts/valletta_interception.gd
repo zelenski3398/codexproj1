@@ -144,15 +144,12 @@ func _style_label(label: Label) -> void:
 	label.add_theme_constant_override("shadow_offset_y", 2)
 
 func _player_destroyed(player: FlightAircraft) -> void:
-	if player == session.aircraft and phase in ["CHECKPOINT", "ACTIVE"]:
-		_finish(false, "Player aircraft destroyed — interception failed")
+	if player == session.aircraft: session.malta_mission._message("Aircraft disabled · E leave wreck · V call transport")
 
 func _player_crashed(_reason: String, player: FlightAircraft) -> void:
 	if player != session.aircraft or phase == "CANCELLED":
 		return
 	_player_impact(player.global_position)
-	if phase in ["CHECKPOINT", "ACTIVE"]:
-		_finish(false, "Player aircraft destroyed — interception failed")
 
 func _player_impact(point: Vector3) -> void:
 	if player_impact_started:
@@ -174,8 +171,8 @@ func remaining_seconds() -> float:
 
 func _physics_process(delta: float) -> void:
 	var player: FlightAircraft = session.aircraft
-	if phase in ["CHECKPOINT", "ACTIVE"] and is_instance_valid(player) and (player.is_destroyed or player.is_crashed):
-		_finish(false, "Player aircraft destroyed — interception failed")
+	if phase in ["CHECKPOINT", "ACTIVE"] and session.malta_mission.pilot.health.hp<=0:
+		_finish(false, "Pilot killed — interception failed")
 	# An aircraft destroyed in the air keeps falling; explode only on contact.
 	if is_instance_valid(player) and player.is_destroyed and not player_impact_started:
 		var grounded: bool = player.gear.contact_count > 0
@@ -209,8 +206,9 @@ func _update_checkpoint_visual() -> void:
 func _advance_checkpoint(expected_index: int) -> void:
 	if phase != "CHECKPOINT" or expected_index != checkpoint_index:
 		return # old/deferred duplicate entry cannot advance a later checkpoint
-	if session.aircraft.is_destroyed or session.aircraft.is_crashed or session.encounters.ended:
-		_finish(false, "Player aircraft destroyed — interception failed")
+	if session.malta_mission.pilot.health.hp<=0 or session.encounters.ended: return
+	if session.aircraft.is_destroyed or session.aircraft.is_crashed:
+		activation_queued=false
 		return
 	checkpoint_index += 1
 	checkpoint_reached.emit(checkpoint_index)

@@ -43,6 +43,11 @@ func _ready() -> void:
 	add_child(label)
 
 func _physics_process(delta: float) -> void:
+	if not occupied and grounded and absf(speed)<.1:
+		# Parking brake holds a settled unoccupied chassis on the apron grade.
+		velocity=Vector3.ZERO
+		steering=0
+		return
 	var drive: float = Input.get_axis("throttle_down","throttle_up") if occupied else 0
 	var desired: float = drive * (forward_speed if drive >= 0 else reverse_speed)
 	var brake: bool = not occupied or Input.is_action_pressed("brake")
@@ -78,6 +83,8 @@ func start_driving() -> void:
 
 func stop_driving() -> void:
 	occupied = false
+	speed = 0
+	velocity = Vector3.ZERO
 	model.driver.visible = false
 	steering = 0
 

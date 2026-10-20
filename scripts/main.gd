@@ -46,7 +46,7 @@ func _ready() -> void:
 	encounters = EnemyEncounters.new()
 	encounters.session = self
 	add_child(encounters)
-	show_selection()
+	show_selection(false)
 	if DisplayServer.get_name() != "headless" and "--skip-intro" not in OS.get_cmdline_user_args():
 		show_intro()
 
@@ -66,7 +66,7 @@ func _dismiss_intro() -> void:
 	if is_instance_valid(selector):
 		selector.active = true
 
-func show_selection() -> void:
+func show_selection(replay_poster: bool = true) -> void:
 	_dismiss_intro()
 	if is_instance_valid(harbour):
 		harbour.cancel()
@@ -108,11 +108,22 @@ func show_selection() -> void:
 	enemy_rear_statistics = null
 	selector = AircraftSelector.new()
 	selector.name = "AircraftSelection"
-	selector.chosen.connect(start_flight, CONNECT_DEFERRED)
+	selector.chosen.connect(start_free_roam, CONNECT_DEFERRED)
+	selector.test_requested.connect(start_test_departure, CONNECT_DEFERRED)
 	add_child(selector)
 	selector.select(selected_aircraft)
 	selector.malta_requested.connect(show_malta_selection, CONNECT_DEFERRED)
 	selector.missions_requested.connect(show_missions, CONNECT_DEFERRED)
+	if replay_poster and DisplayServer.get_name()!="headless" and "--skip-intro" not in OS.get_cmdline_user_args():show_intro()
+
+func start_free_roam(kind: String) -> void:
+	var destination: String=departure_spawn
+	if StElmoLocations.is_fort(destination):destination=home_airfield
+	if MaltaGeography.field(destination).is_empty():destination="ta_qali"
+	start_malta(destination,kind,"encounter")
+
+func start_test_departure(kind: String) -> void:
+	start_malta("ta_qali",kind,"encounter",true)
 
 func start_flight(kind: String) -> void:
 	_dismiss_intro()
@@ -273,6 +284,7 @@ func _clear_encounter_effects() -> void:
 		effect.queue_free()
 
 func show_malta_selection() -> void:
+	if is_instance_valid(selector):selected_aircraft=selector.selected
 	_dismiss_intro()
 	if is_instance_valid(malta_menu) or is_instance_valid(malta_mission):
 		return
@@ -286,8 +298,14 @@ func show_malta_selection() -> void:
 	malta_menu.selected_field = departure_spawn
 	malta_menu.selected_kind = selected_aircraft
 	malta_menu.departed.connect(start_malta, CONNECT_DEFERRED)
-	malta_menu.back_requested.connect(show_selection, CONNECT_DEFERRED)
+	malta_menu.back_requested.connect(_return_from_malta_options, CONNECT_DEFERRED)
 	add_child(malta_menu)
+
+func _return_from_malta_options() -> void:
+	if is_instance_valid(malta_menu):
+		departure_spawn=malta_menu.selected_field
+		selected_aircraft=malta_menu.selected_kind
+	show_selection()
 
 func _clear_malta() -> void:
 	for node in [malta_menu, malta_mission, missions_menu]:
@@ -297,7 +315,7 @@ func _clear_malta() -> void:
 	malta_menu = null
 	malta_mission = null
 	missions_menu = null
-	if environment_id == "malta":
+	if field is MaltaWorld:
 		# Fleet lives under the mission and is already queued, not a direct child.
 		aircraft = null
 		if is_instance_valid(field):
@@ -308,7 +326,7 @@ func _clear_malta() -> void:
 		add_child(field)
 	environment_id = "countryside"
 
-func start_malta(field_id: String, kind: String, selected_mode: String = "encounter") -> void:
+func start_malta(field_id: String, kind: String, selected_mode: String = "encounter", test_environment: bool = false) -> void:
 	_dismiss_intro()
 	var spawn_id: String=field_id
 	if StElmoLocations.is_fort(field_id):
@@ -336,13 +354,13 @@ func start_malta(field_id: String, kind: String, selected_mode: String = "encoun
 	if is_instance_valid(field):
 		remove_child(field)
 		field.queue_free()
-	environment_id = "malta"
+	environment_id = "countryside" if test_environment else "malta"
 	game_mode = selected_mode
 	home_airfield = field_id
 	departure_spawn = spawn_id
 	selected_aircraft = kind
 	departure_kind = kind
-	field = MaltaWorld.new()
+	field = CountrysideWorld.new() if test_environment else MaltaWorld.new()
 	add_child(field)
 	malta_mission = MaltaMission.new()
 	malta_mission.session = self
@@ -406,13 +424,14 @@ func attach_malta_player(player: FlightAircraft) -> void:
 	component_debug.toggled.connect(func(enabled: bool): hud.component_debugging = enabled)
 
 func restart_malta() -> void:
-	if environment_id != "malta":
+	if not is_instance_valid(malta_mission):
 		return
+	var saved_test: bool=field is CountrysideWorld
 	var saved_home: String = departure_spawn
 	var saved_kind: String = departure_kind
 	var saved_mode: String = game_mode
-	show_selection()
-	start_malta(saved_home, saved_kind, saved_mode)
+	show_selection(false)
+	start_malta(saved_home, saved_kind, saved_mode, saved_test)
 
 func show_missions() -> void:
 	_dismiss_intro()

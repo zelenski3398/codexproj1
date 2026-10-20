@@ -1,5 +1,7 @@
 # Italian aircraft and the Ta’ Qali interception
 
+**20 October update:** available player aircraft now depart from hangar stands. Pilot health is independent from hull HP; a surviving pilot can exit a wreck and use **V → E truck entry** recovery without resetting this mission. Aircraft loss alone no longer fails the attempt. [Current survival/recovery rules](pilot-survival-and-recovery.md).
+
 Open **Missions → Defend Valletta — Ta’ Qali Interception** in the first game
 menu. Choose a Spitfire or Sea Gladiator and depart. This mission uses the
 existing continuous Malta environment; it does not change terrain, airfield

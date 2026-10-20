@@ -377,7 +377,7 @@ func _drop_bomb() -> void:
 	bombs_released += 1
 
 func _player_alive() -> bool:
-	return is_instance_valid(session.aircraft) and not session.aircraft.is_destroyed and not session.aircraft.is_crashed and session.malta_mission.pilot.health.hp > 0
+	return session.malta_mission.pilot.health.hp > 0
 
 func _queue_resolution() -> void:
 	if _resolution_queued or is_finished(): return

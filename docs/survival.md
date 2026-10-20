@@ -1,5 +1,7 @@
 # Confirmed encounters and Malta Survival
 
+**20 October update:** available player aircraft now depart from hangar stands. Pilot health is independent from hull HP; a surviving pilot can exit a wreck and use **V → E truck entry** recovery without resetting this mission. Aircraft loss alone no longer fails the attempt. [Current survival/recovery rules](pilot-survival-and-recovery.md).
+
 Malta free roam now waits for its first **C / Spawn Random Enemy** request and
 uses Stuka/CR.42/C.200/C.202 opponents. **Survival is unchanged**: stage 1 begins
 immediately and subsequent stages still require confirmation. See the

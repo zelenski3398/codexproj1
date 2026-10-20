@@ -13,6 +13,9 @@ extends AirfieldInstallation
 ## Floor follows the existing graded apron; walls/steel remain upright.
 @export var floor_grade_x: float = 0.0
 @export var floor_grade_z: float = 0.0
+## Six fighter stands, 14 m lateral spacing, 14 m row spacing. Local -Z
+## faces out of the doorway. Slots can be edited without changing spawn logic.
+@export var parking_points: Array[Vector3] = [Vector3(0,0,-7),Vector3(-14,0,-7),Vector3(14,0,-7),Vector3(-14,0,7),Vector3(0,0,7),Vector3(14,0,7)]
 var truss_count: int = 0
 static var _shared_materials: Dictionary = {}
 static var _shared_geometry: Dictionary = {}
@@ -66,6 +69,11 @@ func _ready() -> void:
 		_visuals.append(mesh)
 		if key == "cladding": visual = mesh
 	_batches.clear()
+	for i in parking_points.size():
+		var marker := Marker3D.new()
+		marker.name = "AircraftParking%d"%(i+1)
+		marker.transform = parking_pose(i)
+		add_child(marker)
 
 func floor_height(x: float, z: float) -> float:
 	return floor_grade_x * x + floor_grade_z * z
@@ -214,3 +222,8 @@ func take_damage(amount: float) -> void:
 	if is_destroyed and not was_destroyed:
 		var scorched := MeshKit.material(Color("443c33"))
 		for mesh in _visuals: mesh.material_override = scorched
+
+func parking_pose(index: int) -> Transform3D:
+	var point: Vector3 = parking_points[index]
+	point.y = floor_height(point.x,point.z)+1.18+.025
+	return Transform3D(Basis(Vector3.RIGHT,.117),point)

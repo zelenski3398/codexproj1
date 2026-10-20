@@ -101,7 +101,7 @@ func run() -> void:
 	# normal W input and CharacterBody collision, not transform-based driving.
 	var collision_checks: Array[Dictionary] = [
 		{"name":"hangar","position":Vector3(78,0.04,field.runway_length*.31-45+23.85),"yaw":-PI/2,"minimum":78.0},
-		{"name":"parked aircraft","position":Vector3(70,0.04,field.runway_length*.31-35),"yaw":PI/2,"minimum":61.5},
+		{"name":"parked aircraft","position":Vector3(82,0.04,field.runway_length*.31-45),"yaw":-PI/2,"minimum":82.0},
 		{"name":"AA emplacement","position":Vector3(45,0.04,field.runway_length*.31-90),"yaw":PI/2,"minimum":39.8}
 	]
 	for spec in collision_checks:
@@ -119,7 +119,7 @@ func run() -> void:
 		await frames(80)
 		release_controls()
 		var local: Vector3 = field.to_local(truck.global_position)
-		check(local.x >= spec.minimum and local.x < (82 if spec.name=="hangar" else 70),"Solid "+spec.name+" blocks driving through it")
+		check(local.x >= spec.minimum and local.x < (82 if spec.name=="hangar" else (90 if spec.name=="parked aircraft" else 70)),"Solid "+spec.name+" blocks driving through it")
 		check(absf(truck.rotation.x)<.001 and absf(truck.rotation.z)<.001 and truck.grounded,"Chassis remains upright on uneven graded apron")
 		check(controls.leave_vehicle(),"Safe low-speed exit after solid contact")
 	check(mission.world.get_instance_id()==world_id and session.interception.phase=="CHECKPOINT" and session.interception.elapsed==0,"Travel retains world and stopped checkpoint mission state")

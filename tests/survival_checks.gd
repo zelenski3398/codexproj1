@@ -146,13 +146,13 @@ func _run() -> void:
 	_check(session.malta_mission.board_nearest(), "Reboards fresh run aircraft")
 	session.enemy.take_damage(100)
 	session.encounters.confirm()
-	session.aircraft.take_damage(100)
+	session.malta_mission.pilot.take_damage(100)
 	await _frames(5)
-	_check(session.encounters.ended and not session.encounters.awaiting_confirmation and session.encounters.active.is_empty() and session.encounters.stage == 1, "Player destruction cancels an already queued next-stage spawn")
+	_check(session.encounters.ended and not session.encounters.awaiting_confirmation and session.encounters.active.is_empty() and session.encounters.stage == 1, "Pilot death cancels an already queued next-stage spawn")
 	for press in range(8):
 		session.encounters.confirm()
 	await _frames(5)
-	_check(session.encounters.active.is_empty(), "Destroyed player cannot spawn further stages")
+	_check(session.encounters.active.is_empty(), "Dead pilot cannot spawn further stages")
 	# A queued callback from an old mission cannot mutate a fresh run.
 	session.restart_malta()
 	await _frames(180)

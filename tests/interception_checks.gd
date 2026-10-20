@@ -189,7 +189,10 @@ func _run() -> void:
 	await _frames(2)
 	session.aircraft.take_damage(100)
 	await _frames(2)
-	_check(mission.phase == "FAILED" and mission.final_reason.contains("Player aircraft destroyed") and mission.result_count == 1, "Player destruction immediately fails even after both enemies were lost")
+	_check(mission.phase == "ACTIVE" and session.malta_mission.pilot.health.hp==100, "Hull destruction alone does not fail the living pilot")
+	session.malta_mission.pilot.take_damage(1000)
+	await _frames(2)
+	_check(mission.phase == "FAILED" and mission.final_reason.contains("Pilot killed") and mission.result_count == 1, "Pilot death immediately fails even after both enemies were lost")
 	await _restart_activate()
 	mission = session.interception
 	var crash_field: MaltaAirfield = session.malta_mission.world.fields.ta_qali
@@ -218,8 +221,8 @@ func _run() -> void:
 	for foe in [mission.bomber, mission.escort]:
 		foe.ai.combat_enabled = false
 	session.aircraft.request_reset()
-	session.aircraft.pending_reset_pose = Transform3D(Basis.IDENTITY, session.malta_mission.world.fields.ta_qali.to_global(Vector3(0, 20, 0)))
-	session.aircraft.pending_reset_velocity = Vector3.DOWN * 30
+	session.aircraft.pending_reset_pose = Transform3D(Basis(Vector3.RIGHT,-PI*.5), session.malta_mission.world.fields.ta_qali.to_global(Vector3(0, 20, 0)))
+	session.aircraft.pending_reset_velocity = Vector3.DOWN * 60
 	await _frames(3)
 	session.aircraft.engine_running = false
 	session.aircraft.gear.extended = false
@@ -228,7 +231,7 @@ func _run() -> void:
 		if session.aircraft.is_crashed:
 			break
 	await _frames(3)
-	_check(session.aircraft.is_crashed and mission.phase == "FAILED" and mission.elapsed < mission.definition.deadline_seconds, "Actual player terrain crash fails immediately rather than waiting for expiry")
+	_check(session.aircraft.is_crashed and mission.phase == "FAILED" and mission.elapsed < mission.definition.deadline_seconds, "Actual fatal-severity terrain impact kills pilot and fails immediately")
 	_check(mission.player_impact_count == 1, "Player crash displays one Compatibility destruction burst")
 	mission._player_crashed("duplicate", session.aircraft)
 	await _frames(3)
@@ -271,7 +274,7 @@ func _run() -> void:
 	mission.checkpoint_index = mission.definition.checkpoint_positions.size() - 1
 	session.aircraft.is_crashed = true # explicit late-contact fixture
 	mission._advance_checkpoint(mission.checkpoint_index)
-	_check(mission.phase == "FAILED" and not mission.activated and mission.elapsed == 0 and session.encounters.active.is_empty(), "Late crash cancels final checkpoint capture before formation creation")
+	_check(mission.phase == "CHECKPOINT" and not mission.activated and not mission.activation_queued and mission.elapsed == 0 and session.encounters.active.is_empty(), "Survivable late crash cancels capture without failing or spawning formation")
 	session.return_to_missions()
 	await _frames(3)
 	# CR.42 escort variation uses the same mission; no count or default-mode changes.

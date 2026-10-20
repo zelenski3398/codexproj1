@@ -8,7 +8,7 @@ const INK := Color("e9e8d7")
 const MUTED := Color("abb8ad")
 const GOLD := Color("e4bf75")
 const PANEL := Color(0.055, 0.09, 0.085, 0.90)
-const CONTROLS := "↑ / ↓   Nose down / up\n← / →   Bank left / right\nA / D   Rudder left / right\nW / S   Increase / decrease throttle\n%s (hold)   %s\nG   %s\nSPACE   Hold wheel brakes\nH   DEBUG: remove 10 HP   ·   F3 components\nC   Confirm next enemy / stage\nR   Restart encounter\nESC   Pause / controls"
+const CONTROLS := "↑ / ↓   Nose down / up\n← / →   Bank left / right\nA / D   Rudder left / right\nW / S   Increase / decrease throttle\n%s (hold)   %s\nG   %s\nSPACE   Hold wheel brakes\nH   DEBUG: remove 10 HP   ·   F3 components\nC   Confirm next enemy / stage\nV   Transport after aircraft loss (Malta)\nR   Restart encounter\nESC   Pause / controls"
 var fire_key_label: String = "F" if OS.has_feature("web") else "CTRL"
 var component_debugging: bool = false
 var aircraft: FlightAircraft
@@ -285,9 +285,9 @@ func _process(delta: float) -> void:
 	_update_enemy(camera)
 	gear_label.modulate = GOLD if not aircraft.gear.extended else Color.WHITE
 	var heading := fposmod(rad_to_deg(atan2(-aircraft.global_basis.z.x, aircraft.global_basis.z.z)), 360.0)
-	heading_label.text = "HDG %03d°    ·    %s" % [roundi(heading), "MALTA" if mission != null else "RUNWAY 18 / 36"]
+	heading_label.text = "HDG %03d°    ·    %s" % [roundi(heading), "MALTA" if mission != null and mission.session.environment_id=="malta" else "RUNWAY 18 / 36"]
 	if aircraft.is_destroyed:
-		state_label.text = "DESTROYED · R TO RESET"
+		state_label.text = "AIRCRAFT DISABLED · E EXIT / V RECOVERY" if mission != null else "DESTROYED · R TO RESET"
 	elif aircraft.is_crashed:
 		state_label.text = "AIRCRAFT LOST"
 	elif aircraft.stalled:
@@ -306,26 +306,30 @@ func _process(delta: float) -> void:
 	elif is_instance_valid(enemy) and (enemy.pilot.fire or enemy.rear_gunner.firing) and not aircraft.is_destroyed and not aircraft.is_crashed:
 		notice_label.text = "REAR GUNNER FIRING · BREAK AWAY" if enemy.rear_gunner.firing else "INCOMING FIRE · BANK TO EVADE"
 	if aircraft.is_destroyed:
-		help_label.text = "AIRCRAFT DESTROYED · ENGINE AND GUNS OFF · PRESS R TO RESET"
+		help_label.text = "AIRCRAFT DISABLED · E EXIT WHEN SAFE · V CALL TRANSPORT" if mission != null else "AIRCRAFT DESTROYED · ENGINE AND GUNS OFF · PRESS R TO RESET"
 	elif aircraft.is_crashed:
-		help_label.text = "AIRCRAFT LOST · PRESS R TO RESET"
+		help_label.text = "WRECK · E EXIT WHEN SAFE · V CALL TRANSPORT" if mission != null else "AIRCRAFT LOST · PRESS R TO RESET"
 	elif aircraft.gear.contact_count > 0:
 		help_label.text = "HOLD W TO SET POWER  ·  AT %s KM/H, GENTLY HOLD ↓ TO LIFT OFF" % aircraft.takeoff_speed_hint
 	else:
 		help_label.text = "%s  FIRE · FOLLOW THE ENEMY MARKERS · KEEP AIRSPEED ABOVE %d KM/H" % [fire_key_label, aircraft.safe_speed_hint]
 	if not get_window().has_focus() and not aircraft.is_crashed and not aircraft.is_destroyed and not get_tree().paused:
 		help_label.text = "CLICK INSIDE THE GAME VIEW TO FOCUS IT · THEN HOLD W TO SET POWER"
-	overlay.visible = (get_tree().paused and not component_debugging) or aircraft.is_crashed or aircraft.is_destroyed
+	overlay.visible = (get_tree().paused and not component_debugging) or ((aircraft.is_crashed or aircraft.is_destroyed) and mission == null)
 	if get_tree().paused and component_debugging and not aircraft.is_crashed and not aircraft.is_destroyed:
 		state_label.text = "PAUSED · DAMAGE INSPECTION"
 	if mission != null and is_instance_valid(mission.session.interception) and mission.session.interception.phase in ["SUCCESS", "FAILED"]:
 		overlay.visible = false
 	if mission != null and is_instance_valid(mission.session.harbour) and mission.session.harbour.is_finished():
 		overlay.visible = false
-	resume_button.disabled = aircraft.is_crashed or aircraft.is_destroyed
+	resume_button.disabled = (aircraft.is_crashed or aircraft.is_destroyed) and mission == null
 	if overlay.visible:
 		overlay_title.text = "DESTROYED" if aircraft.is_destroyed else ("AIRCRAFT LOST" if aircraft.is_crashed else "PAUSED")
 		overlay_detail.text = "0 HP · engine and guns disabled.\nPress R for a fresh aircraft." if aircraft.is_destroyed else (aircraft.crash_reason + "\nPress R for a fresh aircraft." if aircraft.is_crashed else "Take your time. The aircraft is waiting.")
+		if mission != null and (aircraft.is_destroyed or aircraft.is_crashed):
+			overlay_title.text="AIRCRAFT DISABLED · PILOT ALIVE" if mission.survival.alive() else "PILOT KILLED"
+			overlay_detail.text="Resume, then E to leave when safe or V to call transport.\nRecovery preserves this mission and the abandoned aircraft."
+
 
 func _update_enemy(camera: Camera3D) -> void:
 	enemy_marker.visible = false

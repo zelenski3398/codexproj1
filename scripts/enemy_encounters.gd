@@ -106,6 +106,7 @@ func set_target(player: FlightAircraft) -> void:
 		player.guns.telemetry_target = session.enemy
 
 func player_destroyed(source: FlightAircraft) -> void:
+	if is_instance_valid(session.malta_mission): return # persistent pilot life owns Malta outcomes
 	if session.game_mode=="aa_defence":return
 	if ended or source != session.aircraft or stage == 0:
 		return
@@ -113,6 +114,13 @@ func player_destroyed(source: FlightAircraft) -> void:
 	awaiting_confirmation = false
 	generation += 1
 	spawning = false
+
+func pilot_died() -> void:
+	if ended: return
+	ended=true
+	awaiting_confirmation=false
+	generation+=1
+	spawning=false
 
 func confirm() -> void:
 	if not awaiting_confirmation or spawning or ended or complete or not _player_live() or get_tree().paused:
@@ -132,7 +140,7 @@ func _confirmed_spawn(token: int) -> void:
 	_spawn_batch()
 
 func _player_live() -> bool:
-	if session.game_mode=="aa_defence" and is_instance_valid(session.malta_mission):return session.malta_mission.pilot.health.hp>0
+	if is_instance_valid(session.malta_mission):return session.malta_mission.pilot.health.hp>0
 	return is_instance_valid(session.aircraft) and not session.aircraft.is_destroyed and not session.aircraft.is_crashed
 
 func _spawn_batch() -> void:
@@ -261,12 +269,12 @@ func _process(_delta: float) -> void:
 	if stage == 0:
 		return
 	if not _player_live():
-		player_destroyed(session.aircraft)
+		pilot_died()
 	var prefix: String = "SURVIVAL · STAGE %d/5 · %d ENEMIES REMAINING" % [stage, active.size()] if mode == "survival" else "ENCOUNTER %d · %d ENEMY REMAINING" % [stage, active.size()]
 	status.visible = mode != "interception"
 	status.text = prefix
 	if ended:
-		status.text += "\nSURVIVAL ENDED · R to restart" if mode == "survival" else "\nAIRCRAFT LOST · R to restart"
+		status.text += "\nSURVIVAL ENDED · R to restart" if mode == "survival" else "\nPILOT KILLED · R to restart"
 	elif complete:
 		status.text += "\nSurvival Complete"
 	elif awaiting_confirmation:

@@ -85,7 +85,7 @@ func _run() -> void:
 	check(session.enemy == null and director.active.is_empty() and director.initial_spawn_pending and director.awaiting_confirmation, "Retry invalidates queued orders and returns to peaceful free roam")
 	check(director.wrecks.is_empty() and session.malta_mission.fleet.all(func(a): return a.health.hp == 100), "Retry clears old wrecks and restores the fleet")
 	director.confirm()
-	session.aircraft.take_damage(100)
+	session.malta_mission.pilot.take_damage(100)
 	await frames(4)
 	check(director.ended and director.active.is_empty() and not director.awaiting_confirmation, "Player loss cancels a queued first spawn")
 	session.show_selection()

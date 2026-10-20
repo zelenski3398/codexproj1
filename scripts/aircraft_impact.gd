@@ -3,6 +3,8 @@ extends Node3D
 ## Shared impact presentation. Flight remains force driven; debris reuses actual
 ## model triangles, split spatially into eight independently simulated pieces.
 @export var crash_sound: AudioStream # Optional per-aircraft override; shared profile supplies the default.
+@export var preserve_wreck_remains: bool = false
+var persistent_remnant: Node3D
 @export var debris_lifetime: float = 12.0
 @export var fragment_speed: float = 9.0
 @export var water_drag: float = 1.8
@@ -46,6 +48,7 @@ func on_destroyed() -> void:
 func ground_contact(velocity: Vector3, normal: Vector3, surface: String = "terrain") -> void:
 	if started or water: return
 	crash_result = AircraftCrashSolver.assess(aircraft,velocity,normal,surface)
+	aircraft.impact_assessed.emit(crash_result)
 	impact_speed = velocity.length()
 	if crash_result.category in ["controlled","moderate"]:
 		started = true
@@ -112,6 +115,7 @@ func start(in_water: bool = false) -> void:
 		if splash_count>0:return
 		water=true
 		crash_result = AircraftCrashSolver.assess(aircraft, aircraft.linear_velocity, water_normal, "water")
+		aircraft.impact_assessed.emit(crash_result)
 		splash_count+=1
 		started=true
 		var speed_factor:float=clampf(impact_speed/maxf(profile.full_water_impact_speed,1),0,1.5)
@@ -204,6 +208,7 @@ func _break_meshes(node: Node) -> void:
 					while fragments.size() <= key:
 						var body := AircraftDebrisPiece.new()
 						body.impact_owner = aircraft.get_instance_id()
+						body.set_meta("aircraft_section",fragments.size())
 						body.add_to_group("aircraft_fragments")
 						body.mass = aircraft.mass / 12
 						body.maximum_burning_emitters = aircraft.components.profile.maximum_fire_emitters
@@ -240,6 +245,7 @@ func _physics_process(delta: float) -> void:
 		return
 	age += delta
 	aircraft.damage_effects.clear()
+	if preserve_wreck_remains and not water and age>debris_lifetime-1 and persistent_remnant==null:_preserve_remnant()
 	if age > debris_lifetime:
 		for fragment in fragments:
 			if is_instance_valid(fragment):
@@ -249,6 +255,8 @@ func _physics_process(delta: float) -> void:
 		aircraft.model.hide()
 
 func reset() -> void:
+	if is_instance_valid(persistent_remnant):persistent_remnant.queue_free()
+	persistent_remnant=null
 	generation+=1
 	if is_instance_valid(AircraftImpactService.instance):AircraftImpactService.instance.clear_owner(aircraft.get_instance_id())
 	explosion_count=0
@@ -408,3 +416,25 @@ func _limit_debris() -> void:
 					proxy.size = bounds.size.max(Vector3.ONE*0.1)
 					geometry.position += bounds.get_center()
 					geometry.mesh = proxy
+
+func _preserve_remnant() -> void:
+	# Keep two recognizable central sections after short-lived dynamic debris
+	# expires. Only mission-owned player wrecks opt in; no infinite particles.
+	persistent_remnant=Node3D.new()
+	persistent_remnant.name="PersistentWreckRemains"
+	persistent_remnant.top_level=true
+	add_child(persistent_remnant)
+	persistent_remnant.add_to_group("persistent_aircraft_wrecks")
+	var copied:=0
+	var charred:=MeshKit.material(Color("444740"),.98)
+	for piece in fragments:
+		if not is_instance_valid(piece) or int(piece.get_meta("aircraft_section",-1)) not in [4,5]:continue
+		for child in piece.get_children():
+			if not child is MeshInstance3D or copied>=64:continue
+			var mesh:=MeshInstance3D.new()
+			mesh.mesh=child.mesh
+			mesh.material_override=charred
+			persistent_remnant.add_child(mesh)
+			mesh.global_transform=child.global_transform
+			mesh.visibility_range_end=3000
+			copied+=1

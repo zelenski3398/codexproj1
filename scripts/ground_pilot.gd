@@ -6,6 +6,7 @@ var yaw: float = 0
 var camera: Camera3D
 var active: bool = true
 var combat_enabled: bool = false
+var swimming: bool = false
 var health: AircraftHealth
 var avatar: RafPilotAvatar
 
@@ -21,6 +22,8 @@ func _ready() -> void:
 	health=AircraftHealth.new()
 	add_child(health)
 	health.depleted.connect(func(): active=false;set_physics_process(false))
+	for water in get_tree().get_nodes_in_group("aircraft_water"):
+		if water is PhysicsBody3D:add_collision_exception_with(water)
 	floor_snap_length = 0.45
 	avatar = RafPilotAvatar.new()
 	avatar.position.y = -0.9 # feet at the unchanged capsule's bottom
@@ -40,7 +43,13 @@ func _physics_process(delta: float) -> void:
 	movement = movement.limit_length(1) * walking_speed
 	velocity.x = movement.x
 	velocity.z = movement.z
-	velocity.y -= 9.81 * delta
+	var water_query:=PhysicsRayQueryParameters3D.create(global_position+Vector3.UP*3,global_position-Vector3.UP*8,1,[get_rid()])
+	var surface:=get_world_3d().direct_space_state.intersect_ray(water_query)
+	swimming=not surface.is_empty() and surface.collider.is_in_group("aircraft_water") and global_position.y<surface.position.y+1.5
+	if swimming:
+		velocity.x*=.55;velocity.z*=.55
+		velocity.y=clampf((surface.position.y+.45-global_position.y)*4,-3,3)
+	else:velocity.y -= 9.81 * delta
 	move_and_slide()
 	avatar.rotation.y = yaw
 	avatar.animate_walk(Vector2(velocity.x, velocity.z).length(), delta)

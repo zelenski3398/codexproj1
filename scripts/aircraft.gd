@@ -3,6 +3,7 @@ extends RigidBody3D
 signal crashed(reason: String)
 signal reset_completed
 signal destroyed
+signal impact_assessed(result: Dictionary)
 
 @export_group("Aircraft and pilot guidance")
 @export var display_name: String = "Spitfire Mk I"
@@ -241,7 +242,10 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		for i in range(state.get_contact_count()):
 			var impact := state.get_contact_local_velocity_at_position(i).length()
 			if not gear.extended or impact > 9.0 or gear.contact_count == 0:
-				var normal: Vector3 = state.transform.basis * state.get_contact_local_normal(i)
+				# Godot's contact normal here already uses world axes ("local"
+				# identifies this body, versus the collider). Rotating it again
+				# misclassified a nose-first vertical impact as a glancing scrape.
+				var normal: Vector3 = state.get_contact_local_normal(i).normalized()
 				var collider_object: Object = state.get_contact_collider_object(i)
 				var surface: String = "hard" if collider_object is StaticBody3D and not collider_object.is_in_group("terrain") else "terrain"
 				# The collision solver may already have removed normal velocity. Use
