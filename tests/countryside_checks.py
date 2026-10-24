@@ -16,6 +16,8 @@ def check(ok,label):
 r=json.loads((OUT/'manifest.json').read_text());g=RuralGeography();allowed,excluded,routes=masks(g,r['settings'])
 plots=[shape(p['footprint']) for p in r['plots']]
 check(r['inferred'] and len(plots)>500 and len(r['clusters'])>20,'Numerous inferred fields occur in separate rural clusters, not an island-wide painted grid')
+check(len(r['clusters'])>=400 and len(plots)>=12000 and r['wall_length_m']>=40000,'Expanded countryside substantially exceeds the old sparse cluster and wall budgets')
+check(all(c['clusters']>0 and c['wall_m']>0 for c in r['coverage_cells'] if c['eligible_centres']>=3),'Every substantial eligible 2.5 km countryside region contains fields and rubble walls')
 check(all(p.is_valid and p.area>=r['settings']['minimum_plot_area_m2'] for p in plots),'All field polygons are valid and useful-sized')
 check(all(allowed.covers(p) for p in plots),'No fields enter protected cities, mapped structures, fortifications, bases, roads, coast or sea')
 check(sum(len(p.exterior.coords)==5 for p in plots)/len(plots)>.6,'Most fields are quadrilaterals, with occasional clipped/access-edge shapes')

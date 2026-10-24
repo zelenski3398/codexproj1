@@ -12,8 +12,8 @@ var visual_count: int = 0
 var elapsed: float = 0
 var stone_material: StandardMaterial3D
 var soil_material: ShaderMaterial
-@export var detail_distance: float = 370
-@export var unload_distance: float = 700
+@export var detail_distance: float = 530
+@export var unload_distance: float = 900
 @export var maximum_close_batches: int = 6
 
 func _ready() -> void:

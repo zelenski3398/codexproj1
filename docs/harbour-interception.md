@@ -1,5 +1,7 @@
 # Faith, Hope and Charity — Harbour Interception
 
+**24 October audio update:** the supplied air-raid siren loops from departure through the interception and fades out on the mission result. It uses the existing Aircraft volume control and radio ducking. Retry restarts one alarm; returning to the menu stops it. AA defence keeps its existing positional siren without a duplicate.
+
 **20 October update:** Ħal Far's departure hangar contains Faith and two additional serviceable Sea Gladiators, replacing this mission's parked Spitfire. The chase camera stays below the roof when boarding. Pilot health remains independent from hull HP, but **a sea crash in the currently occupied aircraft immediately fails this mission**, even if the pilot survives. Survivable land wrecks retain **V → E truck entry** recovery without resetting the mission. [Current survival/recovery rules](pilot-survival-and-recovery.md).
 
 A **fictional** three-wave mission inspired by Malta's early air defence, not a reconstruction of a documented engagement. Launch it from **Main menu → Missions → Faith, Hope and Charity → Depart from Ħal Far**. The existing continuous Malta world, terrain, cities, military installations and flight controllers are retained.

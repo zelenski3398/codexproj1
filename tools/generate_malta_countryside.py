@@ -112,7 +112,7 @@ def build(output=OUT):
     output=Path(output);output.mkdir(parents=True,exist_ok=True)
     settings=json.loads((OUT/'settings.json').read_text());rng=np.random.default_rng(settings['seed']);g=RuralGeography()
     allowed,excluded,routes=masks(g,settings)
-    # Broad rural clusters, separated by open country. Local roads/contours
+    # Broad rural clusters across ALL safe countryside. Local roads/contours
     # orient plots; source painted parcels are not cadastral boundaries.
     samples=np.concatenate([np.array(line.coords)[::max(1,len(line.coords)//80)] for line in routes]);road_tree=cKDTree(samples)
     candidates=[];spacing=settings['cluster_spacing_m'];bounds=allowed.bounds
@@ -123,18 +123,19 @@ def build(output=OUT):
             h=g.heights([p])[0];gradient=g.gradient(p)
             if not np.isfinite(h) or h<8 or not np.isfinite(gradient).all() or np.linalg.norm(gradient)>settings['maximum_cluster_slope']:continue
             distance,index=road_tree.query(p)
-            gozo=p[1]<-6500
-            if distance>1700 and not gozo:continue
+            # Remote countryside is valid too; road distance is an orientation
+            # hint, never a requirement that leaves whole rural regions bare.
             if np.linalg.norm(gradient)>.055:direction=np.array([-gradient[1],gradient[0]]);basis='terrain contour'
             else:
                 road=min(routes,key=lambda r:r.distance(Point(*p)))
                 t=road.project(Point(*p));direction=np.array(road.interpolate(min(road.length,t+12)).coords[0])-np.array(road.interpolate(max(0,t-12)).coords[0]);basis='nearby road' if distance<1700 else 'regional road orientation, inferred'
             angle=np.arctan2(direction[1],direction[0])+rng.uniform(-.13,.13)
             candidates.append((p,float(h),gradient,float(angle),basis))
+    eligible_centres=[candidate[0].copy() for candidate in candidates]
     rng.shuffle(candidates)
     dispersed=[]
     for candidate in candidates:
-        if all(np.linalg.norm(candidate[0]-other[0])>440 for other in dispersed):dispersed.append(candidate)
+        if all(np.linalg.norm(candidate[0]-other[0])>settings.get('minimum_cluster_separation_m',440) for other in dispersed):dispersed.append(candidate)
         if len(dispersed)>=settings['maximum_clusters']:break
     candidates=dispersed
     plots=[];tracks=[];clusters=[]
@@ -193,6 +194,17 @@ def build(output=OUT):
         if count:clusters.append(dict(id=index,centre=[float(centre[0]),height,float(centre[1])],angle=angle,orientation_basis=basis,plots=count))
     # One shared edge graph, then selected walls and deliberate access gaps.
     edge_graph=unary_union([p['polygon'].boundary for p in plots]);edges=lines(edge_graph);rng.shuffle(edges)
+    # Spend the wall budget throughout the islands, rather than exhausting it
+    # on whichever region happens to occur first in the edge graph.
+    cluster_tree=cKDTree(np.array([c['centre'][::2] for c in clusters]))
+    regional_edges={i:[] for i in range(len(clusters))}
+    for edge in edges:
+        index=int(cluster_tree.query(np.asarray(edge.centroid.coords[0]))[1])
+        regional_edges[index].append(edge)
+    edges=[]
+    while any(regional_edges.values()):
+        for group in regional_edges.values():
+            if group:edges.append(group.pop())
     sections=[];wall_length=0.0;track_mask=unary_union(tracks).buffer(2.2)
     for edge in edges:
         if edge.length<5 or rng.random()>settings['wall_probability']:continue
@@ -209,9 +221,9 @@ def build(output=OUT):
             if wall_length+length>settings['maximum_wall_length_m']:break
             sections.append((p,q,h));wall_length+=length
         if wall_length>=settings['maximum_wall_length_m']-2:break
-    chunks={}
+    chunks={};chunk_size=settings.get('chunk_size_m',300)
     def chunk_at(point):
-        key=tuple(np.floor(np.asarray(point)/300).astype(int));return chunks.setdefault(key,dict(soil=[],track=[],sections=[]))
+        key=tuple(np.floor(np.asarray(point)/chunk_size).astype(int));return chunks.setdefault(key,dict(soil=[],track=[],sections=[]))
     for record in plots:
         mesh=g.drape(record['polygon'],record['colour'])
         if mesh is not None:chunk_at(record['polygon'].centroid.coords[0])['soil'].append(mesh)
@@ -221,7 +233,7 @@ def build(output=OUT):
     for a,b,h in sections:chunk_at((a+b)/2)['sections'].append((a,b,h))
     entries=[];generated=set();triangles={}
     for (x,z),chunk in sorted(chunks.items()):
-        origin=np.array([x*300,0,z*300]);entry=dict(origin=origin.tolist(),centre=[x*300+150,0,z*300+150],files={})
+        origin=np.array([x*chunk_size,0,z*chunk_size]);entry=dict(origin=origin.tolist(),centre=[(x+.5)*chunk_size,0,(z+.5)*chunk_size],files={})
         meshes={k:chunk[k] for k in ['soil','track']}
         if chunk['sections']:
             walls=stone_batch(chunk['sections'],settings['wall'],rng)
@@ -241,7 +253,15 @@ def build(output=OUT):
             stale.unlink();metadata=Path(str(stale)+'.import')
             if metadata.exists():metadata.unlink()
     protected_files=['terrain.glb','world_data.json','roads/world_paths.json','valletta/layout.json','mdina/layout.json','cottonera/region.json','landscape/landcover.png']
-    report=dict(version=1,seed=settings['seed'],units='metres',inferred=True,note='Plausible 1940-42 agricultural scenery, not mapped parcels. Contour strips suggest terraces; original ground elevation is unchanged.',settings=settings,clusters=clusters,plots=[dict(cluster=p['cluster'],footprint=mapping(p['polygon']),colour=p['colour'],terraced=p['terraced'],angle=p['angle']) for p in plots],tracks=[mapping(p) for p in tracks],sections=[dict(a=[float(a[0]),float(h[0]),float(a[1])],b=[float(b[0]),float(h[2]),float(b[1])]) for a,b,h in sections],wall_length_m=float(wall_length),chunks=entries,triangles=triangles,source_hashes={p:hashlib.sha256((ASSET/p).read_bytes()).hexdigest() for p in protected_files})
+    coverage={}
+    def coverage_at(point):
+        key=tuple(np.floor(np.asarray(point)/2500).astype(int))
+        return coverage.setdefault(key,dict(cell=list(key),eligible_centres=0,clusters=0,plots=0,wall_m=0.0))
+    for point in eligible_centres:coverage_at(point)['eligible_centres']+=1
+    for cluster in clusters:
+        cell=coverage_at(cluster['centre'][::2]);cell['clusters']+=1;cell['plots']+=cluster['plots']
+    for a,b,h in sections:coverage_at((a+b)/2)['wall_m']+=float(np.linalg.norm(b-a))
+    report=dict(version=2,seed=settings['seed'],units='metres',inferred=True,note='Plausible 1940-42 agricultural scenery, not mapped parcels. Contour strips suggest terraces; original ground elevation is unchanged.',settings=settings,coverage_cells=list(coverage.values()),clusters=clusters,plots=[dict(cluster=p['cluster'],footprint=mapping(p['polygon']),colour=p['colour'],terraced=p['terraced'],angle=p['angle']) for p in plots],tracks=[mapping(p) for p in tracks],sections=[dict(a=[float(a[0]),float(h[0]),float(a[1])],b=[float(b[0]),float(h[2]),float(b[1])]) for a,b,h in sections],wall_length_m=float(wall_length),chunks=entries,triangles=triangles,source_hashes={p:hashlib.sha256((ASSET/p).read_bytes()).hexdigest() for p in protected_files})
     (output/'manifest.json').write_text(json.dumps(report,indent=2,allow_nan=False,default=numpy_scalar)+'\n')
     print(json.dumps(dict(clusters=len(clusters),plots=len(plots),tracks=len(tracks),wall_m=wall_length,chunks=len(entries),triangles=triangles)),flush=True)
     return report

@@ -29,9 +29,12 @@ var canvas: CanvasLayer
 var status: Label
 var confirm_button: Button
 var enemy_widgets: Dictionary = {}
+var siren: InterceptionSiren
 
 func _ready() -> void:
 	random.randomize()
+	siren = InterceptionSiren.new()
+	add_child(siren)
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	canvas = CanvasLayer.new()
 	canvas.layer = 9
@@ -79,6 +82,7 @@ func is_manual_free_roam() -> bool:
 	return mode == "encounter" and session.environment_id == "malta"
 
 func clear() -> void:
+	if is_instance_valid(siren): siren.stop()
 	generation += 1 # invalidate confirmations queued before restart/menu changes
 	awaiting_confirmation = false
 	spawning = false
@@ -266,6 +270,12 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func _process(_delta: float) -> void:
+	# Authored interceptions sound throughout departure/navigation and battle.
+	# Free roam and Survival sound only during live enemy encounters. AA defence
+	# already owns its supplied positional siren; never stack another over it.
+	var authored: bool = session.game_mode in ["interception", "harbour"]
+	var combat: bool = session.game_mode in ["encounter", "survival"] and not active.is_empty()
+	siren.set_active(stage > 0 and not ended and not complete and (authored or combat))
 	if stage == 0:
 		return
 	if not _player_live():

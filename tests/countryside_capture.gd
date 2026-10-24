@@ -25,9 +25,9 @@ func run() -> void:
 	var hit:Dictionary=world.get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(Vector3(ground_camera.x,500,ground_camera.z),Vector3(ground_camera.x,-50,ground_camera.z),1))
 	ground_camera.y=(hit.position.y if not hit.is_empty() else middle.y)+1.65
 	var views:Array=[
-		["countryside-fields-aerial",centre+Vector3(170,260,230),centre],
-		["countryside-rubble-ground",ground_camera,middle+Vector3.UP*.5],
-		["countryside-regional",centre+Vector3(900,850,1200),centre+Vector3(-500,0,-500)]
+		["countryside-expanded-fields-aerial",centre+Vector3(170,260,230),centre],
+		["countryside-expanded-rubble-ground",ground_camera,middle+Vector3.UP*.5],
+		["countryside-expanded-regional",centre+Vector3(900,850,1200),centre+Vector3(-500,0,-500)]
 	]
 	for view in views:
 		camera.global_position=view[1];camera.look_at(view[2])

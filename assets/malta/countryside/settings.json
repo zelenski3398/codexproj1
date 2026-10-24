@@ -1,31 +1,31 @@
 {
   "seed": 1942,
-  "cluster_spacing_m": 650,
+  "cluster_spacing_m": 460,
   "cluster_size_m": [
-    190,
-    285
+    200,
+    320
   ],
-  "maximum_clusters": 115,
-  "cluster_probability": 0.72,
+  "maximum_clusters": 600,
+  "cluster_probability": 1.0,
   "coast_guard_m": 70,
   "maximum_plot_slope": 0.28,
   "maximum_cluster_slope": 0.2,
   "road_field_margin_m": 7,
-  "maximum_wall_length_m": 15000,
-  "wall_probability": 0.22,
+  "maximum_wall_length_m": 45000,
+  "wall_probability": 0.32,
   "section_length_m": 1.6,
   "minimum_plot_area_m2": 170,
   "small_width_m": [
     12,
-    25
+    30
   ],
   "medium_width_m": [
-    25,
-    55
+    30,
+    65
   ],
   "large_width_m": [
-    55,
-    90
+    65,
+    110
   ],
   "urban_buffers_lon_lat_m": [
     [
@@ -209,5 +209,7 @@
   "access_gap_m": [
     2.6,
     4.8
-  ]
+  ],
+  "minimum_cluster_separation_m": 480,
+  "chunk_size_m": 500
 }

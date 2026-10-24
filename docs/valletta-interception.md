@@ -1,5 +1,7 @@
 # Italian aircraft and the Ta’ Qali interception
 
+**24 October audio update:** the supplied air-raid siren loops from departure through the interception and fades out on the mission result. It uses the existing Aircraft volume control and radio ducking. Retry restarts one alarm; returning to the menu stops it. AA defence keeps its existing positional siren without a duplicate.
+
 **20 October update:** available player aircraft now depart from hangar stands. Pilot health is independent from hull HP; a surviving pilot can exit a wreck and use **V → E truck entry** recovery without resetting this mission. Aircraft loss alone no longer fails the attempt. [Current survival/recovery rules](pilot-survival-and-recovery.md).
 
 Open **Missions → Defend Valletta — Ta’ Qali Interception** in the first game

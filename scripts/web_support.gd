@@ -31,6 +31,12 @@ func _process(delta: float) -> void:
 	sample_clock = 0.2
 	var state: Dictionary = {"selecting": session.selector != null, "selected": session.selected_aircraft, "paused": get_tree().paused, "environment": session.environment_id, "airfield_selecting": is_instance_valid(session.malta_menu), "on_foot": is_instance_valid(session.malta_mission) and session.malta_mission.pilot.active}
 	state.hangars = []
+	if is_instance_valid(session.encounters) and is_instance_valid(session.encounters.siren):
+		var alarm: InterceptionSiren = session.encounters.siren
+		state.interception_siren = {"requested":alarm.requested,"playing":alarm.player.playing,"starts":alarm.starts,"loop":alarm.player.stream.loop}
+	if is_instance_valid(session.malta_mission) and is_instance_valid(session.malta_mission.world.countryside):
+		var rural: MaltaCountryside = session.malta_mission.world.countryside
+		state.countryside = {"plots":rural.manifest.plots.size(),"clusters":rural.manifest.clusters.size(),"wall_m":rural.manifest.wall_length_m,"near_batches":rural.close_visuals.size(),"near_limit":rural.maximum_close_batches}
 	for hangar in get_tree().get_nodes_in_group("aircraft_hangars"):
 		state.hangars.append({"id":str(hangar.get_instance_id()),"width":hangar.width,"depth":hangar.depth,"door_width":hangar.entrance_width,"trusses":hangar.truss_count,"hp":hangar.hp,"meshes":hangar._visuals.size(),"roof_mesh":str(hangar._visuals[1].mesh.get_instance_id())})
 	state.startup_intro = {"active":is_instance_valid(session.startup_intro)}
