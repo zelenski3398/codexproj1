@@ -6,6 +6,7 @@ signal destroyed
 var command_station: Node3D
 var mouse_controls: AAMouseControls
 var aim_assist: BoforsAimAssist
+var predictor_post: Node3D
 var trigger_held: bool = false
 var fuze_seconds: float = 1.14
 var breech: MeshInstance3D
@@ -177,6 +178,7 @@ func fire_round(command_order: bool = false) -> bool:
 	if not hit.is_empty() and hit.collider.has_method("get_team_id") and hit.collider.get_team_id() == CombatTeams.PLAYER: return false
 	if not battery.pool_for(weapon).spawn(muzzle.global_position, direction * projectile_speed, fuze_seconds if weapon.heavy else maximum_lifetime, direct_damage, get_rid(), true, CombatTeams.PLAYER): return false
 	shots_fired += 1
+	if not weapon.heavy and is_instance_valid(predictor_post) and not aim_assist.solution.is_empty():predictor_post.notify_shot()
 	cooldown = weapon.reload_seconds
 	recoil = weapon.recoil_metres
 	battery.effects.puff(muzzle.global_position, "muzzle", .8 if weapon.heavy else .25)
@@ -195,4 +197,4 @@ func _cull_visuals(node: Node) -> void:
 	for child in node.get_children(): _cull_visuals(child)
 
 func status_text() -> String:
-	return "%s · HP %d/%d · AMMO ∞ · %s\n%s" % [weapon.display_name,hp,max_hp,("AUTO RELOAD %.1fs"%cooldown) if cooldown > 0 else "READY",("FUZE %.2fs · W/S adjust · LMB single shot"%fuze_seconds) if weapon.heavy else "HOLD LMB · 2 shots/sec · Aim assist %s (ESC settings)" % ("ON" if AAMouseControls.bofors_assist else "OFF")]
+	return "%s · HP %d/%d · AMMO ∞ · %s\n%s" % [weapon.display_name,hp,max_hp,("AUTO RELOAD %.1fs"%cooldown) if cooldown > 0 else "READY",("FUZE %.2fs · W/S adjust · LMB single shot"%fuze_seconds) if weapon.heavy else "HOLD LMB · 2 shots/sec · %s (ESC settings)" % ["MANUAL","ASSISTED","TRAINING"][AAMouseControls.fire_control_mode]]

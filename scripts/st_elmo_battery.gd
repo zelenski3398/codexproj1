@@ -40,6 +40,47 @@ func _ready() -> void:
 		var point: Array=layout.gun_positions[i]
 		gun.global_position=Vector3(point[0],point[2]+.025,point[1])
 		guns.append(gun)
+	call_deferred("_place_predictor")
+
+func _place_predictor() -> void:
+	# Imported city collision enters the physics broad phase on the following
+	# ticks; querying in the first deferred idle can see only underlying terrain.
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	if not is_inside_tree():return
+	# Search real supported deck around the established fort spawn.
+	var start: Vector3=StElmoLocations.position_for("st_elmo")-Vector3.UP*1.05
+	var offsets: Array[Vector3]=[]
+	for x in range(-28,29,4):
+		for z in range(-28,29,4):
+			var offset:=Vector3(x,0,z)
+			if offset.length()>=6:offsets.append(offset)
+	offsets.sort_custom(func(a,b):return a.length_squared()<b.length_squared())
+	for offset in offsets:
+		var p: Vector3=start+offset
+		# Start above every fort roof, never inside a building/deck collider.
+		var ray:=PhysicsRayQueryParameters3D.create(p+Vector3.UP*2000,p+Vector3.DOWN*8,1)
+		var hit:=get_world_3d().direct_space_state.intersect_ray(ray)
+		if hit.is_empty() or hit.normal.y<.9 or absf(hit.position.y-start.y)>.35:continue
+		var supported:=true
+		for corner in [Vector3(-2.3,0,-2.4),Vector3(2.3,0,-2.4),Vector3(-2.3,0,2.4),Vector3(2.3,0,2.4),Vector3(0,0,3.5)]:
+			var probe:=PhysicsRayQueryParameters3D.create(p+corner+Vector3.UP*2000,p+corner+Vector3.DOWN*8,1)
+			var floor:=get_world_3d().direct_space_state.intersect_ray(probe)
+			if floor.is_empty() or floor.normal.y<.9 or absf(floor.position.y-hit.position.y)>.2:supported=false;break
+		if not supported:continue
+		var shape:=BoxShape3D.new();shape.size=Vector3(5,2.4,5.5)
+		var query:=PhysicsShapeQueryParameters3D.new();query.shape=shape
+		query.transform=Transform3D(Basis.IDENTITY,hit.position+Vector3.UP*1.3);query.collision_mask=31
+		if not get_world_3d().direct_space_state.intersect_shape(query).is_empty():continue
+		var walker:=CapsuleShape3D.new();walker.radius=.4;walker.height=1.8
+		var route:=PhysicsShapeQueryParameters3D.new();route.shape=walker
+		route.transform=Transform3D(Basis.IDENTITY,start+Vector3.UP)
+		route.motion=hit.position+Vector3.BACK*3.5-start;route.collision_mask=1
+		var travel:=get_world_3d().direct_space_state.cast_motion(route)
+		if travel[0]<.99:continue
+		world.aa_battery.add_bofors_post("st_elmo",guns,Transform3D(Basis.IDENTITY,hit.position+Vector3.UP*.025))
+		return
+	push_warning("No clear supported St Elmo predictor platform found")
 func toggle(gun: StElmoBofors) -> void:
 	if commanding:cancel();return
 	if not gun.mounted or gun.is_destroyed:return

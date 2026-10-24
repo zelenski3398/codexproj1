@@ -802,6 +802,8 @@ AA now uses [relative mouse aiming, LMB fire, RMB sight zoom and unlimited ammun
 
 [Heavy battery command and supplied defence recordings](docs/battery-command-and-defence-audio.md): walk to a predictor post and press F, RMB designate, LMB issue a staggered four-gun salvo. Individual guns and unlimited ammunition remain available.
 
+[Bofors observation posts and predictor sights](docs/bofors-command-post.md): four accessible posts provide visible-target assignment and per-gun ballistic lead. Choose Manual, Assisted or Training; the player retains all aiming and firing control.
+
 ## Fortified Valletta
 
 All Malta environments now include an original dense limestone city, courtyard street blocks, bastions and a Fort St Elmo-inspired fort at the existing Valletta landmark. See the [city guide and screenshots](docs/valletta-city.md) for placement, performance, validation and limitations.

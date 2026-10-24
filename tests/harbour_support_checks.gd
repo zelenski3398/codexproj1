@@ -32,9 +32,10 @@ func run() -> void:
 	var battery: AirfieldAABattery=game.field.aa_battery
 	var gun: BritishAAGun=battery.guns.filter(func(g):return not g.weapon.heavy)[0]
 	var heavy: BritishAAGun=battery.guns.filter(func(g):return g.weapon.heavy)[0]
-	var saved_assist:=AAMouseControls.bofors_assist
-	game.malta_mission.bofors_assist_option.set_pressed(true)
-	check(AAMouseControls.bofors_assist,"Pause settings checkbox enables optional Bofors assist")
+	var saved_mode:=AAMouseControls.fire_control_mode
+	game.malta_mission.bofors_mode_option.select(1)
+	game.malta_mission.bofors_mode_option.item_selected.emit(1)
+	check(AAMouseControls.fire_control_mode==1,"Pause settings selects optional Bofors predictor mode")
 	var cfg:=ConfigFile.new();cfg.load("user://aa_controls.cfg")
 	check(cfg.get_value("aa","bofors_assist",false),"Assist preference persists beside existing mouse sensitivity")
 	gun.start_operation();gun.yaw.rotation.y=0;gun.elevation.rotation.x=deg_to_rad(25);gun.mouse_controls.reset_target()
@@ -44,8 +45,8 @@ func run() -> void:
 	foe.linear_velocity=Vector3.ZERO;await frames(3)
 	gun.mouse_controls.reset_target();var before:=gun.mouse_controls.target_yaw
 	gun.aim_assist.scan_clock=0;gun.aim_assist.update(.1)
-	check(gun.aim_assist.target==foe and absf(gun.mouse_controls.target_yaw-before)>0,"Nearby hostile in sight receives a lead-aware aim nudge")
-	check(absf(gun.mouse_controls.target_yaw-before)<=deg_to_rad(1.2)+.0001,"Assistance correction obeys its angular speed cap")
+	check(gun.aim_assist.target==null and gun.mouse_controls.target_yaw==before,"Unassigned hostile does not receive automatic aiming assistance")
+	check(gun.predictor_post!=null and not gun.predictor_post.is_destroyed,"Existing Bofors connects to its local predictor")
 	check(gun.shots_fired==0,"Assistance never initiates firing")
 	Input.action_press("fire");await frames(100);Input.action_release("fire")
 	check(gun.shots_fired==2,"Assisted Bofors still requires held player fire and keeps two rounds per second")
@@ -72,7 +73,7 @@ func run() -> void:
 	heavy.start_operation();before=heavy.mouse_controls.target_yaw;heavy.aim_assist.update(.1)
 	check(heavy.aim_assist.target==null and heavy.mouse_controls.target_yaw==before and heavy.weapon.reload_seconds==5,"Heavy gun remains fully manual with its five-second reload")
 	heavy.stop_operation();foe.queue_free()
-	AAMouseControls.set_bofors_assist(saved_assist)
+	AAMouseControls.set_fire_control_mode(saved_mode)
 	# A real fueled enemy's ground-impact presentation, then enemy cleanup.
 	var wreck:=EnemyAircraft.new();game.add_child(wreck);await frames(3)
 	wreck.freeze=true;wreck.reset_pending=false;wreck.ai.set_physics_process(false)

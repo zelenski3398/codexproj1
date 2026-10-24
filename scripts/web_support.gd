@@ -129,6 +129,20 @@ func _process(delta: float) -> void:
 		state.command_posts=[]
 		for post in aa.command_stations:
 			state.command_posts.append({"field":post.field_id,"position":[post.global_position.x,post.global_position.y,post.global_position.z],"mounted":post.mounted,"hp":post.hp,"salvos":post.salvos_issued,"shots":post.commanded_shots,"pending":post.orders.size(),"target":post.target.marker_name if is_instance_valid(post.target) else "","designated":post.designated,"valid":post.solutions.values().filter(func(s):return s.valid and s.aimable).size()})
+		state.bofors_posts=[]
+		for post in aa.bofors_posts:
+			var approach: Vector3=post.to_global(Vector3(0,1.05,3.5))
+			state.bofors_posts.append({"field":post.field_id,"position":[post.global_position.x,post.global_position.y,post.global_position.z],"approach":[approach.x,approach.y,approach.z],"mounted":post.mounted,"hp":post.hp,"assigned":post.assigned_guns.size(),"observed":post.detected.size(),"target":post.target.display_name if is_instance_valid(post.target) else "","quality":post.quality,"yaw":post.yaw.rotation.y,"pitch":post.elevation.rotation.x,"valid":post.solutions.values().filter(func(s):return s.valid).size()})
+		state.bofors_mode=AAMouseControls.fire_control_mode
+		state.bofors_mode_picker=_center(session.malta_mission.bofors_mode_option)
+		state.bofors_mode_popup_focus=session.malta_mission.bofors_mode_option.get_popup().get_focused_item()
+		state.bofors_lead={"visible":session.malta_mission.interaction.sight.marker_visible,"aligned":session.malta_mission.interaction.sight.aligned}
+		var current: BritishAAGun=session.malta_mission.interaction.occupied_gun
+		if is_instance_valid(current) and current.aim_assist!=null and not current.aim_assist.solution.is_empty():
+			var solution: Dictionary=current.aim_assist.solution
+			state.bofors_lead.yaw_error=rad_to_deg(wrapf(solution.yaw-current.yaw.rotation.y,-PI,PI))
+			state.bofors_lead.pitch_error=rad_to_deg(solution.pitch-current.elevation.rotation.x)
+			state.bofors_lead.valid=solution.valid
 		state.aa_count = aa.guns.size()
 		if is_instance_valid(session.aa_defence):
 			state.defence_sounds={"intro":session.aa_defence.audio.radio.player.playing,"intro_count":session.aa_defence.audio.radio.transmissions_played,"siren":session.aa_defence.audio.siren.playing,"siren_loop":session.aa_defence.audio.siren.stream.loop,"siren_starts":session.aa_defence.audio.siren_starts,"dives":session.encounters.active.map(func(f):return f.get_children().filter(func(c):return c is StukaDiveAudio and c.player.playing).size())}

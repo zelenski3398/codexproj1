@@ -1,5 +1,7 @@
 # Player-directed heavy AA battery and supplied defence audio
 
+The separate [Bofors observation posts and predictor sights](bofors-command-post.md), added 25 October, use LMB/Tab to acquire and Enter to assign an observed target. They provide manual lead markers and do not issue salvos. The heavy-AA controls below retain their original behaviour.
+
 Each Malta airfield retains four heavy guns and two independently mountable Bofors. A separate, damageable predictor post stands beside the first heavy emplacement at local X47, apron-centre Z−80, away from the runway, parking and driving lane. Its desk, tripod and optical predictor are original procedural placeholders. No terrain, road geometry, aircraft physics or ammunition rules were replaced.
 
 ## Controls

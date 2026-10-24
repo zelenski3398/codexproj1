@@ -4,6 +4,7 @@ extends Node
 static var sensitivity: float = 1.0
 static var settings_loaded: bool = false
 static var bofors_assist: bool = false
+static var fire_control_mode: int = 0 # Manual / Assisted / Training
 var gun: BritishAAGun
 var target_yaw: float
 var target_elevation: float
@@ -18,6 +19,8 @@ func _ready() -> void:
 		if config.load("user://aa_controls.cfg") == OK:
 			sensitivity = clampf(config.get_value("aa","sensitivity",1.0),.2,3)
 			bofors_assist = bool(config.get_value("aa","bofors_assist",false))
+			fire_control_mode = clampi(int(config.get_value("aa","fire_control_mode",1 if bofors_assist else 0)),0,2)
+			bofors_assist = fire_control_mode>0
 		settings_loaded = true
 
 static func set_sensitivity(value: float) -> void:
@@ -25,13 +28,18 @@ static func set_sensitivity(value: float) -> void:
 	save_settings()
 
 static func set_bofors_assist(value: bool) -> void:
-	bofors_assist = value
+	set_fire_control_mode(1 if value else 0)
+
+static func set_fire_control_mode(value: int) -> void:
+	fire_control_mode = clampi(value,0,2)
+	bofors_assist = fire_control_mode>0
 	save_settings()
 
 static func save_settings() -> void:
 	var config := ConfigFile.new()
 	config.set_value("aa","sensitivity",sensitivity)
 	config.set_value("aa","bofors_assist",bofors_assist)
+	config.set_value("aa","fire_control_mode",fire_control_mode)
 	config.save("user://aa_controls.cfg")
 
 func reset_target() -> void:

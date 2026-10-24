@@ -119,7 +119,7 @@ func run() -> void:
 	interaction.leave_gun()
 	game.restart_malta()
 	await frames(20)
-	check(game.field.aa_battery.command_stations.size()==3 and get_nodes_in_group("friendly_aa_commands").size()==3,"Retry restores exactly three command posts without duplicates")
+	check(game.field.aa_battery.command_stations.size()==3 and game.field.aa_battery.bofors_posts.size()==4 and get_nodes_in_group("friendly_aa_commands").size()==7,"Retry restores three heavy and four Bofors posts without duplicates")
 	check(game.field.aa_battery.command_stations.all(func(p):return p.hp==p.max_hp and p.orders.is_empty()),"Retry resets post health, orders and gun control ownership")
 	var restored: AACommandStation
 	for post in game.field.aa_battery.command_stations:

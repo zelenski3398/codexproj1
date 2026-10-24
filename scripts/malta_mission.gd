@@ -25,7 +25,7 @@ var chart_panel: PanelContainer
 var aa_settings: PanelContainer
 var aa_sensitivity: HSlider
 var aa_sensitivity_label: Label
-var bofors_assist_option: CheckBox
+var bofors_mode_option: OptionButton
 var chart: MaltaChart
 var notice: String = ""
 var notice_time: float = 0
@@ -138,13 +138,13 @@ func _build_ui() -> void:
 	aa_sensitivity.value = AAMouseControls.sensitivity
 	aa_sensitivity.value_changed.connect(AAMouseControls.set_sensitivity)
 	settings_column.add_child(aa_sensitivity)
-	bofors_assist_option = CheckBox.new()
-	bofors_assist_option.text = "Bofors aim assist"
-	bofors_assist_option.button_pressed = AAMouseControls.bofors_assist
-	bofors_assist_option.toggled.connect(AAMouseControls.set_bofors_assist)
-	settings_column.add_child(bofors_assist_option)
+	bofors_mode_option = OptionButton.new()
+	for label in ["Bofors: Manual", "Bofors: Assisted predictor", "Bofors: Training sight"]:bofors_mode_option.add_item(label)
+	bofors_mode_option.select(AAMouseControls.fire_control_mode)
+	bofors_mode_option.item_selected.connect(AAMouseControls.set_fire_control_mode)
+	settings_column.add_child(bofors_mode_option)
 	var help := Label.new()
-	help.text = "Mouse aims · LMB fire · RMB sight zoom\nESC resumes · click view to recapture mouse"
+	help.text = "Gun: mouse aim · LMB fire · RMB zoom\nPost: LMB acquire · ENTER assign · TAB target\nESC resumes · click view to recapture mouse"
 	settings_column.add_child(help)
 	aa_settings.hide()
 
@@ -267,7 +267,7 @@ func _process(delta: float) -> void:
 	var show_settings: bool = get_tree().paused and interaction.occupied_gun != null
 	if show_settings and not aa_settings.visible:aa_sensitivity.set_value_no_signal(AAMouseControls.sensitivity)
 	aa_settings.visible = show_settings
-	bofors_assist_option.set_pressed_no_signal(AAMouseControls.bofors_assist)
+	if bofors_mode_option.selected!=AAMouseControls.fire_control_mode:bofors_mode_option.select(AAMouseControls.fire_control_mode)
 	aa_sensitivity_label.text = "AA mouse sensitivity: %.2f×"%AAMouseControls.sensitivity
 	chart.show_objective = is_instance_valid(session.interception) and session.interception.phase == "CHECKPOINT"
 	if chart.show_objective:
@@ -286,9 +286,14 @@ func _process(delta: float) -> void:
 	chart.player_position = position
 	chart.player_heading = heading
 	chart.contacts.clear()
-	for foe in session.encounters.active:
-		if position.distance_to(foe.global_position) < foe.ai.detection_range:
-			chart.contacts.append({"position": foe.global_position, "ace": foe.encounter_ace})
+	if interaction.occupied_gun is BoforsCommandPost:
+		var observer: BoforsCommandPost=interaction.occupied_gun
+		if is_instance_valid(observer.target) and observer.clock-observer.last_seen<=observer.observation_interval*2:
+			chart.contacts.append({"position":observer.observed_position,"ace":false})
+	else:
+		for foe in session.encounters.active:
+			if position.distance_to(foe.global_position) < foe.ai.detection_range:
+				chart.contacts.append({"position": foe.global_position, "ace": foe.encounter_ace})
 	chart.show_contact = not chart.contacts.is_empty()
 	if chart.show_contact:
 		chart.contact_position = chart.contacts[0].position

@@ -10,16 +10,21 @@ var sight: AAAimReticle
 var previous_mouse_mode: int = Input.MOUSE_MODE_VISIBLE
 
 func _ready() -> void:
+	mission.world.aa_battery.bofors_post_added.connect(_connect_predictor)
 	sight = AAAimReticle.new()
 	mission.canvas.add_child(sight)
 	sight.visible = false
-	for gun in mission.world.aa_battery.guns + mission.world.fort_battery.guns + mission.world.aa_battery.command_stations:
+	for gun in mission.world.aa_battery.guns + mission.world.fort_battery.guns + mission.world.aa_battery.command_stations + mission.world.aa_battery.bofors_posts:
 		gun.destroyed.connect(_gun_destroyed.bind(gun))
 	# AA placement is deferred until the world is ready.
 	call_deferred("_connect_guns")
 
+func _connect_predictor(post: BritishAAGun) -> void:
+	if not post.destroyed.is_connected(_gun_destroyed.bind(post)):
+		post.destroyed.connect(_gun_destroyed.bind(post))
+
 func _connect_guns() -> void:
-	for gun in mission.world.aa_battery.guns + mission.world.fort_battery.guns + mission.world.aa_battery.command_stations:
+	for gun in mission.world.aa_battery.guns + mission.world.fort_battery.guns + mission.world.aa_battery.command_stations + mission.world.aa_battery.bofors_posts:
 		if not gun.destroyed.is_connected(_gun_destroyed.bind(gun)):
 			gun.destroyed.connect(_gun_destroyed.bind(gun))
 
@@ -47,7 +52,7 @@ func nearest_command() -> BritishAAGun:
 	if is_operating() or mission.occupied!=null or not mission.pilot.active:return null
 	var best: BritishAAGun=null
 	var distance:=4.5
-	for station in mission.world.aa_battery.command_stations:
+	for station in mission.world.aa_battery.command_stations + mission.world.aa_battery.bofors_posts:
 		var d: float=mission.pilot.global_position.distance_to(station.global_position)
 		if not station.is_destroyed and d<distance:best=station;distance=d
 	return best
@@ -85,7 +90,8 @@ func mount_gun(gun: BritishAAGun) -> bool:
 		# Hidden seated visual, live collision capsule at the actual operator.
 		mission.pilot.global_position=gun.to_global(Vector3(0,1.45,1.55))
 	sight.visible = true
-	mission._message("Battery command · RMB designates target / area · LMB orders a salvo · F exits" if gun is AACommandStation else "Mouse aims · LMB fire · RMB zoom · ESC releases cursor; click to recapture")
+	sight.gun=gun
+	mission._message("Bofors observation · LMB acquire · TAB visible targets · G gun scope · ENTER assign · F exit" if gun is BoforsCommandPost else ("Battery command · RMB designates target / area · LMB orders a salvo · F exits" if gun is AACommandStation else "Mouse aims · LMB fire · RMB zoom · ESC releases cursor; click to recapture"))
 	return true
 
 func enter_vehicle(truck: MilitaryTruck) -> bool:
@@ -125,6 +131,7 @@ func _restore_pilot(position: Vector3) -> void:
 	mission.pilot.camera.make_current()
 	Input.mouse_mode = previous_mouse_mode
 	sight.visible = false
+	sight.gun=null
 
 func leave_gun(force: bool = false) -> bool:
 	if not is_instance_valid(occupied_gun): return false
@@ -177,7 +184,7 @@ func prompt() -> String:
 		return occupied_gun.status_text() + "\nMOUSE Aim · LMB Fire · RMB Zoom · arrows alternative · SPACE Fine aim · E Exit AA Gun · M Map · ESC Pause · R Restart"
 	if occupied_vehicle != null:
 		return "MILITARY TRUCK · %d km/h\nW Forward · S Reverse · A/D Steer · SPACE Brake\nE Exit when stopped · M Map · ESC Pause · R Full restart" % roundi(absf(occupied_vehicle.speed)*3.6)
-	if nearest_command()!=null:return "F Enter Heavy AA Battery Command · mouse target designation"
+	if nearest_command()!=null:return "F Operate Bofors Predictor · observe and assign targets" if nearest_command() is BoforsCommandPost else "F Enter Heavy AA Battery Command · mouse target designation"
 	var object := nearest()
 	if object is BritishAAGun: return "E Mount AA Gun"
 	if object is MilitaryTruck: return "E Enter recovery truck · return to departure airfield" if object.get_meta("recovery",false) else "E Enter Military Truck"

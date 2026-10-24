@@ -63,6 +63,10 @@ func choose_target(slot: int) -> BritishAAGun:
 	if available.is_empty():return null
 	var mounted: BritishAAGun=session.malta_mission.interaction.occupied_gun
 	if mounted is AACommandStation and not mounted.is_destroyed and mounted.field_id==session.home_airfield and slot%2==0:return mounted
+	var posts: Array[BritishAAGun]=[]
+	for post in session.malta_mission.world.aa_battery.bofors_posts:
+		if not post.is_destroyed and post.field_id==session.home_airfield:posts.append(post)
+	if not posts.is_empty() and slot%3==2:return posts[slot%posts.size()]
 	if mounted!=null and available.has(mounted) and slot%2==0:return mounted
 	return available[slot%available.size()]
 
@@ -215,7 +219,7 @@ func _finish(won: bool,reason: String) -> void:
 	if session.malta_mission.interaction.occupied_vehicle!=null:session.malta_mission.interaction.occupied_vehicle.stop_driving()
 	session.encounters.ended=true
 	session.encounters.awaiting_confirmation=false
-	for gun in session.malta_mission.world.aa_battery.guns+session.malta_mission.world.aa_battery.command_stations:gun.stop_operation()
+	for gun in session.malta_mission.world.aa_battery.guns+session.malta_mission.world.aa_battery.command_stations+session.malta_mission.world.aa_battery.bofors_posts:gun.stop_operation()
 	for foe in session.encounters.active:
 		foe.ai.set_physics_process(false)
 		foe.pilot.fire=false
@@ -225,7 +229,7 @@ func _finish(won: bool,reason: String) -> void:
 	results.get_child(0).get_child(0).text=("MISSION COMPLETE\n" if won else "MISSION FAILED\n")+reason
 func cancel() -> void:
 	if is_instance_valid(audio):audio.stop()
-	for station in session.malta_mission.world.aa_battery.command_stations:
+	for station in session.malta_mission.world.aa_battery.command_stations+session.malta_mission.world.aa_battery.bofors_posts:
 		if is_instance_valid(station):station.stop_operation()
 	cancelled=true
 	for gun in guns:

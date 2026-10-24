@@ -1,10 +1,12 @@
 class_name AirfieldAABattery
 extends Node3D
+signal bofors_post_added(post: BritishAAGun)
 ## One battery per continuous world. Retry frees this owner, shells and effects.
 @export var aerial_burst_visual_scale: float = 4.0
 var world: MaltaWorld
 var guns: Array[BritishAAGun] = []
 var command_stations: Array[BritishAAGun] = []
+var bofors_posts: Array[BritishAAGun] = []
 var projectiles: ProjectilePool
 var light_projectiles: ProjectilePool
 var heavy_definition: AAWeaponDefinition = preload("res://weapon_definitions/heavy_aa.tres")
@@ -52,6 +54,22 @@ func _place() -> void:
 		add_child(station)
 		station.global_transform=field.global_transform*Transform3D(Basis.IDENTITY,Vector3(47,.025,field.runway_length*.31-80))
 		command_stations.append(station)
+		var light_guns: Array[BritishAAGun]=[]
+		for gun in guns:
+			if gun.name.begins_with(String(field.record.id)) and not gun.weapon.heavy:light_guns.append(gun)
+		add_bofors_post(String(field.record.id),light_guns,field.global_transform*Transform3D(Basis.IDENTITY,Vector3(49,.025,field.runway_length*.31+65)))
+
+func add_bofors_post(id: String,connected: Array[BritishAAGun],pose: Transform3D) -> BoforsCommandPost:
+	for existing in bofors_posts:
+		if existing.field_id==id:return existing
+	var post:=BoforsCommandPost.new()
+	post.name=id+"_Bofors_Predictor"
+	post.field_id=id;post.battery=self;post.battery_guns=connected
+	add_child(post)
+	post.global_transform=pose
+	bofors_posts.append(post)
+	bofors_post_added.emit(post)
+	return post
 
 func pool_for(definition: AAWeaponDefinition) -> ProjectilePool:
 	return projectiles if definition.heavy else light_projectiles

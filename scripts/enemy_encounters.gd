@@ -295,13 +295,14 @@ func _process(_delta: float) -> void:
 	if is_manual_free_roam():
 		confirm_button.text = "SPAWN RANDOM ENEMY · C" if initial_spawn_pending else "SPAWN NEXT RANDOM ENEMY · C"
 	var camera: Camera3D = get_viewport().get_camera_3d()
+	var observing: bool=is_instance_valid(session.malta_mission) and session.malta_mission.interaction.occupied_gun is BoforsCommandPost
 	for foe in active:
 		var widget: VBoxContainer = enemy_widgets[foe.get_instance_id()]
 		widget.visible = false
 		# Flight HUD draws the focused aircraft only while it is actually visible.
 		# Ground/gunner cameras still need a marker for that same enemy.
 		var focused_in_hud: bool = foe == session.enemy and is_instance_valid(session.hud) and session.hud.visible
-		if focused_in_hud or camera == null or get_tree().paused or not _player_live():
+		if observing or focused_in_hud or camera == null or get_tree().paused or not _player_live():
 			continue
 		var overhead: Vector3 = foe.global_position + Vector3.UP * 5
 		var screen: Vector2 = get_viewport().get_visible_rect().size

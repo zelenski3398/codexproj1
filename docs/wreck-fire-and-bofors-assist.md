@@ -12,11 +12,11 @@ Fueled land-crash wrecks now leave orange flames and dark smoke among actual air
 
 ## Bofors option and controls
 
-Mount a Bofors using **E**, press **Esc**, and enable **Bofors aim assist** beside the existing AA sensitivity slider. Press **Esc** to resume, then click the view to recapture the mouse. Assist defaults off and is saved with sensitivity. The gun status shows ON/OFF. **Mouse aims, LMB fires, RMB zooms**; arrows remain available.
+As of 25 October, use the [Bofors predictor post](bofors-command-post.md): **F** enters optics, **LMB/Tab** acquire visible targets, **G** chooses gun/battery scope and **Enter** assigns. Exit and mount a Bofors using **E**. In **Esc** settings choose **Manual, Assisted or Training** beside sensitivity. Resume and click to recapture. **Mouse aims, LMB fires, RMB zooms**; arrows remain available.
 
-Assist only helps with a visible hostile already within 8° of the barrel's sight and within 2,400 m. It predicts whole-aircraft lead using target velocity, the real shell speed and gravity. It nudges the requested aim at a capped rate through the existing mechanical traversal, rather than rotating instantly, auto-firing, bending rounds or directly applying damage. Friendly aircraft, terrain/buildings, destroyed aircraft and targets outside the sight cone prevent acquisition. Unoccupied guns remain idle.
+Assisted and Training use the explicitly assigned observer track to display a gravity-compensated lead diamond. The player remains responsible for aiming and firing. This replaces the earlier automatic nudge; unoccupied guns remain idle, and no projectile is bent or damage applied without real collisions. Obscured or lost observations remove the solution.
 
-Tune `assist_cone_degrees`, `assist_degrees_per_second` and `assist_strength` in `AAWeaponDefinition`. Heavy AA ignores the preference and retains its five-second single-shot reload. Bofors retain infinite ammunition, automatic reload and one physical round every 0.5 seconds while the player holds fire.
+Tune observation properties in `BoforsCommandPost` and `predictor_alignment_degrees` in `AAWeaponDefinition`. Heavy AA ignores the preference and retains its five-second single-shot reload. Bofors retain infinite ammunition, automatic reload and one physical round every 0.5 seconds while the player holds fire.
 
 ## Harbour enemy balance
 
@@ -28,7 +28,7 @@ Final-wave aces retain their previous 0.2× aim-error scale, 0.25× dispersion s
 
 1. In harbour interception, observe ordinary escorts' shorter bursts and gaps; compare the final two aces, which should remain substantially more accurate.
 2. In the AA defence mission, shoot down a fueled Stuka over land. Inspect flames/smoke and debris after the original enemy is removed; wait for fade, then retry to check cleanup. A sea crash should produce no lingering land fire.
-3. Mount a Bofors, pause and toggle assist. Resume and bring a hostile close to the sight: the barrel should gently help with lead. Sweep away to break acquisition. Fire remains your decision.
+3. Assign a visible target at a predictor, then mount an assigned Bofors and select Assisted/Training. Manually put the actual reticle on the lead diamond. Neither aiming nor firing occurs automatically.
 4. Place a friendly or building in the line of sight: assist must not acquire through it. Dismount and confirm no automatic aiming/firing.
 5. Mount heavy AA: its aim and reload should be unaffected by the Bofors preference.
 
