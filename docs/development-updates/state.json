@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "2d1866c48c6819cfc41b08ea2f7c16693927a1ba",
-  "last_documented_commit": "eb17dfe2b8e60c92d08386c33d84b83afe291743",
-  "update_document": "2026-10-20-harbour-hangar-camera.md",
-  "review_range": "8f01e46f43ed77c33847f5bc0c2e6456a8333a14..eb17dfe2b8e60c92d08386c33d84b83afe291743",
-  "date": "2026-10-20",
+  "previous_documentation_publication": "9bd67d557a5cde5b2b39ebac78d72876e75c4201",
+  "last_documented_commit": "cebd3f7ffd61c870b7fef77cf29f2fc891ad2dd9",
+  "update_document": "2026-10-24-countryside-and-sirens.md",
+  "review_range": "eb17dfe2b8e60c92d08386c33d84b83afe291743..cebd3f7ffd61c870b7fef77cf29f2fc891ad2dd9",
+  "date": "2026-10-24",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }

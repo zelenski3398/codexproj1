@@ -4,6 +4,7 @@
 
 The original report is a frozen 50-commit audit through `588ac7b`. Later changes are recorded here with explicit commit boundaries, avoiding a repeated reconstruction of unchanged history.
 
+- [24 October 2026: island-wide rural fields, protected roads and interception sirens](2026-10-24-countryside-and-sirens.md).
 - [20 October 2026: harbour boarding, Gladiator roster, sea loss, gentler normal pilots, wreck fires and Bofors assist](2026-10-20-harbour-hangar-camera.md).
 - [20 October 2026: hangar departures, independent pilot survival, recovery transport and reliable poster playback](2026-10-20-pilot-recovery.md).
 - [18 October 2026: open steel-truss hangars at every runway](2026-10-18-aircraft-hangars.md).
