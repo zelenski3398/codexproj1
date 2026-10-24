@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-24",
+  "source_commit": "5533313c0bab2d3f724657de828c85ca9148ca77",
+  "godot": "4.6.3.stable.official.7d41c59c4",
+  "native_assertions": 386,
+  "native_suites": {
+    "bofors_predictor": 59,
+    "battery_command": 36,
+    "battery_engagement": 17,
+    "st_elmo": 43,
+    "airfield_controls": 61,
+    "dive_defence": 47,
+    "layered_aa": 55,
+    "harbour_support": 24,
+    "countryside_departure": 12,
+    "aa_mouse": 32
+  },
+  "rendered_assertions": 2,
+  "browser_checks": 13,
+  "browser_script": "tools/bofors_predictor_web_smoke.cjs",
+  "browser_renderer": "Chromium ANGLE SwiftShader",
+  "web_export": "passed",
+  "posts": 4,
+  "existing_guns": 21,
+  "heavy_stations": 3,
+  "performance_fixture": {
+    "targets": 4,
+    "gun_solutions": 9,
+    "post_refreshes": 200,
+    "total_microseconds": 11488,
+    "mean_microseconds": 57.44
+  },
+  "limitations": [
+    "Observer recordings missing: labelled subtitles only",
+    "Simplified period-inspired model, no dedicated instrument animation",
+    "Two native software-render texture allocations remain at shutdown",
+    "No exhaustive human combat, mobile or hardware performance test",
+    "Live Pages deployment not verified"
+  ]
+}
