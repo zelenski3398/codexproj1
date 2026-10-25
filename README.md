@@ -34,6 +34,10 @@ Tuning lives in `scripts/aircraft_impact.gd`: debris lifetime/speed, water resis
 
 Checks: `godot --headless --path . --fixed-fps 120 --script tests/aircraft_impact_checks.gd`. Render fixtures: `godot --path . --script tests/aircraft_impact_capture.gd` (writes `/tmp/aircraft-previews`). After `bash tools/build_web.sh`, run `node tools/aircraft_impact_web_smoke.cjs` for actual browser breakup/reset checks.
 
+## Minimal HUD and help
+
+**F1** opens Controls & Help; Escape closes it first. The shared HUD keeps health, the current objective and a few contextual actions separate. **F2** explicitly toggles diagnostics. Aircraft component health remains visible. See [layout, controls and verification](docs/minimal-hud-and-help.md).
+
 ## Development history and update boundary
 
 **Latest documented commit:** [`5533313c0bab2d3f724657de828c85ca9148ca77`](https://github.com/zelenski3398/codexproj1/commit/5533313c0bab2d3f724657de828c85ca9148ca77)
@@ -93,7 +97,7 @@ menu. Start on foot beside a Spitfire or Sea Gladiator at Ta’ Qali, board with
 **E**, start the engine with **I**, taxi and take off. Follow two nearby numbered airborne
 checkpoints shown on **M**'s navigation map. The last checkpoint spawns an
 **SM.79 bomber** and **C.200 escort** about **1,200 m away at one o’clock** and starts
-**01:30**; all navigation before it is untimed. Enemy losses are counted immediately,
+**03:00**; all navigation before it is untimed. Enemy losses are counted immediately,
 but results wait for timer expiry. Player crash/destruction fails immediately.
 Results offer **Retry Mission** and **Return to Missions**.
 

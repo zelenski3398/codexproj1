@@ -256,7 +256,7 @@ func _release_waypoint(start: Vector3) -> Vector3:
 	# v = (target distance - arrival allowance)/(approach time + fall time).
 	# Therefore release distance / v remains the requested approach duration,
 	# while inherited horizontal velocity carries the falling bomb to Valletta.
-	var speed: float = (flat.length() - definition.arrival_radius * 0.5) / (definition.deadline_seconds + fall_seconds)
+	var speed: float = (flat.length() - definition.arrival_radius * 0.5) / (definition.approach_seconds + fall_seconds)
 	var point: Vector3 = definition.target_area - flat.normalized() * speed * fall_seconds
 	point.y = definition.bombing_point.y
 	return point
@@ -278,7 +278,7 @@ func activate() -> void:
 	# insertion: its initial forward axis and velocity already face Valletta.
 	var direction: Vector3 = ((point - start) * Vector3(1, 0, 1)).normalized()
 	bomber_route_length = ((point - start) * Vector3(1, 0, 1)).length()
-	var approach_speed: float = (bomber_route_length - definition.arrival_radius * 0.5) / definition.deadline_seconds
+	var approach_speed: float = (bomber_route_length - definition.arrival_radius * 0.5) / definition.approach_seconds
 	# Existing throttle pacing can handle this route without artificial holds.
 	if approach_speed < BomberPilot.DEFAULT_MINIMUM_SPEED or approach_speed > BomberPilot.DEFAULT_MAXIMUM_SPEED:
 		_finish(false, "Interception area outside bomber pacing limits — check navigation route")
@@ -297,7 +297,7 @@ func activate() -> void:
 		foe.destroyed.connect(_enemy_destroyed.bind(foe))
 	activation_distance = session.aircraft.global_position.distance_to(bomber.global_position)
 	var route: BomberPilot = bomber.ai as BomberPilot
-	route.assign_route(start, point, definition.deadline_seconds)
+	route.assign_route(start, point, definition.approach_seconds)
 	route.arrival_radius = definition.arrival_radius
 	var wingman_ai: EscortPilot = escort.ai as EscortPilot
 	wingman_ai.escorted = bomber

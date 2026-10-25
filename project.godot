@@ -19,6 +19,16 @@ window/stretch/mode="canvas_items"
 
 [input]
 
+controls_help={
+"deadzone":0.2,
+"events":[Object(InputEventKey,"physical_keycode":4194332)]
+}
+hud_debug={
+"deadzone":0.2,
+"events":[Object(InputEventKey,"physical_keycode":4194333)]
+}
+
+
 call_transport={
 "deadzone":0.2,
 "events":[Object(InputEventKey,"physical_keycode":86), Object(InputEventKey,"keycode":86)]

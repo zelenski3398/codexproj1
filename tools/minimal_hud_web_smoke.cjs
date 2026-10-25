@@ -1,0 +1,52 @@
+// Production export; actual menu, key and pointer inputs, read-only telemetry.
+const {chromium}=require('playwright');
+const {spawn}=require('node:child_process');
+const path=require('node:path');
+const assert=require('node:assert/strict');
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+(async()=>{
+ const server=spawn('python3',['-m','http.server','8794','--bind','127.0.0.1','--directory',path.resolve(__dirname,'../builds/web')],{stdio:'ignore'});
+ let browser,page,passed=0;const errors=[];
+ const check=(condition,message)=>{assert.ok(condition,message);passed++;console.log('PASS:',message);};
+ try{
+  await sleep(500);
+  browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
+  page=await browser.newPage({viewport:{width:960,height:600}});
+  page.on('pageerror',error=>errors.push(error.message));
+  page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
+  page.on('response',response=>{if(response.status()>=400)errors.push(response.status()+' '+response.url());});
+  const wait=fn=>page.waitForFunction(fn,null,{timeout:240000});
+  const state=()=>page.evaluate(()=>window.firstSortieState);
+  const click=async key=>{const [x,y]=(await state())[key];await page.mouse.click(x,y);};
+  await page.goto('http://127.0.0.1:8794/index.html?smoke=1');
+  await wait(()=>window.firstSortieState?.startup_intro?.phase===1);
+  const [x,y]=(await state()).startup_intro.play_button;await page.mouse.click(x,y);
+  await wait(()=>!window.firstSortieState.startup_intro.active);await click('fly_button');
+  await wait(()=>window.firstSortieState.on_foot&&window.firstSortieState.minimal_hud);
+  check(!(await state()).minimal_hud.tracker&&!(await state()).minimal_hud.debug,'Free roam has no empty objective or diagnostics');
+  const world=(await state()).world_id;
+  await page.keyboard.press('F1');await wait(()=>window.firstSortieState.minimal_hud.help&&window.firstSortieState.paused);
+  check((await state()).minimal_hud.help_text.includes('Radio')&&(await state()).minimal_hud.help_text.includes('RMB'),'F1 opens scrollable help with actual radio/right-click bindings');
+  await page.keyboard.press('e');await page.keyboard.press('c');await page.keyboard.press('i');await page.keyboard.press('r');
+  check((await state()).on_foot&&(await state()).enemy_count===0&&(await state()).world_id===world,'Help blocks boarding, spawning, engine and restart shortcuts');
+  await page.screenshot({path:'/tmp/minimal-hud-browser-help.png'});
+  await page.keyboard.press('Escape');await wait(()=>!window.firstSortieState.minimal_hud.help&&!window.firstSortieState.paused);
+  check((await state()).on_foot,'Escape closes help without opening pause');
+  await page.keyboard.press('e');await wait(()=>!window.firstSortieState.on_foot&&window.firstSortieState.minimal_hud.parts);
+  check(!(await state()).minimal_hud.actions.includes('Enter aircraft'),'Boarding clears entry prompt and retains component health');
+  await page.keyboard.press('F1');await wait(()=>window.firstSortieState.minimal_hud.help);
+  await page.setViewportSize({width:800,height:500});await sleep(700);
+  const close=(await state()).minimal_hud.help_close;await page.mouse.click(close[0],close[1]);
+  await wait(()=>!window.firstSortieState.minimal_hud.help&&!window.firstSortieState.paused);
+  check((await state()).minimal_hud.parts,'Visible close button works after resizing in aircraft');
+  await page.screenshot({path:'/tmp/minimal-hud-browser-aircraft.png'});
+  await page.keyboard.press('Escape');await wait(()=>window.firstSortieState.minimal_hud.pause_menu);
+  await page.keyboard.press('F1');await wait(()=>window.firstSortieState.minimal_hud.help);
+  await page.keyboard.press('F1');await wait(()=>!window.firstSortieState.minimal_hud.help&&window.firstSortieState.paused);
+  check((await state()).minimal_hud.pause_menu,'Help restores previous paused state');
+  await page.keyboard.press('Escape');await wait(()=>!window.firstSortieState.paused);
+  check((await state()).world_id===world,'Help and pause preserve running world');
+  check(errors.length===0,'No JavaScript, missing-resource or engine errors');
+  console.log(`MINIMAL HUD WEB RESULT: ${passed}/${passed} passed`);
+ }finally{if(browser)await browser.close();server.kill();}
+})().catch(error=>{console.error(error);process.exitCode=1;});

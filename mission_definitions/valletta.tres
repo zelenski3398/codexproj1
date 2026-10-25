@@ -5,3 +5,5 @@
 script = ExtResource("1")
 commander_voice = ExtResource("2")
 checkpoint_positions = PackedVector3Array(2600, 330, 5000, 3900, 430, 5050)
+deadline_seconds = 180.0
+approach_seconds = 90.0

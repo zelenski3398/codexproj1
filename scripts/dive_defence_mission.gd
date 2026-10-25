@@ -308,5 +308,5 @@ func _process(_delta: float) -> void:
 		var size: Vector2=get_viewport().get_visible_rect().size
 		var point: Vector2=camera.unproject_position(target) if not camera.is_position_behind(target) else Vector2(size.x-160,size.y*.5)
 		marker.position=Vector2(clampf(point.x-90,10,size.x-210),clampf(point.y,170,size.y-160))
-		marker.text="◇ MOUNT AA GUN · %d m · E"%roundi(pilot.global_position.distance_to(nearest.global_position))
+		marker.text="◇ AA GUN · %d m"%roundi(pilot.global_position.distance_to(nearest.global_position))
 		marker.show()

@@ -18,7 +18,7 @@ func _run() -> void:
 	session.missions_menu.launch_button.pressed.emit()
 	await _frames(180)
 	var mission: VallettaInterception = session.interception
-	_check(mission.definition.checkpoint_positions.size() == 2 and mission.definition.deadline_seconds == 90, "Short mission config uses two checkpoints and 90 seconds")
+	_check(mission.definition.checkpoint_positions.size() == 2 and mission.definition.deadline_seconds == 180, "Short mission config uses two checkpoints and 180 seconds")
 	_check(session.game_mode == "interception" and session.malta_mission.home == "ta_qali", "Mission departs from geographic Ta' Qali")
 	_check(session.malta_mission.occupied == null and not session.aircraft.engine_running and session.aircraft.gear.contact_count > 0, "Player starts on foot beside a grounded aircraft with engine off")
 	_check(session.encounters.active.is_empty() and mission.elapsed == 0 and not mission.activated, "No enemy or timer before checkpoint")
@@ -74,7 +74,7 @@ func _run() -> void:
 	_check(mission.activated and session.encounters.active.size() == 2, "Entering airborne checkpoint creates exactly two aircraft")
 	_check(mission.bomber.aircraft_kind == "sm79" and mission.escort.aircraft_kind == "c200", "Formation contains the specified bomber and escort")
 	_check(mission.elapsed > 0 and mission.elapsed < 0.2 and not mission.checkpoint_mesh.visible, "Countdown starts only at activation and checkpoint disappears")
-	_check(mission.objective.text.begins_with("01:30") and mission.radio.triggered, "Second checkpoint starts 01:30 and the one-shot radio together")
+	_check(mission.objective.text.begins_with("03:00") and mission.radio.triggered, "Second checkpoint starts 03:00 and the one-shot radio together")
 	_check(not mission.bomber.gear.extended and not mission.escort.gear.extended, "Bomber and C200 spawn with their retractable undercarriage raised")
 	var first_bomber: EnemyAircraft = mission.bomber
 	var first_escort: EnemyAircraft = mission.escort
@@ -93,7 +93,7 @@ func _run() -> void:
 	var maximum_bank: float = 0
 	var last_distance: float = INF
 	var arrival_observed: bool = false
-	for tick in range(19000):
+	for tick in range(27000):
 		await physics_frame
 		if not is_instance_valid(mission.bomber):
 			break
@@ -108,7 +108,7 @@ func _run() -> void:
 		for effect in mission.effects.get_children():
 			if effect is MissionBomb and not effect.impacted.is_connected(_record_impact.bind(impacts)):
 				effect.impacted.connect(_record_impact.bind(impacts))
-		if mission.bombing and mission.bomb_impacts == mission.definition.bomb_count and (mission.bomber.ai as BomberPilot).route_elapsed >= mission.definition.deadline_seconds + 35:
+		if mission.elapsed >= mission.definition.deadline_seconds and mission.bombing and mission.bomb_impacts == mission.definition.bomb_count and (mission.bomber.ai as BomberPilot).route_elapsed >= mission.definition.deadline_seconds + 35:
 			break
 	var route: BomberPilot = mission.bomber.ai
 	print("ARRIVAL_SECONDS=", route.arrival_elapsed, " minAGL=", minimum_altitude, " bank=", maximum_bank, " reason=", mission.final_reason, " released=", mission.bombs_released, " impacts=", mission.bomb_impacts)

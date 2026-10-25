@@ -35,8 +35,8 @@ func _ready() -> void:
 	# Leave the bottom instruments and right-hand pilot notes unobstructed.
 	subtitle.offset_left = -310
 	subtitle.offset_right = 310
-	subtitle.offset_top = -210
-	subtitle.offset_bottom = -125
+	subtitle.offset_top = -280
+	subtitle.offset_bottom = -200
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	subtitle.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART

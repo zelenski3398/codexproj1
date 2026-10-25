@@ -265,6 +265,7 @@ func _add_widget(foe: EnemyAircraft) -> void:
 	enemy_widgets[foe.get_instance_id()] = column
 
 func _input(event: InputEvent) -> void:
+	if GameplayHUD.blocks_input():return
 	if event.is_action_pressed("confirm_encounter") and not event.is_echo() and awaiting_confirmation:
 		confirm()
 		get_viewport().set_input_as_handled()

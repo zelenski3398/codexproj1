@@ -238,6 +238,7 @@ func _instrument(parent: HBoxContainer, title: String, value: String, unit: Stri
 	return number
 
 func _input(event: InputEvent) -> void:
+	if GameplayHUD.blocks_input():return
 	# Handle flight shortcuts before GUI navigation can consume them. This
 	# CanvasLayer processes while paused, so Escape and R always remain usable.
 	if not flight_input_enabled:

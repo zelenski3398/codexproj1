@@ -149,6 +149,7 @@ func _build_ui() -> void:
 	aa_settings.hide()
 
 func _input(event: InputEvent) -> void:
+	if GameplayHUD.blocks_input():return
 	if event.is_echo():
 		return
 	if event.is_action_pressed("call_transport"):

@@ -1,7 +1,7 @@
 class_name InterceptionDefinition
 extends Resource
 @export var title: String = "Defend Valletta — Ta’ Qali Interception"
-@export_multiline var briefing: String = "Take off from Ta’ Qali and follow two nearby airborne checkpoints. An Italian SM.79 bomber and Macchi C.200 escort appear at one o’clock, 1,200 metres away. Destroy both within 90 seconds. Results are confirmed when the timer expires; losing your aircraft fails immediately."
+@export_multiline var briefing: String = "Take off from Ta’ Qali and follow two nearby airborne checkpoints. An Italian SM.79 bomber and Macchi C.200 escort appear at one o’clock, 1,200 metres away. Destroy both within three minutes. Results are confirmed when the timer expires; losing your aircraft fails immediately."
 @export var home_airfield: String = "ta_qali"
 @export var checkpoint_positions: PackedVector3Array = PackedVector3Array()
 @export var checkpoint_radius: float = 350
@@ -21,7 +21,9 @@ extends Resource
 @export var target_area: Vector3 = Vector3(10131.404, 42.149, 3472.677)
 @export var bombing_point: Vector3 = Vector3(9600, 500, 3630)
 @export var automatic_release_lead: bool = true
-@export var deadline_seconds: float = 90
+@export var deadline_seconds: float = 180
+## Preserve the established physical approach, independent of the result deadline.
+@export var approach_seconds: float = 90
 @export var arrival_radius: float = 70
 @export_enum("c200", "cr42") var escort_type: String = "c200"
 @export var escort_separation: float = 230

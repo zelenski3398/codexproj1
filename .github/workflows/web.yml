@@ -41,6 +41,7 @@ jobs:
           godot --headless --path . --fixed-fps 120 --script res://tests/wingman_radio_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/harbour_flight_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/harbour_departure_checks.gd
+          godot --headless --path . --fixed-fps 120 --script res://tests/minimal_hud_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/interception_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/interception_siren_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/interception_combat_checks.gd

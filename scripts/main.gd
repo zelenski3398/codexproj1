@@ -1,4 +1,5 @@
 extends Node3D
+var gameplay_hud: GameplayHUD
 var game_mode: String = "encounter"
 var encounters: EnemyEncounters
 var environment_id: String = "countryside"
@@ -46,6 +47,9 @@ func _ready() -> void:
 	encounters = EnemyEncounters.new()
 	encounters.session = self
 	add_child(encounters)
+	gameplay_hud=GameplayHUD.new()
+	gameplay_hud.session=self
+	add_child(gameplay_hud)
 	show_selection(false)
 	if DisplayServer.get_name() != "headless" and "--skip-intro" not in OS.get_cmdline_user_args():
 		show_intro()

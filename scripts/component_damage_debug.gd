@@ -90,6 +90,7 @@ func _label(text: String, font_size: int) -> Label:
 	return label
 
 func _input(event: InputEvent) -> void:
+	if GameplayHUD.blocks_input():return
 	if not developer_tools_enabled: return
 	if event.is_action_pressed("debug_components") and not event.is_echo():
 		set_enabled(not enabled)
