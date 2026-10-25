@@ -40,10 +40,10 @@ Checks: `godot --headless --path . --fixed-fps 120 --script tests/aircraft_impac
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`5533313c0bab2d3f724657de828c85ca9148ca77`](https://github.com/zelenski3398/codexproj1/commit/5533313c0bab2d3f724657de828c85ca9148ca77)
+**Latest documented commit:** [`827bd9c0341181b22e8603921425c43fe937aea9`](https://github.com/zelenski3398/codexproj1/commit/827bd9c0341181b22e8603921425c43fe937aea9)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest Bofors observation and predictor update](docs/development-updates/2026-10-24-bofors-predictor.md)
+[latest minimal HUD and controls update](docs/development-updates/2026-10-25-minimal-hud.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -52,9 +52,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor 5533313c0bab2d3f724657de828c85ca9148ca77 HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' 5533313c0bab2d3f724657de828c85ca9148ca77..HEAD
-git diff --stat 5533313c0bab2d3f724657de828c85ca9148ca77..HEAD
+git merge-base --is-ancestor 827bd9c0341181b22e8603921425c43fe937aea9 HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' 827bd9c0341181b22e8603921425c43fe937aea9..HEAD
+git diff --stat 827bd9c0341181b22e8603921425c43fe937aea9..HEAD
 ```
 
 Append a dated, evidence-linked update and advance this SHA to the newest inspected

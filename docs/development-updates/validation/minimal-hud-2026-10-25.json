@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-25",
+  "source_commit": "827bd9c0341181b22e8603921425c43fe937aea9",
+  "godot": "4.6.3.stable.official.7d41c59c4",
+  "native_assertions": 532,
+  "native_suites": {
+    "minimal_hud": 61,
+    "interception": 78,
+    "pilot_recovery": 70,
+    "airfield_controls": 61,
+    "dive_defence": 47,
+    "harbour": 50,
+    "bofors_predictor": 59,
+    "mission_radio": 22,
+    "survival": 84
+  },
+  "browser_checks": 9,
+  "browser_script": "tools/minimal_hud_web_smoke.cjs",
+  "browser_renderer": "Chromium ANGLE SwiftShader",
+  "web_export": "passed",
+  "interception_deadline_seconds": 180,
+  "preserved_bomber_approach_seconds": 90,
+  "limitations": [
+    "No exhaustive human combat or every-resolution test",
+    "AA/truck help tested natively, not in browser flow",
+    "Software-render texture allocations reported at capture shutdown",
+    "Live Pages deployment not verified"
+  ]
+}

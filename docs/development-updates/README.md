@@ -4,6 +4,7 @@
 
 The original report is a frozen 50-commit audit through `588ac7b`. Later changes are recorded here with explicit commit boundaries, avoiding a repeated reconstruction of unchanged history.
 
+- [25 October 2026: minimal HUD, modal controls help and three-minute interception deadline](2026-10-25-minimal-hud.md).
 - [24 October 2026: staffed Bofors observation posts, explicit target assignment and manual predictor sights](2026-10-24-bofors-predictor.md).
 - [24 October 2026: island-wide rural fields, protected roads and interception sirens](2026-10-24-countryside-and-sirens.md).
 - [20 October 2026: harbour boarding, Gladiator roster, sea loss, gentler normal pilots, wreck fires and Bofors assist](2026-10-20-harbour-hangar-camera.md).
