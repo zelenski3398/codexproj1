@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-25",
+  "source_commit": "4f376d68bd90a2ad593301e453abe43bda756451",
+  "godot": "4.6.3.stable.official.7d41c59c4",
+  "native_assertions": 357,
+  "native_suites": {
+    "mission_return": 33,
+    "interception": 82,
+    "survival": 84,
+    "harbour": 50,
+    "dive_defence": 47,
+    "minimal_hud": 61
+  },
+  "isolated_browser_checks": 8,
+  "browser_script": "tools/mission_return_web_smoke.cjs",
+  "browser_renderer": "Chromium ANGLE SwiftShader",
+  "web_export": "passed",
+  "landing": {
+    "speed_m_s": 8,
+    "vertical_speed_m_s": 1.5,
+    "minimum_wheel_contacts": 2,
+    "settled_seconds": 2,
+    "same_aircraft_required": true,
+    "friendly_runway_or_apron": true
+  },
+  "limitations": [
+    "No complete human combat-to-landing sortie",
+    "Browser uses explicit victory and landing-pose fixture",
+    "Native capture reported two texture allocations at shutdown",
+    "Live Pages deployment not verified"
+  ]
+}

@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "5a3186a08e2b0592fef640f6810d1059493cedd5",
-  "last_documented_commit": "827bd9c0341181b22e8603921425c43fe937aea9",
-  "update_document": "2026-10-25-minimal-hud.md",
-  "review_range": "5533313c0bab2d3f724657de828c85ca9148ca77..827bd9c0341181b22e8603921425c43fe937aea9",
+  "previous_documentation_publication": "20a4bb090ab8b1cc8cade2061b5bf0f612bb4723",
+  "last_documented_commit": "4f376d68bd90a2ad593301e453abe43bda756451",
+  "update_document": "2026-10-25-mission-return.md",
+  "review_range": "827bd9c0341181b22e8603921425c43fe937aea9..4f376d68bd90a2ad593301e453abe43bda756451",
   "date": "2026-10-25",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }
