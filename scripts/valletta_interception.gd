@@ -116,6 +116,7 @@ func _build_ui() -> void:
 	results.visible = false
 
 func cancel() -> void:
+	if is_instance_valid(session.malta_mission) and is_instance_valid(session.malta_mission.return_flow):session.malta_mission.return_flow.cancel_owner(self)
 	# Deferred callbacks from the old physics tick must not finish a NEW run.
 	phase = "CANCELLED"
 	radio.stop()
@@ -364,6 +365,8 @@ func _resolve() -> void:
 func _finish(won: bool, reason: String) -> void:
 	if phase in ["SUCCESS", "FAILED"]:
 		return
+	if won and session.malta_mission.return_flow.hold_success(self,reason):return
+	if not won:session.malta_mission.return_flow.cancel_owner(self)
 	phase = "SUCCESS" if won else "FAILED"
 	success = won
 	final_reason = reason

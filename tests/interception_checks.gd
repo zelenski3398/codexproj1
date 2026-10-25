@@ -140,7 +140,9 @@ func _run() -> void:
 	_check(mission.phase == "ACTIVE" and not mission.results.visible, "No success panel before timer expiry")
 	mission.elapsed = mission.definition.deadline_seconds
 	mission._resolve()
-	_check(mission.success and mission.result_count == 1, "Early enemy losses produce one success at expiry")
+	_check(mission.phase == "RETURNING" and not mission.results.visible, "Airborne objectives wait for a real landing before success presentation")
+	await preload("res://tests/return_landing_fixture.gd").park(session)
+	_check(mission.success and mission.result_count == 1, "Early enemy losses produce one success after expiry and landing")
 	_check(not session.encounters.awaiting_confirmation and session.encounters.active.is_empty(), "Mission kills never open the continuous encounter confirmation")
 	await _restart_activate()
 	mission = session.interception
@@ -152,7 +154,9 @@ func _run() -> void:
 	_check(mission.phase == "ACTIVE" and mission.result_count == 0, "Escort-first losses also wait for timer expiry")
 	mission.elapsed = mission.definition.deadline_seconds
 	mission._resolve()
-	_check(mission.success, "Escort-first losses succeed at expiry")
+	_check(mission.phase == "RETURNING" and not mission.results.visible, "Airborne objectives wait for a real landing before success presentation")
+	await preload("res://tests/return_landing_fixture.gd").park(session)
+	_check(mission.success, "Escort-first losses succeed after expiry and landing")
 	await _restart_activate()
 	mission = session.interception
 	mission.bomber.take_damage(100)
@@ -215,7 +219,9 @@ func _run() -> void:
 	_check(mission.bomber.impact_count == 1 and mission.escort.impact_count == 1 and session.encounter_effects.get_child_count() == 2, "Enemy crashes produce one existing destruction burst per aircraft")
 	mission.elapsed = mission.definition.deadline_seconds
 	mission._resolve()
-	_check(mission.success, "Enemy crash losses count toward success at timer expiry")
+	_check(mission.phase == "RETURNING" and not mission.results.visible, "Airborne objectives wait for a real landing before success presentation")
+	await preload("res://tests/return_landing_fixture.gd").park(session)
+	_check(mission.success, "Enemy crash losses count toward success after timer expiry and landing")
 	await _restart_activate()
 	mission = session.interception
 	for foe in [mission.bomber, mission.escort]:
@@ -263,7 +269,9 @@ func _run() -> void:
 	_check(session.interception.phase == "ACTIVE" and session.interception.result_count == 0, "Simultaneous early kills do not resolve before expiry")
 	session.interception.elapsed = session.interception.definition.deadline_seconds
 	session.interception._resolve()
-	_check(session.interception.success and session.interception.result_count == 1, "Simultaneous pre-deadline kills produce one success at expiry")
+	_check(session.interception.phase == "RETURNING" and not session.interception.results.visible, "Airborne objectives wait for a real landing before success presentation")
+	await preload("res://tests/return_landing_fixture.gd").park(session)
+	_check(session.interception.success and session.interception.result_count == 1, "Simultaneous pre-deadline kills produce one success after expiry and landing")
 	session.return_to_missions()
 	await _frames(3)
 	# A late physics crash can occur after capture was queued but before its

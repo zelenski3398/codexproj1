@@ -24,6 +24,7 @@ var awaiting_confirmation: bool = false
 var spawning: bool = false
 var ended: bool = false
 var complete: bool = false
+var survival_results: PanelContainer
 var generation: int = 0
 var canvas: CanvasLayer
 var status: Label
@@ -59,6 +60,7 @@ func _ready() -> void:
 	confirm_button.focus_mode = Control.FOCUS_NONE
 	confirm_button.pressed.connect(confirm)
 	panel.add_child(confirm_button)
+	_build_survival_results()
 	canvas.visible = false
 
 func begin(selected_mode: String) -> void:
@@ -82,6 +84,8 @@ func is_manual_free_roam() -> bool:
 	return mode == "encounter" and session.environment_id == "malta"
 
 func clear() -> void:
+	if is_instance_valid(survival_results):survival_results.hide()
+	if is_instance_valid(session.malta_mission) and is_instance_valid(session.malta_mission.return_flow):session.malta_mission.return_flow.cancel_owner(self)
 	if is_instance_valid(siren): siren.stop()
 	generation += 1 # invalidate confirmations queued before restart/menu changes
 	awaiting_confirmation = false
@@ -120,6 +124,7 @@ func player_destroyed(source: FlightAircraft) -> void:
 	spawning = false
 
 func pilot_died() -> void:
+	if is_instance_valid(session.malta_mission) and is_instance_valid(session.malta_mission.return_flow):session.malta_mission.return_flow.cancel_owner(self)
 	if ended: return
 	ended=true
 	awaiting_confirmation=false
@@ -235,7 +240,7 @@ func _destroyed(foe: EnemyAircraft) -> void:
 	session.encounter_tracking_changed()
 	if active.is_empty() and not ended and mode != "interception":
 		if mode == "survival" and stage == STAGE_COUNTS.size():
-			complete = true
+			finish_survival(true,"All five stages cleared")
 		else:
 			awaiting_confirmation = true
 
@@ -337,3 +342,26 @@ func track_enemy(foe: EnemyAircraft) -> void:
 	foe.destroyed.connect(_destroyed.bind(foe))
 	foe.wreck_removed.connect(_wreck_removed.bind(foe))
 	_add_widget(foe)
+
+func _build_survival_results() -> void:
+	survival_results=PanelContainer.new()
+	canvas.add_child(survival_results)
+	survival_results.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	survival_results.offset_left=-240;survival_results.offset_right=240
+	survival_results.offset_top=-110;survival_results.offset_bottom=110
+	var style:=StyleBoxFlat.new();style.bg_color=Color(.035,.06,.055,.97);style.set_content_margin_all(20)
+	survival_results.add_theme_stylebox_override("panel",style)
+	var column:=VBoxContainer.new();column.add_theme_constant_override("separation",12);survival_results.add_child(column)
+	var title:=Label.new();title.text="SURVIVAL COMPLETE";title.add_theme_font_size_override("font_size",26);column.add_child(title)
+	for caption in ["Restart Survival","Return to menu"]:
+		var button:=Button.new();button.text=caption;button.focus_mode=Control.FOCUS_NONE;column.add_child(button)
+		if caption=="Restart Survival":button.pressed.connect(func():session.call_deferred("restart_malta"))
+		else:button.pressed.connect(func():session.call_deferred("show_selection"))
+	survival_results.hide()
+
+func finish_survival(won: bool,reason: String) -> void:
+	if complete or ended:return
+	if won and is_instance_valid(session.malta_mission) and session.malta_mission.return_flow.hold_success(self,reason):return
+	complete=won;ended=not won;awaiting_confirmation=false
+	survival_results.visible=won
+	if won:Input.mouse_mode=Input.MOUSE_MODE_VISIBLE

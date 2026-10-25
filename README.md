@@ -34,6 +34,10 @@ Tuning lives in `scripts/aircraft_impact.gd`: debris lifetime/speed, water resis
 
 Checks: `godot --headless --path . --fixed-fps 120 --script tests/aircraft_impact_checks.gd`. Render fixtures: `godot --path . --script tests/aircraft_impact_capture.gd` (writes `/tmp/aircraft-previews`). After `bash tools/build_web.sh`, run `node tools/aircraft_impact_web_smoke.cjs` for actual browser breakup/reset checks.
 
+## Return and land
+
+After securing a flight mission’s objectives, return to a friendly runway/apron and slow down. The success panel and existing congratulations radio wait for a safe landing. Ground-based AA victories finish on the ground; airborne fallback victories also require landing. See [landing requirements and validation](docs/mission-return-and-landing.md).
+
 ## Minimal HUD and help
 
 **F1** opens Controls & Help; Escape closes it first. The shared HUD keeps health, the current objective and a few contextual actions separate. **F2** explicitly toggles diagnostics. Aircraft component health remains visible. See [layout, controls and verification](docs/minimal-hud-and-help.md).

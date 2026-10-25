@@ -212,6 +212,8 @@ func _resolve() -> void:
 	elif wave==6 and total_destroyed==10 and alive.is_empty() and outstanding_ordnance()==0:_finish(true,"All ten Stukas destroyed — airfield defended")
 func _finish(won: bool,reason: String) -> void:
 	if is_finished():return
+	if won and session.malta_mission.return_flow.hold_success(self,reason):return
+	if not won:session.malta_mission.return_flow.cancel_owner(self)
 	audio.stop()
 	phase="SUCCESS" if won else "FAILED"
 	final_reason=reason
@@ -228,6 +230,7 @@ func _finish(won: bool,reason: String) -> void:
 	results.visible=true
 	results.get_child(0).get_child(0).text=("MISSION COMPLETE\n" if won else "MISSION FAILED\n")+reason
 func cancel() -> void:
+	if is_instance_valid(session.malta_mission) and is_instance_valid(session.malta_mission.return_flow):session.malta_mission.return_flow.cancel_owner(self)
 	if is_instance_valid(audio):audio.stop()
 	for station in session.malta_mission.world.aa_battery.command_stations+session.malta_mission.world.aa_battery.bofors_posts:
 		if is_instance_valid(station):station.stop_operation()

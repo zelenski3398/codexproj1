@@ -426,6 +426,8 @@ func _cue(id: String, text: String, voice: AudioStream = null, summary: bool = f
 
 func _finish(won: bool, reason: String) -> void:
 	if is_finished(): return
+	if won and session.malta_mission.return_flow.hold_success(self,reason):return
+	if not won:session.malta_mission.return_flow.cancel_owner(self)
 	phase = "SUCCESS" if won else "FAILED"
 	final_reason = reason
 	result_count += 1
@@ -456,6 +458,7 @@ func _update_results() -> void:
 	result_label.text = "%s\n%s\n\nBombers intercepted: %d/3\nEscorts destroyed: %d · withdrawn: %d\nPlayer kills: %d · friendly AI kills: %d\nOther losses: %d · surviving wingmen: %d/2\nSt Elmo: %d/%d HP · St Angelo: %d/%d HP" % ["HARBOUR DEFENDED" if phase == "SUCCESS" else "MISSION FAILED", final_reason, bombers_intercepted, escorts_destroyed, escaped_escorts, player_kills, friendly_kills, other_losses, survivors, ceili(forts[0].hp), ceili(forts[0].maximum_hp), ceili(forts[1].hp), ceili(forts[1].maximum_hp)]
 
 func cancel() -> void:
+	if is_instance_valid(session.malta_mission) and is_instance_valid(session.malta_mission.return_flow):session.malta_mission.return_flow.cancel_owner(self)
 	cancelled = true
 	radio.stop()
 	for friend in wingmen:

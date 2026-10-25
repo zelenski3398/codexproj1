@@ -15,6 +15,7 @@ var fleet: Array[FlightAircraft] = []
 var pilot: GroundPilot
 var occupied: FlightAircraft
 var survival: PilotSurvival
+var return_flow: MissionReturn
 var recovery: TransportRecovery
 var interaction: AirfieldInteraction
 var last_abandoned: FlightAircraft
@@ -77,6 +78,9 @@ func _ready() -> void:
 	recovery=TransportRecovery.new()
 	recovery.mission=self
 	add_child(recovery)
+	return_flow=MissionReturn.new()
+	return_flow.mission=self
+	add_child(return_flow)
 	set_process_input(true)
 
 func _build_ui() -> void:
@@ -274,6 +278,10 @@ func _process(delta: float) -> void:
 	if chart.show_objective:
 		chart.objective_position = session.interception.current_checkpoint()
 		chart.objective_label = "CHECKPOINT %d/%d" % [session.interception.checkpoint_index + 1, session.interception.definition.checkpoint_positions.size()]
+	if return_flow.pending:
+		chart.show_objective=true
+		chart.objective_position=return_flow.objective_point()
+		chart.objective_label="RETURN AND LAND"
 	if not get_tree().paused:
 		notice_time = maxf(notice_time - delta, 0)
 	var position: Vector3 = occupied.global_position if is_instance_valid(occupied) else pilot.global_position
