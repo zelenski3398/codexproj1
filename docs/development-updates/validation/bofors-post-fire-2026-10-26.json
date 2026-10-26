@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-26",
+  "source_commit": "9542c5944ae863b43fc48030edce09cec06e2e2f",
+  "godot": "4.6.3",
+  "headless_passed": {
+    "bofors_battery_fire": 22,
+    "bofors_predictor": 59,
+    "aa_hud_context": 27,
+    "minimal_hud": 61,
+    "dive_defence": 47,
+    "battery_command": 36
+  },
+  "headless_total": 252,
+  "native_window": {
+    "renderer": "Compatibility/Mesa llvmpipe",
+    "render_loop": false,
+    "core_battery_cases_passed": 18,
+    "trigger_action": "aa_fire",
+    "shutdown_texture_leak_reported": true
+  },
+  "web_export": "passed",
+  "browser_battery_playtest": "not performed",
+  "mermaid_diagrams_parsed": 1,
+  "limitations": [
+    "No new interactive browser battery battle or live Pages deployment verification.",
+    "No exhaustive firing-arc tests at every post or human combat-balancing playthrough."
+  ]
+}

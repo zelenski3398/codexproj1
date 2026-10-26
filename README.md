@@ -44,10 +44,10 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`9fc9a131afc6a532dd15c0dea5ad6e6b71545a03`](https://github.com/zelenski3398/codexproj1/commit/9fc9a131afc6a532dd15c0dea5ad6e6b71545a03)
+**Latest documented commit:** [`9542c5944ae863b43fc48030edce09cec06e2e2f`](https://github.com/zelenski3398/codexproj1/commit/9542c5944ae863b43fc48030edce09cec06e2e2f)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest AA HUD and contextual-interaction update](docs/development-updates/2026-10-26-aa-hud-context.md)
+[latest Bofors battery firing and aim-assist update](docs/development-updates/2026-10-26-bofors-post-fire.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -56,9 +56,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor 9fc9a131afc6a532dd15c0dea5ad6e6b71545a03 HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' 9fc9a131afc6a532dd15c0dea5ad6e6b71545a03..HEAD
-git diff --stat 9fc9a131afc6a532dd15c0dea5ad6e6b71545a03..HEAD
+git merge-base --is-ancestor 9542c5944ae863b43fc48030edce09cec06e2e2f HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' 9542c5944ae863b43fc48030edce09cec06e2e2f..HEAD
+git diff --stat 9542c5944ae863b43fc48030edce09cec06e2e2f..HEAD
 ```
 
 Append a dated, evidence-linked update and advance this SHA to the newest inspected
@@ -810,7 +810,7 @@ AA now uses [relative mouse aiming, LMB fire, RMB sight zoom and unlimited ammun
 
 [Heavy battery command and supplied defence recordings](docs/battery-command-and-defence-audio.md): walk to a predictor post and press F, RMB designate, LMB issue a staggered four-gun salvo. Individual guns and unlimited ammunition remain available.
 
-[Bofors observation posts and predictor sights](docs/bofors-command-post.md): four accessible posts provide visible-target assignment and per-gun ballistic lead. Choose Manual, Assisted or Training; the player retains all aiming and firing control.
+[Bofors command posts and predictor sights](docs/bofors-command-post.md): four accessible posts now let the player mouse-aim and hold LMB to fire connected guns. B toggles measured predictive battery assistance; Tab selects a visible target, Enter assigns it, and G selects one gun or the battery. Individual-gun Manual/Assisted/Training sights remain available.
 
 ## Fortified Valletta
 
