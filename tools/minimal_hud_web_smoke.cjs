@@ -42,7 +42,7 @@ const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   await page.screenshot({path:'/tmp/minimal-hud-browser-aircraft.png'});
   await page.keyboard.press('Escape');await wait(()=>window.firstSortieState.minimal_hud.pause_menu);
   await page.keyboard.press('F1');await wait(()=>window.firstSortieState.minimal_hud.help);
-  await page.keyboard.press('F1');await wait(()=>!window.firstSortieState.minimal_hud.help&&window.firstSortieState.paused);
+  await page.keyboard.press('F1');await wait(()=>!window.firstSortieState.minimal_hud.help&&window.firstSortieState.paused&&window.firstSortieState.minimal_hud.pause_menu);
   check((await state()).minimal_hud.pause_menu,'Help restores previous paused state');
   await page.keyboard.press('Escape');await wait(()=>!window.firstSortieState.paused);
   check((await state()).world_id===world,'Help and pause preserve running world');

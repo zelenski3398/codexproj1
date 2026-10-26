@@ -29,6 +29,7 @@ var completion_time: float = 0
 var last_notice: String = ""
 var notice_clock: float = 0
 var tracked_session: int = -1
+var interaction_context: String = ""
 
 static func blocks_input() -> bool:
 	return is_instance_valid(instance) and instance.help_open
@@ -136,7 +137,7 @@ func controls_text() -> String:
 	var sections: Dictionary={
 		"On Foot":[["throttle_up","Walk forward"],["throttle_down","Walk back"],["rudder_left","Walk left"],["rudder_right","Walk right"],["roll_left","Turn left"],["roll_right","Turn right"],["board","Enter / exit nearest aircraft, gun or truck (safe conditions apply)"],["battery_command","Enter / exit nearby command post"]],
 		"Aircraft":[["pitch_up","Nose up"],["pitch_down","Nose down"],["roll_left","Bank left"],["roll_right","Bank right"],["rudder_left","Left rudder"],["rudder_right","Right rudder"],["throttle_up","Increase throttle"],["throttle_down","Decrease throttle"],["engine","Start / stop engine"],["gear","Retract / extend gear; Gladiator gear is fixed"],["brake","Wheel brakes"],["fire","Forward guns"]],
-		"AA Guns":[["aa_fire","Fire: heavy single shot / 5 s reload; Bofors automatic / 0.5 s reload"],["aa_zoom","Gun-sight zoom (not an aircraft aim aid); heavy post designates target / approximate area"],["brake","Fine aim"],["board","Mount / dismount gun"],["throttle_up","Heavy gun: increase timed fuze"],["throttle_down","Heavy gun: decrease timed fuze"],["aa_battery_toggle","St Elmo: explicit gunner relay"],["battery_command","Operate / exit predictor or heavy command station"]],
+		"AA Guns":[["aa_fire","Fire: heavy single shot / 5 s reload; Bofors automatic / 0.5 s reload"],["aa_zoom","Gun-sight zoom; at the heavy command post, designate a target / approximate area (aim estimate)"],["brake","Fine aim"],["board","Mount / dismount gun"],["throttle_up","Heavy gun: increase timed fuze"],["throttle_down","Heavy gun: decrease timed fuze"],["aa_battery_toggle","St Elmo: explicit gunner relay"],["battery_command","Operate / exit predictor or heavy command station"]],
 		"Vehicles":[["throttle_up","Accelerate"],["throttle_down","Brake / reverse"],["rudder_left","Steer left"],["rudder_right","Steer right"],["brake","Brake"],["board","Enter / exit at low speed; recovery truck returns to base"]],
 		"Radio":[["wingman_status","Faith, Hope and Charity: request wingman status; unavailable in other modes"]],
 		"Recovery":[["call_transport","Request transport after aircraft loss or away from base, if pilot survives"]],
@@ -157,6 +158,15 @@ func suppress_legacy() -> void:
 	var mission: MaltaMission=session.malta_mission
 	if is_instance_valid(mission):
 		mission.status.hide();mission.recovery.status.hide()
+		if is_instance_valid(session.aa_defence):
+			# Nearby 3D equipment captions can fill the screen through the gun camera.
+			# The contextual HUD already identifies the only eligible interaction.
+			for gun in session.aa_defence.guns:
+				var caption: Node=gun.get_node_or_null("FriendlyAALabel")
+				if caption!=null:caption.hide()
+			for truck in mission.world.trucks:
+				for child in truck.get_children():
+					if child is Label3D:child.hide()
 		if mission.aa_settings.get_parent()!=pause_column:
 			var settings: PanelContainer=mission.aa_settings
 			settings.reparent(pause_column)
@@ -204,14 +214,23 @@ func _process(delta: float) -> void:
 		instruments.text="\n".join(Array(gun.status_text().split("\n")).slice(0,3)) if gun is AACommandStation else ("Ready" if gun.cooldown<=0 else "Reload %.1f s"%gun.cooldown)
 	elif is_instance_valid(mission) and mission.interaction.occupied_vehicle!=null:
 		instruments.show();instruments.text="Truck · %d km/h"%roundi(absf(mission.interaction.occupied_vehicle.speed)*3.6)
-	actions.text=context_actions();actions.visible=playing
+	var context: String="foot"
+	if is_instance_valid(mission):
+		if is_instance_valid(mission.occupied):context="aircraft:%d"%mission.occupied.get_instance_id()
+		elif is_instance_valid(mission.interaction.occupied_gun):context="gun:%d"%mission.interaction.occupied_gun.get_instance_id()
+		elif is_instance_valid(mission.interaction.occupied_vehicle):context="truck:%d"%mission.interaction.occupied_vehicle.get_instance_id()
+		if not alive or mission.interaction.mission_ended():context="ended"
+	if context!=interaction_context:
+		interaction_context=context;notice_clock=0
+		last_notice=mission.notice.split("\n")[0].left(100) if is_instance_valid(mission) else ""
+	actions.text=context_actions();actions.visible=playing and not actions.text.is_empty()
 	update_objective()
 	keep_markers_clear()
 	if is_instance_valid(mission) and mission.notice_time>0 and mission.notice.split("\n")[0].left(100)!=last_notice:
 		last_notice=mission.notice.split("\n")[0].left(100);notice_clock=4
 	notification.text=binding("controls_help")+" — Controls" if age<5 else (last_notice if notice_clock>0 else "")
 	if is_instance_valid(player) and player.stalled:notification.text="Stall — lower the nose"
-	notification.visible=playing and not notification.text.is_empty()
+	notification.visible=playing and context!="ended" and not notification.text.is_empty()
 	debug.text="DEBUG · mode %s · active enemies %d · session %d"%[session.game_mode,session.encounters.active.size(),session.session_number]
 
 func keep_markers_clear() -> void:
@@ -244,12 +263,12 @@ func context_actions() -> String:
 			var object: Node3D=interaction.nearest()
 			if command!=null:hints.append(binding("battery_command")+" — Operate "+("Bofors predictor" if command is BoforsCommandPost else "heavy command post"))
 			elif object!=null:hints.append(binding("board")+" — "+("Mount AA gun" if object is BritishAAGun else ("Enter truck" if object is MilitaryTruck else "Enter aircraft")))
-		if mission.recovery.state=="IDLE" and mission.recovery.available():hints.append(binding("call_transport")+" — Call transport")
-		elif mission.recovery.state=="READY" and is_instance_valid(mission.recovery.truck):
+		if not interaction.is_operating() and mission.recovery.state=="IDLE" and mission.recovery.available():hints.append(binding("call_transport")+" — Call transport")
+		elif not interaction.is_operating() and mission.recovery.state=="READY" and is_instance_valid(mission.recovery.truck):
 			var anchor: Node3D=mission.occupied if is_instance_valid(mission.occupied) else mission.pilot
 			var offset: Vector3=mission.recovery.truck.global_position-anchor.global_position
 			hints.append("Pickup · %d m · %03d°"%[roundi(offset.length()),roundi(fposmod(rad_to_deg(atan2(offset.x,-offset.z)),360))])
-		elif mission.recovery.state in ["REQUESTED","ARRIVING"]:hints.append("Transport · "+mission.recovery.state.to_lower())
+		elif not interaction.is_operating() and mission.recovery.state in ["REQUESTED","ARRIVING"]:hints.append("Transport · "+mission.recovery.state.to_lower())
 	return "    ·    ".join(hints.slice(0,3))
 
 func update_objective() -> void:
@@ -271,9 +290,11 @@ func update_objective() -> void:
 		details="Wave %d/3 · enemies %d\nSt Elmo %d HP · St Angelo %d HP"%[maxi(director.wave,1),session.encounters.active.size(),ceili(director.forts[0].hp),ceili(director.forts[1].hp)]
 	elif is_instance_valid(session.aa_defence):
 		director=session.aa_defence;heading="UNDER DIVE-BOMBER ATTACK"
-		current="Mount a gun and defend the airfield" if director.phase=="WAIT_MOUNT" else ("Mission complete" if director.phase=="SUCCESS" else ("Mission failed" if director.phase=="FAILED" else "Defend against the Stukas"))
+		current="Mount an AA gun" if director.phase=="WAIT_MOUNT" and not session.malta_mission.interaction.is_operating() else ("Mission complete" if director.phase=="SUCCESS" else ("Mission failed" if director.phase=="FAILED" else "Defend the position"))
 		var surviving: int=director.guns.filter(func(gun):return not gun.is_destroyed).size()
-		details="Wave %d/6 · enemies %d\nOperational guns: %d"%[maxi(director.wave,1),director.alive.size(),surviving]
+		details="Wave %d/6 · aircraft remaining %d\nOperational guns: %d"%[maxi(director.wave,1),director.alive.size(),surviving]
+		if director.phase in ["PREPARING","INTERVAL"]:details+=" · next wave %d s"%ceili(director.clock)
+		elif director.phase=="DRAINING":details+=" · ordnance clearing"
 	elif session.game_mode=="survival":
 		heading="MALTA SURVIVAL";var encounter: EnemyEncounters=session.encounters
 		current="Survival Complete" if encounter.complete else ("Run ended" if encounter.ended else ("Stage cleared — confirm next stage" if encounter.awaiting_confirmation else "Destroy the attacking aircraft"))

@@ -38,7 +38,7 @@ func run() -> void:
 	check(not interaction.mount_gun(station),"Remote command-station mounting rejected")
 	game.malta_mission.pilot.global_position=interaction.find_exit(station,3)
 	await frames(2)
-	check("F Enter Heavy AA" in interaction.prompt(),"Nearby soldier receives explicit F command prompt")
+	check(GameplayHUD.binding("battery_command")+" — Operate heavy command post" in interaction.prompt(),"Nearby soldier receives explicit F command prompt")
 	key(true)
 	await frames(3)
 	key(false)

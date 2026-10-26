@@ -34,7 +34,7 @@ func _ready() -> void:
 	camera.far = 100000
 	add_child(camera)
 	var label := Label3D.new()
-	label.text = "MILITARY TRUCK · E TO ENTER"
+	label.text = "MILITARY TRUCK"
 	label.position.y = 3.2
 	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	label.font_size = 25

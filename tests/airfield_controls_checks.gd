@@ -38,7 +38,7 @@ func run() -> void:
 	check(not controls.mount_gun(gun) and not controls.enter_vehicle(truck),"No remote mounting from aircraft parking")
 	for target_gun in [mission.world.aa_battery.guns[0],mission.world.aa_battery.guns[1]]:
 		await walk_to(target_gun.global_position + field.global_basis.x*5 + Vector3.UP*1.05)
-		check(controls.prompt()=="E Mount AA Gun", "Nearby manual mount prompt")
+		check(controls.prompt()==GameplayHUD.binding("board")+" — Mount AA gun", "Nearby manual mount prompt")
 		check(controls.interact() and controls.occupied_gun==target_gun and exclusive(),"Both guns mount through exclusive E interaction")
 		var yaw: float = target_gun.yaw.rotation.y
 		Input.action_press("roll_right")
@@ -47,7 +47,7 @@ func run() -> void:
 		await frames(120)
 		release_controls()
 		check(target_gun.shots_fired>0 and target_gun.yaw.rotation.y != yaw,"Mounted aim/fire works")
-		check(target_gun.camera.current and controls.sight.visible and "Exit AA Gun" in controls.prompt(),"Gunner camera, reticle and exit instructions")
+		check(target_gun.camera.current and controls.sight.visible and "Exit gun" in controls.prompt(),"Gunner camera, reticle and exit instructions")
 		target_gun.take_damage(20)
 		var hp: float = target_gun.hp
 		check(controls.interact() and mission.pilot.active and mission.pilot.camera.current and exclusive(),"Exit restores on-foot input and camera")
@@ -60,7 +60,7 @@ func run() -> void:
 		check(controls.mount_gun(target_gun) and target_gun.hp==hp,"Re-enter retains gun damage")
 		check(controls.leave_gun(),"Repeated mount/exit remains safe")
 	await walk_to(truck.global_position + field.global_basis.x*2.8 + Vector3.UP*1.05)
-	check(controls.prompt()=="E Enter Military Truck" and controls.interact(),"Enter nearby truck using established E input")
+	check(controls.prompt()==GameplayHUD.binding("board")+" — Enter truck" and controls.interact(),"Enter nearby truck using established E input")
 	check(exclusive() and truck.camera.current and truck.model.driver.visible,"Truck owns camera/input and seated driver")
 	check(not controls.mount_gun(gun) and not mission.board_aircraft(mission.initial_aircraft),"Cannot mount guns/planes while driving")
 	var start := truck.global_position

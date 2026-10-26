@@ -63,7 +63,7 @@ func run() -> void:
 	var gun: BritishAAGun=post.battery_guns[0]
 	post.measurement_error_metres=0
 	mission.pilot.global_position=post.to_global(Vector3(0,1.05,3.5));await frames(3)
-	check(mission.interaction.nearest_command()==post and mission.interaction.prompt().contains("Bofors Predictor"),"Nearby soldier sees the Bofors predictor interaction")
+	check(mission.interaction.nearest_command()==post and mission.interaction.prompt().contains("Bofors predictor"),"Nearby soldier sees the Bofors predictor interaction")
 	await key(KEY_F)
 	check(mission.interaction.occupied_gun==post and post.mounted and post.camera.current and not mission.pilot.active,"F enters optics through exclusive existing controller routing")
 	var foe:=EnemyAircraft.new();game.add_child(foe);await frames(3)

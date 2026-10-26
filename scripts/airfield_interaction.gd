@@ -32,7 +32,7 @@ func is_operating() -> bool:
 	return is_instance_valid(occupied_gun) or is_instance_valid(occupied_vehicle)
 
 func nearest() -> Node3D:
-	if is_operating() or mission.occupied != null or not mission.pilot.active or mission.pilot.health.hp<=0: return null
+	if mission_ended() or is_operating() or mission.occupied != null or not mission.pilot.active or mission.pilot.health.hp<=0: return null
 	var best: Node3D = mission.nearest_serviceable()
 	var distance := mission.pilot.global_position.distance_to(best.global_position) if best != null else INF
 	for gun in mission.world.aa_battery.guns + mission.world.fort_battery.guns:
@@ -49,7 +49,7 @@ func nearest() -> Node3D:
 	return best
 
 func nearest_command() -> BritishAAGun:
-	if is_operating() or mission.occupied!=null or not mission.pilot.active:return null
+	if mission_ended() or is_operating() or mission.occupied!=null or not mission.pilot.active or mission.pilot.health.hp<=0:return null
 	var best: BritishAAGun=null
 	var distance:=4.5
 	for station in mission.world.aa_battery.command_stations + mission.world.aa_battery.bofors_posts:
@@ -91,7 +91,7 @@ func mount_gun(gun: BritishAAGun) -> bool:
 		mission.pilot.global_position=gun.to_global(Vector3(0,1.45,1.55))
 	sight.visible = true
 	sight.gun=gun
-	mission._message("Bofors observation · LMB acquire · TAB visible targets · G gun scope · ENTER assign · F exit" if gun is BoforsCommandPost else ("Battery command · RMB designates target / area · LMB orders a salvo · F exits" if gun is AACommandStation else "Mouse aims · LMB fire · RMB zoom · ESC releases cursor; click to recapture"))
+
 	return true
 
 func enter_vehicle(truck: MilitaryTruck) -> bool:
@@ -101,7 +101,6 @@ func enter_vehicle(truck: MilitaryTruck) -> bool:
 	_hide_pilot()
 	if mission.pilot.combat_enabled:truck.add_collision_exception_with(mission.pilot)
 	truck.start_driving()
-	mission._message("W forward · S reverse · A/D steer · SPACE brake · E exit when stopped")
 	return true
 
 func find_exit(body: Node3D, radius: float) -> Vector3:
@@ -178,18 +177,9 @@ func _process(_delta: float) -> void:
 	if occupied_gun != null and mission_ended(): leave_gun(true)
 
 func prompt() -> String:
-	if occupied_gun is AACommandStation:
-		return occupied_gun.status_text()+"\nESC Pause / sensitivity · M Map · R Restart"
-	if occupied_gun != null:
-		return occupied_gun.status_text() + "\nMOUSE Aim · LMB Fire · RMB Zoom · arrows alternative · SPACE Fine aim · E Exit AA Gun · M Map · ESC Pause · R Restart"
-	if occupied_vehicle != null:
-		return "MILITARY TRUCK · %d km/h\nW Forward · S Reverse · A/D Steer · SPACE Brake\nE Exit when stopped · M Map · ESC Pause · R Full restart" % roundi(absf(occupied_vehicle.speed)*3.6)
-	if nearest_command()!=null:return "F Operate Bofors Predictor · observe and assign targets" if nearest_command() is BoforsCommandPost else "F Enter Heavy AA Battery Command · mouse target designation"
-	var object := nearest()
-	if object is BritishAAGun: return "E Mount AA Gun"
-	if object is MilitaryTruck: return "E Enter recovery truck · return to departure airfield" if object.get_meta("recovery",false) else "E Enter Military Truck"
-	if object is FlightAircraft: return "E Board " + object.display_name
-	return "Approach a truck, AA gun or aircraft · E to enter"
+	# Compatibility callers use the same occupied/nearest state as the visible HUD.
+	var hud: GameplayHUD=mission.session.gameplay_hud
+	return hud.context_actions() if is_instance_valid(hud) else ""
 
 func _exit_tree() -> void:
 	if is_instance_valid(occupied_gun): occupied_gun.stop_operation()

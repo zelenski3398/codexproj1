@@ -301,7 +301,7 @@ func _process(_delta: float) -> void:
 	objective.text="UNDER DIVE-BOMBER ATTACK · WAVE %d/6 · %d REMAIN\nPLAYER HP %d/100%s\n%s"%[maxi(wave,1),alive.size(),pilot.health.hp,health_status,instruction]
 	if phase=="WAIT_MOUNT":objective.text+="\n"+BRIEFING
 	marker.hide()
-	if is_finished() or session.malta_mission.interaction.occupied_gun!=null:return
+	if is_finished() or not pilot.active or session.malta_mission.interaction.is_operating() or not session.malta_mission.survival.alive():return
 	var nearest: BritishAAGun=null
 	for gun in guns:
 		if not gun.is_destroyed and (nearest==null or pilot.global_position.distance_to(gun.global_position)<pilot.global_position.distance_to(nearest.global_position)):nearest=gun
