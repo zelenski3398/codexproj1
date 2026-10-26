@@ -1,7 +1,9 @@
 class_name BoforsCommandPost
 extends AACommandStation
-## Observation/assignment only. Reuses the staffed heavy post's interaction,
-## damage and optics, never its gun-driving or salvo mechanisms.
+## Player-directed light battery: manual sight laying or optional measured lead.
+## Only a held player trigger permits connected guns to discharge.
+@export var manual_sight_range: float = 1500
+@export var battery_aim_assist: bool = false
 @export var observation_range: float = 4000
 @export var observation_interval: float = .12
 @export var lost_after_seconds: float = 1.25
@@ -28,7 +30,7 @@ var mission_context: MaltaMission
 func _ready() -> void:
 	super._ready()
 	add_to_group("bofors_predictor_posts")
-	command_label.text = "F · BOFORS PREDICTOR\nObservation / target assignment"
+	command_label.text = "F · BOFORS COMMAND\nPlayer-controlled battery"
 	command_label.pixel_size=.009
 	command_label.position.y=3.1
 	_decorate()
@@ -77,7 +79,7 @@ func _decorate() -> void:
 
 func start_operation(operator: AirfieldInteraction=null) -> void:
 	if is_destroyed: return
-	# Do not call AACommandStation.start_operation: it connects gun drives.
+	# Keep Bofors continuous trigger handling separate from heavy single salvos.
 	mounted=true;operator_session=operator
 	command_label.hide()
 	for gun in battery.guns+battery_guns:
@@ -88,6 +90,9 @@ func start_operation(operator: AirfieldInteraction=null) -> void:
 		var safe:=operator.find_exit(self,5)
 		if safe!=Vector3.INF and crew.health.hp>0:crew.move_to_wait(safe-Vector3.UP*1.05)
 	camera.make_current();mouse_controls.begin();mouse_controls.release_fire=true
+	trigger_held=false
+	for gun in battery_guns:
+		if not gun.is_destroyed and not gun.mounted:gun.command_station=self
 
 func stop_operation() -> void:
 	super.stop_operation()
@@ -98,21 +103,62 @@ func stop_operation() -> void:
 			if label!=null:label.show()
 	if is_instance_valid(crew) and not is_destroyed:crew.return_to_seat()
 
-func fire_round(_command_order: bool=false) -> bool:
-	return false # A predictor has no weapon or firing orders.
+func toggle_battery_assist() -> void:
+	battery_aim_assist=not battery_aim_assist
+	cancel_orders() # Switching modes must not inherit a held trigger.
 
-func drive_gun(_gun: BritishAAGun,_delta: float) -> void:
-	pass # Connected Bofors always retain manual traverse and fire.
+func selected(gun: BritishAAGun) -> bool:
+	var index: int=battery_guns.find(gun)
+	return index>=0 and (gun_scope==0 or gun_scope==index+1) and not gun.is_destroyed and not gun.mounted
+
+func command_solution(gun: BritishAAGun) -> Dictionary:
+	if battery_aim_assist:
+		var solution: Dictionary=get_solution(gun)
+		return solution if solution.get("valid",false) else {}
+	# Manual mode follows the player's actual sight, with parallax convergence.
+	# It has no target selection, velocity lead or gravity compensation.
+	var origin: Vector3=camera.global_position
+	var point: Vector3=origin-camera.global_basis.z*manual_sight_range
+	var excludes: Array[RID]=[get_rid()]
+	if is_instance_valid(mission_context):excludes.append(mission_context.pilot.get_rid())
+	var ray:=PhysicsRayQueryParameters3D.create(origin,point,1,excludes)
+	var hit:=get_world_3d().direct_space_state.intersect_ray(ray)
+	if not hit.is_empty():point=hit.position
+	var direction: Vector3=(point-gun.muzzle.global_position).normalized()
+	var local: Vector3=gun.yaw.get_parent().global_basis.inverse()*direction
+	var pitch: float=atan2(local.y,Vector2(local.x,local.z).length())
+	return {"direction":direction,"yaw":atan2(-local.x,-local.z),"pitch":pitch,
+		"aimable":pitch>=deg_to_rad(gun.minimum_elevation_degrees) and pitch<=deg_to_rad(gun.maximum_elevation_degrees)}
+
+func fire_round(_command_order: bool=false) -> bool:
+	if not command_active() or not trigger_held:return false
+	var ordered: bool=false
+	for gun in battery_guns:
+		if selected(gun) and gun.command_station==self:
+			orders[gun]={} # Authorization only; every gun still checks its own reload.
+			ordered=true
+	return ordered
+
+func drive_gun(gun: BritishAAGun,delta: float) -> void:
+	if not command_active() or not selected(gun):return
+	var solution: Dictionary=command_solution(gun)
+	if solution.is_empty() or not solution.get("aimable",false):return
+	gun.yaw.rotation.y=rotate_toward(gun.yaw.rotation.y,solution.yaw,deg_to_rad(gun.traverse_degrees)*delta)
+	gun.elevation.rotation.x=move_toward(gun.elevation.rotation.x,solution.pitch,deg_to_rad(gun.elevation_degrees)*delta)
+	if not trigger_held or not orders.has(gun):return
+	if not Input.is_action_pressed("fire") and not (Input.mouse_mode==Input.MOUSE_MODE_CAPTURED and Input.is_action_pressed("aa_fire")):return
+	if (-gun.muzzle.global_basis.z).angle_to(solution.direction)>deg_to_rad(firing_tolerance_degrees):return
+	if gun.fire_round(true):commanded_shots+=1
 
 func _input(event: InputEvent) -> void:
-	if not mounted or mouse_controls.blocked():return
-	if event is InputEventMouseButton and event.pressed and event.button_index==MOUSE_BUTTON_LEFT and Input.mouse_mode==Input.MOUSE_MODE_CAPTURED:
-		designate_from_sight();get_viewport().set_input_as_handled()
+	if not mounted or mouse_controls.blocked() or event.is_echo():return
+	if event.is_action_pressed("aa_battery_toggle"):
+		toggle_battery_assist();get_viewport().set_input_as_handled()
 	elif event is InputEventKey and event.pressed and not event.echo:
 		if event.physical_keycode==KEY_TAB or event.keycode==KEY_TAB:
 			cycle_target();get_viewport().set_input_as_handled()
 		elif event.physical_keycode==KEY_G or event.keycode==KEY_G:
-			gun_scope=(gun_scope+1)%(battery_guns.size()+1);get_viewport().set_input_as_handled()
+			gun_scope=(gun_scope+1)%(battery_guns.size()+1);cancel_orders();get_viewport().set_input_as_handled()
 		elif event.physical_keycode==KEY_ENTER or event.keycode==KEY_ENTER:
 			assign_target();get_viewport().set_input_as_handled()
 
@@ -124,7 +170,11 @@ func _physics_process(delta: float) -> void:
 		lose_target(false);return
 	if is_instance_valid(mission_context) and mission_context.interaction.mission_ended():
 		lose_target(false);radio.stop();return
-	if mounted and not mouse_controls.blocked():mouse_controls.sample(delta)
+	if command_active():
+		trigger_held=mouse_controls.sample(delta)
+		if trigger_held:fire_round()
+		else:orders.clear()
+	else:cancel_orders()
 	solution_clock-=delta
 	if solution_clock>0:return
 	solution_clock=observation_interval
@@ -273,8 +323,13 @@ func take_damage(amount: float) -> void:
 		if is_instance_valid(crew):crew.fallen()
 
 func status_text() -> String:
-	var feasible: bool=false
-	for i in battery_guns.size():
-		if (gun_scope==0 or gun_scope==i+1) and solutions.has(battery_guns[i]) and solutions[battery_guns[i]].valid:feasible=true
-	var state: String="NO SOLUTION" if solutions.is_empty() else ("OUTSIDE FIRING ENVELOPE" if not feasible else ("PREDICTOR READY" if quality>.65 else "TRACK SETTLING"))
-	return "BOFORS PREDICTOR · HP %d/%d · %s\n%s\nSCOPE: %s · %d GUNS ASSIGNED · %s\nMouse observe · RMB binocular zoom · LMB acquire · TAB next visible target\nG gun/battery scope · ENTER assign · F/E exit and operate a Bofors"%[hp,max_hp,"TARGET ACQUIRED" if is_instance_valid(target) else "NO OBSERVED TARGET",report,"BATTERY" if gun_scope==0 else "GUN %d"%gun_scope,assigned_guns.size(),state]
+	var operational: int=battery_guns.filter(func(g):return not g.is_destroyed).size()
+	var ready: int=battery_guns.filter(func(g):return selected(g) and g.cooldown<=0).size()
+	var mode: String="ASSIST ON" if battery_aim_assist else "MANUAL"
+	var solution: String=""
+	if battery_aim_assist:
+		if not is_instance_valid(target):solution=" · Tab select target"
+		elif assigned_guns.is_empty():solution=" · Enter assign"
+		elif not battery_guns.any(func(g):return selected(g) and not command_solution(g).is_empty()):solution=" · OUTSIDE FIRING ENVELOPE"
+		else:solution=" · lead ready" if quality>.65 else " · tracking settling"
+	return "BOFORS COMMAND · %s%s\n%s\n%s · %d operational · %d ready"%[mode,solution,report,"BATTERY" if gun_scope==0 else "GUN %d"%gun_scope,operational,ready]

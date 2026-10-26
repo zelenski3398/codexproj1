@@ -27,7 +27,7 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   check(Math.abs(initial.ground_position[1]-goal[1])<.6,'Fort predictor approach shares the soldier\'s accessible deck');
   const held=new Set();
   for(let tick=0;tick<180;tick++){
-   const s=await state(),p=s.ground_position,dx=goal[0]-p[0],dz=goal[2]-p[2];if(Math.hypot(dx,dz)<.8||s.ground_prompt.includes('F Operate Bofors'))break;
+   const s=await state(),p=s.ground_position,dx=goal[0]-p[0],dz=goal[2]-p[2];if(Math.hypot(dx,dz)<.8||s.ground_prompt.includes('Operate Bofors predictor'))break;
    const lx=Math.cos(s.pilot_yaw)*dx-Math.sin(s.pilot_yaw)*dz,lz=Math.sin(s.pilot_yaw)*dx+Math.cos(s.pilot_yaw)*dz,wanted=new Set();
    if(Math.abs(lx)>.4)wanted.add(lx>0?'d':'a');if(Math.abs(lz)>.4)wanted.add(lz>0?'s':'w');
    for(const key of held)if(!wanted.has(key)){await page.keyboard.up(key);held.delete(key);}
@@ -35,7 +35,7 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
    await sleep(150);
   }
   for(const key of held)await page.keyboard.up(key);
-  check((await state()).ground_prompt.includes('F Operate Bofors'),'Normal walking reaches a usable Fort St Elmo predictor');
+  check((await state()).ground_prompt.includes('Operate Bofors predictor'),'Normal walking reaches a usable Fort St Elmo predictor');
   await page.keyboard.press('f');await wait(()=>window.firstSortieState.bofors_posts.some(p=>p.mounted));
   if(!(await state()).aa_mouse.captured){await page.mouse.click(400,250);await sleep(500);}
   check(!(await state()).on_foot&&(await state()).fort.shots.every(v=>v===0),'F gives exclusive optics control without firing a gun');

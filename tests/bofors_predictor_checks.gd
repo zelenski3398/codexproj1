@@ -109,7 +109,9 @@ func run() -> void:
 	aim_post(post,foe.global_position);post.designate(foe);post.assign_target();await frames(280)
 	solution=post.get_solution(gun)
 	check(not solution.is_empty() and not solution.valid,"Target outside Bofors range is explicitly outside the firing envelope")
-	check(post.status_text().contains("OUTSIDE FIRING ENVELOPE") and not post.ready_announced,"Observation post also reports impossible gun solutions without a false readiness call")
+	post.battery_aim_assist=true
+	check(post.status_text().contains("OUTSIDE FIRING ENVELOPE") and not post.ready_announced,"Assisted battery reports impossible gun solutions without a false readiness call")
+	post.battery_aim_assist=false
 	foe.global_position=gun.muzzle.global_position+Vector3.UP*200
 	aim_post(post,foe.global_position);post.designate(foe);post.assign_target();await frames(280)
 	solution=post.get_solution(gun)
@@ -117,7 +119,7 @@ func run() -> void:
 	foe.global_position=saved_position
 	aim_post(post,foe.global_position);post.designate(foe);post.assign_target();await frames(300)
 	check(post.radio.seen.size()>0 and post.radio.played.is_empty(),"Unrecorded period calls use the existing subtitle queue without fake speech")
-	check(post.battery_guns.all(func(g):return g.shots_fired==0 and g.command_station==null),"Observation post never drives or fires the connected guns")
+	check(post.battery_guns.all(func(g):return g.shots_fired==0 and g.command_station==post),"Occupied command post lays guns but never fires without a player trigger")
 	await key(KEY_F)
 	check(mission.pilot.active and mission.interaction.occupied_gun==null and post.assigned_guns.size()==2,"F dismount restores walking while the target assignment persists")
 	mission.pilot.global_position=mission.interaction.find_exit(gun,5);await frames(3)

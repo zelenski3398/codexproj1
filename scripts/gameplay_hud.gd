@@ -137,7 +137,7 @@ func controls_text() -> String:
 	var sections: Dictionary={
 		"On Foot":[["throttle_up","Walk forward"],["throttle_down","Walk back"],["rudder_left","Walk left"],["rudder_right","Walk right"],["roll_left","Turn left"],["roll_right","Turn right"],["board","Enter / exit nearest aircraft, gun or truck (safe conditions apply)"],["battery_command","Enter / exit nearby command post"]],
 		"Aircraft":[["pitch_up","Nose up"],["pitch_down","Nose down"],["roll_left","Bank left"],["roll_right","Bank right"],["rudder_left","Left rudder"],["rudder_right","Right rudder"],["throttle_up","Increase throttle"],["throttle_down","Decrease throttle"],["engine","Start / stop engine"],["gear","Retract / extend gear; Gladiator gear is fixed"],["brake","Wheel brakes"],["fire","Forward guns"]],
-		"AA Guns":[["aa_fire","Fire: heavy single shot / 5 s reload; Bofors automatic / 0.5 s reload"],["aa_zoom","Gun-sight zoom; at the heavy command post, designate a target / approximate area (aim estimate)"],["brake","Fine aim"],["board","Mount / dismount gun"],["throttle_up","Heavy gun: increase timed fuze"],["throttle_down","Heavy gun: decrease timed fuze"],["aa_battery_toggle","St Elmo: explicit gunner relay"],["battery_command","Operate / exit predictor or heavy command station"]],
+		"AA Guns":[["aa_fire","Fire: heavy single shot / 5 s reload; Bofors automatic / 0.5 s reload"],["aa_zoom","Gun-sight zoom; at the heavy command post, designate a target / approximate area (aim estimate)"],["brake","Fine aim"],["board","Mount / dismount gun"],["throttle_up","Heavy gun: increase timed fuze"],["throttle_down","Heavy gun: decrease timed fuze"],["aa_battery_toggle","Bofors post: toggle battery aim assist; St Elmo gun: gunner relay"],["battery_command","Operate / exit predictor or heavy command station"]],
 		"Vehicles":[["throttle_up","Accelerate"],["throttle_down","Brake / reverse"],["rudder_left","Steer left"],["rudder_right","Steer right"],["brake","Brake"],["board","Enter / exit at low speed; recovery truck returns to base"]],
 		"Radio":[["wingman_status","Faith, Hope and Charity: request wingman status; unavailable in other modes"]],
 		"Recovery":[["call_transport","Request transport after aircraft loss or away from base, if pilot survives"]],
@@ -145,7 +145,7 @@ func controls_text() -> String:
 	for heading in sections:
 		text+="[color=#e4bf75][b]"+heading+"[/b][/color]\n"
 		for entry in sections[heading]:text+="[b]"+binding(entry[0])+"[/b] — "+entry[1]+"\n"
-		if heading=="AA Guns":text+="Mouse moves the actual barrel; arrows remain an alternative. Esc settings: sensitivity and Manual / Assisted / Training sights.\nBofors post: LMB acquire, Tab cycle visible targets, G gun/battery scope, Enter assign. Heavy post: LMB orders a salvo. No autonomous Bofors aiming/fire.\n"
+		if heading=="AA Guns":text+="Mouse moves the actual barrel; arrows remain an alternative. Esc settings: sensitivity and Manual / Assisted / Training sights.\nBofors post: hold LMB to fire connected guns; mouse lays the battery. B toggles predictive aim assist. Tab selects a visible target, Enter assigns it for assisted lead, G selects gun/battery scope. RMB zooms. Heavy post: LMB orders a salvo. No autonomous firing.\n"
 		text+="\n"
 	return text
 
@@ -255,6 +255,9 @@ func context_actions() -> String:
 		elif is_instance_valid(interaction.occupied_gun):
 			var gun: BritishAAGun=interaction.occupied_gun
 			hints.append(binding("battery_command" if gun is AACommandStation else "board")+" — Exit "+("post" if gun is AACommandStation else "gun"))
+			if gun is BoforsCommandPost:
+				hints.append(binding("aa_fire")+" — Fire battery")
+				hints.append(binding("aa_battery_toggle")+" — Assist "+("on" if gun.battery_aim_assist else "off"))
 			hints.append(binding("aa_zoom")+ (" — Designate / aim estimate" if gun is AACommandStation and not gun is BoforsCommandPost else " — Optics zoom"))
 		elif is_instance_valid(interaction.occupied_vehicle):
 			if absf(interaction.occupied_vehicle.speed)<=mission.maximum_exit_speed and interaction.occupied_vehicle.grounded:hints.append(binding("board")+" — Exit truck")
@@ -269,7 +272,7 @@ func context_actions() -> String:
 			var offset: Vector3=mission.recovery.truck.global_position-anchor.global_position
 			hints.append("Pickup · %d m · %03d°"%[roundi(offset.length()),roundi(fposmod(rad_to_deg(atan2(offset.x,-offset.z)),360))])
 		elif not interaction.is_operating() and mission.recovery.state in ["REQUESTED","ARRIVING"]:hints.append("Transport · "+mission.recovery.state.to_lower())
-	return "    ·    ".join(hints.slice(0,3))
+	return "    ·    ".join(hints.slice(0,4))
 
 func update_objective() -> void:
 	var current: String="";var details: String="";var heading: String=""

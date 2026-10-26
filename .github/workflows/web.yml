@@ -76,6 +76,7 @@ jobs:
           xvfb-run -a godot --path . --audio-driver Dummy --disable-render-loop --fixed-fps 120 --script res://tests/battery_command_ui_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/battery_command_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/bofors_predictor_checks.gd
+          godot --headless --path . --fixed-fps 120 --script res://tests/bofors_battery_fire_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/battery_engagement_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/defence_sound_checks.gd
           godot --headless --path . --fixed-fps 120 --script res://tests/layered_aa_checks.gd
