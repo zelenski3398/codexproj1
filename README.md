@@ -44,10 +44,10 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`4f376d68bd90a2ad593301e453abe43bda756451`](https://github.com/zelenski3398/codexproj1/commit/4f376d68bd90a2ad593301e453abe43bda756451)
+**Latest documented commit:** [`9ae7f845634149f5d6b54e79cf5b9e12de08a5d7`](https://github.com/zelenski3398/codexproj1/commit/9ae7f845634149f5d6b54e79cf5b9e12de08a5d7)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest return-and-land update](docs/development-updates/2026-10-25-mission-return.md)
+[latest larger-fields and Mediterranean trees update](docs/development-updates/2026-10-26-rural-fields-and-trees.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -56,9 +56,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor 4f376d68bd90a2ad593301e453abe43bda756451 HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' 4f376d68bd90a2ad593301e453abe43bda756451..HEAD
-git diff --stat 4f376d68bd90a2ad593301e453abe43bda756451..HEAD
+git merge-base --is-ancestor 9ae7f845634149f5d6b54e79cf5b9e12de08a5d7 HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' 9ae7f845634149f5d6b54e79cf5b9e12de08a5d7..HEAD
+git diff --stat 9ae7f845634149f5d6b54e79cf5b9e12de08a5d7..HEAD
 ```
 
 Append a dated, evidence-linked update and advance this SHA to the newest inspected

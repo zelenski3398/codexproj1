@@ -4,6 +4,7 @@
 
 The original report is a frozen 50-commit audit through `588ac7b`. Later changes are recorded here with explicit commit boundaries, avoiding a repeated reconstruction of unchanged history.
 
+- [26 October 2026: larger shared-edge fields and distinct Mediterranean tree species](2026-10-26-rural-fields-and-trees.md).
 - [25 October 2026: safe return and landing before results and congratulations](2026-10-25-mission-return.md).
 - [25 October 2026: minimal HUD, modal controls help and three-minute interception deadline](2026-10-25-minimal-hud.md).
 - [24 October 2026: staffed Bofors observation posts, explicit target assignment and manual predictor sights](2026-10-24-bofors-predictor.md).

@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-26",
+  "source_commit": "9ae7f845634149f5d6b54e79cf5b9e12de08a5d7",
+  "godot": "4.6.3.stable.official.7d41c59c4",
+  "source_checks": {
+    "countryside": 27,
+    "vegetation": 25
+  },
+  "native_assertions": 146,
+  "native_suites": {
+    "countryside": 10,
+    "maltese_vegetation": 11,
+    "rural_flight": 5,
+    "airfield_controls": 61,
+    "countryside_departure": 12,
+    "malta_terrain": 30,
+    "valletta": 17
+  },
+  "production_browser_checks": 8,
+  "browser_script": "tools/rural_vegetation_web_smoke.cjs",
+  "browser_renderer": "Chromium ANGLE SwiftShader",
+  "web_export": "passed",
+  "web_pack_bytes": 358883176,
+  "fields": {
+    "plots": 9703,
+    "clusters": 389,
+    "median_area_m2": 4711.355570799088,
+    "p10_area_m2": 1772.5579749874744,
+    "p90_area_m2": 10666.2363647849,
+    "total_area_km2": 54.545511383926545,
+    "triangles": 644,
+    "wall_metres": 44999.95686045755,
+    "chunks": 936,
+    "glbs": 3087
+  },
+  "trees": {
+    "count": 4800,
+    "species": {
+      "carob": 1439,
+      "olive": 2077,
+      "aleppo_pine": 1284
+    },
+    "geometry_variants": 9,
+    "lod_meshes": 18,
+    "spatial_groups": 2531,
+    "collision_distance_m": 220,
+    "maximum_colliders": 192,
+    "planting_seed": 194226
+  },
+  "rebuild": {
+    "rural_glbs_byte_identical": true,
+    "manifest_and_planting_identical": true,
+    "tree_glbs_byte_identical": true
+  },
+  "drape_check": {
+    "maximum_height_error_m": 0.0028696635942679904,
+    "adjacent_edge_resamples": 172,
+    "edge_search_metres": 0.002
+  },
+  "protected_source_hashes": {
+    "terrain.glb": "4f5137ce21c038f1af815a853578b32e9501e5d382fb67ac74f6df169b2f39f8",
+    "world_data.json": "6bb3be486b754cb72b8afd785acc45f23fa32557c5e571ca412a384ff3618bc1",
+    "roads/world_paths.json": "72a6aefc3a6983ff7ebecfea80c47386ed1549e94caa3db1fd5130b48c659319",
+    "valletta/layout.json": "f03c0fe99d1c53b7929c8892a7535c98afe6f3b24217d0f44984ab770c9e8f6f",
+    "mdina/layout.json": "a52b062d85955aa45053f41f8876f9992c75a9ff1402d233637f9167f4c05d00",
+    "cottonera/region.json": "5c0297e78a37bc5f3407d61f627dbaafb5b695821988c4941583f930b353d3ba",
+    "landscape/landcover.png": "d188e113baec9fe78c21b201cd069c37860dc322f6c6512295cc18febb5fb338"
+  },
+  "limitations": [
+    "Artistic inferred parcels and planting, not a historic cadastral/tree survey",
+    "No hardware/mobile frame-rate benchmark or exhaustive route drive",
+    "Browser verifies production integration and resource loading, not a full rural flight",
+    "Live Pages deployment not verified"
+  ]
+}
