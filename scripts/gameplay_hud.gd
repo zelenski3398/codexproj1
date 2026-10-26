@@ -290,7 +290,7 @@ func update_objective() -> void:
 		details="Wave %d/3 · enemies %d\nSt Elmo %d HP · St Angelo %d HP"%[maxi(director.wave,1),session.encounters.active.size(),ceili(director.forts[0].hp),ceili(director.forts[1].hp)]
 	elif is_instance_valid(session.aa_defence):
 		director=session.aa_defence;heading="UNDER DIVE-BOMBER ATTACK"
-		current="Mount an AA gun" if director.phase=="WAIT_MOUNT" and not session.malta_mission.interaction.is_operating() else ("Mission complete" if director.phase=="SUCCESS" else ("Mission failed" if director.phase=="FAILED" else "Defend the position"))
+		current="Mount an AA gun" if director.phase=="WAIT_MOUNT" and not is_instance_valid(session.malta_mission.interaction.occupied_gun) else ("Mission complete" if director.phase=="SUCCESS" else ("Mission failed" if director.phase=="FAILED" else "Defend the position"))
 		var surviving: int=director.guns.filter(func(gun):return not gun.is_destroyed).size()
 		details="Wave %d/6 · aircraft remaining %d\nOperational guns: %d"%[maxi(director.wave,1),director.alive.size(),surviving]
 		if director.phase in ["PREPARING","INTERVAL"]:details+=" · next wave %d s"%ceili(director.clock)

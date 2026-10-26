@@ -41,6 +41,10 @@ func run() -> void:
 	var truck: MilitaryTruck=mission.world.trucks[1]
 	mission.pilot.global_position=truck.global_position+Vector3(2,1,0);await frames()
 	check("Enter truck" in ui.actions.text and controls.enter_vehicle(truck),"Truck entry prompt and mounting")
+	var phase_before: String=director.phase
+	director.phase="WAIT_MOUNT";ui.update_objective()
+	check(ui.objective.text=="Mount an AA gun","Driving before the first mount does not complete the gun objective")
+	director.phase=phase_before
 	await frames();check(not "Enter" in ui.actions.text and not "Mount" in ui.actions.text and not director.marker.visible,"Driving suppresses nearby gun and vehicle entry instructions")
 	ui.open_help();await frames();ui.close_help();await frames()
 	check(controls.occupied_vehicle==truck and root.get_camera_3d()==truck.camera,"Truck help retains occupied controller and camera")
