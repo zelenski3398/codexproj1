@@ -9,4 +9,5 @@ with tempfile.TemporaryDirectory(prefix='malta-rural-',dir='/tmp') as directory:
  after={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in Path(directory).glob('farm_*.glb')}
  assert before==after,'Every rural mesh/collision file must regenerate identically'
  assert json.loads((OUT/'manifest.json').read_text())==json.loads(json.dumps(result,default=numpy_scalar)),'Plot geometry, tracks, wall sections and configuration must regenerate identically'
+ assert json.loads((OUT/'trees.json').read_text())==json.loads((Path(directory)/'trees.json').read_text()),'Tree and scrub placement must regenerate identically'
  print('PASS: Full countryside regeneration matches',len(before),'GLBs and all manifest data',flush=True)

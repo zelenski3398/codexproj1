@@ -1,9 +1,9 @@
 {
   "seed": 1942,
-  "cluster_spacing_m": 460,
+  "cluster_spacing_m": 520,
   "cluster_size_m": [
-    200,
-    320
+    340,
+    540
   ],
   "maximum_clusters": 600,
   "cluster_probability": 1.0,
@@ -14,7 +14,7 @@
   "maximum_wall_length_m": 45000,
   "wall_probability": 0.32,
   "section_length_m": 1.6,
-  "minimum_plot_area_m2": 170,
+  "minimum_plot_area_m2": 650,
   "small_width_m": [
     12,
     30
@@ -210,6 +210,41 @@
     2.6,
     4.8
   ],
-  "minimum_cluster_separation_m": 480,
-  "chunk_size_m": 500
+  "minimum_cluster_separation_m": 600,
+  "chunk_size_m": 500,
+  "plot_area_classes_m2": {
+    "small": [
+      900,
+      2400
+    ],
+    "medium": [
+      3200,
+      7600
+    ],
+    "large": [
+      8500,
+      18000
+    ]
+  },
+  "plot_area_weights": [
+    0.09,
+    0.49,
+    0.42
+  ],
+  "triangle_probability": 0.12,
+  "vegetation": {
+    "seed": 194226,
+    "maximum_trees": 4800,
+    "grove_probability": 0.18,
+    "edge_group_probability": 0.8,
+    "pine_group_probability": 0.35,
+    "trunk_wall_clearance_m": 2.0,
+    "minimum_tree_spacing_m": 7.5,
+    "maximum_tree_slope": 0.36,
+    "batch_size_m": 256,
+    "near_distance_m": 380,
+    "far_distance_m": 2200,
+    "collision_distance_m": 220,
+    "maximum_trunk_colliders": 192
+  }
 }

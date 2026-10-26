@@ -11,7 +11,7 @@ func run() -> void:
 	GameAudioMixer.instance.audio_button.visible=false
 	var chosen:Dictionary
 	for cluster in rural.manifest.clusters:
-		if cluster.centre[2]>0 and (chosen.is_empty() or cluster.plots>chosen.plots):chosen=cluster
+		if cluster.centre[2]>0 and (chosen.is_empty() or cluster.plots>chosen.plots and cluster.centre[2]<11000):chosen=cluster
 	var centre:=MaltaGeography.vector(chosen.centre)
 	var nearest:Dictionary=rural.manifest.sections[0]
 	var distance:float=INF
@@ -24,10 +24,15 @@ func run() -> void:
 	var ground_camera:Vector3=middle+normal*5+(b-a).normalized()*2
 	var hit:Dictionary=world.get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(Vector3(ground_camera.x,500,ground_camera.z),Vector3(ground_camera.x,-50,ground_camera.z),1))
 	ground_camera.y=(hit.position.y if not hit.is_empty() else middle.y)+1.65
+	var planting: Dictionary=world.landscape_details.trees.layout
+	var grove: Array=planting.trees.filter(func(t):return t.context=="olive_grove" and t.position[2]>0)
+	var grove_point:=MaltaGeography.vector(grove[grove.size()/2].position)
 	var views:Array=[
-		["countryside-expanded-fields-aerial",centre+Vector3(170,260,230),centre],
-		["countryside-expanded-rubble-ground",ground_camera,middle+Vector3.UP*.5],
-		["countryside-expanded-regional",centre+Vector3(900,850,1200),centre+Vector3(-500,0,-500)]
+		["countryside-varied-fields-aerial",centre+Vector3(170,260,230),centre],
+		["countryside-varied-rubble-ground",ground_camera,middle+Vector3.UP*.5],
+		["countryside-varied-regional",centre+Vector3(900,850,1200),centre+Vector3(-500,0,-500)],
+		["countryside-trees-ground",grove_point+Vector3(12,1.7,12),grove_point+Vector3.UP*2.5],
+		["countryside-trees-low-flight",grove_point+Vector3(85,75,120),grove_point]
 	]
 	for view in views:
 		camera.global_position=view[1];camera.look_at(view[2])
@@ -35,6 +40,7 @@ func run() -> void:
 			rural.refresh_detail(camera.global_position)
 			await process_frame
 		await RenderingServer.frame_post_draw
+		print("RENDER COUNTERS ",view[0]," draws=",Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)," triangles=",Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME))
 		print("CAPTURE ",view[0]," ",root.get_texture().get_image().save_png("res://docs/previews/"+view[0]+".png"))
 		if "--quick" in OS.get_cmdline_user_args(): break
 	world.queue_free()

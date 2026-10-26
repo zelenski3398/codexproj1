@@ -35,7 +35,7 @@ const delay=ms=>new Promise(r=>setTimeout(r,ms));
   check((await state()).mission_selected===2,'Harbour mission selected through production menu');
   await click('mission_depart_button');await wait(()=>window.firstSortieState.on_foot&&window.firstSortieState.fleet_count===7);
   const before=await state();
-  check(before.countryside.plots>=12000&&before.countryside.clusters>=400&&before.countryside.wall_m>=40000&&before.countryside.near_batches<=before.countryside.near_limit,'Expanded countryside exports and respects near-detail budget');
+  check(before.countryside.plots>=7000&&before.countryside.plots<=12000&&before.countryside.clusters>=300&&before.countryside.wall_m>=40000&&before.countryside.near_batches<=before.countryside.near_limit,'Expanded countryside exports and respects near-detail budget');
   check(before.interception_siren.requested&&before.interception_siren.playing&&before.interception_siren.loop&&before.interception_siren.starts===1,'Harbour air-raid recording loops once from mission start');
   check(before.hangar_parked===7&&before.fleet.every(a=>a.hp===100&&!a.engine),'Mission fleet starts serviceable, engines off, in hangars');
   await page.keyboard.press('e');await wait(()=>window.firstSortieState.ground_mode==='aircraft');

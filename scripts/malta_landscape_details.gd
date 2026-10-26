@@ -1,10 +1,12 @@
 class_name MaltaLandscapeDetails
 extends Node3D
-## Decorative only: no collision, gameplay ownership or persistent-state changes.
+## Sparse bush visuals plus a separate tree owner with bounded trunk collision.
+## No gameplay ownership or persistent-state changes.
 ## Valletta buildings are owned separately by VallettaCity.
 var world: MaltaWorld
 var instance_count: int = 0
 var batch_count: int = 0
+var trees: MalteseTrees
 var town_instance_count: int = 0
 
 func _ready() -> void:
@@ -15,6 +17,10 @@ func _populate() -> void:
 	# Static collision must have reached the physics server before alignment rays.
 	await get_tree().physics_frame
 	var layout: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://assets/malta/landscape/decoration.json"))
+	var planting: Dictionary=JSON.parse_string(FileAccess.get_file_as_string(MalteseTrees.PLACEMENTS))
+	layout.scrub_centres=planting.shrub_centres
+	trees=MalteseTrees.new()
+	add_child(trees)
 	var random: RandomNumberGenerator = RandomNumberGenerator.new()
 	random.seed = int(layout.seed)
 	var batches: Dictionary = {}

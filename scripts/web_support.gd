@@ -33,6 +33,9 @@ func _process(delta: float) -> void:
 	if is_instance_valid(session.gameplay_hud):
 		var hud: GameplayHUD=session.gameplay_hud
 		state.minimal_hud={"help":hud.help_open,"tracker":hud.tracker.visible,"objective":hud.objective.text,"supporting":hud.supporting.text,"actions":hud.actions.text,"help_text":hud.help_text.get_parsed_text(),"help_close":_center(hud.help.get_child(0).get_child(2)),"parts":hud.parts.visible,"debug":hud.debug.visible,"pause_menu":hud.pause_panel.visible,"vital":hud.vital.text}
+	if is_instance_valid(session.malta_mission) and is_instance_valid(session.malta_mission.world.landscape_details) and is_instance_valid(session.malta_mission.world.landscape_details.trees):
+		var trees: MalteseTrees=session.malta_mission.world.landscape_details.trees
+		state.vegetation={"count":trees.instance_count,"meshes":trees.meshes.size(),"batches":trees.batch_count,"colliders":trees.collider_count,"collider_cap":trees.maximum_colliders,"species":trees.layout.species_counts,"opaque":trees.material.transparency==BaseMaterial3D.TRANSPARENCY_DISABLED,"near":trees.near_distance,"far":trees.far_distance}
 	state.hangars = []
 	if is_instance_valid(session.encounters) and is_instance_valid(session.encounters.siren):
 		var alarm: InterceptionSiren = session.encounters.siren

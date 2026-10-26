@@ -1,0 +1,111 @@
+{
+  "units": "metres",
+  "original": true,
+  "species": {
+    "carob": [
+      {
+        "variant": 0,
+        "trunk_radius": 0.45,
+        "trunk_collision_height": 2.8,
+        "near": "res://assets/malta/vegetation/carob_0_near.glb",
+        "near_triangles": 878,
+        "height": 6.043389558387465,
+        "canopy_radius": 4.732862358681621,
+        "far": "res://assets/malta/vegetation/carob_0_far.glb",
+        "far_triangles": 330
+      },
+      {
+        "variant": 1,
+        "trunk_radius": 0.45,
+        "trunk_collision_height": 2.8,
+        "near": "res://assets/malta/vegetation/carob_1_near.glb",
+        "near_triangles": 878,
+        "height": 7.1244980792174655,
+        "canopy_radius": 5.379346130136198,
+        "far": "res://assets/malta/vegetation/carob_1_far.glb",
+        "far_triangles": 330
+      },
+      {
+        "variant": 2,
+        "trunk_radius": 0.45,
+        "trunk_collision_height": 2.8,
+        "near": "res://assets/malta/vegetation/carob_2_near.glb",
+        "near_triangles": 878,
+        "height": 5.550407540616774,
+        "canopy_radius": 5.024324298815705,
+        "far": "res://assets/malta/vegetation/carob_2_far.glb",
+        "far_triangles": 330
+      }
+    ],
+    "olive": [
+      {
+        "variant": 0,
+        "trunk_radius": 0.45,
+        "trunk_collision_height": 2.8,
+        "near": "res://assets/malta/vegetation/olive_0_near.glb",
+        "near_triangles": 1028,
+        "height": 5.4031796666163485,
+        "canopy_radius": 3.9425678423353667,
+        "far": "res://assets/malta/vegetation/olive_0_far.glb",
+        "far_triangles": 400
+      },
+      {
+        "variant": 1,
+        "trunk_radius": 0.45,
+        "trunk_collision_height": 2.8,
+        "near": "res://assets/malta/vegetation/olive_1_near.glb",
+        "near_triangles": 1244,
+        "height": 6.417266308914289,
+        "canopy_radius": 4.628122809387606,
+        "far": "res://assets/malta/vegetation/olive_1_far.glb",
+        "far_triangles": 480
+      },
+      {
+        "variant": 2,
+        "trunk_radius": 0.45,
+        "trunk_collision_height": 2.8,
+        "near": "res://assets/malta/vegetation/olive_2_near.glb",
+        "near_triangles": 1028,
+        "height": 5.936764489053968,
+        "canopy_radius": 3.71691893840595,
+        "far": "res://assets/malta/vegetation/olive_2_far.glb",
+        "far_triangles": 400
+      }
+    ],
+    "aleppo_pine": [
+      {
+        "variant": 0,
+        "trunk_radius": 0.25,
+        "trunk_collision_height": 4.0,
+        "near": "res://assets/malta/vegetation/aleppo_pine_0_near.glb",
+        "near_triangles": 1184,
+        "height": 8.148972938080263,
+        "canopy_radius": 3.213024294787571,
+        "far": "res://assets/malta/vegetation/aleppo_pine_0_far.glb",
+        "far_triangles": 400
+      },
+      {
+        "variant": 1,
+        "trunk_radius": 0.25,
+        "trunk_collision_height": 4.0,
+        "near": "res://assets/malta/vegetation/aleppo_pine_1_near.glb",
+        "near_triangles": 1028,
+        "height": 11.452240121511448,
+        "canopy_radius": 4.796617668050532,
+        "far": "res://assets/malta/vegetation/aleppo_pine_1_far.glb",
+        "far_triangles": 400
+      },
+      {
+        "variant": 2,
+        "trunk_radius": 0.25,
+        "trunk_collision_height": 4.0,
+        "near": "res://assets/malta/vegetation/aleppo_pine_2_near.glb",
+        "near_triangles": 1028,
+        "height": 9.88135185223619,
+        "canopy_radius": 4.635416126596928,
+        "far": "res://assets/malta/vegetation/aleppo_pine_2_far.glb",
+        "far_triangles": 400
+      }
+    ]
+  }
+}

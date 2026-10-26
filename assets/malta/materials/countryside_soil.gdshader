@@ -16,6 +16,8 @@ void vertex() {
 }
 void fragment() {
     float earth = texture(surface_detail, world_point.xz * 0.11).g;
-    ALBEDO = COLOR.rgb * (0.85 + earth * 0.23);
+    // GLB vertex colours are stored in sRGB; ALBEDO uses linear colour.
+    // Decode once to keep neighbouring plots earthy rather than pastel tiles.
+    ALBEDO = pow(COLOR.rgb, vec3(2.2)) * (0.85 + earth * 0.23);
     ROUGHNESS = 0.98;
 }

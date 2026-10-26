@@ -1,94 +1,123 @@
-# Procedural Maltese countryside — updated 24 October 2026
+# Maltese countryside — 26 October 2026
 
-The continuous Malta world now includes **17,977 inferred agricultural plots in 556 rural clusters**, **540 dirt-track pieces**, and approximately **45 km of physical rubble walls**. These supplement the existing terrain/material system; they do not replace the islands or change ground elevation, coastline, roads, airfields or settlements.
+The continuous world contains **9,703 inferred plots across 389 groups**, **378 dirt-track pieces**, approximately **45 km of physical rubble walls**, and **4,800 planted trees**. The supplied terrain, coastline, roads, airfields, city/fort geometry and mission coordinates are unchanged.
 
-## Visual principle and geographic scope
+## Larger, coherent fields
 
-The supplied comparison is used as a design reference: unequal rectangles/trapezoids, smaller subdivisions, longer merged plots, offset T-junctions, subtly uneven corners and coherent local orientations. A repeated global grid of identical green squares is deliberately avoided. Most parcels remain quadrilaterals; a minority have extra corners where adjacent parcels merge or an access lane cuts them. The palette favours red/brown earth, warm harvested tones and restrained olive/stubble rather than uniformly lush green.
+The former layout had 17,977 plots with a median area of 1,212 m². Recursive straight divisions now replace the row/column grid: the median is **4,711 m²**, the 10th/90th percentiles are **1,773 / 10,666 m²**, and **83%** exceed 2,400 m². Total cultivated footprint is about **54.55 km²**, compared with 30.06 km² previously. Fewer plots do not mean less coverage.
 
-![Actual native aerial field cluster](previews/countryside-expanded-fields-aerial.png)
+The groups mix unequal quadrilaterals, trapezoids, 644 triangular plots and more complex road/track-clipped polygons. Cuts have coherent local orientations and restrained angular variation, rather than random jagged borders. Neighbours share exact division lines; adjoining groups are clipped against earlier groups to prevent overlap. Slopes orient the groups along contours, while flatter areas use nearby road directions.
 
-Clusters are distributed deterministically throughout eligible countryside, with open country between them. All 64 substantial eligible 2.5 km coverage cells contain fields and physical rubble walls. They turn with local contours on hillsides, or nearby rural-road directions on flatter land. Separate island samplers reuse the existing Malta, Gozo and Comino mesh data; no island is moved or regenerated. The current placement has 432 clusters on Malta and 124 across Gozo/Comino. These counts describe the inferred layout, not verified historic agricultural use. No field cadastral dataset was available: **these are inferred visual plots, not surveyed 1940–1942 parcels or verified historic crop distributions**. The old broad painted landscape remains as the underlying material outside these additions.
+![Actual native aerial view](previews/countryside-varied-fields-aerial.png)
 
-The following are excluded:
+Muted brown, earth, stubble and olive tones vary by group and plot. The soil shader decodes the GLB's sRGB vertex colours before applying the existing soil detail, avoiding bright pastel/checkerboard colours. The original broad terrain landcover remains underneath and outside these rendered skins.
 
-- Actual coastline plus a 70 m inland guard, invalid terrain and steep ground.
-- Existing Valletta and Mdina geometry bounds with margins; the whole Cottonera generation area and its existing field-wall system.
-- Conservative latitude/longitude buffers around other historic settlement centres. These are editorial exclusion masks, not municipal boundary claims.
-- All supplied building/fort/wall evidence in the Cottonera source extract, including structures outside its selected model area.
-- All existing world-road corridors, plus clearance for wall envelopes and loose stones.
-- Broad rotated operational envelopes around every airfield, covering runway ends, taxi/parking, trucks, AA guns and command stations.
+Groups span 340–540 m. Target area classes are small 900–2,400 m², medium 3,200–7,600 m² and large 8,500–18,000 m², sampled with weights 9% / 49% / 42%. These are subdivision targets, not strict final-area bins: clipping and recursion change the resulting distribution. The minimum retained plot is 650 m². The old `small_width_m` / `medium_width_m` / `large_width_m` settings remain historical metadata; recursive subdivision uses the area classes instead.
 
-Every actual source terrain triangle intersecting a field must pass the slope guard, including interior ridges which corner-only sampling could miss. The masks and generation seed are read-only with respect to existing world data.
+The scenery is **inferred artistic agricultural layout**, not cadastral data or a surveyed 1940–1942 landscape. Contour alignment suggests terraced cultivation without cutting level benches into the original terrain.
 
-![Coordinate-derived island-wide coverage](previews/countryside-island-wide-coverage.png)
+## Geographic exclusions and grounding
 
-The overview is a plot of actual generated footprints and protected source roads, not a rendered gameplay screenshot. Existing imported geography is the coordinate source.
+Fields and trees use the existing Malta/Gozo/Comino meshes and geographic coordinate conversion. Full footprints clear:
 
-## Fields, contour strips and tracks
+- The coast plus the existing 70 m inland guard, steep ground and missing terrain.
+- Existing roads and their seven-metre field margin.
+- Broad rotated airfield operating envelopes, including runways, taxi/parking, hangars, trucks, AA and command posts.
+- Valletta/Mdina bounds, the Cottonera generation area and mapped buildings/fortifications.
+- Conservative buffers around existing settlement locations.
 
-Cluster sizes vary from 200–320 m. Configurable plot-width classes are 12–30 m, 30–65 m and 65–110 m, with medium widths favoured. These are artistic ranges, not universal historical measurements; merged plots can be longer. Shared grid nodes drift coherently, some neighbouring cells merge and other cells split, breaking full rows into offset joins without overlapping neighbours.
+Soil is clipped to original terrain triangles; it has no extra collision floor. Wall bases and tree roots sample the same terrain. Exported skins were checked against protected masks and ground elevation: the maximum measured height discrepancy, excluding the intentional 45 mm render offset, was **2.87 mm**. At 172 float32-rounded source-edge vertices the checker required a matching adjacent terrain sample within 2 mm, rather than accepting missing heights. Trees remain upright; they are not tilted to hillside normals.
 
-Contour-aligned, narrower hillside strips and stone boundaries suggest traditional terraced agriculture. **No physical cut/fill benches or perfectly level terrace platforms were carved into the original terrain.** Fields follow the supplied slopes. This preserves the existing terrain/collision contract; it is an approximate hillside treatment rather than surveyed terrace earthworks.
+![Actual coordinate-derived footprints, roads and tree positions](previews/countryside-varied-coverage.png)
 
-Soil and tracks are thin **render-only skins clipped to the existing terrain triangles**, rather than a second terrain or collision mesh. Heights are interpolated from the original surfaces. A small shader depth bias prevents flicker at flight distances without lifting physical ground. The shader uses existing bundled procedural soil detail. Dirt lanes cross clusters, with short spurs toward existing road corridors and clear approaches; they have no obstructing collision. Very steep tracks are rejected.
+The coverage chart plots actual data, not a fabricated satellite map. All 61 substantial eligible 2.5 km coverage cells retain both plots and physical walls. These cells are validation regions, not a grid of identical field geometry.
 
-![Actual native regional view](previews/countryside-expanded-regional.png)
+## Rubble walls and access
 
-## Rubble walls
+The existing Maltese rural stone style is retained: irregular limestone rocks, broad bases, uneven courses, varied cream/grey/beige/weathered tones, occasional low/collapsed sections and loose stones. Typical height remains 0.7–1.4 m, with a 0.68 m base and 0.38 m top.
 
-![Actual native ground-level wall](previews/countryside-expanded-rubble-ground.png)
+Boundaries become one noded edge graph, so shared walls are not duplicated. The 45 km budget is distributed between geographic regions, with a small guaranteed initial allocation before probability-based selection. This prevents edge regions losing all walls as the larger plots change the graph. Only selected boundaries receive walls. Access gaps remain 2.6–4.8 m, and track/road corridors are kept open.
 
-The existing Cottonera stone generator is reused through an **optional rural style**; its default output remains unchanged. New walls use several irregular rock variants, varied rotation/dimensions, wider foundations, smaller upper stones, uneven courses, occasional low/collapsed sections and loose stones at the base. Explicit normal buffers give the new meshes 3D lighting rather than flat silhouettes.
+![Actual wall at walking height](previews/countryside-varied-rubble-ground.png)
 
-The artistic palette mixes pale limestone `#DDD8C8`, white-grey `#BFC0B8`, warm limestone `#C9B38B`, ochre `#B89467`, reddish limestone `#A67B65` and red-brown `#89624F`. Each section has a predominant tone with per-rock variation; some lower rocks are darker or stained. Most remain limestone-coloured. Geometry/materials are stylized and consistent with the game's existing detail level, not photogrammetric stonework.
+Simple continuous collision strips represent the walls. Individual rocks have no physics bodies. Exact terrain-height sampling, slope guards and midpoint checks prevent obvious floating/buried runs. The default Cottonera wall generator/output remains unchanged.
 
-Typical walls are 0.7–1.4 m high, with a roughly 0.68 m base and 0.38 m top. Occasional low sections use 0.42–0.68 m, with rarer collapsed portions. Plot boundaries are unioned into one noded edge graph before selected walls are created. Shared edges are not duplicated. Access gaps vary from 2.6–4.8 m; track and road approaches are kept clear. Only a selected portion of edges receives walls, bounded by a configurable 45 km budget, shared across clusters in round-robin order to prevent one region consuming it, so fields are not all sealed enclosures.
+## Three reusable tree species
 
-Each section samples actual ground at both ends and its midpoint. Discontinuous/steep sections are skipped. Simple continuous collision strips sit on terrain; there are **no separate stone physics bodies**. The physical strips intentionally approximate gaps between individual rocks.
+There are nine original GLB shapes and nine matching distant LODs under [assets/malta/vegetation](../assets/malta/vegetation). All use metre scale, Y-up roots at ground level, vertex-coloured bark/foliage and actual normal buffers. They have one shared opaque runtime material, without transparent leaf cards, alpha sorting or external foliage textures.
 
-## Runtime and performance
+**Carob:** 1,439 placements; broad dense dark evergreen crowns, thick bent trunks and low spreading limbs. Model heights are roughly 5.6–7.1 m before placement scaling.
 
-`MaltaWorld` owns one `MaltaCountryside` node in the existing scene. Soil, tracks, coarse wall visuals and static wall collisions remain available throughout the mission. No region transition resets the world or player.
+![Three carob variants](previews/maltese-trees-carob.png)
 
-- 950 spatial batches, with 4,260 compiled GLBs across alternative representations.
-- About 133,666 soil triangles and 11,848 track triangles; the exact terrain-clipping approach avoids dense extra terrain grids.
-- Detailed rocks below 160 m; simpler walls at 160–2,500 m; distant silhouettes at 2,500–8,000 m. Soil/track skins have a 13 km visibility limit.
-- Close rock scenes load through Godot's asynchronous resource loader, with at most two pending requests and six active detail batches. Farthest detail can be replaced by nearer chunks. Ordinary flight never waits for a load.
-- Simple collision remains loaded even when detailed stones disappear. Only complete world disposal drains pending scenery requests; retries free the old owner.
-- Existing F4 heatmap mode hides countryside rendering and restores it on return; collision persists. Spatial chunks are now 500 m wide; close-detail loading reaches 530 m and unloads beyond 900 m, retaining the six-batch/two-request caps.
+**Olive:** 2,077 placements; irregular twisted trunks and visible forks, with separate airy grey-green/silvery foliage clusters. Heights are roughly 5.4–6.4 m.
 
-The close tier totals about 5.50 million triangles across the entire world, **not all active at once**. Assets add download/storage cost, and static collisions have a persistent memory cost. Native scripted captures do not establish browser or low-end-device frame-rate guarantees. This scenery expansion does not change gameplay controllers, engines, weapons, AI, health or mission objectives. The accompanying siren hookup is documented separately in the latest development update.
+![Three olive variants](previews/maltese-trees-olive.png)
 
-## Files and tuning
+**Aleppo pine:** 1,284 placements; slender taller trunks and asymmetric raised needle crowns. One young variant is conical; mature variants have separated umbrella-like crowns. Heights are roughly 8.1–11.5 m.
 
-- [tools/generate_malta_countryside.py](../tools/generate_malta_countryside.py): read-only island sampling, exclusions, clustered plots, tracks, exact terrain draping, wall selection, export and stale-output cleanup.
-- [tools/cottonera/landscape.py](../tools/cottonera/landscape.py): reused rock library with optional rural variants, palette, staining and collapse/loose-stone controls.
-- [assets/malta/countryside/settings.json](../assets/malta/countryside/settings.json): seed, cluster count/probability/spacing, plot classes, slope/coast/road guards, urban buffers, track widths, access gaps, wall-length budget, palette and dimensions.
-- `assets/malta/countryside/manifest.json`, `farm_*.glb`: deterministic plot/track/wall metadata and compiled scenes/collision.
-- [scripts/malta_countryside.gd](../scripts/malta_countryside.gd): batch loading, LOD, near-detail streaming and collision ownership; detail distances/budget are exported properties.
-- [countryside_soil.gdshader](../assets/malta/materials/countryside_soil.gdshader): Compatibility/WebGL-compatible soil detail and depth bias, with the existing `surface_detail.png` asset.
-- [scripts/malta_world.gd](../scripts/malta_world.gd): ownership and existing heatmap visibility integration.
-- New Python/Godot tests, capture fixture, publishing-check entry and documentation.
+![Three Aleppo pine variants](previews/maltese-trees-aleppo-pine.png)
 
-Using the existing GIS environment (NumPy, SciPy, Shapely 2, trimesh, pyproj, matplotlib, triangle):
+Placement adds 0.86–1.14 scale and yaw variation. Olive groves use loose, jittered rows in selected plots; carobs/olives occur near boundaries; pine groups and isolated trees stay off cultivated interiors. Substantial farmland remains open. This is not a historical tree-distribution survey. The pre-existing bush system now uses 62 vetted scrub centres outside fields/walls/routes, rather than jittering plants into newly cultivated areas.
 
-```sh
-python3 tools/generate_malta_countryside.py
-godot --headless --path . --editor --import --quit
-python3 tests/countryside_checks.py
-godot --headless --path . --fixed-fps 120 --script tests/countryside_checks.gd
-python3 tests/countryside_regeneration_checks.py
+Trunks stay at least two metres from physical walls and clear access tracks. Whole crown envelopes clear the protected-area mask. Minimum tree spacing is 7.5 m, increased for larger crowns. Roots use actual source elevations; excessive slopes are rejected.
+
+![Ground-level olive and nearby pine in the actual world](previews/countryside-trees-ground.png)
+
+![Low-altitude view of a grove and uncultivated pine group](previews/countryside-trees-low-flight.png)
+
+## Rendering and physics budgets
+
+- Rural scenery: **936 spatial batches / 3,087 GLBs**, down from 950 / 4,260. Soil has 134,316 triangles; tracks 12,050. Close rocks total 5.46 million across the whole world, with the original maximum six active close batches and two asynchronous loads.
+- Detailed rocks below 160 m; mid/far wall tiers and persistent static wall collision retain their original behaviour. Chunk size remains 500 m; detail requests reach 530 m and unload beyond 900 m.
+- Trees: **878–1,244 triangles** per near mesh, **330–480** per far mesh. Shared meshes are instanced in 256 m spatial groups, with near/far ranges of 380 / 2,200 m. Corresponding tiers share an origin and range boundary. Shadows are disabled to limit cost.
+- Trunks use one simple cylinder each, within 220 m of the active camera, with a **192-body cap**. A spatial lookup refreshes at 0.5 s intervals. Branches and leaves have no collision; distant trunk bodies unload independently of continuous terrain.
+- Baked countryside is about 315 MiB; reusable tree assets add about 0.5 MiB. The tested web pack is approximately 343 MiB. Assets still have download and memory costs.
+
+Native software-render counters varied by view: about 30–1,780 draw calls and 232k–362k primitives across the captured aerial/ground/regional views. These are scene counters, not hardware frame-rate guarantees. The regional view includes the broader existing world, not just vegetation.
+
+F4 heatmap mode hides countryside/tree visuals through existing ownership; terrain and wall collision remain intact. Retry frees the old world and creates one stable replacement population.
+
+## Pipeline and tuning
+
+```mermaid
+flowchart LR
+    G[Existing geography, terrain and protected masks] --> P[Recursive shared-edge parcels]
+    P --> D[Terrain-clipped soil and access tracks]
+    P --> W[Unioned wall graph and regional budget]
+    W --> B[Batched wall LODs and collision]
+    G --> V[Masked tree and scrub placement]
+    P --> V
+    W --> V
+    T[Nine original tree models and distant LODs] --> V
+    V --> M[MalteseTrees spatial MultiMeshes]
+    M --> C[Bounded nearby trunk collision]
 ```
 
-Complete generation and Godot import before running the game or captures. Regeneration writes only countryside outputs; a temporary second build verifies exact bytes and metadata without editing shipped assets. There is no GIS/network dependency in the running game.
+- [generate_malta_countryside.py](../tools/generate_malta_countryside.py): exclusions, terrain draping, regional wall allocation, export, stale-asset cleanup and manifests.
+- [rural_parcels.py](../tools/rural_parcels.py): recursive oblique subdivisions and occasional triangular plots.
+- [generate_maltese_trees.py](../tools/generate_maltese_trees.py): original reusable species/variant/LOD geometry.
+- [rural_vegetation.py](../tools/rural_vegetation.py): masked reproducible planting, grove/edge/pine/scattered contexts and filtered scrub.
+- [settings.json](../assets/malta/countryside/settings.json): seed 1942, area classes/weights, slopes, exclusions, wall budgets and vegetation seed 194226/budgets.
+- [MaltaCountryside](../scripts/malta_countryside.gd): existing static scenery and asynchronous near-rock ownership, unchanged.
+- [MaltaLandscapeDetails](../scripts/malta_landscape_details.gd) and [MalteseTrees](../scripts/maltese_trees.gd): filtered bush visuals and shared opaque tree meshes/LOD/nearby trunks.
+- [countryside_soil.gdshader](../assets/malta/materials/countryside_soil.gdshader): bundled soil detail and subdued colour decoding.
+- [export_presets.cfg](../export_presets.cfg) and [build_web.sh](../tools/build_web.sh): explicitly include both JSON manifests/model metadata and ship tree attribution.
 
-## Verification and remaining checks
+Example Linux compiler setup:
 
-The source tests verify field shape/size/orientation diversity, non-overlap, exclusions, every underlying terrain triangle's slope, shared wall edges, terrain fitting, protected hashes, asset existence, colour/normal data and byte-equivalent default Cottonera rock geometry. Runtime tests verify actual wall ray collision, asynchronous detail loading/budgets/unloading, persistent physics, F4, military counts and clean retry. The 24 October source checks passed **24/24**, runtime checks **10/10**, and a complete second build reproduced all **4,260 GLBs** byte for byte. [Current mission/audio checks and browser results](development-updates/2026-10-24-countryside-and-sirens.md) distinguish this revision from the original 17 October baseline.
+```sh
+python -m venv /tmp/malta-rural-env
+/tmp/malta-rural-env/bin/pip install -r tools/requirements-rural.txt
+/tmp/malta-rural-env/bin/python tools/generate_maltese_trees.py
+/tmp/malta-rural-env/bin/python tools/generate_malta_countryside.py
+/tmp/malta-rural-env/bin/python tests/countryside_checks.py
+/tmp/malta-rural-env/bin/python tests/maltese_vegetation_checks.py
+/tmp/malta-rural-env/bin/python tests/countryside_regeneration_checks.py
+```
 
-The three images above are real Godot 4.6.3 Compatibility captures of the continuous world, not reference-photo composites. Reproduce with `DISPLAY=:99 godot --path . --audio-driver Dummy --fixed-fps 60 --script tests/countryside_capture.gd` on a working X server. Capture fixtures move only the review camera.
+Generation is offline. Runtime loads baked assets; it never re-rolls agricultural layout. The full rebuild test compares every GLB byte and both manifests. The GIS overlap checker uses micrometre-precision overlay for coincident edges; independently snapping parcel vertices was rejected because it introduced actual narrow wedges.
 
-Manual review: take off from Ta' Qali or Luqa and inspect nearby rural clusters from different heights; fly toward Gozo; then use the truck and existing roads to approach field access lanes. Walk into a wall and through an opening, compare stone palettes, and move far enough to exercise detail loading. Retry and toggle F4. Verify vehicle/AA/aircraft transitions still use their established controls. Exhaustive human walking/driving of every track and field gap was not performed. The production web export and seven browser checks passed, including loading the expanded manifest and starting the looping harbour siren. Exhaustive flights/drives throughout the expanded scenery and hardware performance remain unverified.
+Run `tests/countryside_checks.gd`, `tests/maltese_vegetation_checks.gd` and `tests/rural_flight_checks.gd` in Godot, plus existing ground-control/departure checks. Native captures are generated by `tests/countryside_capture.gd` and `tests/maltese_tree_capture.gd`. After web export, use [rural_vegetation_web_smoke.cjs](../tools/rural_vegetation_web_smoke.cjs).
 
-The layout is inferred visual scenery; it does not assert historical ownership, surveyed field boundaries or complete agricultural coverage of steep/protected land.
+The [dated development/validation record](development-updates/2026-10-26-rural-fields-and-trees.md) states the exact checks and limitations. Native captures use controlled cameras; the low-flight test has an explicit initial pose and then uses normal aerodynamic control inputs. Browser checks verify real game integration, export/resource loading and normal boarding/help/resize/dismount; they do not claim a full browser flight through every rural group or a hardware performance benchmark.

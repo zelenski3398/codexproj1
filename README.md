@@ -840,7 +840,7 @@ Cottonera buildings now follow the reviewed outer defensive enclosure, with expl
 
 ## Procedural Maltese countryside
 
-The Malta world now includes clustered irregular fields, red/brown soil, dirt access lanes and physical rubble walls, with conservative exclusions for towns, roads, airfields and installations. Detailed rocks load near the active camera. [Current screenshots, geography, settings, generation and validation](docs/malta-countryside.md). Layouts are explicitly inferred; the original terrain elevations and existing Cottonera environment are preserved.
+The Malta world includes 9,703 larger shared-edge fields, subdued soil, dirt access lanes and about 45 km of physical rubble walls. It also has 4,800 carob, olive and Aleppo pine trees using nine original shapes and distant LODs. Protected towns, roads, airfields and installations remain clear; detailed rocks and simple trunk collision load near the active camera. [Current screenshots, geography, settings, generation and validation](docs/malta-countryside.md). Layouts are explicitly inferred; the original terrain elevations and existing Cottonera environment are preserved.
 
 ## Open aircraft hangars
 

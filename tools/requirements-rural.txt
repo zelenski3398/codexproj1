@@ -1,0 +1,8 @@
+# Tested offline asset compiler environment (Python 3.12).
+numpy==2.3.5
+scipy==1.17.0
+shapely==2.2.0
+trimesh==5.2.0
+pyproj==3.8.0
+matplotlib==3.10.8
+triangle==20250106
