@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-26",
+  "source_commit": "9fc9a131afc6a532dd15c0dea5ad6e6b71545a03",
+  "reference_commit": "20a4bb090ab8b1cc8cade2061b5bf0f612bb4723",
+  "reference_accessible": true,
+  "godot": "4.6.3 Compatibility",
+  "native_passed": {
+    "aa_hud_context": 27,
+    "minimal_hud": 61,
+    "dive_defence": 47,
+    "airfield_controls": 61,
+    "bofors_predictor": 59,
+    "battery_command": 36
+  },
+  "native_total": 291,
+  "web_export": "passed",
+  "native_previews": [
+    "aa-hud-context-on-foot.png",
+    "aa-hud-context-mounted.png",
+    "aa-hud-context-help.png"
+  ],
+  "limits": [
+    "Recovery relocation is a direct-position fixture, not a full recovery-truck journey.",
+    "Browser smoke covers shared help and aircraft, not a browser AA battle.",
+    "Native capture shutdown reports existing Mesa texture-allocation leaks.",
+    "No live Pages deployment verification or exhaustive human six-wave playthrough."
+  ],
+  "browser": {
+    "renderer": "Chromium ANGLE/SwiftShader",
+    "passed": 9,
+    "total": 9,
+    "javascript_resource_engine_errors": 0
+  }
+}
