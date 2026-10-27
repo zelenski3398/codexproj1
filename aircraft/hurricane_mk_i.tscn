@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/hawker_hurricane.gd" id="1"]
+[node name="HawkerHurricaneMkI" type="RigidBody3D"]
+script = ExtResource("1")
+display_name = "Hawker Hurricane Mk I"
+gun_description = "Eight .303 Browning machine guns"
+takeoff_speed_hint = "150–170"
+approach_speed_hint = "145–165"
+safe_speed_hint = 135
+wing_area = 23.92
+engine_thrust = 11200.0
+lift_at_zero_alpha = 0.62
+lift_slope = 4.7
+stall_speed = 29.0
+parasite_drag = 0.038
+induced_drag = 0.059
+pitch_torque = 17500.0
+roll_torque = 19500.0
+rudder_torque = 12500.0
+angular_response = 3.6
+collision_wing_span = 12.19

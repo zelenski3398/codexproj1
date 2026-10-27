@@ -1,0 +1,254 @@
+[gd_resource type="Resource" script_class="AircraftDamageProfile" load_steps=36 format=3]
+
+[ext_resource type="Script" path="res://scripts/aircraft_damage_profile.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/aircraft_component_definition.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/damage_hitbox_spec.gd" id="3"]
+
+[sub_resource type="Resource" id="fuselage_0"]
+script = ExtResource("3")
+position = Vector3(0.00000, -0.10800, 0.30000)
+size = Vector3(1.03398, 0.79920, 1.92000)
+rotation_degrees = Vector3(0, 0, 0)
+[sub_resource type="Resource" id="fuselage_1"]
+script = ExtResource("3")
+position = Vector3(0.00000, 0.00000, 3.18000)
+size = Vector3(0.65304, 0.70200, 3.84000)
+rotation_degrees = Vector3(0, 0, 0)
+[sub_resource type="Resource" id="fuselage"]
+script = ExtResource("2")
+role = "structure"
+adjacent = Array[StringName]([&"cockpit", &"fuel_tank", &"left_wing", &"right_wing", &"tail"])
+combustible = true
+id = &"fuselage"
+display_name = "Fuselage"
+max_integrity = 140.0
+damage_multiplier = 1.0
+airframe_multiplier = 1.0
+debug_color = Color(0.33725490196078434, 0.8117647058823529, 0.8784313725490196, 1)
+hitboxes = Array[ExtResource("3")]([SubResource("fuselage_0"), SubResource("fuselage_1")])
+[sub_resource type="Resource" id="left_wing_0"]
+script = ExtResource("3")
+position = Vector3(-1.79586, -0.07020, -0.36000)
+size = Vector3(2.28564, 0.25920, 2.52000)
+rotation_degrees = Vector3(0, 0, 0)
+[sub_resource type="Resource" id="left_wing_1"]
+script = ExtResource("3")
+position = Vector3(-3.97266, -0.01944, -0.07200)
+size = Vector3(2.06796, 0.25920, 1.92000)
+rotation_degrees = Vector3(0, 0, 0)
+[sub_resource type="Resource" id="left_wing_2"]
+script = ExtResource("3")
+position = Vector3(-5.50730, 0.01080, 0.09600)
+size = Vector3(1.00133, 0.25920, 0.96000)
+rotation_degrees = Vector3(0, 0, 0)
+[sub_resource type="Resource" id="left_wing"]
+script = ExtResource("2")
+role = "wing"
+adjacent = Array[StringName]([&"fuselage", &"left_aileron"])
+combustible = true
+detachable = true
+fragment_region = &"left_wing"
+id = &"left_wing"
+display_name = "Left wing"
+max_integrity = 80.0
+damage_multiplier = 1.25
+airframe_multiplier = 0.65
+debug_color = Color(0.4117647058823529, 0.8470588235294118, 0.4235294117647059, 1)
+hitboxes = Array[ExtResource("3")]([SubResource("left_wing_0"), SubResource("left_wing_1"), SubResource("left_wing_2")])
+[sub_resource type="Resource" id="right_wing_0"]
+script = ExtResource("3")
+position = Vector3(1.79586, -0.07020, -0.36000)
+size = Vector3(2.28564, 0.25920, 2.52000)
+rotation_degrees = Vector3(0, 0, 0)
+[sub_resource type="Resource" id="right_wing_1"]
+script = ExtResource("3")
+position = Vector3(3.97266, -0.01944, -0.07200)
+size = Vector3(2.06796, 0.25920, 1.92000)
+rotation_degrees = Vector3(0, 0, 0)
+[sub_resource type="Resource" id="right_wing_2"]
+script = ExtResource("3")
+position = Vector3(5.50730, 0.01080, 0.09600)
+size = Vector3(1.00133, 0.25920, 0.96000)
+rotation_degrees = Vector3(0, 0, 0)
+[sub_resource type="Resource" id="right_wing"]
+script = ExtResource("2")
+role = "wing"
+adjacent = Array[StringName]([&"fuselage", &"right_aileron"])
+combustible = true
+detachable = true
+fragment_region = &"right_wing"
+id = &"right_wing"
+display_name = "Right wing"
+max_integrity = 80.0
+damage_multiplier = 1.25
+airframe_multiplier = 0.65
+debug_color = Color(0.6509803921568628, 0.9254901960784314, 0.34509803921568627, 1)
+hitboxes = Array[ExtResource("3")]([SubResource("right_wing_0"), SubResource("right_wing_1"), SubResource("right_wing_2")])
+[sub_resource type="Resource" id="engine_0"]
+script = ExtResource("3")
+position = Vector3(0.00000, 0.00000, -3.12000)
+size = Vector3(1.17547, 1.20960, 2.52000)
+rotation_degrees = Vector3(0, 0, 0)
+[sub_resource type="Resource" id="engine"]
+script = ExtResource("2")
+role = "engine"
+adjacent = Array[StringName]([&"fuel_tank", &"fuselage"])
+combustible = true
+id = &"engine"
+display_name = "Engine"
+max_integrity = 80.0
+damage_multiplier = 1.6
+airframe_multiplier = 0.15
+debug_color = Color(1.0, 0.5882352941176471, 0.33725490196078434, 1)
+hitboxes = Array[ExtResource("3")]([SubResource("engine_0")])
+[sub_resource type="Resource" id="cockpit_0"]
+script = ExtResource("3")
+position = Vector3(0.00000, 0.71280, 0.24000)
+size = Vector3(0.93602, 0.84240, 1.98000)
+rotation_degrees = Vector3(0, 0, 0)
+[sub_resource type="Resource" id="cockpit"]
+script = ExtResource("2")
+role = "crew"
+adjacent = Array[StringName]([&"fuselage"])
+id = &"cockpit"
+display_name = "Cockpit"
+max_integrity = 60.0
+damage_multiplier = 1.5
+airframe_multiplier = 1.5
+debug_color = Color(0.47058823529411764, 0.6588235294117647, 1.0, 1)
+hitboxes = Array[ExtResource("3")]([SubResource("cockpit_0")])
+[sub_resource type="Resource" id="rudder_0"]
+script = ExtResource("3")
+position = Vector3(0.00000, 0.91800, 4.62000)
+size = Vector3(0.25033, 1.51200, 1.32000)
+rotation_degrees = Vector3(0, 0, 0)
+[sub_resource type="Resource" id="rudder"]
+script = ExtResource("2")
+role = "control"
+adjacent = Array[StringName]([&"tail"])
+detachable = true
+fragment_region = &"rudder"
+id = &"rudder"
+display_name = "Rudder"
+max_integrity = 45.0
+damage_multiplier = 1.25
+airframe_multiplier = 0.5
+debug_color = Color(0.8705882352941177, 0.5529411764705883, 0.9803921568627451, 1)
+hitboxes = Array[ExtResource("3")]([SubResource("rudder_0")])
+[sub_resource type="Resource" id="elevator_0"]
+script = ExtResource("3")
+position = Vector3(-1.22989, 0.08640, 4.32000)
+size = Vector3(1.91558, 0.25920, 1.44000)
+rotation_degrees = Vector3(0, 0, 0)
+[sub_resource type="Resource" id="elevator_1"]
+script = ExtResource("3")
+position = Vector3(1.22989, 0.08640, 4.32000)
+size = Vector3(1.91558, 0.25920, 1.44000)
+rotation_degrees = Vector3(0, 0, 0)
+[sub_resource type="Resource" id="elevator"]
+script = ExtResource("2")
+role = "control"
+adjacent = Array[StringName]([&"tail"])
+detachable = true
+fragment_region = &"elevator"
+id = &"elevator"
+display_name = "Elevator"
+max_integrity = 55.0
+damage_multiplier = 1.25
+airframe_multiplier = 0.6
+debug_color = Color(0.9294117647058824, 0.4666666666666667, 0.7215686274509804, 1)
+hitboxes = Array[ExtResource("3")]([SubResource("elevator_0"), SubResource("elevator_1")])
+[sub_resource type="Resource" id="fuel_tank_0"]
+script = ExtResource("3")
+position = Vector3(0.00000, 0.00000, -1.26000)
+size = Vector3(1.00133, 1.08000, 1.14000)
+rotation_degrees = Vector3(0, 0, 0)
+[sub_resource type="Resource" id="fuel_tank"]
+script = ExtResource("2")
+role = "fuel"
+adjacent = Array[StringName]([&"engine", &"fuselage"])
+combustible = true
+id = &"fuel_tank"
+display_name = "Fuel tank"
+max_integrity = 60.0
+damage_multiplier = 1.2
+airframe_multiplier = 0.8
+debug_color = Color(1.0, 0.8862745098039215, 0.4627450980392157, 1)
+hitboxes = Array[ExtResource("3")]([SubResource("fuel_tank_0")])
+[sub_resource type="Resource" id="tail_spec"]
+script = ExtResource("3")
+position = Vector3(0.00000, 0.00000, 3.84000)
+size = Vector3(0.54420, 0.54000, 1.20000)
+[sub_resource type="Resource" id="tail"]
+script = ExtResource("2")
+material_kind = "fabric"
+id = &"tail"
+display_name = "Tail"
+role = "structure"
+max_integrity = 100.0
+airframe_multiplier = 0.2
+adjacent = Array[StringName]([&"fuselage", &"rudder", &"elevator"])
+hitboxes = Array[ExtResource("3")]([SubResource("tail_spec")])
+detachable = true
+fragment_region = &"tail"
+combustible = true
+[sub_resource type="Resource" id="left_aileron_spec"]
+script = ExtResource("3")
+position = Vector3(-2.24428, -0.07020, 0.69840)
+size = Vector3(1.02854, 0.17280, 0.45360)
+[sub_resource type="Resource" id="left_aileron"]
+script = ExtResource("2")
+id = &"left_aileron"
+display_name = "Left Aileron"
+role = "control"
+max_integrity = 100.0
+airframe_multiplier = 0.2
+adjacent = Array[StringName]([&"left_wing"])
+hitboxes = Array[ExtResource("3")]([SubResource("left_aileron_spec")])
+detachable = true
+fragment_region = &"left_aileron"
+[sub_resource type="Resource" id="right_aileron_spec"]
+script = ExtResource("3")
+position = Vector3(2.24428, -0.07020, 0.69840)
+size = Vector3(1.02854, 0.17280, 0.45360)
+[sub_resource type="Resource" id="right_aileron"]
+script = ExtResource("2")
+id = &"right_aileron"
+display_name = "Right Aileron"
+role = "control"
+max_integrity = 100.0
+airframe_multiplier = 0.2
+adjacent = Array[StringName]([&"right_wing"])
+hitboxes = Array[ExtResource("3")]([SubResource("right_aileron_spec")])
+detachable = true
+fragment_region = &"right_aileron"
+[sub_resource type="Resource" id="gear_left_spec"]
+script = ExtResource("3")
+position = Vector3(-1.36050, -0.97200, -1.26000)
+size = Vector3(0.59862, 1.72800, 0.96000)
+
+[sub_resource type="Resource" id="gear_right_spec"]
+script = ExtResource("3")
+position = Vector3(1.36050, -0.97200, -1.26000)
+size = Vector3(0.59862, 1.72800, 0.96000)
+
+[sub_resource type="Resource" id="gear_tail_spec"]
+script = ExtResource("3")
+position = Vector3(0.00000, -0.64800, 4.50000)
+size = Vector3(0.32652, 0.64800, 0.60000)
+
+[sub_resource type="Resource" id="landing_gear"]
+script = ExtResource("2")
+id = &"landing_gear"
+display_name = "Landing Gear"
+role = "gear"
+max_integrity = 100.0
+airframe_multiplier = 0.2
+adjacent = Array[StringName]([&"fuselage"])
+hitboxes = Array[ExtResource("3")]([SubResource("gear_left_spec"), SubResource("gear_right_spec"), SubResource("gear_tail_spec")])
+detachable = true
+fragment_region = &"landing_gear"
+[resource]
+script = ExtResource("1")
+components = Array[ExtResource("2")]([SubResource("fuselage"), SubResource("left_wing"), SubResource("right_wing"), SubResource("engine"), SubResource("cockpit"), SubResource("rudder"), SubResource("elevator"), SubResource("fuel_tank"), SubResource("tail"), SubResource("left_aileron"), SubResource("right_aileron"), SubResource("landing_gear")])
+lift_lever_arm = 2.3

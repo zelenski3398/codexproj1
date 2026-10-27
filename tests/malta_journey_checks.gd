@@ -113,7 +113,7 @@ func _run() -> void:
 		_finish()
 		return
 	# Taxi the landed aircraft near the other parked aeroplane, then walk to it.
-	var parked: FlightAircraft = mission.fleet[5]
+	var parked: FlightAircraft = mission.fleet.filter(func(a):return a is SeaGladiator and destination.contains(a.global_position))[0]
 	player.pilot.brakes = false
 	player.pilot.pitch = 0
 	var dispersal: Vector3 = destination.to_global(Vector3(40, 1.18, destination.runway_length * 0.31 - 35))

@@ -97,7 +97,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
   await wait(() => window.firstSortieState.airfield_selecting);
   check(await measure('departure map music') > 0.0001, 'Music continues through Malta airfield selection');
   await click('depart_button');
-  await wait(() => window.firstSortieState.on_foot && !window.firstSortieState.audio.music_playing && window.firstSortieState.fleet_count === 6);
+  await wait(() => window.firstSortieState.on_foot && !window.firstSortieState.audio.music_playing && window.firstSortieState.fleet_count === 9);
   check(!(await state()).audio.engine_playing, 'Parked Malta aircraft remain silent before boarding');
   await page.keyboard.press('e');
   await wait(() => !window.firstSortieState.on_foot);

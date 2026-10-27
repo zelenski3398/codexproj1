@@ -35,7 +35,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	for id in world.fields:
 		var field: MaltaAirfield = world.fields[id]
-		var kinds: Array = field.record.stationed_aircraft.duplicate()
+		var kinds: Array = AlliedAircraft.roster(field.record) if session.game_mode in ["encounter","survival"] and (session.environment_id=="malta" or initial_kind=="hurricane") else field.record.stationed_aircraft.duplicate()
 		# Mission-local roster: leave the shared airfield/free-roam records intact.
 		if session.game_mode == "harbour" and id == home:
 			kinds = ["sea_gladiator", "sea_gladiator", "sea_gladiator"]
@@ -43,7 +43,7 @@ func _ready() -> void:
 			kinds.erase(initial_kind)
 			kinds.push_front(initial_kind)
 		for i in range(kinds.size()):
-			var aircraft: FlightAircraft = SeaGladiator.new() if kinds[i] == "sea_gladiator" else FlightAircraft.new()
+			var aircraft: FlightAircraft = AlliedAircraft.create(kinds[i])
 			aircraft.process_mode = Node.PROCESS_MODE_PAUSABLE
 			aircraft.name = id + "_" + kinds[i]
 			if kinds.count(kinds[i]) > 1: aircraft.name += "_" + str(i + 1)

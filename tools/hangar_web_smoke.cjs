@@ -32,7 +32,7 @@ const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   const before=await state();
   check(before.hangars.every(h=>h.width===48&&h.depth===36&&h.door_width===42&&h.trusses===7&&h.meshes===8&&h.hp===250),'All six Malta hangars export with intended dimensions, open-door width, steel and installation HP');
   check(new Set(before.hangars.map(h=>h.roof_mesh)).size===1,'Repeated buildings share merged roof geometry');
-  check(before.fleet_count===6&&before.aa_count===18,'Aircraft parking and eighteen airfield AA guns remain present');
+  check(before.fleet_count===9&&before.aa_count===18,'Aircraft parking and eighteen airfield AA guns remain present');
   await page.screenshot({path:'/tmp/hangar-browser-luqa.png'});
   await page.keyboard.press('r');await wait(old=>window.firstSortieState.hangars.length===6&&window.firstSortieState.hangars[0].id!==old,before.hangars[0].id);
   const after=await state();

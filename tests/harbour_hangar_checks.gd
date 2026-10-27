@@ -66,7 +66,7 @@ func run() -> void:
 	game.show_selection(false)
 	game.start_free_roam("spitfire")
 	await frames(180)
-	check(game.malta_mission.fleet.size() == 6 and game.malta_mission.fleet.filter(func(a): return a is SeaGladiator).size() == 3, "Ordinary free roam retains its mixed original fleet")
+	check(game.malta_mission.fleet.size() == 9 and game.malta_mission.fleet.filter(func(a): return a is SeaGladiator).size() == 3, "Ordinary free roam retains its mixed fleet including the Hurricane")
 	game.queue_free()
 	await frames(10)
 	print("HARBOUR HANGAR RESULT: ", passed, "/", passed + failed, " passed")

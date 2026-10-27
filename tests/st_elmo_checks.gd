@@ -96,7 +96,7 @@ func run() -> void:
 	for id in ["st_elmo_1","st_elmo_2","st_elmo_3","luqa","ta_qali","hal_far","st_elmo"]:
 		check(mission.teleport_to(id),"Safe live-world travel to "+id)
 		await frames(3)
-	check(world.get_instance_id()==identity and aircraft.health.hp==hp and mission.fleet.size()==6 and game.encounters.active.is_empty(),"Travel preserves the world, fleet damage, aircraft state and peaceful encounter")
+	check(world.get_instance_id()==identity and aircraft.health.hp==hp and mission.fleet.size()==9 and game.encounters.active.is_empty(),"Travel preserves the world, fleet damage, aircraft state and peaceful encounter")
 	mission.teleport_to("st_elmo_2")
 	await frames(3)
 	check(mission.interaction.mount_gun(fort.guns[1]),"Second gun supports crew replacement")

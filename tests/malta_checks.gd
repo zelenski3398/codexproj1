@@ -26,7 +26,7 @@ func _run() -> void:
 	await _frames(180)
 	mission = world.malta_mission
 	_check(world.field is MaltaWorld and mission.world.mesh_count >= 36, "All supplied islands and road terrain patches occupy one continuous metre-scale world")
-	_check(mission.world.fields.size() == 3 and mission.fleet.size() == 6, "All three airfields and six configurable stationed aircraft coexist")
+	_check(mission.world.fields.size() == 3 and mission.fleet.size() == 9, "All three airfields and nine free-roam stationed aircraft coexist")
 	_check(mission.world.bounds.size.x > 35000 and mission.world.bounds.size.z > 32000, "Terrain bounds retain 1:1 geographical proportions")
 	_check(mission.pilot.active and mission.occupied == null and mission.pilot.is_on_floor(), "Mission starts with a collision-driven pilot beside the selected aircraft")
 	for aircraft in mission.fleet:
@@ -108,11 +108,11 @@ func _run() -> void:
 	_check(mission.leave_aircraft(), "Pilot can leave the stopped aircraft at a different airfield")
 	_check(player.health.hp == hp and player.components.integrity_ratio(&"left_wing") == wing and player.components.fuel_remaining <= 0.63, "Leaving preserves aircraft health, component damage and fuel")
 	# Walk-position fixture verifies local boarding at the other field; no reset.
-	var replacement: FlightAircraft = mission.fleet[5]
+	var replacement: FlightAircraft = mission.fleet.filter(func(a):return a is SeaGladiator and destination.contains(a.global_position))[0]
 	mission.pilot.global_position = replacement.global_position + replacement.global_basis.x * 6
 	await _frames(5)
 	_check(mission.board_nearest() and mission.occupied == replacement and replacement is SeaGladiator, "A serviceable stationed Sea Gladiator can be boarded at Ħal Far")
-	_check(mission.world.get_instance_id() == scene_id and world.enemy.get_instance_id() == enemy_id and mission.fleet.size() == 6, "Changing aircraft keeps the same world, fleet and enemy without reloading")
+	_check(mission.world.get_instance_id() == scene_id and world.enemy.get_instance_id() == enemy_id and mission.fleet.size() == 9, "Changing aircraft keeps the same world, fleet and enemy without reloading")
 	_check(player.health.hp == hp and not player.engine_running and player.pilot.automated and player.pilot.brakes, "Previous Spitfire stays parked with damage and engine state")
 	var installation: AirfieldInstallation = destination.installations[0]
 	installation.take_damage(installation.max_hp)
@@ -124,7 +124,7 @@ func _run() -> void:
 	_check(world.enemy.is_destroyed and world.enemy_defeated and notifications == 1, "Enemy destruction is one-shot and does not respawn on aircraft changes")
 	world.restart_malta()
 	await _frames(120)
-	_check(world.malta_mission.fleet.size() == 6 and world.enemy == null and world.encounters.active.is_empty() and world.encounters.initial_spawn_pending and not world.enemy_defeated and world.malta_mission.occupied == null, "Explicit full restart restores peaceful free roam, clean fleet and pilot")
+	_check(world.malta_mission.fleet.size() == 9 and world.enemy == null and world.encounters.active.is_empty() and world.encounters.initial_spawn_pending and not world.enemy_defeated and world.malta_mission.occupied == null, "Explicit full restart restores peaceful free roam, clean fleet and pilot")
 	_check(world.malta_mission.world.get_instance_id() != scene_id and world.malta_mission.fleet[0].health.hp == 100, "Only explicit mission restart replaces the environment and damaged aircraft")
 	world.show_selection()
 	await _frames(3)

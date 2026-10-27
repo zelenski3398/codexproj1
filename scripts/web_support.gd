@@ -82,6 +82,7 @@ func _process(delta: float) -> void:
 		state.selected = session.selector.selected
 		state.spitfire_button = _center(session.selector.buttons[0])
 		state.gladiator_button = _center(session.selector.buttons[1])
+		state.hurricane_button = _center(session.selector.buttons[2])
 		state.fly_button = _center(session.selector.fly_button)
 		state.malta_button = _center(session.selector.malta_button)
 		state.missions_button = _center(session.selector.missions_button)
@@ -121,7 +122,7 @@ func _process(delta: float) -> void:
 		state.corrected_access_segments=int(MaltaTerrainAppearance.LANDSCAPE.get_shader_parameter("new_access_count"))
 		state.world_id = session.malta_mission.world.get_instance_id()
 		state.fleet_count = session.malta_mission.fleet.size()
-		state.fleet = session.malta_mission.fleet.map(func(a):return {"id":str(a.get_instance_id()),"hp":a.health.hp,"destroyed":a.is_destroyed,"engine":a.engine_running})
+		state.fleet = session.malta_mission.fleet.map(func(a):return {"id":str(a.get_instance_id()),"kind":AlliedAircraft.kind_of(a),"ports":a.model.gun_ports.size(),"hp":a.health.hp,"destroyed":a.is_destroyed,"engine":a.engine_running})
 		var mission: MaltaMission=session.malta_mission
 		state.pilot_hp=mission.pilot.health.hp
 		state.recovery={"state":mission.recovery.state,"requests":mission.recovery.requests,"returns":mission.recovery.returns,"truck":is_instance_valid(mission.recovery.truck),"destination":mission.recovery.destination,"truck_position":[mission.recovery.truck.global_position.x,mission.recovery.truck.global_position.y,mission.recovery.truck.global_position.z] if is_instance_valid(mission.recovery.truck) else []}

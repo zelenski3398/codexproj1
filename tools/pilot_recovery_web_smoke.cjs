@@ -27,10 +27,10 @@ const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   await wait(()=>window.firstSortieState?.startup_intro?.active===false);
   await page.keyboard.press('2');await wait(()=>window.firstSortieState.selected==='sea_gladiator');
   const [x,y]=(await state()).fly_button;await page.mouse.click(x,y);
-  await wait(()=>window.firstSortieState.on_foot&&window.firstSortieState.hangar_parked===6);
+  await wait(()=>window.firstSortieState.on_foot&&window.firstSortieState.hangar_parked===9);
   const before=await state();const ids=before.fleet.map(a=>a.id);
   check(before.environment==='malta'&&before.selected==='sea_gladiator'&&before.pilot_hp===100,'Fresh primary free-roam action opens Malta on foot with selected Gladiator');
-  check(before.fleet.every(a=>a.hp===100&&!a.engine)&&before.hangar_parked===6,'All six available aircraft spawn parked inside hangars with engines stopped');
+  check(before.fleet.every(a=>a.hp===100&&!a.engine)&&before.hangar_parked===9,'All nine available aircraft spawn parked inside hangars with engines stopped');
   await page.keyboard.press('e');await wait(()=>window.firstSortieState.ground_mode==='aircraft');
   for(let i=0;i<10;i++){await page.keyboard.press('h');await sleep(150);}
   await wait(()=>window.firstSortieState.hp===0);let disabled=await state();

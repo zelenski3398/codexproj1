@@ -63,7 +63,7 @@ func _build_ui() -> void:
 	panel.add_theme_stylebox_override("panel", _style(Color(0.05, 0.08, 0.075, 0.95)))
 	root.add_child(panel)
 	var stack: VBoxContainer = VBoxContainer.new()
-	stack.add_theme_constant_override("separation", 16)
+	stack.add_theme_constant_override("separation", 10)
 	panel.add_child(stack)
 	malta_button = Button.new()
 	malta_button.text = "MALTA · AIRFIELD / MODE OPTIONS →"
@@ -72,14 +72,14 @@ func _build_ui() -> void:
 	stack.add_child(malta_button)
 	stack.add_child(_label("SELECT A FIGHTER", 14, GOLD))
 	var group: ButtonGroup = ButtonGroup.new()
-	var kinds: Array[String] = ["spitfire", "sea_gladiator"]
-	var names: Array[String] = ["SPITFIRE Mk I\nFaster monoplane · eight wing guns", "GLOSTER SEA GLADIATOR\nSlower biplane · four machine guns"]
-	for i in range(2):
+	var kinds: Array[String] = AlliedAircraft.KINDS
+	var names: Array[String] = ["SPITFIRE Mk I\nFaster monoplane · eight wing guns", "GLOSTER SEA GLADIATOR\nSlower biplane · four machine guns", "HAWKER HURRICANE Mk I\nMalta defender · eight .303 guns"]
+	for i in kinds.size():
 		var button: Button = Button.new()
 		button.text = names[i]
 		button.toggle_mode = true
 		button.button_group = group
-		button.custom_minimum_size = Vector2(426, 92)
+		button.custom_minimum_size = Vector2(426, 66)
 		button.add_theme_font_size_override("font_size", 19)
 		button.add_theme_color_override("font_color", INK)
 		button.add_theme_stylebox_override("normal", _style(Color("25332d")))
@@ -89,7 +89,7 @@ func _build_ui() -> void:
 		stack.add_child(button)
 		buttons.append(button)
 	details = _label("", 17, INK)
-	details.custom_minimum_size = Vector2(420, 112)
+	details.custom_minimum_size = Vector2(420, 104)
 	stack.add_child(details)
 	fly_button = Button.new()
 	fly_button.custom_minimum_size.y = 54
@@ -104,7 +104,7 @@ func _build_ui() -> void:
 	test.pressed.connect(func():
 		if active:active=false;test_requested.emit(selected))
 	stack.add_child(test)
-	stack.add_child(_label("Click an aircraft, then Fly.\n← / → or 1 / 2 select · ENTER starts", 14, Color("abb8ad")))
+	stack.add_child(_label("Click an aircraft, then Fly.\n← / → or 1 / 2 / 3 select · ENTER starts", 14, Color("abb8ad")))
 	preview_title = _label("", 22, INK)
 	preview_title.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
 	preview_title.offset_left = -530
@@ -113,7 +113,7 @@ func _build_ui() -> void:
 	preview_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	root.add_child(preview_title)
 	var fire_key: String = "F" if OS.has_feature("web") else "CTRL"
-	var guide: Label = _label("ARROWS  Pitch / bank    W / S  Throttle    A / D  Rudder    %s  Fire\nSPACE  Brakes    G  Gear (Spitfire only)    R  Reset    ESC  Pause" % fire_key, 15, INK)
+	var guide: Label = _label("ARROWS  Pitch / bank    W / S  Throttle    A / D  Rudder    %s  Fire\nSPACE  Brakes    G  Gear (monoplanes)    R  Reset    ESC  Pause" % fire_key, 15, INK)
 	guide.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	guide.offset_left = 38
 	guide.offset_right = -38
@@ -145,17 +145,18 @@ func _style(color: Color) -> StyleBoxFlat:
 	return result
 
 func select(kind: String) -> void:
-	if not active or kind not in ["spitfire", "sea_gladiator"]:
+	if not active or kind not in AlliedAircraft.KINDS:
 		return
 	if selected == kind and is_instance_valid(preview):
 		return
 	selected = kind
 	buttons[0].set_pressed_no_signal(kind == "spitfire")
 	buttons[1].set_pressed_no_signal(kind == "sea_gladiator")
+	buttons[2].set_pressed_no_signal(kind == "hurricane")
 	if is_instance_valid(preview):
 		remove_child(preview)
 		preview.queue_free()
-	preview = SeaGladiatorModel.new() if kind == "sea_gladiator" else SpitfireModel.new()
+	preview = HurricaneModel.new() if kind == "hurricane" else (SeaGladiatorModel.new() if kind == "sea_gladiator" else SpitfireModel.new())
 	add_child(preview)
 	preview.global_transform = Transform3D(Basis(Vector3.RIGHT, 0.117), Vector3(0, 1.18, 650))
 	preview.animate(0, 0, preview_gear, false)
@@ -163,6 +164,10 @@ func select(kind: String) -> void:
 		details.text = "Higher speed and stronger climb\nRetractable landing gear\nEight wing guns · 100 HP\nTakeoff: 160–180 km/h"
 		fly_button.text = "FREE ROAM MALTA · SPITFIRE"
 		preview_title.text = "SPITFIRE Mk I\nRAF fighter · 1940"
+	elif kind=="hurricane":
+		details.text="Malta defender from June 1940\nStable gun platform · retractable gear\nEight .303 Brownings · Merlin III\nRepresentative RAF period scheme"
+		fly_button.text="FREE ROAM MALTA · HURRICANE"
+		preview_title.text="HAWKER HURRICANE Mk I\nAllied fighter · 1940"
 	else:
 		details.text = "Lower speed and reduced climb\nFixed landing gear · lower stall speed\nFour machine guns · 100 HP\nTakeoff: 115–135 km/h"
 		fly_button.text = "FREE ROAM MALTA · GLADIATOR"
@@ -173,10 +178,16 @@ func _input(event: InputEvent) -> void:
 		return
 	var code: int = event.keycode if event.keycode != 0 else event.physical_keycode
 	match code:
-		KEY_LEFT, KEY_UP, KEY_1:
+		KEY_LEFT, KEY_UP:
+			select(AlliedAircraft.KINDS[posmod(AlliedAircraft.KINDS.find(selected)-1,AlliedAircraft.KINDS.size())])
+		KEY_RIGHT, KEY_DOWN:
+			select(AlliedAircraft.KINDS[posmod(AlliedAircraft.KINDS.find(selected)+1,AlliedAircraft.KINDS.size())])
+		KEY_1:
 			select("spitfire")
-		KEY_RIGHT, KEY_DOWN, KEY_2:
+		KEY_2:
 			select("sea_gladiator")
+		KEY_3:
+			select("hurricane")
 		KEY_ENTER, KEY_KP_ENTER, KEY_SPACE:
 			_fly()
 	# Do not forward menu navigation to flight controls in the starting frame.

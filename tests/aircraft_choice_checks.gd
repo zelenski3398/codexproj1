@@ -13,7 +13,7 @@ func _run() -> void:
 	world = (load("res://main.tscn") as PackedScene).instantiate()
 	root.add_child(world)
 	await _frames(3)
-	_check(world.aircraft == null and world.enemy == null and world.selector.buttons.size() == 2, "Startup presents both aircraft before spawning gameplay")
+	_check(world.aircraft == null and world.enemy == null and world.selector.buttons.size() == 3, "Startup presents all three Allied aircraft before spawning gameplay")
 	_key(KEY_W, true)
 	_key(KEY_CTRL, true)
 	_key(KEY_H, true)

@@ -98,16 +98,16 @@ func select_field(id: String) -> void:
 		if MaltaGeography.data().airfields[index].id == id:
 			field_picker.select(index)
 	fighter_picker.clear()
-	for kind in record.stationed_aircraft:
-		fighter_picker.add_item("Spitfire Mk I" if kind == "spitfire" else "Gloster Sea Gladiator")
-	var selected_index: int = record.stationed_aircraft.find(selected_kind)
+	for kind in AlliedAircraft.roster(record):
+		fighter_picker.add_item(AlliedAircraft.title(kind))
+	var selected_index: int = AlliedAircraft.roster(record).find(selected_kind)
 	fighter_picker.select(maxi(selected_index, 0))
 	_choose_kind(fighter_picker.selected)
-	info.text = "%s\nDeparture strip: %d m\nAvailable: %s\nSpawn on foot at the dispersal area.\nFly freely to any other airfield." % [record.name, roundi(float(record.length)), " / ".join(record.stationed_aircraft).replace("spitfire", "Spitfire").replace("sea_gladiator", "Sea Gladiator")]
+	info.text = "%s\nDeparture strip: %d m\nAvailable: %s\nSpawn on foot at the dispersal area.\nFly freely to any other airfield." % [record.name, roundi(float(record.length)), " / ".join(AlliedAircraft.roster(record).map(AlliedAircraft.title))]
 
 func _choose_kind(index: int) -> void:
 	if StElmoLocations.is_fort(selected_field):return
-	selected_kind = MaltaGeography.field(selected_field).stationed_aircraft[index]
+	selected_kind = AlliedAircraft.roster(MaltaGeography.field(selected_field))[index]
 
 func depart() -> void:
 	if not active:

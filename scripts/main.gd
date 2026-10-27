@@ -131,7 +131,7 @@ func start_test_departure(kind: String) -> void:
 
 func start_flight(kind: String) -> void:
 	_dismiss_intro()
-	if is_instance_valid(aircraft) or kind not in ["spitfire", "sea_gladiator"]:
+	if is_instance_valid(aircraft) or kind not in AlliedAircraft.KINDS:
 		return
 	GameAudioMixer.instance.set_menu_active(false)
 	game_mode = "encounter"
@@ -141,8 +141,8 @@ func start_flight(kind: String) -> void:
 		selector.queue_free()
 	selector = null
 	get_viewport().gui_release_focus()
-	aircraft = SeaGladiator.new() if kind == "sea_gladiator" else FlightAircraft.new()
-	aircraft.name = "SeaGladiator" if kind == "sea_gladiator" else "Spitfire"
+	aircraft = AlliedAircraft.create(kind)
+	aircraft.name = kind.to_pascal_case()
 	add_child(aircraft)
 	_spawn_enemy()
 	aircraft.collision_mask = 5 # terrain and enemy airframes
@@ -338,7 +338,7 @@ func start_malta(field_id: String, kind: String, selected_mode: String = "encoun
 		field_id="luqa"
 	if selected_mode not in ["encounter", "survival", "interception", "aa_defence", "harbour"]:
 		return
-	if MaltaGeography.field(field_id).is_empty() or kind not in ["spitfire", "sea_gladiator"]:
+	if MaltaGeography.field(field_id).is_empty() or kind not in AlliedAircraft.KINDS:
 		return
 	if is_instance_valid(malta_mission):
 		return
@@ -409,7 +409,7 @@ func attach_malta_player(player: FlightAircraft) -> void:
 			remove_child(node)
 			node.queue_free()
 	aircraft = player
-	selected_aircraft = "sea_gladiator" if player is SeaGladiator else "spitfire"
+	selected_aircraft = AlliedAircraft.kind_of(player)
 	chase = ChaseCamera.new()
 	chase.aircraft = player
 	add_child(chase)
