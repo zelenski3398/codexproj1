@@ -7,10 +7,12 @@ Startup and return to the title now show the supplied looping live poster, with 
 The primary **Free Roam** action opens Malta on foot beside the selected aircraft inside a hangar. **E** boards/exits; **V** requests recovery after an aircraft loss. Pilot health is independent of aircraft HP. [Hangar departures, survival, recovery and poster fixes](docs/pilot-survival-and-recovery.md).
 
 A single-player 3D **Godot 4 / GDScript** flight prototype set at a fictional RAF
-countryside airfield in 1940, or a continuous 1:1 Malta island world. Choose a **Spitfire Mk I** or **Gloster Sea
-Gladiator**, take off, bank over the fields, return, land and brake. Both have
+countryside airfield in 1940, or a continuous 1:1 Malta island world. Choose a **Spitfire Mk I**, **Gloster Sea
+Gladiator** or **Hawker Hurricane Mk I**, take off, bank over the fields, return, land and brake. All three have
 guns, component damage and health/damage effects. Countryside starts with a flying
 Ju 87-inspired opponent; Malta free roam starts peacefully until you request combat. All aircraft are original procedural mesh placeholders. No paid assets.
+
+The [Hurricane Mk I](docs/hawker-hurricane.md) has its own broad-winged 3D model, eight .303 wing guns, retractable gear, damage profile and shared survivor recovery. It is available in Malta free roam at all three airfields, without changing scripted mission formations. Historical source verification and gameplay approximations are documented in its guide.
 
 ## Faith, Hope and Charity — Harbour Interception
 
@@ -44,10 +46,10 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`9542c5944ae863b43fc48030edce09cec06e2e2f`](https://github.com/zelenski3398/codexproj1/commit/9542c5944ae863b43fc48030edce09cec06e2e2f)
+**Latest documented commit:** [`e0e7ae069445eac65fc8c1c5ee5d59eb996d7dd9`](https://github.com/zelenski3398/codexproj1/commit/e0e7ae069445eac65fc8c1c5ee5d59eb996d7dd9)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest Bofors battery firing and aim-assist update](docs/development-updates/2026-10-26-bofors-post-fire.md)
+[latest Hawker Hurricane Mk I update](docs/development-updates/2026-10-27-hurricane.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -56,9 +58,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor 9542c5944ae863b43fc48030edce09cec06e2e2f HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' 9542c5944ae863b43fc48030edce09cec06e2e2f..HEAD
-git diff --stat 9542c5944ae863b43fc48030edce09cec06e2e2f..HEAD
+git merge-base --is-ancestor e0e7ae069445eac65fc8c1c5ee5d59eb996d7dd9 HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' e0e7ae069445eac65fc8c1c5ee5d59eb996d7dd9..HEAD
+git diff --stat e0e7ae069445eac65fc8c1c5ee5d59eb996d7dd9..HEAD
 ```
 
 Append a dated, evidence-linked update and advance this SHA to the newest inspected
@@ -85,7 +87,7 @@ The workflow also saves a downloadable **first-sortie-web** artifact.
 
 The supplied **Wings Over Malta** theme plays through both selection menus and
 fades out on departure. Spitfire and Sea Gladiator use their supplied engine
-and gun sounds, with throttle/damage-driven engine mixing and spatial playback.
+and gun sounds, with throttle/damage-driven engine mixing and spatial playback. The Hurricane reuses the existing Merlin/Spitfire engine and rifle-calibre gun audio.
 Click **AUDIO** for saved music/engine/gun volumes and mute. In a browser, the
 first click or key press in the game menu enables sound. The Stuka temporarily
 uses the supplied Spitfire audio. See [audio controls, tuning and checks](docs/audio.md).
@@ -149,9 +151,9 @@ See [encounter implementation, tuning and verification](docs/survival.md).
 
 ## Select a map and depart in Malta
 
-The startup screen keeps **Countryside** and adds **Choose Malta**. Malta
-opens a chart to choose **Ta' Qali, Luqa or Ħal Far**, a Spitfire or Sea Gladiator,
-and **Depart**. You spawn on foot beside the selected parked aircraft.
+The primary **Free Roam Malta** action launches directly beside the selected aircraft.
+**Malta · Airfield / Mode Options** opens a chart to choose **Ta' Qali, Luqa or Ħal Far**,
+a Spitfire, Sea Gladiator or Hurricane, and **Depart**. You spawn on foot beside the selected parked aircraft.
 
 **E** boards/leaves; **I** starts/stops the engine; **M** opens the live map.
 On foot, **WASD** walks and **Left/Right arrows** turn. Taxi from the apron onto
@@ -222,7 +224,7 @@ the automated pilot for screenshots. Use F5 / `main.tscn` for gameplay.
 
 ## Aircraft choice
 
-The startup screen shows both fighters and a live model preview. No player
+The startup screen shows all three fighters and a live model preview. No player
 physics or enemy combat runs until you choose **Fly**. R resets the selected
 aircraft; it does not revert to the Spitfire. To change aircraft without closing
 the game, press Escape and click **Choose another aircraft**. This clears the
@@ -234,6 +236,8 @@ cowling, three-blade propeller, framed cockpit, fixed main wheels/tailwheel,
 camouflage, RAF roundels and fin flashes, plus a cosmetic naval hook. The
 **FAITH** marking is reference-inspired; this is an approximate original mesh.
 The Gloster Sea Gladiator was a late-1930s naval biplane used during WWII.
+
+The following original two-fighter comparison is retained; the [Hurricane guide](docs/hawker-hurricane.md#measured-game-behaviour) includes the current three-aircraft fixture and its exact conditions.
 
 | Prototype characteristic | Spitfire Mk I | Gloster Sea Gladiator |
 | --- | --- | --- |

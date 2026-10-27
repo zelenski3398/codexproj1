@@ -4,6 +4,7 @@
 
 The original report is a frozen 50-commit audit through `588ac7b`. Later changes are recorded here with explicit commit boundaries, avoiding a repeated reconstruction of unchanged history.
 
+- [27 October 2026: flyable Hurricane Mk I, shared Allied factory and free-roam integration](2026-10-27-hurricane.md).
 - [26 October 2026: direct Bofors battery fire and switchable post aim assist](2026-10-26-bofors-post-fire.md).
 - [26 October 2026: AA mission contextual text and shared modal help](2026-10-26-aa-hud-context.md).
 - [26 October 2026: larger shared-edge fields and distinct Mediterranean tree species](2026-10-26-rural-fields-and-trees.md).

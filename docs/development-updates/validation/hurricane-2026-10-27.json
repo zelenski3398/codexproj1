@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-27",
+  "source_commit": "e0e7ae069445eac65fc8c1c5ee5d59eb996d7dd9",
+  "godot": "4.6.3 Compatibility",
+  "headless_assertions_passed": {
+    "hurricane_integration": 28,
+    "hurricane_flight": 15,
+    "hurricane_performance": 4,
+    "aircraft_choice": 32,
+    "malta": 39,
+    "harbour_hangar": 24,
+    "countryside_departure": 12,
+    "minimal_hud": 61,
+    "pilot_recovery": 73,
+    "st_elmo": 43
+  },
+  "headless_total": 331,
+  "browser": {
+    "renderer": "Chromium ANGLE/SwiftShader",
+    "passed": 9,
+    "errors": 0,
+    "airborne_flight_tested": false
+  },
+  "web_export": "passed",
+  "historical_external_verification": "Blocked: HTTP tunnel 403 for museum/RAF endpoints. No fetched historical content verified.",
+  "performance_fixture": {
+    "hurricane": {
+      "climb_mps": 14.0848907470703,
+      "coast_speed_5s": 71.8124237060547,
+      "height": 818.133850097656,
+      "speed_45s": 94.441780090332,
+      "speed_after_5s": 62.0615997314453
+    },
+    "sea_gladiator": {
+      "climb_mps": 7.84080810546875,
+      "coast_speed_5s": 62.4891929626465,
+      "height": 815.586853027344,
+      "speed_45s": 63.9650917053223,
+      "speed_after_5s": 56.4094085693359
+    },
+    "spitfire": {
+      "climb_mps": 16.9024353027344,
+      "coast_speed_5s": 72.7236022949219,
+      "height": 819.557983398438,
+      "speed_45s": 104.871429443359,
+      "speed_after_5s": 64.0376815795898
+    }
+  },
+  "native_previews": [
+    "hurricane-front-quarter.png",
+    "hurricane-side.png",
+    "hurricane-planform.png",
+    "hurricane-hangar.png"
+  ],
+  "browser_previews": [
+    "hurricane-web-menu.png"
+  ],
+  "limits": [
+    "No uninterrupted human Hurricane Malta flight or browser airborne test.",
+    "No authenticated Malta paint identity or independent museum specification confirmation.",
+    "No low-end/mobile FPS benchmark or live Pages verification.",
+    "Native preview renderer reports existing texture-allocation leaks during shutdown."
+  ]
+}

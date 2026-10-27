@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "9fc1b431fca6b5063e36d9a9063313b1086807c5",
-  "last_documented_commit": "9542c5944ae863b43fc48030edce09cec06e2e2f",
-  "update_document": "2026-10-26-bofors-post-fire.md",
-  "review_range": "9fc9a131afc6a532dd15c0dea5ad6e6b71545a03..9542c5944ae863b43fc48030edce09cec06e2e2f",
-  "date": "2026-10-26",
+  "previous_documentation_publication": "f6695257309349247104616123a14d26a1fd6972",
+  "last_documented_commit": "e0e7ae069445eac65fc8c1c5ee5d59eb996d7dd9",
+  "update_document": "2026-10-27-hurricane.md",
+  "review_range": "9542c5944ae863b43fc48030edce09cec06e2e2f..e0e7ae069445eac65fc8c1c5ee5d59eb996d7dd9",
+  "date": "2026-10-27",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }
