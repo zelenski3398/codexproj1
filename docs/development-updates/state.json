@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "2d6d3d7ae171ccf8b85ee33cc1f53c5d077f9054",
-  "last_documented_commit": "7723f2f4ac36e07bd431ec346e42ea88b534097a",
-  "update_document": "2026-11-06-flight-devices.md",
-  "review_range": "52a5e685f3bd5e8ec22e2fac234133b473726c31..7723f2f4ac36e07bd431ec346e42ea88b534097a",
+  "previous_documentation_publication": "50957ea676623186795a4c6b7a8b1283237db89b",
+  "last_documented_commit": "5dd8456c015a6d5b329841739b8c35d5ce015856",
+  "update_document": "2026-11-06-flight-keybinds.md",
+  "review_range": "7723f2f4ac36e07bd431ec346e42ea88b534097a..5dd8456c015a6d5b329841739b8c35d5ce015856",
   "date": "2026-11-06",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }

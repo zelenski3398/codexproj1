@@ -4,6 +4,7 @@
 
 The original report is a frozen 50-commit audit through `588ac7b`. Later changes are recorded here with explicit commit boundaries, avoiding a repeated reconstruction of unchanged history.
 
+- [6 November 2026: restore F aircraft guns and move landing flaps to Q](2026-11-06-flight-keybinds.md).
 - [6 November 2026: functional flaps, Stuka dive brakes, idle deceleration and native/web controls](2026-11-06-flight-devices.md).
 - [6 November 2026: stale HUD publishing checks, complete-suite runner and retained diagnostics](2026-11-06-publishing-hud-checks.md).
 - [6 November 2026: full three-minute Valletta bomber approach and bomb-release gate](2026-11-06-valletta-three-minutes.md).

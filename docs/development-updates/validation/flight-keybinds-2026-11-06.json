@@ -1,0 +1,109 @@
+{
+  "source_commit": "5dd8456c015a6d5b329841739b8c35d5ce015856",
+  "date": "2026-11-06",
+  "godot_suites": [
+    {
+      "suite": "keyboard_checks",
+      "script": "res://tests/keyboard_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/keyboard_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 2.27,
+      "errors": [],
+      "result_lines": [
+        "KEYBOARD RESULT: 24/24 passed; 0 failed"
+      ],
+      "log": "keyboard_checks.log"
+    },
+    {
+      "suite": "flight_devices_checks",
+      "script": "res://tests/flight_devices_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/flight_devices_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 2.32,
+      "errors": [],
+      "result_lines": [
+        "FLIGHT DEVICES RESULT: 24/24 passed"
+      ],
+      "log": "flight_devices_checks.log"
+    },
+    {
+      "suite": "weapons_checks",
+      "script": "res://tests/weapons_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/weapons_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 4.28,
+      "errors": [],
+      "result_lines": [
+        "WEAPONS RESULT: 36/36 passed; 0 failed"
+      ],
+      "log": "weapons_checks.log"
+    },
+    {
+      "suite": "minimal_hud_checks",
+      "script": "res://tests/minimal_hud_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/minimal_hud_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 15.26,
+      "errors": [],
+      "result_lines": [
+        "MINIMAL HUD RESULT: 61/61 passed"
+      ],
+      "log": "minimal_hud_checks.log"
+    }
+  ],
+  "web_export": "passed",
+  "browser": "7/7 production-export Chromium checks passed with actual Q flap and F gunfire inputs",
+  "bindings": {
+    "flaps": "Q",
+    "fire": [
+      "F",
+      "Ctrl"
+    ],
+    "airbrakes": "B",
+    "throttle": [
+      "W",
+      "S"
+    ],
+    "wheel_brakes": "Space"
+  }
+}

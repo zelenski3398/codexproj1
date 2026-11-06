@@ -1,6 +1,6 @@
 # Flaps, dive brakes and deceleration
 
-F toggles landing flaps; B toggles dedicated airbrakes where fitted. W/S still controls throttle; Space operates wheel brakes **only through tyre contact**. Native aircraft guns remain Ctrl; browser aircraft guns are now **J**, replacing F. F remains command-post interaction on foot and B remains AA assist while mounted: only the occupied aircraft accepts aircraft device commands. F1 / pause Controls & Help lists the bindings.
+Q toggles landing flaps; B toggles dedicated airbrakes where fitted. W/S still controls throttle; Space operates wheel brakes **only through tyre contact**. Aircraft guns use **F**, with Ctrl retained as an alternative on both native and web builds. F remains command-post interaction on foot and B remains AA assist while mounted: only the occupied aircraft accepts aircraft device commands. F1 / pause Controls & Help lists the bindings.
 
 ## Physics audit and implementation
 
@@ -60,10 +60,10 @@ The existing compact instrument line retains airspeed, AGL, throttle, gear and f
 
 1. Run `godot --headless --path . --fixed-fps 120 --script res://tests/flight_devices_checks.gd`. Repeat with `-- --hz60` for a 60 Hz physics timestep.
 2. For a manual comparison, use the same altitude, mass, gear, heading and 65 m/s start; set idle and compare retracted, flaps, explicit assist airbrakes, then both. Keep attitude similar; do not compare a climb with a dive. Record actual speed over six seconds. Use a Stuka for equipped dive brakes.
-3. Below operating speed press F: observe gradual panels and percentages, slower approach and added lift. Retract at low speed: lift reduces; sufficiently low speed or high angle of attack still stalls. Above the limit, extension is refused with FLAPS OVERSPEED.
+3. Below operating speed press Q: observe gradual panels and percentages, slower approach and added lift. Retract at low speed: lift reduces; sufficiently low speed or high angle of attack still stalls. Above the limit, extension is refused with FLAPS OVERSPEED.
 4. At idle in a dive, compare B retracted/deployed: physical drag reduces speed relative to the clean case. Start a sufficiently steep dive slowly: gravity can still accelerate it.
 5. Hold Space while airborne: it must not change aerodynamic deceleration. Land with gear down and hold Space: tyre friction stops the plane. Take off again.
-6. Open F1 while deploying: simulation pauses, F/B do not issue commands; close and deployment resumes. Verify AA/post F/B bindings separately remain scoped to occupied equipment.
+6. Open F1 while deploying: simulation pauses, Q/B do not issue commands; close and deployment resumes. Verify AA/post F/B bindings separately remain scoped to occupied equipment.
 7. Destroy and reset: no new deployment commands on the wreck; reset returns all surfaces to zero. Confirm health, guns, gear and AI still operate.
 8. Export with `bash tools/build_web.sh`; run `NODE_PATH=<Playwright module directory> node tools/flight_devices_web_smoke.cjs`. It uses actual browser menu/keyboard inputs and read-only telemetry.
 
