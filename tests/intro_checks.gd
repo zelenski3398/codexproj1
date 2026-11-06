@@ -18,6 +18,8 @@ func run() -> void:
 	intro.set_process(false)
 	check(not selector.active and session.aircraft == null, "Intro shields existing menu without starting gameplay")
 	check(intro.movie.stream is VideoStreamTheora and intro.movie.loop and intro.movie.bus == &"Music", "Supplied movie uses looping Theora and existing Music bus")
+	check(GameIntro.POSTER_AUDIO.resource_path.ends_with("wings_over_malta_cinematic_march.ogg") and is_equal_approx(intro.poster_audio.stream.get_length(),48.0) and intro.poster_audio.stream.loop,"Supplied full 48-second march loops independently on the poster")
+	check(intro.poster_audio.bus==&"Music" and intro.movie.volume_db<=-80,"March uses Music bus; embedded video audio stays muted")
 	check(not GameAudioMixer.instance.menu_active and not GameAudioMixer.instance.audio_button.visible, "Menu music and floating audio control hidden during poster")
 	for dimensions in [Vector2i(1440,900), Vector2i(480,900)]:
 		root.content_scale_size = dimensions
@@ -40,7 +42,7 @@ func run() -> void:
 	intro.begin_play()
 	check(intro.elapsed == elapsed, "Repeated Play cannot restart transition")
 	intro._process(1.2)
-	check(intro.phase == GameIntro.Phase.MENU and not intro.surface.visible and not intro.movie.is_playing(), "Black midpoint stops video and reveals existing menu")
+	check(intro.phase == GameIntro.Phase.MENU and not intro.surface.visible and not intro.movie.is_playing() and not intro.poster_audio.playing, "Black midpoint stops video and reveals existing menu")
 	check(GameAudioMixer.instance.menu_active and not selector.active, "Menu music returns while controls wait for fade")
 	intro._process(1.7)
 	await frames(2)

@@ -44,6 +44,10 @@ func _process(delta: float) -> void:
 		state.startup_intro.video_position = session.startup_intro.movie.stream_position
 		state.startup_intro.video_playing = session.startup_intro.movie.is_playing()
 		state.startup_intro.video_restarts = session.startup_intro.video_restarts
+		state.startup_intro.music_playing = session.startup_intro.poster_audio.playing
+		state.startup_intro.music_position = session.startup_intro.poster_audio.get_playback_position()
+		state.startup_intro.music_starts = session.startup_intro.music_starts
+		state.startup_intro.music_asset = GameIntro.POSTER_AUDIO.resource_path
 		state.startup_intro.play_button = _center(session.startup_intro.play_button)
 	state.missions_selecting = is_instance_valid(session.missions_menu)
 	if is_instance_valid(session.missions_menu):

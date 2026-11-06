@@ -23,8 +23,10 @@ func run() -> void:
 	await wait(.8)
 	check(paused and intro.movie.stream_position!=first,"Poster decoder keeps moving even when gameplay is paused")
 	paused=false
-	await wait(4.5)
-	check(intro.phase==GameIntro.Phase.POSTER and intro.movie.is_playing() and intro.video_restarts==0,"Source clip loops continuously past its five-second end without watchdog intervention")
+	await wait(10.5)
+	check(intro.phase==GameIntro.Phase.POSTER and intro.movie.is_playing() and intro.video_restarts==0,"Continuous forward/return clip loops past ten seconds without watchdog intervention")
+	check(intro.poster_audio.playing and intro.music_starts==1 and intro.poster_audio.get_playback_position()>10,"Full-length march keeps its playback position through video loop")
+	check(intro.poster_audio.stream != GameIntro.POSTER_AUDIO and GameIntro.POSTER_AUDIO.resource_path.ends_with("wings_over_malta_cinematic_march.ogg"),"Poster uses an independent instance of the supplied cinematic march")
 	var first_id:=intro.get_instance_id()
 	intro.begin_play();intro.begin_play()
 	await wait(3.7)

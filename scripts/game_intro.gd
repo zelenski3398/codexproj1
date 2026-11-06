@@ -7,8 +7,9 @@ signal completed
 @export var exit_fade_seconds: float = 1.6
 @export var menu_fade_seconds: float = 1.6
 @export var decode_video: bool = true
+@export var poster_music_volume_db: float = -3.0
 const POSTER = preload("res://assets/intro/malta_poster.png")
-const POSTER_AUDIO = preload("res://assets/intro/malta_poster_audio.ogg")
+const POSTER_AUDIO = preload("res://assets/intro/wings_over_malta_cinematic_march.ogg")
 const MOVIE = preload("res://assets/intro/malta_poster.ogv")
 enum Phase { OPENING, POSTER, LEAVING, MENU, DONE }
 var phase: Phase = Phase.OPENING
@@ -17,6 +18,7 @@ var surface: Control
 var artwork: Control
 var still: TextureRect
 var poster_audio: AudioStreamPlayer
+var music_starts: int = 0
 var video_last_position: float = -1
 var video_stalled: float = 0
 var video_restarts: int = 0
@@ -60,11 +62,11 @@ func _ready() -> void:
 	movie.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	artwork.add_child(movie)
 	movie.process_mode = Node.PROCESS_MODE_ALWAYS
-	movie.finished.connect(_video_finished)
 	poster_audio=AudioStreamPlayer.new()
 	poster_audio.stream=POSTER_AUDIO.duplicate()
 	poster_audio.stream.loop=true
 	poster_audio.bus=&"Music"
+	poster_audio.playback_type = AudioServer.PLAYBACK_TYPE_SAMPLE if OS.has_feature("web") else AudioServer.PLAYBACK_TYPE_STREAM
 	poster_audio.volume_db=-80
 	add_child(poster_audio)
 	play_button = Button.new()
@@ -98,6 +100,7 @@ func _ready() -> void:
 	_layout()
 	_update_visuals()
 	call_deferred("_start_video")
+	call_deferred("_start_audio")
 
 func _layout() -> void:
 	var viewport_size := get_viewport().get_visible_rect().size
@@ -114,6 +117,10 @@ func _layout() -> void:
 	play_button.add_theme_font_size_override("font_size", maxi(16, int(dimensions.y * 0.027)))
 
 func _input(event: InputEvent) -> void:
+	# Retry a browser-blocked initial request on any real user gesture, without
+	# restarting a track that is already running or tying it to video wraps.
+	if (event is InputEventMouseButton and event.pressed) or (event is InputEventKey and event.pressed and not event.echo):
+		_start_audio()
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode in [KEY_ENTER, KEY_KP_ENTER, KEY_SPACE]:
 			begin_play()
@@ -131,11 +138,13 @@ func _process(delta: float) -> void:
 	elapsed += delta
 	if decode_video and phase in [Phase.OPENING,Phase.POSTER] and DisplayServer.get_name()!="headless":
 		var position:=movie.stream_position
-		video_stalled=video_stalled+delta if is_equal_approx(position,video_last_position) else 0
+		# A slow frame/background tab is not a stopped decoder. Only recover
+		# an unexpectedly stopped player; normal looping belongs to Godot.
+		video_stalled=video_stalled+minf(delta,.25) if not movie.is_playing() else 0
 		video_last_position=position
 		if video_stalled>2.0:
-			# Restart only an actually stalled decoder, never on every frame.
-			movie.stop();movie.play()
+			# Recover a stopped decoder only; never reset a playing clip.
+			movie.play()
 			video_stalled=0
 			video_last_position=-1
 			video_restarts+=1
@@ -166,15 +175,17 @@ func _update_visuals() -> void:
 	elif phase == Phase.MENU:
 		shade = 1.0 - smoothstep(0.0, menu_fade_seconds, elapsed)
 	blackout.color.a = shade
-	poster_audio.volume_db = linear_to_db(maxf(0.0001, reveal * (1.0 - shade) * 0.7))
+	poster_audio.volume_db = linear_to_db(maxf(0.0001, reveal * (1.0 - shade) * db_to_linear(poster_music_volume_db)))
 
 func _start_video() -> void:
 	if not is_inside_tree() or phase not in [Phase.OPENING,Phase.POSTER] or not decode_video or DisplayServer.get_name()=="headless":return
 	if not movie.is_playing():movie.play()
-	if GameAudioMixer.instance.playback_enabled and not poster_audio.playing:poster_audio.play()
 
-func _video_finished() -> void:
-	if phase in [Phase.OPENING,Phase.POSTER]:call_deferred("_start_video")
+func _start_audio() -> void:
+	if not is_inside_tree() or phase not in [Phase.OPENING,Phase.POSTER]: return
+	if GameAudioMixer.instance.playback_enabled and not poster_audio.playing:
+		poster_audio.play()
+		music_starts += 1
 
 func _exit_tree() -> void:
 	if is_instance_valid(poster_audio):poster_audio.stop();poster_audio.stream=null
