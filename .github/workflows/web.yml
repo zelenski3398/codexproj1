@@ -22,71 +22,16 @@ jobs:
       - name: Check controls, combat, interception, Survival, Malta terrain and audio
         run: |
           godot --headless --path . --editor --import --quit
-          godot --headless --path . --fixed-fps 120 --script res://tests/universal_damage_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/aircraft_failure_flight_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/aircraft_failure_ai_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/component_damage_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/intro_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/keyboard_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/weapons_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/impact_audio_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/aircraft_impact_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/aircraft_damage_hud_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/italian_aircraft_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/malta_encounter_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/harbour_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/harbour_hangar_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/hurricane_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/hurricane_flight_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/hurricane_performance_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/harbour_support_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/harbour_radio_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/wingman_radio_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/harbour_flight_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/harbour_departure_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/mission_return_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/minimal_hud_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/aa_hud_context_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/interception_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/interception_siren_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/interception_combat_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/interception_departure_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/survival_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/malta_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/malta_terrain_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/st_elmo_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/valletta_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/mdina_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/cottonera_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/maltese_vegetation_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/rural_flight_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/countryside_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/countryside_departure_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/recovery_wreck_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/pilot_recovery_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/hangar_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/airfield_ground_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/malta_roads_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/base_access_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/dive_defence_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/dive_attack_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/audio_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/flyby_audio_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/mission_radio_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/pilot_character_checks.gd
-          xvfb-run -a godot --path . --audio-driver Dummy --script res://tests/intro_playback_checks.gd
-          xvfb-run -a godot --path . --audio-driver Dummy --disable-render-loop --fixed-fps 120 --script res://tests/aa_mouse_checks.gd
-          xvfb-run -a godot --path . --audio-driver Dummy --disable-render-loop --fixed-fps 120 --script res://tests/battery_command_ui_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/battery_command_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/bofors_predictor_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/bofors_battery_fire_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/battery_engagement_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/defence_sound_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/layered_aa_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/aa_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/aa_presentation_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/flak_damage_checks.gd
-          godot --headless --path . --fixed-fps 120 --script res://tests/airfield_controls_checks.gd
+          python3 -m unittest discover -s tests -p test_publishing_runner.py
+          python3 tools/run_godot_checks.py
+      - name: Save check results and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: godot-check-logs
+          path: builds/checks/
+          retention-days: 7
+          if-no-files-found: ignore
       - name: Export browser game
         run: bash tools/build_web.sh
       - name: Verify exported game payload

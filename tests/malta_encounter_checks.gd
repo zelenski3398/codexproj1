@@ -16,7 +16,7 @@ func _run() -> void:
 	var director: EnemyEncounters = session.encounters
 	var mission: MaltaMission = session.malta_mission
 	check(director.active.is_empty() and session.enemy == null and director.initial_spawn_pending and director.awaiting_confirmation and not session.enemy_defeated, "Free roam has no initial enemy or false kill message and waits for explicit spawn")
-	check(director.confirm_button.visible and director.confirm_button.text.contains("SPAWN RANDOM ENEMY"), "Visible spawn button explains the C alternative")
+	check(session.gameplay_hud.confirm_action.is_visible_in_tree() and not session.gameplay_hud.confirm_action.disabled and "Spawn random enemy" in session.gameplay_hud.confirm_action.text and GameplayHUD.binding("confirm_encounter") in session.gameplay_hud.confirm_action.text and not director.confirm_button.visible, "Visible spawn button explains the C alternative")
 	await frames(60)
 	check(director.active.is_empty(), "Elapsed time alone never spawns an encounter")
 	paused = true

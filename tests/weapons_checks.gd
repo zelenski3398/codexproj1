@@ -148,7 +148,7 @@ func _run() -> void:
 	_check(aircraft.health.hp == 0 and aircraft.is_destroyed and destruction_count == 1, "HP clamps at zero and destruction occurs exactly once")
 	_check(aircraft.pilot.throttle == 0 and aircraft.guns.pool.active.is_empty(), "Destroyed aircraft cannot fire or power its engine")
 	_check(aircraft.global_position.y < destroyed_y - 3 and aircraft.linear_velocity.y < -5 and not aircraft.freeze, "Destroyed aircraft falls under existing rigid-body physics")
-	_check(world.hud.overlay.visible and world.hud.overlay_title.text == "DESTROYED" and world.hud.hp_bar.value == 0, "Destruction displays 0 HP, destroyed message and reset controls")
+	_check(world.gameplay_hud.vital.is_visible_in_tree() and "0 HP" in world.gameplay_hud.vital.text and "Destroyed" in world.gameplay_hud.vital.text and world.gameplay_hud.actions.is_visible_in_tree() and GameplayHUD.binding("reset")+" — Restart flight" in world.gameplay_hud.actions.text and not world.hud.overlay.visible, "Active shared HUD displays 0 HP, destroyed state and restart action without the retired overlay")
 	await _frames(30)
 	_check(aircraft.impact_effects.explosion_count == 0 and not aircraft.damage_effects.emitting and aircraft.model.visible, "Zero-HP combat loss disables the aircraft without an automatic fireball")
 	# Reset while Ctrl is held clears shots and does not immediately refire.

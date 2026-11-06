@@ -193,13 +193,15 @@ func _process(delta: float) -> void:
 	var playing: bool=not get_tree().paused and alive
 	confirm_action.visible=playing and session.encounters.awaiting_confirmation and not session.encounters.ended and not session.encounters.complete
 	confirm_action.disabled=session.encounters.spawning
-	confirm_action.text=("Confirm next stage · " if session.game_mode=="survival" else "Spawn next enemy · ")+binding("confirm_encounter")
+	confirm_action.text=("Confirm next stage · " if session.game_mode=="survival" else ("Spawn random enemy · " if session.encounters.initial_spawn_pending else "Spawn next enemy · "))+binding("confirm_encounter")
 	pause_panel.visible=get_tree().paused and not help_open
 	
 	if get_tree().paused:Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
 	help.visible=help_open
 	vital.text="Pilot · %d HP"%ceili(mission.pilot.health.hp) if is_instance_valid(mission) else ""
-	if is_instance_valid(player):vital.text="%s · %d HP"%[player.display_name,ceili(player.health.hp)]
+	if is_instance_valid(player):
+		vital.text="%s · %d HP"%[player.display_name,ceili(player.health.hp)]
+		if not is_instance_valid(mission) and (player.is_destroyed or player.is_crashed):vital.text+=" · Destroyed" if player.is_destroyed else " · Crashed"
 	parts.visible=is_instance_valid(player)
 	if parts.visible:
 		parts.refresh(player.components)
@@ -272,6 +274,8 @@ func context_actions() -> String:
 			var offset: Vector3=mission.recovery.truck.global_position-anchor.global_position
 			hints.append("Pickup · %d m · %03d°"%[roundi(offset.length()),roundi(fposmod(rad_to_deg(atan2(offset.x,-offset.z)),360))])
 		elif not interaction.is_operating() and mission.recovery.state in ["REQUESTED","ARRIVING"]:hints.append("Transport · "+mission.recovery.state.to_lower())
+	elif is_instance_valid(session.aircraft) and (session.aircraft.is_destroyed or session.aircraft.is_crashed):
+		hints.append(binding("reset")+" — Restart flight")
 	return "    ·    ".join(hints.slice(0,4))
 
 func update_objective() -> void:
