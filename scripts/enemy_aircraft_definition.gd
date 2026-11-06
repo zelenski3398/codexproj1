@@ -16,6 +16,19 @@ extends Resource
 @export var wing_area: float = 16.8
 @export var thrust: float = 12500
 @export var drag: float = 0.035
+@export_group("Landing devices (gameplay tuning, SI units)")
+@export var flaps_available: bool = true
+@export var airbrakes_available: bool = false
+@export var flap_landing_degrees: float = 40
+@export var flap_operating_speed: float = 65
+@export var flap_lift_coefficient: float = .45
+@export var flap_drag_coefficient: float = .14
+@export var flap_deploy_seconds: float = 2.5
+@export var airbrake_drag_coefficient: float = .50
+@export var airbrake_deploy_seconds: float = 1.2
+@export var gear_drag_coefficient: float = .026
+@export var idle_propeller_drag: float = .022
+@export_group("AI and weapons")
 @export var cruise_speed: float = 75
 @export var stall_speed: float = 31
 @export var control_torque: Vector3 = Vector3(19000, 12500, 23000)

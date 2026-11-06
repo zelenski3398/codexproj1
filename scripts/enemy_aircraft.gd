@@ -27,6 +27,10 @@ func configure_airframe() -> void:
 	display_name = "Ju 87 Stuka"
 	team_id = CombatTeams.ENEMY
 	collision_wing_span = 13.6
+	flaps_available = true
+	airbrakes_available = true
+	flap_landing_degrees = 40
+	flap_operating_speed = 60
 	wing_area = 26.0
 	engine_thrust = 11500.0
 

@@ -23,6 +23,24 @@ signal impact_assessed(result: Dictionary)
 @export var stall_speed: float = 32.0
 @export var parasite_drag: float = 0.034
 @export var induced_drag: float = 0.055
+@export_group("Landing devices and deceleration (SI units)")
+@export var flaps_available: bool = true
+@export var airbrakes_available: bool = false
+## Explicit ahistorical option for aircraft without dedicated dive brakes.
+@export var gameplay_airbrake_assist: bool = false
+@export var flap_retracted_degrees: float = 0
+@export var flap_landing_degrees: float = 85
+@export var flap_lift_coefficient: float = 0.45
+@export var flap_drag_coefficient: float = 0.14
+@export var flap_deploy_seconds: float = 2.5
+@export var flap_operating_speed: float = 70 # m/s; requests above this are rejected
+@export var airbrake_drag_coefficient: float = 0.50
+@export var airbrake_deploy_seconds: float = 1.2
+@export var ai_dive_brake_deploy_speed: float = 80
+@export var ai_dive_brake_retract_speed: float = 70
+@export var gear_drag_coefficient: float = 0.026
+@export var idle_propeller_drag: float = 0.022
+@export var wind_velocity: Vector3 = Vector3.ZERO
 @export_group("Handling")
 @export var pitch_torque: float = 19000.0
 @export var roll_torque: float = 23000.0
@@ -37,6 +55,7 @@ signal impact_assessed(result: Dictionary)
 @export var input_enabled: bool = true
 @export var fuel_consumption_rate: float = 0.0
 
+var devices: FlightDevices
 var pilot: PilotInput
 var gear: LandingGear
 var model: SpitfireModel
@@ -108,6 +127,10 @@ func _ready() -> void:
 	components.profile = damage_profile if damage_profile != null else default_damage_profile()
 	add_child(components)
 	gear.damage_system = components
+	devices = FlightDevices.new()
+	devices.name = "FlightDevices"
+	devices.aircraft = self
+	add_child(devices)
 	component_visuals = ComponentDamageVisuals.new()
 	component_visuals.aircraft = self
 	component_visuals.name = "ComponentDamageVisuals"
@@ -151,9 +174,18 @@ func create_model() -> SpitfireModel:
 	return SpitfireModel.new()
 
 func _input(event: InputEvent) -> void:
-	if not input_enabled:
+	if not input_enabled or get_tree().paused:
 		return
 	# HUD owns reset/pause. Discrete commands ignore OS key-repeat.
+	if not is_destroyed and not is_crashed and not event.is_echo():
+		if event.is_action_pressed("flaps"):
+			devices.command_flaps(not devices.flap_target)
+			get_viewport().set_input_as_handled()
+			return
+		if event.is_action_pressed("airbrakes"):
+			devices.command_airbrakes(not devices.brake_target)
+			get_viewport().set_input_as_handled()
+			return
 	if event.is_action_pressed("gear") and not event.is_echo() and not is_crashed and not is_destroyed:
 		gear.toggle()
 		get_viewport().set_input_as_handled()
@@ -201,6 +233,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		impact_effects.reset()
 		freeze = false
 		components.reset()
+		devices.reset()
 		health.reset()
 		guns.reset()
 		damage_effects.clear()
@@ -213,6 +246,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	if impact_effects.integrate(state):
 		return
 	var dt := state.step
+	devices.advance(dt)
 	components.advance(dt)
 	components.evaluate_structure(dt, state.linear_velocity, state.angular_velocity)
 	pilot.sample(dt)
@@ -224,8 +258,9 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	var velocity := state.linear_velocity
 	var before_contact: Vector3 = previous_contact_velocity
 	previous_contact_velocity = velocity
-	airspeed = velocity.length()
-	var local_velocity := basis.transposed() * velocity
+	var air_velocity := velocity - wind_velocity
+	airspeed = air_velocity.length()
+	var local_velocity := basis.transposed() * air_velocity
 	var forward_speed := maxf(-local_velocity.z, 0.0)
 	angle_of_attack = atan2(-local_velocity.y, maxf(forward_speed, 0.1))
 	_update_altitude(state.transform.origin)
@@ -266,20 +301,25 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	var alpha_limit := deg_to_rad(stall_angle_degrees)
 	var alpha_abs := absf(angle_of_attack)
 	var stall_blend := smoothstep(alpha_limit, alpha_limit + deg_to_rad(14.0), alpha_abs)
-	var cl := clampf(lift_at_zero_alpha + lift_slope * angle_of_attack, -1.5, 1.8)
+	var flap_lift := devices.flaps * flap_lift_coefficient
+	var cl := clampf(lift_at_zero_alpha + lift_slope * angle_of_attack + flap_lift, -1.5, 1.8 + flap_lift)
 	# This forgiving stall fades lift rather than imposing a scripted fall.
 	# Residual lift and pitch authority allow recovery by lowering the nose.
 	cl *= lerpf(1.0, 0.22, stall_blend)
-	stalled = gear.contact_count == 0 and (airspeed < stall_speed / sqrt(maxf(components.lift_factor(), 0.1)) or alpha_abs > alpha_limit)
-	var direction := velocity.normalized() if airspeed > 0.1 else -basis.z
+	stalled = gear.contact_count == 0 and (airspeed < stall_speed / sqrt(maxf(components.lift_factor(), 0.1) * (1.0 + devices.flaps * flap_lift_coefficient / 1.8)) or alpha_abs > alpha_limit)
+	var direction := air_velocity.normalized() if airspeed > 0.1 else -basis.z
 	var lift_direction := basis.y.slide(direction).normalized()
 	# Healthy factors are exactly 1/0, preserving the original flight tuning.
 	var original_lift: float = q * wing_area * cl
 	state.apply_central_force(lift_direction * original_lift * components.lift_factor())
 	state.apply_torque(components.balance_torque(original_lift, q, lift_direction, direction, basis.x))
-	var drag_coefficient := parasite_drag + induced_drag * cl * cl + stall_blend * 0.28 + components.additional_drag()
+	# Healthy idle/windmilling prop drag fades out as the existing failed-
+	# propeller damage term takes over. Do not stack two full prop penalties.
+	var prop_drag: float = idle_propeller_drag * components.power_factor() * pow(1.0 - pilot.throttle if engine_running else 1.0, 2)
+	var device_drag := devices.flaps * flap_drag_coefficient + devices.airbrakes * airbrake_drag_coefficient
+	var drag_coefficient := parasite_drag + induced_drag * cl * cl + stall_blend * 0.28 + components.additional_drag() + device_drag + prop_drag
 	if gear.extended:
-		drag_coefficient += 0.026
+		drag_coefficient += gear_drag_coefficient
 	state.apply_central_force(-direction * 0.5 * air_density * airspeed * airspeed * wing_area * drag_coefficient)
 	# Propeller thrust loses effectiveness with speed; no velocity cap or
 	# direct transform movement is used in normal flight.

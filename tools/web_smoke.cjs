@@ -55,10 +55,10 @@ function check(condition, message) {
     await clickControl('fly_button');
     await wait(() => !window.firstSortieState.selecting);
     check((await state()).selected === 'sea_gladiator' && (await state()).fixed_gear, 'Mouse Fly starts the correct biplane with fixed gear');
-    check((await state()).hp === 100 && (await state()).enemy_count === 1 && (await state()).fire_guide === 'F', 'Health, one enemy and browser firing guide');
-    await page.keyboard.down('w'); await page.keyboard.down('f');
+    check((await state()).hp === 100 && (await state()).enemy_count === 1 && (await state()).fire_guide === 'J', 'Health, one enemy and browser firing guide');
+    await page.keyboard.down('w'); await page.keyboard.down('j');
     await wait(() => window.firstSortieState.throttle > 0.2 && window.firstSortieState.shots > 10);
-    await page.keyboard.up('w'); await page.keyboard.up('f'); await delay(600);
+    await page.keyboard.up('w'); await page.keyboard.up('j'); await delay(600);
     const throttle = (await state()).throttle;
     const shots = (await state()).shots;
     await delay(600);
@@ -82,7 +82,7 @@ function check(condition, message) {
     await wait(() => window.firstSortieState.destroyed && window.firstSortieState.hp === 0);
     check((await state()).destroyed, 'Zero HP enters destroyed state');
     const destroyedShots = (await state()).shots;
-    await page.keyboard.down('f');await delay(700);await page.keyboard.up('f');
+    await page.keyboard.down('j');await delay(700);await page.keyboard.up('j');
     check((await state()).shots === destroyedShots, 'Destroyed aircraft cannot fire');
     await page.keyboard.press('r');
     await wait(() => window.firstSortieState.hp === 100 && !window.firstSortieState.destroyed && window.firstSortieState.shots === 0);
@@ -104,9 +104,9 @@ function check(condition, message) {
     await page.keyboard.press('Enter');
     await wait(() => !window.firstSortieState.selecting);
     check((await state()).selected === 'spitfire' && !(await state()).fixed_gear && (await state()).hp === 100, 'Mouse selects Spitfire and Enter starts a clean session');
-    await page.keyboard.down('f');
+    await page.keyboard.down('j');
     await wait(() => window.firstSortieState.shots >= 16);
-    await page.keyboard.up('f');
+    await page.keyboard.up('j');
     check((await state()).shots >= 16, 'Spitfire wing guns fire with browser F');
     await page.screenshot({path:path.join(output,'spitfire.png')});
     await page.keyboard.press('Escape');

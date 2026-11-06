@@ -19,3 +19,5 @@ roll_torque = 19500.0
 rudder_torque = 12500.0
 angular_response = 3.6
 collision_wing_span = 12.19
+flap_landing_degrees = 80.0
+flap_operating_speed = 67.0

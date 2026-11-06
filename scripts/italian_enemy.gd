@@ -6,6 +6,17 @@ var additional_gunners: Array[RearGunner] = []
 func configure_airframe() -> void:
 	if definition == null:
 		definition = EnemyAircraftDefinition.find("c200")
+	flaps_available = definition.flaps_available
+	airbrakes_available = definition.airbrakes_available
+	flap_landing_degrees = definition.flap_landing_degrees
+	flap_operating_speed = definition.flap_operating_speed
+	flap_lift_coefficient = definition.flap_lift_coefficient
+	flap_drag_coefficient = definition.flap_drag_coefficient
+	flap_deploy_seconds = definition.flap_deploy_seconds
+	airbrake_drag_coefficient = definition.airbrake_drag_coefficient
+	airbrake_deploy_seconds = definition.airbrake_deploy_seconds
+	gear_drag_coefficient = definition.gear_drag_coefficient
+	idle_propeller_drag = definition.idle_propeller_drag
 	aircraft_kind = definition.id
 	marker_name = definition.marker
 	display_name = definition.title

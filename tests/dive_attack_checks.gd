@@ -32,10 +32,14 @@ func run() -> void:
 	var ai: DiveAttackPilot=foe.ai
 	var pitch_min:=0.0
 	var closest:=INF
+	var brake_peak: float=0
+	var retracted_in_circle: bool=false
 	for tick in range(14400):
 		await physics_frame
 		if not is_instance_valid(foe) or foe.is_destroyed:break
 		phases[ai.attack_state]=true
+		brake_peak=maxf(brake_peak,foe.devices.airbrakes)
+		if ai.attack_state=="CIRCLE" and foe.devices.airbrakes<.01:retracted_in_circle=true
 		pitch_min=minf(pitch_min,asin(clampf((-foe.global_basis.z).y,-1,1)))
 		closest=minf(closest,foe.global_position.distance_to(ai.attack_point))
 		for child in mission.effects.get_children():
@@ -49,6 +53,7 @@ func run() -> void:
 	check(not impacts.is_empty(),"Actual gravity-driven swept bomb reaches a physical impact")
 	check(not foe.is_destroyed and ai.minimum_clearance>50,"Undamaged aircraft recovers with positive terrain clearance")
 	check(foe.guns.pool.total_spawned>0 and ai.passes>0,"Surviving Stuka returns for real projectile strafing after its single bomb")
+	check(brake_peak>.1 and retracted_in_circle,"Stuka uses speed-controlled dive brakes and retracts them during recovery")
 	var final_clearance: float=ai.minimum_clearance
 	session.queue_free()
 	await frames(8)

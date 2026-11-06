@@ -63,7 +63,7 @@ func _ready() -> void:
 	bottom.offset_left=20;bottom.offset_right=-20;bottom.offset_top=-250;bottom.offset_bottom=-16;bottom.alignment=BoxContainer.ALIGNMENT_END;bottom.add_theme_constant_override("separation",7);root.add_child(bottom)
 	actions=label(15,Color("e4bf75"));actions.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;bottom.add_child(actions)
 	confirm_action=Button.new();confirm_action.text="Confirm / spawn · "+binding("confirm_encounter");confirm_action.focus_mode=Control.FOCUS_NONE;confirm_action.size_flags_horizontal=Control.SIZE_SHRINK_BEGIN;confirm_action.pressed.connect(func():session.encounters.confirm());bottom.add_child(confirm_action)
-	instruments=label(15);bottom.add_child(instruments)
+	instruments=label(15);instruments.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;bottom.add_child(instruments)
 	parts=AircraftDamageHUD.new();parts.custom_minimum_size.y=100;bottom.add_child(parts)
 	notification=label(16,Color("e4bf75"));notification.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER;notification.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
 	notification.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP);notification.offset_left=-220;notification.offset_right=220;notification.offset_top=150;root.add_child(notification)
@@ -136,7 +136,7 @@ func controls_text() -> String:
 	var text: String=""
 	var sections: Dictionary={
 		"On Foot":[["throttle_up","Walk forward"],["throttle_down","Walk back"],["rudder_left","Walk left"],["rudder_right","Walk right"],["roll_left","Turn left"],["roll_right","Turn right"],["board","Enter / exit nearest aircraft, gun or truck (safe conditions apply)"],["battery_command","Enter / exit nearby command post"]],
-		"Aircraft":[["pitch_up","Nose up"],["pitch_down","Nose down"],["roll_left","Bank left"],["roll_right","Bank right"],["rudder_left","Left rudder"],["rudder_right","Right rudder"],["throttle_up","Increase throttle"],["throttle_down","Decrease throttle"],["engine","Start / stop engine"],["gear","Retract / extend gear; Gladiator gear is fixed"],["brake","Wheel brakes"],["fire","Forward guns"]],
+		"Aircraft":[["pitch_up","Nose up"],["pitch_down","Nose down"],["roll_left","Bank left"],["roll_right","Bank right"],["rudder_left","Left rudder"],["rudder_right","Right rudder"],["throttle_up","Increase throttle"],["throttle_down","Decrease throttle"],["engine","Start / stop engine"],["gear","Retract / extend gear; Gladiator gear is fixed"],["flaps","Toggle landing flaps (where fitted)"],["airbrakes","Toggle dive brakes (Stuka; other types unavailable unless gameplay assist enabled)"],["brake","Wheel brakes (ground only)"],["fire","Forward guns"]],
 		"AA Guns":[["aa_fire","Fire: heavy single shot / 5 s reload; Bofors automatic / 0.5 s reload"],["aa_zoom","Gun-sight zoom; at the heavy command post, designate a target / approximate area (aim estimate)"],["brake","Fine aim"],["board","Mount / dismount gun"],["throttle_up","Heavy gun: increase timed fuze"],["throttle_down","Heavy gun: decrease timed fuze"],["aa_battery_toggle","Bofors post: toggle battery aim assist; St Elmo gun: gunner relay"],["battery_command","Operate / exit predictor or heavy command station"]],
 		"Vehicles":[["throttle_up","Accelerate"],["throttle_down","Brake / reverse"],["rudder_left","Steer left"],["rudder_right","Steer right"],["brake","Brake"],["board","Enter / exit at low speed; recovery truck returns to base"]],
 		"Radio":[["wingman_status","Faith, Hope and Charity: request wingman status; unavailable in other modes"]],
@@ -208,7 +208,7 @@ func _process(delta: float) -> void:
 		parts.diagram.visible=get_viewport().get_visible_rect().size.x>=1100
 		parts.grid.columns=6 if get_viewport().get_visible_rect().size.x>=1100 else 4
 	instruments.visible=is_instance_valid(player)
-	if instruments.visible:instruments.text="%d km/h    AGL %d m    Power %d%%    Gear %s    Fuel %d%%"%[roundi(player.airspeed*3.6),roundi(player.altitude),roundi(player.pilot.throttle*100),"down" if player.gear.extended else "up",roundi(player.components.fuel_remaining*100)]
+	if instruments.visible:instruments.text="%d km/h    AGL %d m    Power %d%%    Gear %s    Fuel %d%%"%[roundi(player.airspeed*3.6),roundi(player.altitude),roundi(player.pilot.throttle*100),"down" if player.gear.extended else "up",roundi(player.components.fuel_remaining*100)] + "    " + player.devices.status()
 	if is_instance_valid(mission) and mission.interaction.occupied_gun!=null:
 		var gun: BritishAAGun=mission.interaction.occupied_gun
 		vital.text="%s · %d HP   |   Pilot %d HP"%["Command post" if gun is AACommandStation else "AA gun",gun.hp,ceili(mission.pilot.health.hp)]
@@ -231,7 +231,9 @@ func _process(delta: float) -> void:
 	if is_instance_valid(mission) and mission.notice_time>0 and mission.notice.split("\n")[0].left(100)!=last_notice:
 		last_notice=mission.notice.split("\n")[0].left(100);notice_clock=4
 	notification.text=binding("controls_help")+" — Controls" if age<5 else (last_notice if notice_clock>0 else "")
+	if is_instance_valid(player) and player.devices.notice != "":notification.text=player.devices.notice
 	if is_instance_valid(player) and player.stalled:notification.text="Stall — lower the nose"
+	if is_instance_valid(player) and player.devices.flaps > .05 and player.airspeed > player.flap_operating_speed:notification.text="FLAPS OVERSPEED"
 	notification.visible=playing and context!="ended" and not notification.text.is_empty()
 	debug.text="DEBUG · mode %s · active enemies %d · session %d"%[session.game_mode,session.encounters.active.size(),session.session_number]
 

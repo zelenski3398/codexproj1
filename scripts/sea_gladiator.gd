@@ -24,6 +24,7 @@ func _ready() -> void:
 	roll_torque = 14000.0
 	rudder_torque = 10000.0
 	collision_wing_span = 9.8
+	flaps_available = false # Gladiator has no landing flaps
 	super._ready()
 	mass = 2200.0
 	inertia = Vector3(7600, 11000, 6500)

@@ -82,6 +82,15 @@ debug_components={
 "events": [Object(InputEventKey,"physical_keycode":4194334), Object(InputEventKey,"keycode":4194334)]
 }
 
+flaps={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":70), Object(InputEventKey,"keycode":70)]
+}
+airbrakes={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":66), Object(InputEventKey,"keycode":66)]
+}
+
 fire={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"physical_keycode":4194326), Object(InputEventKey,"keycode":4194326)]

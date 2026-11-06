@@ -17,9 +17,9 @@ func _ready() -> void:
 	for physical in [false, true]:
 		var key: InputEventKey = InputEventKey.new()
 		if physical:
-			key.physical_keycode = KEY_F
+			key.physical_keycode = KEY_J
 		else:
-			key.keycode = KEY_F
+			key.keycode = KEY_J
 		InputMap.action_add_event("fire", key)
 	bridge = Engine.get_singleton("JavaScriptBridge")
 	set_process(bridge != null and bool(bridge.eval("new URLSearchParams(location.search).get('smoke') === '1'")))
@@ -190,7 +190,7 @@ func _process(delta: float) -> void:
 		state.audio.gun_playing = aircraft.guns.weapon_audio.player.playing
 		state.audio.gun_gain = aircraft.guns.weapon_audio.gain
 		state.audio.audible_salvos = aircraft.guns.weapon_audio.audible_salvos
-		state.merge({"throttle": aircraft.pilot.throttle, "hp": aircraft.health.hp, "shots": aircraft.guns.pool.statistics.shots, "speed": aircraft.airspeed, "altitude": aircraft.altitude, "gear": aircraft.gear.extended, "fixed_gear": not aircraft.gear.retractable, "destroyed": aircraft.is_destroyed, "crashed": aircraft.is_crashed, "debug_visible": session.component_debug.enabled if is_instance_valid(session.component_debug) else false, "fire_guide": session.hud.fire_key_label if is_instance_valid(session.hud) else "F", "smoke": aircraft.damage_effects.emitting})
+		state.merge({"flaps": aircraft.devices.flaps, "airbrakes": aircraft.devices.airbrakes, "device_notice": aircraft.devices.notice, "throttle": aircraft.pilot.throttle, "hp": aircraft.health.hp, "shots": aircraft.guns.pool.statistics.shots, "speed": aircraft.airspeed, "altitude": aircraft.altitude, "gear": aircraft.gear.extended, "fixed_gear": not aircraft.gear.retractable, "destroyed": aircraft.is_destroyed, "crashed": aircraft.is_crashed, "debug_visible": session.component_debug.enabled if is_instance_valid(session.component_debug) else false, "fire_guide": session.hud.fire_key_label if is_instance_valid(session.hud) else "J", "smoke": aircraft.damage_effects.emitting})
 		state.component_hud = {"visible": session.hud.damage_display.is_visible_in_tree(), "parts": session.hud.damage_display.ratios, "colors": {}}
 		for id in session.hud.damage_display.ratios:
 			state.component_hud.colors[id] = session.hud.damage_display.fills[id].bg_color.to_html(false)
