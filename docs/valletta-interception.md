@@ -1,5 +1,7 @@
 # Italian aircraft and the Ta’ Qali interception
 
+**6 November 2026 timing update:** both the countdown and physical bomber approach now use three minutes. The nearby checkpoints move west to provide a normal-speed straight run to Valletta. No bombs begin before 180 seconds. [Changes and measured checks](development-updates/2026-11-06-valletta-three-minutes.md).
+
 **24 October audio update:** the supplied air-raid siren loops from departure through the interception and fades out on the mission result. It uses the existing Aircraft volume control and radio ducking. Retry restarts one alarm; returning to the menu stops it. AA defence keeps its existing positional siren without a duplicate.
 
 **20 October update:** available player aircraft now depart from hangar stands. Pilot health is independent from hull HP; a surviving pilot can exit a wreck and use **V → E truck entry** recovery without resetting this mission. Aircraft loss alone no longer fails the attempt. [Current survival/recovery rules](pilot-survival-and-recovery.md).
@@ -15,22 +17,22 @@ coordinates, parked aircraft or boarding/landing mechanics.
 2. Press **I** to start its engine. Use **W/S** for throttle and **A/D** for
    rudder; taxi from the parking apron onto the runway before full power.
 3. Take off using the existing arrows. Follow **two nearby gold navigation checkpoints**
-   following the runway departure, then turning gently east. Only the
+   toward the western interception area after takeoff. Only the
    current checkpoint is shown, numbered **1/2** then **2/2**, with its distance
    and altitude. **M** shows the same current point on the navigation chart.
    Their generous **350 m radii** permit ordinary climbing/turning approaches.
 4. Passing checkpoint **2/2** spawns one SM.79 and one C.200 approximately
    **1,200 m away, 30° right of your aircraft’s forward heading (one o’clock)**,
    displays and radios **Italian formation detected, one o’clock — intercept!**,
-   and starts **01:30**. All startup, taxi, takeoff and
+   and starts **03:00**. All startup, taxi, takeoff and
    checkpoint-navigation time is excluded from the countdown.
 5. Destroy both before the deadline. Follow their labelled directional markers.
    Use **Ctrl** on desktop / **F** in browsers for the existing wing guns.
    Stopping the bomber first leaves the escort objective and original timer.
    Even when both enemies are lost, keep flying until the timer expires.
-   Player crash/destruction fails immediately; enemy crashes count as losses.
+   Fatal player crashes/pilot death fail immediately; enemy crashes count as losses.
    A bombing run already begun cannot be undone by a late shootdown.
-6. Results offer **Retry Mission** and **Return to Missions**. A result does
+6. On success, land at a friendly airfield before the existing completion presentation. Results offer **Retry Mission** and **Return to Missions**. A result does
    not pause or reset your aircraft. **R** remains an explicit full restart.
 
 This is a small fictional interception, not a historical mass bombing raid.
@@ -91,51 +93,32 @@ Edit `mission_definitions/valletta.tres` with `InterceptionDefinition`:
 
 | Parameter | Default / meaning |
 | --- | --- |
-| `checkpoint_positions` | `(2600,330,5000)` and `(3900,430,5050)` in the existing metre-based world |
+| `checkpoint_positions` | `(400,330,3400)` and `(-600,430,2500)` in the existing metre-based world |
 | `checkpoint_radius`, `checkpoint_vertical_tolerance` | 350 m spherical radius; within 100 m of the checkpoint's MSL altitude |
 | `minimum_checkpoint_agl` | 80 m; runway/taxi cannot activate a checkpoint |
 | `formation_spawn_distance`, `formation_bearing_degrees` | 1,200 m in 3D, 30° clockwise from the player's horizontal nose heading |
 | `formation_height_offset`, `maximum_formation_height_difference` | Prefer 60 m above the player; never more than 150 m difference |
 | `spawn_clearance`, `escort_separation` | At least 300 m terrain clearance; 230 m lateral separation plus stagger/height |
-| `deadline_seconds` | 90 seconds of simulation time; pause suspends the countdown |
+| `deadline_seconds` | 180 seconds of simulation time; pause suspends the countdown |
+| `approach_seconds` | 180 seconds; bombing is gated until this interval has elapsed |
 | `target_area` | Unchanged Valletta geographic target `(10131.404,42.149,3472.677)` |
 | `bombing_point.y`, `automatic_release_lead` | 500 m MSL bombing altitude; derive an up-course release point for each actual spawn |
-| `arrival_radius` | 70 m; permits release about half a second before expiry |
+| `arrival_radius` | 70 m arrival corridor; physical bombing cannot start before 180 s |
 | `commander_voice`, `commander_volume_db`, `radio_duck_db` | Existing supplied recording, 0 dB gain, temporary -4 dB engine/gun attenuation |
 | `detection_notice_seconds` | Eight seconds of initial warning, followed by normal objectives |
 | `escort_type` | `c200`; `cr42` remains a supported variation |
 | `bomb_count`, `bomb_interval` | Eight falling bombs, separated by 0.7 s |
 
-The checkpoint route is **approximately 3 km from Ta’ Qali's centre**, rather
-than the previous 26.5 km offshore route. The first checkpoint continues the
-runway departure at 330 m MSL; the second lies nearby to the east at 430 m MSL.
-Altitude tolerance prevents capturing the final sphere while too low for a
-practical formation spawn. Both heights are checked against actual terrain.
-Only the current checkpoint appears on the HUD/map, and neither enemies nor
-the countdown exist before checkpoint 2.
+The two checkpoint centres lie roughly 1.1 km and 2.4 km from Ta’ Qali's centre, at 330 m and 430 m MSL. They guide the player west/northwest after takeoff. Both are above measured terrain; only the current checkpoint appears. No formation or countdown exists before checkpoint 2.
 
-At activation, the formation appears at one o'clock, with vertical separation
-included in the exact 1,200 m distance. Terrain rays and collision spheres check
-both aircraft, their mutual separation, and their clearance from the player.
-The bomber faces its Valletta release point immediately; subsequent movement
-uses the unchanged physical controller. Player pose, velocity, health, fuel,
-engine/throttle, component state and active bullets are preserved.
+At activation the formation remains at one o'clock, with vertical separation included in the exact 1,200 m distance. Terrain rays and collision spheres check both aircraft, their mutual separation and clearance from the player. The bomber immediately faces its Valletta release point and uses the original straight-route physical controller. Player pose, velocity, health, fuel, engine/throttle, components and active bullets are preserved.
 
-**Player-to-enemy distance is separate from the bomber's route.** A normal-control
-Spitfire departure measured **1,200.0 m** separation and a **5,391.36 m** bomber
-route, with release-point arrival at **89.45 seconds**. Contact occurred about
-**42.14 seconds after sustained wheel liftoff**, after **2,279.00 m** of actual
-flight. The configured start/capture radii shorten the travelled route further.
-The Sea Gladiator also completed normal taxi/takeoff and both checkpoints:
-**60.058 seconds** to contact, **2,482.43 m** flown, **1,200.0 m** separation,
-**62.15 m** vertical difference, and **89.45-second** bomber arrival.
-These are automated flights using ordinary pilot commands, not claimed manual
-flights. Taxi/engine startup remain untimed and player-controlled.
+**Player-to-enemy distance is separate from the bomber's route.** An automated, normal-control Spitfire departure measured **1,200.0 m** separation and a **10,454.73 m** bomber route. Contact occurred **77.45 seconds after sustained liftoff**, after **4,746.72 m** flown; the bomber reached its release corridor after **179.39 seconds**. The separate ordered-checkpoint fixture produced a **10,727.29 m** route, **179.41-second** arrival and first physical bomb release at **180.00 seconds**; the first bomb landed **37.88 m** from the Valletta target. These are automated physics flights, not a human playthrough. Startup/taxi remain untimed.
 
 The release lead is calculated from actual spawn-to-Valletta distance, bombing
-height, gravity and the 90-second approach. If `T` is ballistic fall time,
+height, gravity and the 180-second approach. If `T` is ballistic fall time,
 `D` target distance and `r` arrival radius, initial speed is
-`(D - r/2) / (90 + T)`, and the release point lies `speed*T` before Valletta.
+`(D - r/2) / (180 + T)`, and the release point lies `speed*T` before Valletta.
 This keeps the first bomb near the target after falling, instead of keeping
 an obsolete release point on the opposite side of Valletta. Set
 `automatic_release_lead=false` to use a manually configured release point.
@@ -187,8 +170,7 @@ and production escort/defensive gunner controls.
 
 Browser smoke tests run the actual exported game through menu, boarding, engine
 start, throttle, map, failure, retry and return controls. They observe state only.
-The native graphical capture checks the 01:30 warning, nearby enemy markers and
-existing radio subtitle. A complete manually flown Windows/browser interception
+Earlier native graphical captures show the former 01:30 revision, nearby enemy markers and the existing radio subtitle; they were not regenerated for this timing update. A complete manually flown Windows/browser interception
 victory and live-site visual/listening checks remain **unverified**.
 
 The Italian models and flight envelopes remain stylised prototypes, not validated
@@ -196,8 +178,4 @@ historical assets. Their shared engine/damage implementation and existing suppli
 engine/gun audio are unchanged. Bombs and explosions remain cosmetic effects;
 this change does not add unavoidable player damage or city destruction logic.
 
-This revision passed **77 mission checks**, **19 Spitfire departure checks**,
-**19 Sea Gladiator departure checks**, **22 radio checks**, **7 combat checks**,
-**83 Survival checks**, **24 keyboard checks** and **36 weapons checks**.
-The exported browser mission passed **16 UI/lifecycle checks**. Native
-Compatibility rendering showed the 01:30 timer, nearby formation and subtitle.
+The original 90-second revision's native/browser checks remain recorded in its historical reports. For the current three-minute route, see the [6 November report](development-updates/2026-11-06-valletta-three-minutes.md). Local web export could not run because this workspace lacks the Godot 4.6.3 web export templates; no new interactive browser verification or deployment result is claimed.

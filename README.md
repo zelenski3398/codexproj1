@@ -46,10 +46,10 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`e0e7ae069445eac65fc8c1c5ee5d59eb996d7dd9`](https://github.com/zelenski3398/codexproj1/commit/e0e7ae069445eac65fc8c1c5ee5d59eb996d7dd9)
+**Latest documented commit:** [`ee9a0af5bac0183a9ba647738217cc9561db651d`](https://github.com/zelenski3398/codexproj1/commit/ee9a0af5bac0183a9ba647738217cc9561db651d)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest Hawker Hurricane Mk I update](docs/development-updates/2026-10-27-hurricane.md)
+[latest full three-minute Valletta interception update](docs/development-updates/2026-11-06-valletta-three-minutes.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -58,9 +58,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor e0e7ae069445eac65fc8c1c5ee5d59eb996d7dd9 HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' e0e7ae069445eac65fc8c1c5ee5d59eb996d7dd9..HEAD
-git diff --stat e0e7ae069445eac65fc8c1c5ee5d59eb996d7dd9..HEAD
+git merge-base --is-ancestor ee9a0af5bac0183a9ba647738217cc9561db651d HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' ee9a0af5bac0183a9ba647738217cc9561db651d..HEAD
+git diff --stat ee9a0af5bac0183a9ba647738217cc9561db651d..HEAD
 ```
 
 Append a dated, evidence-linked update and advance this SHA to the newest inspected
@@ -103,7 +103,7 @@ menu. Start on foot beside a Spitfire or Sea Gladiator at Ta’ Qali, board with
 **E**, start the engine with **I**, taxi and take off. Follow two nearby numbered airborne
 checkpoints shown on **M**'s navigation map. The last checkpoint spawns an
 **SM.79 bomber** and **C.200 escort** about **1,200 m away at one o’clock** and starts
-**03:00**; all navigation before it is untimed. Enemy losses are counted immediately,
+**03:00**; all navigation before it is untimed. The bomber now has a three-minute normal-speed approach and cannot start bombing before 180 seconds. The two checkpoints lead to a nearby western interception area. Enemy losses are counted immediately,
 but results wait for timer expiry. Player crash/destruction fails immediately.
 Results offer **Retry Mission** and **Return to Missions**.
 

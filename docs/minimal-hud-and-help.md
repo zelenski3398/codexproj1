@@ -25,7 +25,7 @@ Help groups On Foot, Aircraft, AA Guns, Vehicles, Radio, Recovery and General. C
 
 `mission_definitions/valletta.tres` now explicitly sets a **180-second result deadline**. The final checkpoint still starts it once; navigation remains untimed. The briefing and current README say three minutes and the tracker starts at **03:00**.
 
-The bomber's established physical approach remains separately configured at **90 seconds**. It can therefore bomb Valletta before the result deadline if not stopped. This preserves the existing bomber path, safe 1,200 m formation insertion, aircraft performance and bombing/failure conditions; it does not slow the bomber below its flight envelope. The additional time extends the mission deadline, including time to finish the escort, rather than delaying the bomber's established attack. Other mission timers are unchanged.
+The bomber's physical approach now also takes **three minutes** (6 November 2026 update), with bombing blocked before 180 seconds. The two checkpoints shift to a nearby western interception area so the original controller can fly a longer straight approach at normal speed while retaining the 1,200 m one-o’clock formation spawn. [Current mission geometry and measurements](valletta-interception.md). Other mission timers are unchanged.
 
 ## Integration
 

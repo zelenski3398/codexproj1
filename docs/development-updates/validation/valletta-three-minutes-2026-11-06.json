@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-06",
+  "source_commit": "ee9a0af5bac0183a9ba647738217cc9561db651d",
+  "godot": "4.6.3",
+  "headless_passed": {
+    "interception": 83,
+    "interception_departure_spitfire": 19,
+    "minimal_hud": 61,
+    "harbour": 50
+  },
+  "total": 213,
+  "timing": {
+    "deadline_seconds": 180,
+    "approach_seconds": 180,
+    "arrival_seconds": 179.408333333334,
+    "first_bomb_mission_seconds": 180.000000000001,
+    "activation_metres": 1200,
+    "bomber_route_metres": 10727.2939453125,
+    "first_impact_target_error_metres": 37.8823432922363,
+    "minimum_bomber_agl_metres": 386.748748779297
+  },
+  "continuous_departure": {
+    "liftoff_to_contact_seconds": 77.4500000000077,
+    "airborne_metres": 4746.71706980467,
+    "activation_metres": 1199.99987792969,
+    "formation_height_difference_metres": 59.8845825195312,
+    "bomber_route_metres": 10454.7314453125,
+    "bomber_arrival_seconds": 179.391666666668
+  },
+  "web_export": "Blocked: matching Godot 4.6.3 no-threads web templates are not installed.",
+  "browser_and_graphical_playtest": "Not performed for this change.",
+  "live_pages_deployment": "Not verified."
+}
