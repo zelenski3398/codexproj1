@@ -46,10 +46,10 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`ee9a0af5bac0183a9ba647738217cc9561db651d`](https://github.com/zelenski3398/codexproj1/commit/ee9a0af5bac0183a9ba647738217cc9561db651d)
+**Latest documented commit:** [`52a5e685f3bd5e8ec22e2fac234133b473726c31`](https://github.com/zelenski3398/codexproj1/commit/52a5e685f3bd5e8ec22e2fac234133b473726c31)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest full three-minute Valletta interception update](docs/development-updates/2026-11-06-valletta-three-minutes.md)
+[latest publishing repair and complete-suite validation](docs/development-updates/2026-11-06-publishing-hud-checks.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -58,9 +58,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor ee9a0af5bac0183a9ba647738217cc9561db651d HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' ee9a0af5bac0183a9ba647738217cc9561db651d..HEAD
-git diff --stat ee9a0af5bac0183a9ba647738217cc9561db651d..HEAD
+git merge-base --is-ancestor 52a5e685f3bd5e8ec22e2fac234133b473726c31 HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' 52a5e685f3bd5e8ec22e2fac234133b473726c31..HEAD
+git diff --stat 52a5e685f3bd5e8ec22e2fac234133b473726c31..HEAD
 ```
 
 Append a dated, evidence-linked update and advance this SHA to the newest inspected
@@ -81,7 +81,7 @@ The cloud proxy blocks direct access to the public Pages domain, so browser
 checks run against the actual release WebAssembly/WebGL build locally.
 
 See [web build, deployment and validation details](docs/web-hosting.md).
-The workflow also saves a downloadable **first-sortie-web** artifact.
+The workflow also saves a downloadable **first-sortie-web** artifact. All 65 publishing checks run from `tests/publishing_checks.json`; failures retain a **godot-check-logs** artifact and job summary. [Local reproduction and diagnostics](docs/web-hosting.md#publishing-checks-and-failure-logs).
 
 ## Music and aircraft audio
 

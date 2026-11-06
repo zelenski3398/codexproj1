@@ -4,6 +4,7 @@
 
 The original report is a frozen 50-commit audit through `588ac7b`. Later changes are recorded here with explicit commit boundaries, avoiding a repeated reconstruction of unchanged history.
 
+- [6 November 2026: stale HUD publishing checks, complete-suite runner and retained diagnostics](2026-11-06-publishing-hud-checks.md).
 - [6 November 2026: full three-minute Valletta bomber approach and bomb-release gate](2026-11-06-valletta-three-minutes.md).
 - [27 October 2026: flyable Hurricane Mk I, shared Allied factory and free-roam integration](2026-10-27-hurricane.md).
 - [26 October 2026: direct Bofors battery fire and switchable post aim assist](2026-10-26-bofors-post-fire.md).

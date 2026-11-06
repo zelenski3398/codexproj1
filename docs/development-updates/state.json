@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "3afecf0af54ab7b5625bb4c49203a73c0234a18c",
-  "last_documented_commit": "ee9a0af5bac0183a9ba647738217cc9561db651d",
-  "update_document": "2026-11-06-valletta-three-minutes.md",
-  "review_range": "e0e7ae069445eac65fc8c1c5ee5d59eb996d7dd9..ee9a0af5bac0183a9ba647738217cc9561db651d",
+  "previous_documentation_publication": "cb2cc2512836ca76d5ca2672b01fe8819b153593",
+  "last_documented_commit": "52a5e685f3bd5e8ec22e2fac234133b473726c31",
+  "update_document": "2026-11-06-publishing-hud-checks.md",
+  "review_range": "ee9a0af5bac0183a9ba647738217cc9561db651d..52a5e685f3bd5e8ec22e2fac234133b473726c31",
   "date": "2026-11-06",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }

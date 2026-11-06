@@ -11,7 +11,7 @@ weapons, health and enemy AI are reused rather than ported to another engine.
 2. Set **Build and deployment → Source** to **GitHub Actions**.
 3. Go to **Actions → Publish browser game → Run workflow**, choose **main** and run.
 
-The workflow imports the project, runs the desktop keyboard and weapons checks,
+The workflow imports the project, runs the complete 65-suite Godot publishing manifest and four check-runner self-tests,
 exports the release web build, uploads a downloadable artifact, and deploys it
 using the official Pages actions. It also runs on subsequent pushes to main.
 Its deployment environment reports the public URL; normally this is
@@ -22,10 +22,7 @@ workflow. There are no personal token/secrets to enter for this workflow; the
 repository's scoped Actions token handles the deployment. Pages and Actions
 must be allowed by the repository's organization/account policies.
 
-GitHub Pages was activated by the repository owner and the previous deployment
-succeeded. Each subsequent main push rebuilds the game and reports its result
-and published URL in the Actions summary. The zipped Malta build is approximately
-14 MB (terrain/source notices included; raw GIS datasets stay in the repository).
+The repository owner previously enabled Pages. Current live deployment status must be checked in Actions; a successful local export does not establish publication. Each main push runs the checks before exporting and uploading the game. The 6 November 2026 local export is approximately 379 MiB in total, including a 342 MiB PCK; raw GIS datasets stay out of the export.
 
 The cloud proxy returns a 403
 CONNECT denial for `api.github.com` and `zelenski3398.github.io`. Git read/push
@@ -55,8 +52,7 @@ system Godot executable. Optional locations: `GODOT_WEB_TOOLS`,
 
 The build helper imports resources before exporting; it produces
 `builds/web/index.html` plus JS, WASM, PCK, audio worklets and license notices.
-Generated builds remain Git-ignored. The current complete export is about
-37 MB uncompressed / 10 MB as a portable ZIP. Serve the **entire directory**
+Generated builds remain Git-ignored. The 6 November payload measured 397,106,717 bytes, including a 358,939,096-byte PCK. Compression and download size depend on hosting. Serve the **entire directory**
 over HTTP(S); opening index.html as a local file will not run the game.
 
 On Windows, open the project in Godot, install the web export templates matching
@@ -72,8 +68,7 @@ cannot supply custom isolation headers. No service worker hides old versions.
 
 ## Browser controls
 
-The page automatically loads directly into the game’s main menu. Select a plane
-and Fly (or Enter), or choose Malta and an airfield. The canvas takes keyboard
+The page loads the Godot intro/live poster. Its integrated Play button transitions to aircraft selection. Select a plane and Fly (or Enter), or choose Malta and an airfield. The canvas takes keyboard
 focus automatically. Browser autoplay rules may keep sound silent until your
 first click or key press inside the menu. Click the game again if focus was moved
 to browser chrome. There is no separate HTML Play screen or repository link.
@@ -81,7 +76,7 @@ to browser chrome. There is no separate HTML Play screen or repository link.
 - Arrows: pitch/bank; A/D: rudder; W/S: persistent throttle.
 - **F held: guns.** The original Ctrl binding still exists, but use F in a browser;
   Ctrl+W and other Ctrl combinations can be reserved by the browser.
-- G: gear (Spitfire); Space: brakes; R: full session restart; Escape: pause.
+- G: gear (Spitfire/Hurricane; Gladiator is fixed); Space: brakes; R: full session restart; Escape: pause.
 - Malta: E board/leave, I engine, M navigation; WASD walks on foot.
 - C: confirm the next encounter/Survival stage without pausing flight.
   Select Survival from the Malta departure chart; [details](survival.md).
@@ -162,3 +157,23 @@ If the error is instead `Get Pages site failed ... Not Found`, first set
 enablement is a repository setting and cannot be performed using the ordinary
 workflow token alone. A workflow change does not prove deployment has succeeded;
 confirm the new run's **deploy** job is green before checking the site.
+
+## Publishing checks and failure logs
+
+[Publishing repair and validation](development-updates/2026-11-06-publishing-hud-checks.md).
+
+The canonical command list is [tests/publishing_checks.json](../tests/publishing_checks.json). It retains all 65 original Godot invocations, including the three Xvfb display tests, in their original order. [run_godot_checks.py](../tools/run_godot_checks.py) runs every suite, retains a log per suite and returns failure if any suite fails. Export and deploy remain blocked by a failing check.
+
+Linux/cloud reproduction after installing matching Godot and importing:
+
+```sh
+godot --headless --path . --editor --import --quit
+python3 -m unittest discover -s tests -p test_publishing_runner.py
+python3 tools/run_godot_checks.py
+```
+
+The default is serial, matching the publishing environment. Optional `--jobs 3` runs independent suites concurrently. For a targeted rerun, use script stems, for example `--only weapons_checks malta_encounter_checks`. Each suite has separate temporary Godot data/config/cache directories, so saved audio/AA preferences cannot leak between suites or alter the developer's normal user data. Settings persist normally within a suite.
+
+After a failed check, open the Actions job summary or download **godot-check-logs**. It contains `summary.md`, `results.json`, and one `.log` per suite. Failures also receive a file-specific annotation. Logs are uploaded with `if: always()` even if the check step fails; interrupted runs can retain a partial report of completed suites. A failure before checks start may have no check artifact.
+
+The runner rejects nonzero exits, explicit failed assertions, GDScript/parse errors, missing executables and timeouts. It additionally catches GDScript errors even if the engine exits zero. It preserves other engine diagnostics in the logs; existing resource-use-at-shutdown warnings are not asserted to be fixed. The four self-tests verify pass/failure propagation, zero-exit script errors, timeout reporting and isolated job-summary output.

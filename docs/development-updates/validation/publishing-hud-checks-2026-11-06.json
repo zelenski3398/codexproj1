@@ -1,0 +1,636 @@
+{
+  "date": "2026-11-06",
+  "source_commit": "52a5e685f3bd5e8ec22e2fac234133b473726c31",
+  "godot": "4.6.3.stable.official.7d41c59c4",
+  "reproduced_failures": [
+    {
+      "suite": "weapons_checks",
+      "before": "35/36; obsolete destruction-overlay assertion",
+      "after": "36/36; active shared HUD verified"
+    },
+    {
+      "suite": "malta_encounter_checks",
+      "before": "32/33; obsolete spawn-button assertion",
+      "after": "33/33; active shared confirmation button verified"
+    }
+  ],
+  "historical_source_trees_inspected": [
+    "20a4bb0",
+    "9b1264e",
+    "8355e4b",
+    "9fc1b43",
+    "f669525",
+    "3afecf0",
+    "cb2cc25"
+  ],
+  "remote_actions_logs": "Forbidden; individual run logs not verified",
+  "godot_suites": {
+    "headless": 62,
+    "native_display": 3,
+    "total": 65,
+    "all_passed": true,
+    "manifest_commands_preserved_in_order": true
+  },
+  "suite_results": [
+    {
+      "suite": "aa_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 8.34,
+      "result_lines": [
+        "AA RESULT: 114/114 passed"
+      ]
+    },
+    {
+      "suite": "aa_hud_context_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 4.93,
+      "result_lines": [
+        "AA HUD CONTEXT RESULT: 27/27 passed"
+      ]
+    },
+    {
+      "suite": "aa_mouse_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 42.23,
+      "result_lines": [
+        "AA MOUSE RESULT: 32/32 passed"
+      ]
+    },
+    {
+      "suite": "aa_presentation_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 5.38,
+      "result_lines": [
+        "AA PRESENTATION RESULT: 14/14 passed"
+      ]
+    },
+    {
+      "suite": "aircraft_damage_hud_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 1.77,
+      "result_lines": [
+        "AIRCRAFT DAMAGE HUD RESULT: 26/26 passed"
+      ]
+    },
+    {
+      "suite": "aircraft_failure_ai_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 1.67,
+      "result_lines": [
+        "FAILURE AI RESULT: 8/8 passed"
+      ]
+    },
+    {
+      "suite": "aircraft_failure_flight_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 2.58,
+      "result_lines": [
+        "FAILURE FLIGHT RESULT: 14/14 passed"
+      ]
+    },
+    {
+      "suite": "aircraft_impact_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 9.19,
+      "result_lines": [
+        "AIRCRAFT IMPACT RESULT: 20/20 passed"
+      ]
+    },
+    {
+      "suite": "airfield_controls_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 31.13,
+      "result_lines": [
+        "AIRFIELD CONTROLS RESULT: 61/61 passed"
+      ]
+    },
+    {
+      "suite": "airfield_ground_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 4.17,
+      "result_lines": [
+        "AIRFIELD GROUND RESULT: 39/39 passed"
+      ]
+    },
+    {
+      "suite": "audio_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 7.08,
+      "result_lines": [
+        "AUDIO RESULT: 37/37 passed"
+      ]
+    },
+    {
+      "suite": "base_access_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 73.9,
+      "result_lines": [
+        "BASE ACCESS RESULT: 27/27 passed"
+      ]
+    },
+    {
+      "suite": "battery_command_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 17.56,
+      "result_lines": [
+        "BATTERY COMMAND RESULT: 36/36 passed"
+      ]
+    },
+    {
+      "suite": "battery_command_ui_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 15.42,
+      "result_lines": [
+        "BATTERY UI RESULT: 8/8 passed"
+      ]
+    },
+    {
+      "suite": "battery_engagement_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 27.99,
+      "result_lines": [
+        "BATTERY ENGAGEMENT RESULT: 17/17 passed"
+      ]
+    },
+    {
+      "suite": "bofors_battery_fire_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 16.15,
+      "result_lines": [
+        "BOFORS BATTERY FIRE RESULT: 22/22 passed"
+      ]
+    },
+    {
+      "suite": "bofors_predictor_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 20.62,
+      "result_lines": [
+        "BOFORS PREDICTOR RESULT: 59/59 passed"
+      ]
+    },
+    {
+      "suite": "component_damage_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 9.09,
+      "result_lines": [
+        "COMPONENT RESULT: 148/148 passed; 0 failed"
+      ]
+    },
+    {
+      "suite": "cottonera_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 7.13,
+      "result_lines": [
+        "COTTONERA RESULT: 20/20 passed"
+      ]
+    },
+    {
+      "suite": "countryside_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 6.93,
+      "result_lines": [
+        "COUNTRYSIDE RESULT: 10/10 passed"
+      ]
+    },
+    {
+      "suite": "countryside_departure_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 3.07,
+      "result_lines": [
+        "COUNTRYSIDE DEPARTURE RESULT: 12/12 passed"
+      ]
+    },
+    {
+      "suite": "defence_sound_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 10.14,
+      "result_lines": [
+        "DEFENCE SOUND RESULT: 20/20 passed"
+      ]
+    },
+    {
+      "suite": "dive_attack_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 24.17,
+      "result_lines": [
+        "DIVE ATTACK RESULT: 6/6 passed; min pitch=-31.6973813827397 min AGL=270.604431152344 impact distances=[28.3051204681396]"
+      ]
+    },
+    {
+      "suite": "dive_defence_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 15.0,
+      "result_lines": [
+        "DIVE DEFENCE RESULT: 47/47 passed"
+      ]
+    },
+    {
+      "suite": "flak_damage_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 4.83,
+      "result_lines": [
+        "FLAK DAMAGE RESULT: 9/9 passed; measured HP losses=[100.0, 59.9121189117432, 21.0161868731181, 0.0]"
+      ]
+    },
+    {
+      "suite": "flyby_audio_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 2.77,
+      "result_lines": [
+        "FLYBY AUDIO RESULT: 32/32 passed; 0 failed"
+      ]
+    },
+    {
+      "suite": "hangar_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 7.43,
+      "result_lines": [
+        "HANGAR RESULT: 89/89 passed"
+      ]
+    },
+    {
+      "suite": "harbour_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 22.02,
+      "result_lines": [
+        "HARBOUR RESULT: 50/50 passed"
+      ]
+    },
+    {
+      "suite": "harbour_departure_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 56.34,
+      "result_lines": [
+        "HARBOUR DEPARTURE RESULT: 9/9 passed",
+        "MALTA JOURNEY RESULT: 9/9 passed; 0 failed"
+      ]
+    },
+    {
+      "suite": "harbour_flight_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 220.5,
+      "result_lines": [
+        "HARBOUR FLIGHT RESULT: 7/7 passed"
+      ]
+    },
+    {
+      "suite": "harbour_hangar_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 16.46,
+      "result_lines": [
+        "HARBOUR HANGAR RESULT: 24/24 passed"
+      ]
+    },
+    {
+      "suite": "harbour_radio_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 0.82,
+      "result_lines": [
+        "HARBOUR RADIO RESULT: 13/13 passed"
+      ]
+    },
+    {
+      "suite": "harbour_support_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 15.5,
+      "result_lines": [
+        "HARBOUR SUPPORT RESULT: 24/24 passed"
+      ]
+    },
+    {
+      "suite": "hurricane_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 12.85,
+      "result_lines": [
+        "HURRICANE RESULT: 28/28 passed"
+      ]
+    },
+    {
+      "suite": "hurricane_flight_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 5.33,
+      "result_lines": [
+        "HURRICANE FLIGHT RESULT: 15/15 passed"
+      ]
+    },
+    {
+      "suite": "hurricane_performance_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 4.07,
+      "result_lines": [
+        "HURRICANE PERFORMANCE RESULT: 4/4 passed"
+      ]
+    },
+    {
+      "suite": "impact_audio_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 4.37,
+      "result_lines": [
+        "IMPACT AUDIO RESULT: 25/25 passed"
+      ]
+    },
+    {
+      "suite": "interception_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 203.62,
+      "result_lines": [
+        "INTERCEPTION CHECKS: 83 checks; 0 failures"
+      ]
+    },
+    {
+      "suite": "interception_combat_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 12.74,
+      "result_lines": [
+        "INTERCEPTION COMBAT CHECKS: 7 checks; 0 failures"
+      ]
+    },
+    {
+      "suite": "interception_departure_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 161.94,
+      "result_lines": [
+        "INTERCEPTION DEPARTURE CHECKS: 19 checks; 0 failures"
+      ]
+    },
+    {
+      "suite": "interception_siren_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 29.77,
+      "result_lines": [
+        "INTERCEPTION SIREN RESULT: 22/22 passed"
+      ]
+    },
+    {
+      "suite": "intro_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 1.47,
+      "result_lines": [
+        "INTRO RESULT: 18/18 passed"
+      ]
+    },
+    {
+      "suite": "intro_playback_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 47.86,
+      "result_lines": [
+        "INTRO PLAYBACK RESULT: 9/9 passed"
+      ]
+    },
+    {
+      "suite": "italian_aircraft_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 11.04,
+      "result_lines": [
+        "ITALIAN AIRCRAFT CHECKS: 47 checks; 0 failures"
+      ]
+    },
+    {
+      "suite": "keyboard_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 2.12,
+      "result_lines": [
+        "KEYBOARD RESULT: 24/24 passed; 0 failed"
+      ]
+    },
+    {
+      "suite": "layered_aa_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 9.74,
+      "result_lines": [
+        "LAYERED AA RESULT: 55/55 passed"
+      ]
+    },
+    {
+      "suite": "malta_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 21.57,
+      "result_lines": [
+        "MALTA RESULT: 39/39 passed; 0 failed"
+      ]
+    },
+    {
+      "suite": "malta_encounter_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 12.09,
+      "result_lines": [
+        "MALTA ENCOUNTERS RESULT: 33/33 passed; 0 failed"
+      ]
+    },
+    {
+      "suite": "malta_roads_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 5.58,
+      "result_lines": [
+        "MALTA ROADS RESULT: 11/11 passed"
+      ]
+    },
+    {
+      "suite": "malta_terrain_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 7.04,
+      "result_lines": [
+        "MALTA TERRAIN RESULT: 30/30 passed"
+      ]
+    },
+    {
+      "suite": "maltese_vegetation_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 6.93,
+      "result_lines": [
+        "VEGETATION RUNTIME RESULT: 11/11 passed"
+      ]
+    },
+    {
+      "suite": "mdina_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 7.33,
+      "result_lines": [
+        "MDINA RESULT: 24/24 passed"
+      ]
+    },
+    {
+      "suite": "minimal_hud_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 14.24,
+      "result_lines": [
+        "MINIMAL HUD RESULT: 61/61 passed"
+      ]
+    },
+    {
+      "suite": "mission_radio_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 14.55,
+      "result_lines": [
+        "MISSION RADIO RESULT: 22/22 passed"
+      ]
+    },
+    {
+      "suite": "mission_return_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 20.06,
+      "result_lines": [
+        "MISSION RETURN RESULT: 33/33 passed"
+      ]
+    },
+    {
+      "suite": "pilot_character_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 9.19,
+      "result_lines": [
+        "PILOT CHARACTER RESULT: 22/22 passed"
+      ]
+    },
+    {
+      "suite": "pilot_recovery_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 42.12,
+      "result_lines": [
+        "PILOT RECOVERY RESULT: 73/73 passed"
+      ]
+    },
+    {
+      "suite": "recovery_wreck_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 17.95,
+      "result_lines": [
+        "RECOVERY WRECK RESULT: 13/13 passed"
+      ]
+    },
+    {
+      "suite": "rural_flight_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 7.98,
+      "result_lines": [
+        "RURAL FLIGHT RESULT: 5/5 passed"
+      ]
+    },
+    {
+      "suite": "st_elmo_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 27.58,
+      "result_lines": [
+        "ST ELMO RESULT: 43/43 passed"
+      ]
+    },
+    {
+      "suite": "survival_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 18.41,
+      "result_lines": [
+        "SURVIVAL RESULT: 84/84 passed; 0 failed"
+      ]
+    },
+    {
+      "suite": "universal_damage_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 1.82,
+      "result_lines": [
+        "UNIVERSAL DAMAGE RESULT: 113/113 passed"
+      ]
+    },
+    {
+      "suite": "valletta_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 6.93,
+      "result_lines": [
+        "VALLETTA RESULT: 17/17 passed"
+      ]
+    },
+    {
+      "suite": "weapons_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 3.77,
+      "result_lines": [
+        "WEAPONS RESULT: 36/36 passed; 0 failed"
+      ]
+    },
+    {
+      "suite": "wingman_radio_checks",
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 8.94,
+      "result_lines": [
+        "WINGMAN RADIO RESULT: 40/40 passed"
+      ]
+    }
+  ],
+  "runner_self_tests": 4,
+  "web_export": "passed with official SHA-512-verified templates",
+  "web_payload_bytes": 397106717,
+  "web_pck_bytes": 358939096,
+  "browser": {
+    "renderer": "Chromium ANGLE/SwiftShader",
+    "shared_hud_checks_passed": 9,
+    "javascript_resource_engine_errors": 0
+  },
+  "limitations": [
+    "Remote workflow results/live Pages deployment not verified through inaccessible Actions API.",
+    "Existing resource-use-at-shutdown diagnostics retained in logs.",
+    "No new human combat session or complete browser combat flight."
+  ]
+}
