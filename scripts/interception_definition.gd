@@ -22,8 +22,8 @@ extends Resource
 @export var bombing_point: Vector3 = Vector3(9600, 500, 3630)
 @export var automatic_release_lead: bool = true
 @export var deadline_seconds: float = 180
-## Preserve the established physical approach, independent of the result deadline.
-@export var approach_seconds: float = 90
+## Matched to the interception window; geometry keeps normal bomber speeds.
+@export var approach_seconds: float = 180
 @export var arrival_radius: float = 70
 @export_enum("c200", "cr42") var escort_type: String = "c200"
 @export var escort_separation: float = 230

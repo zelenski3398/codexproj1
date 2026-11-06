@@ -80,7 +80,7 @@ func run() -> void:
 	game.aircraft.global_position=interception.current_checkpoint();interception.checkpoint_index=2;interception.activate();await frames(4)
 	check(interception.phase=="ACTIVE" and interception.elapsed<1 and "03:00" in ui.supporting.text,"Existing final trigger starts displayed 03:00")
 	var time: float=interception.elapsed;ui.open_help();await frames(20);check(interception.elapsed==time,"Help pauses actual mission timer");ui.close_help()
-	check(interception.definition.approach_seconds==90 and (interception.bomber.ai as BomberPilot).route_duration==90,"Deadline extension preserves original physical bomber approach")
+	check(interception.definition.approach_seconds==180 and (interception.bomber.ai as BomberPilot).route_duration==180,"Three-minute deadline matches the extended physical bomber approach")
 	for mode in ["survival","harbour","aa_defence"]:
 		game.show_selection(false);game.start_malta("hal_far" if mode=="harbour" else "luqa","sea_gladiator" if mode=="harbour" else "spitfire",mode,false);await frames(30)
 		check(ui.tracker.visible and not ui.objective.text.is_empty(),mode+": shared objective populated")

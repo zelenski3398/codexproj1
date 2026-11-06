@@ -77,7 +77,7 @@ func _run() -> void:
 		for foe in session.encounters.active:
 			foe.ai.combat_enabled = false
 		var heading: Vector3 = session.interception.activation_approach
-		for tick in range(12000):
+		for tick in range(24000):
 			var goal: Vector3 = player.global_position + heading * 2000
 			goal.y = 500
 			steering._fly_toward(goal, 1.0 / 120)
@@ -86,7 +86,7 @@ func _run() -> void:
 				break
 		var arrival: float = (session.interception.bomber.ai as BomberPilot).arrival_elapsed
 		print("DEPARTURE BOMBER_TRAVEL_SECONDS=", arrival)
-		_check(arrival >= 88 and arrival <= 92, "Bomber from the actual departure capture reaches Valletta in approximately 90 seconds")
+		_check(arrival >= 177 and arrival <= 182, "Bomber from the actual departure capture reaches Valletta in approximately 180 seconds")
 		_check(not player.is_destroyed and not player.is_crashed and session.interception.final_reason == "Valletta bombed — interception failed", "Continuous player flight and actual bomber-arrival failure remain intact")
 	if steering != null:
 		steering.free()

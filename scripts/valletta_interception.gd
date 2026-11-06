@@ -351,7 +351,7 @@ func _resolve() -> void:
 		return
 	# Enemy losses and bombing never end the run early. Only the deadline (or
 	# immediate player loss) resolves it, after all same-tick events settle.
-	if is_instance_valid(bomber) and not bomber.is_destroyed and (bomber.ai as BomberPilot).arrived:
+	if is_instance_valid(bomber) and not bomber.is_destroyed and (bomber.ai as BomberPilot).arrived and elapsed>=definition.approach_seconds:
 		bombing = true
 	if elapsed < definition.deadline_seconds:
 		return

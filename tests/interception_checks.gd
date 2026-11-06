@@ -1,6 +1,6 @@
 extends SceneTree
 ## Real flight/combat with explicit fixture resets for checkpoint/outcome branches.
-## The uninterrupted approach below uses only normal pilot commands for 90 s.
+## The uninterrupted approach below uses only normal pilot commands for 180 s.
 var session: Node3D
 var checks: int = 0
 var failures: int = 0
@@ -38,7 +38,10 @@ func _run() -> void:
 			player.guns.pool.spawn(player.global_position + Vector3.UP * 1000, Vector3.FORWARD * 10, 60, 1, player.get_rid(), false, player.team_id)
 			activation_state.before = _player_snapshot(player)
 	)
-	mission.formation_detected.connect(func(_distance: float): activation_state.after = _player_snapshot(player))
+	mission.formation_detected.connect(func(_distance: float):
+		activation_state.after = _player_snapshot(player)
+		activation_state.formation = mission.bomber.global_position
+	)
 	# Pose fixtures visit the REAL ordered capture logic, including out-of-order
 	# entries and dwelling/re-entering a completed checkpoint.
 	mission.activate()
@@ -65,7 +68,8 @@ func _run() -> void:
 	_check(activation_state.before == activation_state.after, "Activation preserves exact player transform, velocity, HP, engine, throttle, fuel, component and weapon state")
 	_check(mission.objective.text.contains(MissionRadio.FORMATION_LINE), "Activation shows the formation detection message")
 	_check(absf(mission.activation_distance - 1200) < 1, "Actual activation separation is 1200 metres in the existing world scale")
-	var offset: Vector3 = ((mission.bomber.global_position - player.global_position) * Vector3(1, 0, 1)).normalized()
+	var activation_pose: Transform3D=activation_state.after.pose
+	var offset: Vector3 = ((activation_state.formation - activation_pose.origin) * Vector3(1, 0, 1)).normalized()
 	var bearing: float = rad_to_deg(atan2(offset.dot(mission.activation_approach.cross(Vector3.UP)), offset.dot(mission.activation_approach)))
 	_check(absf(bearing - 30) < 0.1, "Formation appears one o'clock, 30 degrees right of player's heading")
 	_check((-mission.bomber.global_basis.z).dot((mission.definition.bombing_point - mission.bomber.global_position).normalized()) > 0.99, "Bomber initially faces Valletta while player closes head-on")
@@ -93,10 +97,12 @@ func _run() -> void:
 	var maximum_bank: float = 0
 	var last_distance: float = INF
 	var arrival_observed: bool = false
+	var first_bomb_time: float = -1
 	for tick in range(27000):
 		await physics_frame
 		if not is_instance_valid(mission.bomber):
 			break
+		if mission.bombs_released>0 and first_bomb_time<0:first_bomb_time=mission.elapsed
 		minimum_altitude = minf(minimum_altitude, mission.bomber.altitude)
 		maximum_bank = maxf(maximum_bank, absf(mission.bomber.rotation.z))
 		if not arrival_observed and (mission.bomber.ai as BomberPilot).arrived and mission.elapsed < mission.definition.deadline_seconds:
@@ -111,13 +117,15 @@ func _run() -> void:
 		if mission.elapsed >= mission.definition.deadline_seconds and mission.bombing and mission.bomb_impacts == mission.definition.bomb_count and (mission.bomber.ai as BomberPilot).route_elapsed >= mission.definition.deadline_seconds + 35:
 			break
 	var route: BomberPilot = mission.bomber.ai
-	print("ARRIVAL_SECONDS=", route.arrival_elapsed, " minAGL=", minimum_altitude, " bank=", maximum_bank, " reason=", mission.final_reason, " released=", mission.bombs_released, " impacts=", mission.bomb_impacts)
+	print("ARRIVAL_SECONDS=", route.arrival_elapsed, " minAGL=", minimum_altitude, " bank=", maximum_bank, " reason=", mission.final_reason, " released=", mission.bombs_released, " impacts=", mission.bomb_impacts," first_bomb_time=",first_bomb_time)
 	_check(not mission.bomber.is_destroyed and minimum_altitude > 300, "Bomber survives continuous real-force approach above Malta terrain")
-	_check(route.arrived and route.arrival_elapsed >= 88 and route.arrival_elapsed <= 92, "Uninterrupted physical bomber reaches Valletta in approximately 90 seconds")
+	_check(first_bomb_time>=180,"No physical bombs are released before the full three-minute interception window")
+	_check(route.arrived and route.arrival_elapsed >= 177 and route.arrival_elapsed <= 182, "Uninterrupted physical bomber reaches Valletta in approximately 180 seconds")
 	_check(mission.phase == "FAILED" and mission.final_reason == "Valletta bombed — interception failed" and mission.result_count == 1, "Actual bomber arrival reports bombing failure once")
 	_check(mission.bombs_released == mission.definition.bomb_count and mission.bomb_impacts >= 2, "Level run releases a sequence of physical falling bombs with swept ground impacts")
 	_check(session.field.get_instance_id() == world_id, "Arrival/bombing never reloads continuous Malta")
 	_check(route.tactic == "POST-RUN ORBIT" and not mission.bomber.is_destroyed and mission.bomber.airspeed > 45 and mission.bomber.global_position.distance_to(mission.definition.bombing_point) < 3000 and absf(mission.bomber.global_basis.x.y) > 0.02, "After level bombing the bomber turns physically into a bounded mission orbit")
+	if not impacts.is_empty():print("BOMB_IMPACT_ERROR_METRES=",(impacts[0]*Vector3(1,0,1)).distance_to(mission.definition.target_area*Vector3(1,0,1)))
 	_check(not impacts.is_empty() and (impacts[0] * Vector3(1, 0, 1)).distance_to(mission.definition.target_area * Vector3(1, 0, 1)) < 250, "Ballistic release lead places the first real bomb impact in the Valletta target area")
 	# Outcome branches use actual health destruction events, not smoke or flags.
 	await _restart_activate()
@@ -179,7 +187,8 @@ func _run() -> void:
 	mission = session.interception
 	(mission.bomber.ai as BomberPilot).arrived = true # isolated early bombing fixture
 	mission._resolve()
-	_check(mission.bombing and mission.phase == "ACTIVE", "Even an early bombing event waits for expiry")
+	_check(not mission.bombing and mission.bombs_released==0 and mission.phase == "ACTIVE", "Early arrival cannot begin bombing before three minutes")
+	mission.bombing=true # isolate persistence of an already-started bombing latch
 	mission.bomber.take_damage(100)
 	mission.escort.take_damage(100)
 	await _frames(2)
