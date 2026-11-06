@@ -40,16 +40,20 @@ Checks: `godot --headless --path . --fixed-fps 120 --script tests/aircraft_impac
 
 After securing a flight mission’s objectives, return to a friendly runway/apron and slow down. The success panel and existing congratulations radio wait for a safe landing. Ground-based AA victories finish on the ground; airborne fallback victories also require landing. See [landing requirements and validation](docs/mission-return-and-landing.md).
 
+## Flaps and deceleration
+
+**F** toggles available landing flaps; **B** toggles available dive brakes. Idle propeller drag and adjustable gear drag improve deceleration through the existing force model. Sea Gladiator and CR.42 have neither device; fighters do not silently gain dedicated airbrakes. Browser aircraft gunfire is now **J**. See [equipment, tuning and tests](docs/flight-devices.md).
+
 ## Minimal HUD and help
 
 **F1** opens Controls & Help; Escape closes it first. The shared HUD keeps health, the current objective and a few contextual actions separate. **F2** explicitly toggles diagnostics. Aircraft component health remains visible. See [layout, controls and verification](docs/minimal-hud-and-help.md).
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`52a5e685f3bd5e8ec22e2fac234133b473726c31`](https://github.com/zelenski3398/codexproj1/commit/52a5e685f3bd5e8ec22e2fac234133b473726c31)
+**Latest documented commit:** [`7723f2f4ac36e07bd431ec346e42ea88b534097a`](https://github.com/zelenski3398/codexproj1/commit/7723f2f4ac36e07bd431ec346e42ea88b534097a)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest publishing repair and complete-suite validation](docs/development-updates/2026-11-06-publishing-hud-checks.md)
+[latest flight-device and deceleration update](docs/development-updates/2026-11-06-flight-devices.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -58,9 +62,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor 52a5e685f3bd5e8ec22e2fac234133b473726c31 HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' 52a5e685f3bd5e8ec22e2fac234133b473726c31..HEAD
-git diff --stat 52a5e685f3bd5e8ec22e2fac234133b473726c31..HEAD
+git merge-base --is-ancestor 7723f2f4ac36e07bd431ec346e42ea88b534097a HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' 7723f2f4ac36e07bd431ec346e42ea88b534097a..HEAD
+git diff --stat 7723f2f4ac36e07bd431ec346e42ea88b534097a..HEAD
 ```
 
 Append a dated, evidence-linked update and advance this SHA to the newest inspected
@@ -71,7 +75,7 @@ the original full-history reconstruction unless earlier evidence changes.
 ## Browser version and free hosting
 
 A single-threaded Godot web export opens directly to the game’s main menu.
-The browser guide uses **F to fire** so W + firing cannot close the tab via
+The browser guide uses **J to fire** so W + firing cannot close the tab via
 Ctrl+W. Desktop Ctrl firing and all existing flight/landing controls are preserved.
 A bundled free font supplies arrows and aiming-marker glyphs in browsers.
 
@@ -268,8 +272,10 @@ name, gun count and fixed/retractable gear state follow your selection.
 | Left / right arrows | Roll left / right; gentle coordinated yaw helps turns |
 | A / D | Manual rudder left / right; steering while taxiing |
 | W / S | Increase / decrease throttle; setting holds when released |
-| Ctrl (hold) | Fire the selected aircraft's guns (eight Spitfire / four Gladiator); release to stop |
+| Ctrl (native) / J (browser), hold | Fire the selected aircraft's guns (eight Spitfire / four Gladiator); release to stop |
 | G | Spitfire: toggle gear, blocked with weight on wheels; Gladiator: fixed-gear notice |
+| F | Toggle landing flaps where fitted; overspeed requests show a warning |
+| B | Toggle dedicated airbrakes (Stuka); other aircraft require explicit optional gameplay assist |
 | Space (hold) | Wheel brakes on the ground |
 | F3 | **TEMPORARY DEBUG**: toggle component hitboxes/health inspector; choose player/enemy and inject/repair component damage |
 | F4 | Malta only: toggle elevation heatmap debug (off by default, also works paused) |

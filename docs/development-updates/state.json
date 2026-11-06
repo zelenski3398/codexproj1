@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "cb2cc2512836ca76d5ca2672b01fe8819b153593",
-  "last_documented_commit": "52a5e685f3bd5e8ec22e2fac234133b473726c31",
-  "update_document": "2026-11-06-publishing-hud-checks.md",
-  "review_range": "ee9a0af5bac0183a9ba647738217cc9561db651d..52a5e685f3bd5e8ec22e2fac234133b473726c31",
+  "previous_documentation_publication": "2d6d3d7ae171ccf8b85ee33cc1f53c5d077f9054",
+  "last_documented_commit": "7723f2f4ac36e07bd431ec346e42ea88b534097a",
+  "update_document": "2026-11-06-flight-devices.md",
+  "review_range": "52a5e685f3bd5e8ec22e2fac234133b473726c31..7723f2f4ac36e07bd431ec346e42ea88b534097a",
   "date": "2026-11-06",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }

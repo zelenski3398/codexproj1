@@ -1,0 +1,460 @@
+{
+  "source_commit": "7723f2f4ac36e07bd431ec346e42ea88b534097a",
+  "date": "2026-11-06",
+  "engine": "Godot 4.6.3.stable.official.7d41c59c4",
+  "renderer": "Compatibility; headless physics and Chromium ANGLE/SwiftShader web export",
+  "suites": [
+    {
+      "suite": "aircraft_failure_ai_checks",
+      "script": "res://tests/aircraft_failure_ai_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/aircraft_failure_ai_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 1.87,
+      "errors": [],
+      "result_lines": [
+        "FAILURE AI RESULT: 8/8 passed"
+      ],
+      "log": "aircraft_failure_ai_checks.log",
+      "assertions_passed": 8
+    },
+    {
+      "suite": "flight_devices_checks",
+      "script": "res://tests/flight_devices_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/flight_devices_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 2.54,
+      "errors": [],
+      "result_lines": [
+        "FLIGHT DEVICES RESULT: 24/24 passed"
+      ],
+      "log": "flight_devices_checks.log",
+      "assertions_passed": 24
+    },
+    {
+      "suite": "aircraft_failure_flight_checks",
+      "script": "res://tests/aircraft_failure_flight_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/aircraft_failure_flight_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 2.97,
+      "errors": [],
+      "result_lines": [
+        "FAILURE FLIGHT RESULT: 14/14 passed"
+      ],
+      "log": "aircraft_failure_flight_checks.log",
+      "assertions_passed": 14
+    },
+    {
+      "suite": "keyboard_checks",
+      "script": "res://tests/keyboard_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/keyboard_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 2.07,
+      "errors": [],
+      "result_lines": [
+        "KEYBOARD RESULT: 24/24 passed; 0 failed"
+      ],
+      "log": "keyboard_checks.log",
+      "assertions_passed": 24
+    },
+    {
+      "suite": "weapons_checks",
+      "script": "res://tests/weapons_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/weapons_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 3.87,
+      "errors": [],
+      "result_lines": [
+        "WEAPONS RESULT: 36/36 passed; 0 failed"
+      ],
+      "log": "weapons_checks.log",
+      "assertions_passed": 36
+    },
+    {
+      "suite": "component_damage_checks",
+      "script": "res://tests/component_damage_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/component_damage_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 10.24,
+      "errors": [],
+      "result_lines": [
+        "COMPONENT RESULT: 148/148 passed; 0 failed"
+      ],
+      "log": "component_damage_checks.log",
+      "assertions_passed": 148
+    },
+    {
+      "suite": "hurricane_flight_checks",
+      "script": "res://tests/hurricane_flight_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/hurricane_flight_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 9.32,
+      "errors": [],
+      "result_lines": [
+        "HURRICANE FLIGHT RESULT: 15/15 passed"
+      ],
+      "log": "hurricane_flight_checks.log",
+      "assertions_passed": 15
+    },
+    {
+      "suite": "italian_aircraft_checks",
+      "script": "res://tests/italian_aircraft_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/italian_aircraft_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 17.27,
+      "errors": [],
+      "result_lines": [
+        "ITALIAN AIRCRAFT CHECKS: 47 checks; 0 failures"
+      ],
+      "log": "italian_aircraft_checks.log",
+      "assertions_passed": 47
+    },
+    {
+      "suite": "minimal_hud_checks",
+      "script": "res://tests/minimal_hud_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/minimal_hud_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 16.14,
+      "errors": [],
+      "result_lines": [
+        "MINIMAL HUD RESULT: 61/61 passed"
+      ],
+      "log": "minimal_hud_checks.log",
+      "assertions_passed": 61
+    },
+    {
+      "suite": "mission_return_checks",
+      "script": "res://tests/mission_return_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/mission_return_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 21.27,
+      "errors": [],
+      "result_lines": [
+        "MISSION RETURN RESULT: 33/33 passed"
+      ],
+      "log": "mission_return_checks.log",
+      "assertions_passed": 33
+    },
+    {
+      "suite": "dive_defence_checks",
+      "script": "res://tests/dive_defence_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/dive_defence_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 14.85,
+      "errors": [],
+      "result_lines": [
+        "DIVE DEFENCE RESULT: 47/47 passed"
+      ],
+      "log": "dive_defence_checks.log",
+      "assertions_passed": 47
+    },
+    {
+      "suite": "dive_attack_checks",
+      "script": "res://tests/dive_attack_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/dive_attack_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 37.15,
+      "errors": [],
+      "result_lines": [
+        "DIVE ATTACK RESULT: 7/7 passed; min pitch=-31.759266961189 min AGL=247.577789306641 impact distances=[49.8215141296387]"
+      ],
+      "log": "dive_attack_checks.log",
+      "assertions_passed": 7
+    },
+    {
+      "suite": "interception_checks",
+      "script": "res://tests/interception_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/interception_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 210.75,
+      "errors": [],
+      "result_lines": [
+        "INTERCEPTION CHECKS: 83 checks; 0 failures"
+      ],
+      "log": "interception_checks.log",
+      "assertions_passed": 83
+    },
+    {
+      "suite": "harbour_flight_checks",
+      "script": "res://tests/harbour_flight_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/harbour_flight_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 231.16,
+      "errors": [],
+      "result_lines": [
+        "HARBOUR FLIGHT RESULT: 7/7 passed"
+      ],
+      "log": "harbour_flight_checks.log",
+      "assertions_passed": 7
+    },
+    {
+      "suite": "interception_combat_checks",
+      "script": "res://tests/interception_combat_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/interception_combat_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 17.76,
+      "errors": [],
+      "result_lines": [
+        "INTERCEPTION COMBAT CHECKS: 7 checks; 0 failures"
+      ],
+      "log": "interception_combat_checks.log",
+      "assertions_passed": 7
+    },
+    {
+      "suite": "airfield_controls_checks",
+      "script": "res://tests/airfield_controls_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/airfield_controls_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 42.74,
+      "errors": [],
+      "result_lines": [
+        "AIRFIELD CONTROLS RESULT: 61/61 passed"
+      ],
+      "log": "airfield_controls_checks.log",
+      "assertions_passed": 61
+    },
+    {
+      "suite": "interception_departure_checks",
+      "script": "res://tests/interception_departure_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/interception_departure_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 181.88,
+      "errors": [],
+      "result_lines": [
+        "INTERCEPTION DEPARTURE CHECKS: 19 checks; 0 failures"
+      ],
+      "log": "interception_departure_checks.log",
+      "assertions_passed": 19
+    },
+    {
+      "suite": "flight_checks",
+      "passed": true,
+      "exit_code": 0,
+      "assertions_passed": 35,
+      "result_lines": [
+        "RESULT: 35/35 passed; 0 failures"
+      ],
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/flight_checks.gd"
+      ]
+    }
+  ],
+  "physics_comparison": {
+    "initial_speed_mps": 65,
+    "duration_seconds": 6,
+    "throttle": 0,
+    "gear": "retracted",
+    "airframe": "Spitfire with explicit optional gameplay airbrake assist",
+    "physics_120_hz": {
+      "clean": 56.802848815918,
+      "flaps": 43.2005996704102,
+      "airbrakes": 34.4712753295898,
+      "both": 29.1803245544434
+    },
+    "physics_60_hz": {
+      "clean": 56.826343536377,
+      "flaps": 43.2207679748535,
+      "airbrakes": 34.4765205383301,
+      "both": 29.1807117462158
+    },
+    "maximum_coast_timestep_difference_mps": 0.024,
+    "dive_pitch_radians": -0.8,
+    "dive_120_hz_clean_mps": 93.3957138061523,
+    "dive_120_hz_braked_mps": 53.6331672668457
+  },
+  "additional_checks": {
+    "physics_60_hz": "24/24",
+    "runner_self_tests": "4/4",
+    "web_export": "passed",
+    "browser": "7/7 production-export checks passed, including actual F/B/J inputs, help input blocking and 800x500 resize"
+  },
+  "mission_measurements": {
+    "stuka_min_agl_m": 247.577789306641,
+    "continuous_interception_departure_to_contact_s": 77.625,
+    "activation_distance_m": 1199.99987792969,
+    "bomber_travel_s": 179.4
+  },
+  "limitations": [
+    "No human-flown native or browser approach/landing session",
+    "No certified historical aerodynamic or operating-speed accuracy",
+    "Continuous original wing meshes retained; close-up surface-art review remains",
+    "Other browser engines and hardware not tested",
+    "Full 66-suite publishing manifest not rerun in this change; targeted 18 distinct Godot suites were run"
+  ]
+}
