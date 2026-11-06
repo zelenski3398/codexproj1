@@ -112,8 +112,8 @@ func _build_ui() -> void:
 	preview_title.offset_top = -155
 	preview_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	root.add_child(preview_title)
-	var fire_key: String = "J" if OS.has_feature("web") else "CTRL"
-	var guide: Label = _label("ARROWS  Pitch / bank    W / S  Throttle    A / D  Rudder    %s  Fire\nF  Flaps    B  Airbrakes (where fitted)\nSPACE  Wheel brakes    G  Gear (monoplanes)    R  Reset    ESC  Pause" % fire_key, 15, INK)
+	var fire_key: String = "F"
+	var guide: Label = _label("ARROWS  Pitch / bank    W / S  Throttle    A / D  Rudder    %s  Fire\nQ  Flaps    B  Airbrakes (where fitted)\nSPACE  Wheel brakes    G  Gear (monoplanes)    R  Reset    ESC  Pause" % fire_key, 15, INK)
 	guide.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	guide.offset_left = 38
 	guide.offset_right = -38

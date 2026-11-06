@@ -8,8 +8,8 @@ const INK := Color("e9e8d7")
 const MUTED := Color("abb8ad")
 const GOLD := Color("e4bf75")
 const PANEL := Color(0.055, 0.09, 0.085, 0.90)
-const CONTROLS := "↑ / ↓   Nose down / up\n← / →   Bank left / right\nA / D   Rudder left / right\nW / S   Increase / decrease throttle\n%s (hold)   %s\nG   %s\nF   Landing flaps (where fitted)\nB   Dive brakes (where fitted)\nSPACE   Hold wheel brakes (ground only)\nH   DEBUG: remove 10 HP   ·   F3 components\nC   Confirm next enemy / stage\nV   Transport after aircraft loss (Malta)\nR   Restart encounter\nESC   Pause / controls"
-var fire_key_label: String = "J" if OS.has_feature("web") else "CTRL"
+const CONTROLS := "↑ / ↓   Nose down / up\n← / →   Bank left / right\nA / D   Rudder left / right\nW / S   Increase / decrease throttle\n%s (hold)   %s\nG   %s\nQ   Landing flaps (where fitted)\nB   Dive brakes (where fitted)\nSPACE   Hold wheel brakes (ground only)\nH   DEBUG: remove 10 HP   ·   F3 components\nC   Confirm next enemy / stage\nV   Transport after aircraft loss (Malta)\nR   Restart encounter\nESC   Pause / controls"
+var fire_key_label: String = "F"
 var component_debugging: bool = false
 var aircraft: FlightAircraft
 var enemy: EnemyAircraft

@@ -106,8 +106,9 @@ func run() -> void:
 	check(stuka.flaps_available and stuka.airbrakes_available,"Stuka has landing flaps and separate dive brakes")
 	check(not plane.airbrakes_available and plane.gameplay_airbrake_assist,"Spitfire dive brakes require explicit gameplay assist")
 	var f := InputEventKey.new();f.physical_keycode=KEY_F
+	var q := InputEventKey.new();q.physical_keycode=KEY_Q
 	var b := InputEventKey.new();b.physical_keycode=KEY_B
-	check(f.is_action("flaps") and not f.is_action("fire") and b.is_action("airbrakes"),"F/B device bindings do not fire aircraft guns")
+	check(q.is_action("flaps") and not q.is_action("fire") and f.is_action("fire") and not f.is_action("flaps") and b.is_action("airbrakes"),"Q/B device bindings are separate from F aircraft guns")
 	world.queue_free();await frames(3)
 	print("FLIGHT DEVICES RESULT: %d/%d passed"%[checks-failures,checks])
 	quit(1 if failures else 0)
