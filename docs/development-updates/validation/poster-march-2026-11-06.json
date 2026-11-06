@@ -1,0 +1,113 @@
+{
+  "source_commit": "4d304da234829ebc8ec69dae8a26e41c11433675",
+  "date": "2026-11-06",
+  "godot_version": "4.6.3.stable.official.7d41c59c4",
+  "godot_checks": [
+    {
+      "suite": "intro_checks",
+      "script": "res://tests/intro_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/intro_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 1.47,
+      "errors": [],
+      "result_lines": [
+        "INTRO RESULT: 20/20 passed"
+      ],
+      "log": "intro_checks.log"
+    },
+    {
+      "suite": "audio_checks",
+      "script": "res://tests/audio_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/audio_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 7.28,
+      "errors": [],
+      "result_lines": [
+        "AUDIO RESULT: 37/37 passed"
+      ],
+      "log": "audio_checks.log"
+    },
+    {
+      "suite": "intro_playback_checks",
+      "script": "res://tests/intro_playback_checks.gd",
+      "command": [
+        "xvfb-run",
+        "-a",
+        "godot",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "res://tests/intro_playback_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 35.48,
+      "errors": [],
+      "result_lines": [
+        "INTRO PLAYBACK RESULT: 11/11 passed"
+      ],
+      "log": "intro_playback_checks.log"
+    }
+  ],
+  "media_measurements": {
+    "original_loop_boundary_mean_absolute_luma_difference": 20.48291015625,
+    "new_loop_boundary_mean_absolute_luma_difference": 0.3955078125,
+    "new_first_motion_step_mean_absolute_luma_difference": 0.14363606770833334,
+    "video": {
+      "source_frames": 121,
+      "loop_frames": 240,
+      "duration_seconds": 10.0,
+      "width": 834,
+      "height": 1112
+    }
+  },
+  "uploaded_audio": {
+    "sha256": "fcbb2063f18f2678b40f281e3d663ccec8a086afacaeb8fba9f54999f5c58150",
+    "bytes": 738003,
+    "duration_seconds": 48,
+    "sample_rate": 44100,
+    "channels": 2,
+    "copied_without_transcoding": true
+  },
+  "web_export": "passed",
+  "browser": {
+    "checks_passed": 8,
+    "checks_total": 8,
+    "renderer": "Chromium ANGLE/SwiftShader",
+    "video_position_before_wrap": 9.8221,
+    "video_position_after_wrap": 0,
+    "manual_video_restarts": 0,
+    "music_position_after_video_wrap": 45.3833999633789,
+    "music_start_requests": 1
+  },
+  "limitations": [
+    "No human listening assessment",
+    "Software browser playback slower than real time; no hardware performance claim",
+    "Forward/return footage, not unique endless forward animation",
+    "Browser autoplay may require a gesture",
+    "Full 48-second audio wrap not independently observed; stream loop configured",
+    "Full 66-suite gameplay manifest not rerun for this media-only change"
+  ]
+}

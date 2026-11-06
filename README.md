@@ -3,7 +3,7 @@
 
 Aircraft now have [universal component failures, progressive fires and severity-based crashes](docs/universal-aircraft-damage.md), including independent SM.79 engines and non-explosive engine-out gliding.
 
-Startup and return to the title now show the supplied looping live poster, with **Play integrated into the artwork**. Play fades into the existing main menu. See the [startup guide and previews](docs/startup-poster.md).
+Startup and return to the title show the supplied live poster as a continuous forward-and-return animation, accompanied by the supplied **Cinematic March** soundtrack, with **Play integrated into the artwork**. Play fades into the existing main menu. See the [startup guide and previews](docs/startup-poster.md).
 The primary **Free Roam** action opens Malta on foot beside the selected aircraft inside a hangar. **E** boards/exits; **V** requests recovery after an aircraft loss. Pilot health is independent of aircraft HP. [Hangar departures, survival, recovery and poster fixes](docs/pilot-survival-and-recovery.md).
 
 A single-player 3D **Godot 4 / GDScript** flight prototype set at a fictional RAF
@@ -50,10 +50,10 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`5dd8456c015a6d5b329841739b8c35d5ce015856`](https://github.com/zelenski3398/codexproj1/commit/5dd8456c015a6d5b329841739b8c35d5ce015856)
+**Latest documented commit:** [`4d304da234829ebc8ec69dae8a26e41c11433675`](https://github.com/zelenski3398/codexproj1/commit/4d304da234829ebc8ec69dae8a26e41c11433675)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest aircraft binding correction](docs/development-updates/2026-11-06-flight-keybinds.md)
+[latest poster soundtrack and animation update](docs/development-updates/2026-11-06-poster-march.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -62,9 +62,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor 5dd8456c015a6d5b329841739b8c35d5ce015856 HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' 5dd8456c015a6d5b329841739b8c35d5ce015856..HEAD
-git diff --stat 5dd8456c015a6d5b329841739b8c35d5ce015856..HEAD
+git merge-base --is-ancestor 4d304da234829ebc8ec69dae8a26e41c11433675 HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' 4d304da234829ebc8ec69dae8a26e41c11433675..HEAD
+git diff --stat 4d304da234829ebc8ec69dae8a26e41c11433675..HEAD
 ```
 
 Append a dated, evidence-linked update and advance this SHA to the newest inspected
