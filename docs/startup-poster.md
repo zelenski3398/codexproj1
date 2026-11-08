@@ -1,6 +1,6 @@
 # Live poster startup
 
-The initial wordmark fades into the supplied animated **Wings Over Malta** poster. A cream/red **PLAY** panel sits within its lower-left sea area, leaving the original lower-right slogan visible. The full portrait fits the viewport with dark side margins on widescreen displays. Click Play, Enter or Space to fade through black into the existing aircraft/main menu.
+The initial wordmark fades into the supplied animated **Wings Over Malta** poster. A cream/red **PLAY** panel sits within its lower-left sea area, leaving the original lower-right slogan visible. The full portrait fits the viewport with dark side margins on widescreen displays. Click Play to fade through black into the existing aircraft/main menu. **Tutorial**, above Play, launches the [continuous flight-school lesson](tutorial-flight-school.md). Tab switches between the two controls; Enter/Space activates the focused option.
 
 ![Poster with integrated Play](previews/intro-poster.png)
 

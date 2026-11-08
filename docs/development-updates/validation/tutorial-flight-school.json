@@ -1,0 +1,249 @@
+{
+  "source_commit": "8a68e0c8d9cc1290d7f19f83763b07573f6dd1eb",
+  "commit_date": "2026-11-08",
+  "godot_version": "4.6.3.stable.official.7d41c59c4",
+  "suites": [
+    {
+      "suite": "intro_checks",
+      "script": "res://tests/intro_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/intro_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 1.52,
+      "errors": [],
+      "result_lines": [
+        "INTRO RESULT: 20/20 passed"
+      ],
+      "log": "intro_checks.log"
+    },
+    {
+      "suite": "tutorial_checks",
+      "script": "res://tests/tutorial_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/tutorial_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 14.85,
+      "errors": [],
+      "result_lines": [
+        "TUTORIAL RESULT: 44/44 passed"
+      ],
+      "log": "tutorial_checks.log"
+    },
+    {
+      "suite": "minimal_hud_checks",
+      "script": "res://tests/minimal_hud_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/minimal_hud_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 14.4,
+      "errors": [],
+      "result_lines": [
+        "MINIMAL HUD RESULT: 64/64 passed"
+      ],
+      "log": "minimal_hud_checks.log"
+    },
+    {
+      "suite": "aa_hud_context_checks",
+      "script": "res://tests/aa_hud_context_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/aa_hud_context_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 5.13,
+      "errors": [],
+      "result_lines": [
+        "AA HUD CONTEXT RESULT: 27/27 passed"
+      ],
+      "log": "aa_hud_context_checks.log"
+    },
+    {
+      "suite": "mission_return_checks",
+      "script": "res://tests/mission_return_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/mission_return_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 21.53,
+      "errors": [],
+      "result_lines": [
+        "MISSION RETURN RESULT: 33/33 passed"
+      ],
+      "log": "mission_return_checks.log"
+    },
+    {
+      "suite": "flak_damage_checks",
+      "script": "res://tests/flak_damage_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/flak_damage_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 4.83,
+      "errors": [],
+      "result_lines": [
+        "FLAK DAMAGE RESULT: 9/9 passed; measured HP losses=[100.0, 59.9121189117432, 21.0161868731181, 0.0]"
+      ],
+      "log": "flak_damage_checks.log"
+    },
+    {
+      "suite": "airfield_controls_checks",
+      "script": "res://tests/airfield_controls_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/airfield_controls_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 33.22,
+      "errors": [],
+      "result_lines": [
+        "AIRFIELD CONTROLS RESULT: 61/61 passed"
+      ],
+      "log": "airfield_controls_checks.log"
+    },
+    {
+      "suite": "pilot_recovery_checks",
+      "script": "res://tests/pilot_recovery_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/pilot_recovery_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 42.47,
+      "errors": [],
+      "result_lines": [
+        "PILOT RECOVERY RESULT: 73/73 passed"
+      ],
+      "log": "pilot_recovery_checks.log"
+    },
+    {
+      "suite": "tutorial_glide_checks",
+      "script": "res://tests/tutorial_glide_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/tutorial_glide_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 24.38,
+      "errors": [],
+      "result_lines": [
+        "TUTORIAL GLIDE RESULT: 1/1 passed touched=true minimum_speed=0.49496060609818 speed=0.02682925201952 hp=45.0 reason= phase=EXIT_DAMAGED"
+      ],
+      "log": "tutorial_glide_checks.log"
+    },
+    {
+      "suite": "intro_playback_checks",
+      "script": "res://tests/intro_playback_checks.gd",
+      "command": [
+        "xvfb-run",
+        "-a",
+        "godot",
+        "--path",
+        ".",
+        "--audio-driver",
+        "Dummy",
+        "--script",
+        "res://tests/intro_playback_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 40.08,
+      "errors": [],
+      "result_lines": [
+        "INTRO PLAYBACK RESULT: 11/11 passed"
+      ],
+      "log": "intro_playback_checks.log"
+    }
+  ],
+  "assertions_passed": 443,
+  "web_export": "passed",
+  "browser_checks": "9/9 actual Chromium ANGLE/SwiftShader menu/input/layout checks",
+  "physical_glide": {
+    "engine_power_factor": 0,
+    "remaining_hp": 45,
+    "resulting_phase": "EXIT_DAMAGED",
+    "final_speed_mps": 0.02682925201952,
+    "initial_clearance_m": 450,
+    "setup_distance_before_luqa_threshold_m": 1800,
+    "pilot_commands_only_after_initial_setup": true
+  },
+  "limitations": [
+    "Progression suite uses test setup poses between flight stages",
+    "Entire tutorial not human-flown end to end",
+    "Browser validation covers entry/boarding/engine/help/layout, not full combat and flight",
+    "Recovery uses existing vehicle approach plus fade/transfer, not an AI drive across Malta",
+    "No tutorial speech supplied or generated",
+    "Full 68-suite publishing manifest not rerun locally",
+    "Live Pages deployment not yet confirmed"
+  ]
+}

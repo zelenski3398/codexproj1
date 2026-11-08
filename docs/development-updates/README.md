@@ -4,6 +4,7 @@
 
 The original report is a frozen 50-commit audit through `588ac7b`. Later changes are recorded here with explicit commit boundaries, avoiding a repeated reconstruction of unchanged history.
 
+- [8 November 2026: continuous flight school, emergency landing/recovery, AA exercise and visible aircraft controls](tutorial-flight-school.md).
 - [6 November 2026: supplied Cinematic March and continuous forward/return poster animation](2026-11-06-poster-march.md).
 - [6 November 2026: restore F aircraft guns and move landing flaps to Q](2026-11-06-flight-keybinds.md).
 - [6 November 2026: functional flaps, Stuka dive brakes, idle deceleration and native/web controls](2026-11-06-flight-devices.md).

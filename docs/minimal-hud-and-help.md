@@ -4,8 +4,8 @@ The shared [GameplayHUD](../scripts/gameplay_hud.gd) presents the running sessio
 
 ## Layout and controls
 
-- **Upper left:** current aircraft or pilot health; mounted equipment also shows operator health.
-- **Upper right:** restrained mission title, current objective and up to three supporting lines. Free roam has no empty tracker. Mission transitions briefly acknowledge the previous objective; failures are not marked complete.
+- **Upper left:** current aircraft or pilot health; mounted equipment also shows operator health. A persistent aircraft-controls reference now sits beneath health in all running missions and free roam, per the flight-school update. It is labelled "while aboard" and reads current bindings; full help remains separate.
+- **Upper right:** restrained mission title, current objective and up to three supporting lines in ordinary modes. Flight school uses this space for its current lesson instructions. Free roam has no empty tracker. Mission transitions briefly acknowledge the previous objective; failures are not marked complete.
 - **Bottom:** up to three contextual hints, a confirmation button when needed, concise active-vehicle instruments and the existing coloured aircraft component-health display. Nearby entry prompts are suppressed while occupying something. Destroyed/removed/out-of-range objects cannot remain a cached HUD target: the shared interaction query is evaluated again each frame.
 - **Notifications:** bounded, wrapping, temporary messages; a five-second initial **F1 — Controls** hint. Enemy tags are kept clear of the objective panel.
 - **F1:** open/close the scrollable **Controls & Help** window. It is also available from Pause. Escape closes help first. Help follows the existing pause policy: simulation and mission timers pause, then the previous paused/running state is restored. Cameras and occupied entities are retained. Weapon inputs are released on closure; browser gun control uses the existing click-to-recapture safeguard.
@@ -13,7 +13,7 @@ The shared [GameplayHUD](../scripts/gameplay_hud.gd) presents the running sessio
 
 ![Compact aircraft instruments and component health](previews/minimal-hud-aircraft.png)
 
-Help groups On Foot, Aircraft, AA Guns, Vehicles, Radio, Recovery and General. Configured bindings come from `InputMap`, including the web aircraft-fire fallback. Existing raw mouse/predictor controls are documented explicitly. The old large pause control paragraph is hidden along with the other superseded presentation panels.
+Help groups On Foot, Aircraft, AA Guns, Vehicles, Radio, Recovery and General. Configured bindings come from `InputMap`, including F/Ctrl gunfire, Q flaps and B fitted airbrakes. Existing raw mouse/predictor controls are documented explicitly. The old large pause control paragraph is hidden along with the other superseded presentation panels.
 
 **T** appears contextually for an available harbour wingman-status request, including its cooldown/pending-request checks. It is not presented in unrelated missions. **Right-click** is described according to the implementation: sight zoom at individual guns, binocular zoom at a Bofors predictor and approximate target/area designation at the heavy command station. The game has no corresponding right-click aircraft aim-estimate action, so none is advertised.
 

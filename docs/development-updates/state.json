@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "340ab9ca7b10f5ca2c8c9b204852fe2d3aa6de7b",
-  "last_documented_commit": "4d304da234829ebc8ec69dae8a26e41c11433675",
-  "update_document": "2026-11-06-poster-march.md",
-  "review_range": "5dd8456c015a6d5b329841739b8c35d5ce015856..4d304da234829ebc8ec69dae8a26e41c11433675",
-  "date": "2026-11-06",
+  "previous_documentation_publication": "eb6382bf06ea22f3e0b581cfbb9b410e6484aa86",
+  "last_documented_commit": "8a68e0c8d9cc1290d7f19f83763b07573f6dd1eb",
+  "update_document": "tutorial-flight-school.md",
+  "review_range": "4d304da234829ebc8ec69dae8a26e41c11433675..8a68e0c8d9cc1290d7f19f83763b07573f6dd1eb",
+  "date": "2026-11-08",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }

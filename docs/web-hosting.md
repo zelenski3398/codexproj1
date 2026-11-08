@@ -11,7 +11,7 @@ weapons, health and enemy AI are reused rather than ported to another engine.
 2. Set **Build and deployment → Source** to **GitHub Actions**.
 3. Go to **Actions → Publish browser game → Run workflow**, choose **main** and run.
 
-The workflow imports the project, runs the complete 66-suite Godot publishing manifest and four check-runner self-tests,
+The workflow imports the project, runs the complete 68-suite Godot publishing manifest and four check-runner self-tests,
 exports the release web build, uploads a downloadable artifact, and deploys it
 using the official Pages actions. It also runs on subsequent pushes to main.
 Its deployment environment reports the public URL; normally this is
@@ -162,7 +162,7 @@ confirm the new run's **deploy** job is green before checking the site.
 
 [Publishing repair and validation](development-updates/2026-11-06-publishing-hud-checks.md).
 
-The canonical command list is [tests/publishing_checks.json](../tests/publishing_checks.json). It retains all 65 original Godot invocations, including the three Xvfb display tests, in their original order, and adds the flight-device regression suite. [run_godot_checks.py](../tools/run_godot_checks.py) runs every suite, retains a log per suite and returns failure if any suite fails. Export and deploy remain blocked by a failing check.
+The canonical command list is [tests/publishing_checks.json](../tests/publishing_checks.json). It retains all 65 original Godot invocations, including the three Xvfb display tests, in their original order, and adds the flight-device, tutorial progression and physical emergency-glide regression suites. [run_godot_checks.py](../tools/run_godot_checks.py) runs every suite, retains a log per suite and returns failure if any suite fails. Export and deploy remain blocked by a failing check.
 
 Linux/cloud reproduction after installing matching Godot and importing:
 

@@ -14,6 +14,10 @@ Ju 87-inspired opponent; Malta free roam starts peacefully until you request com
 
 The [Hurricane Mk I](docs/hawker-hurricane.md) has its own broad-winged 3D model, eight .303 wing guns, retractable gear, damage profile and shared survivor recovery. It is available in Malta free roam at all three airfields, without changing scripted mission formations. Historical source verification and gameplay approximations are documented in its guide.
 
+## Flight school tutorial
+
+Click **Tutorial** inside the animated poster to start on foot beside a Sea Gladiator at Ta’ Qali. Learn takeoff and navigation, fight a Stuka over Valletta, return and land, then fly a Spitfire through a gear/flap lesson and a scripted engine failure. Land at Luqa, call the recovery truck with **V**, return to base, and fight another Stuka from a manually operated AA gun. The same Malta world and aircraft damage persist throughout. [Lesson sequence, tuning and verification](docs/tutorial-flight-school.md).
+
 ## Faith, Hope and Charity — Harbour Interception
 
 Choose **Missions → Faith, Hope and Charity → Depart from Ħal Far**. Fly Faith, a Sea Gladiator, with persistent friendly wingmen Hope and Charity. Stop three SM.79 / CR.42 formations before bomb release on Fort St Elmo or Fort St Angelo. The final formation has two ace escorts. Both supplied commander recordings play as the introduction and success message, with radio mixing and summary captions. See the [mission guide, tuning and validation](docs/harbour-interception.md).
@@ -46,14 +50,14 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Minimal HUD and help
 
-**F1** opens Controls & Help; Escape closes it first. The shared HUD keeps health, the current objective and a few contextual actions separate. **F2** explicitly toggles diagnostics. Aircraft component health remains visible. See [layout, controls and verification](docs/minimal-hud-and-help.md).
+**F1** opens Controls & Help; Escape closes it first. The shared HUD keeps health, the current objective and contextual actions separate. **Basic aircraft controls remain at the top left in every mission and free roam**; detailed explanations stay in F1 / Pause Help. **F2** explicitly toggles diagnostics. Aircraft component health remains visible. See [layout, controls and verification](docs/minimal-hud-and-help.md).
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`4d304da234829ebc8ec69dae8a26e41c11433675`](https://github.com/zelenski3398/codexproj1/commit/4d304da234829ebc8ec69dae8a26e41c11433675)
+**Latest documented commit:** [`8a68e0c8d9cc1290d7f19f83763b07573f6dd1eb`](https://github.com/zelenski3398/codexproj1/commit/8a68e0c8d9cc1290d7f19f83763b07573f6dd1eb)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest poster soundtrack and animation update](docs/development-updates/2026-11-06-poster-march.md)
+[latest tutorial and controls update](docs/development-updates/tutorial-flight-school.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -62,9 +66,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor 4d304da234829ebc8ec69dae8a26e41c11433675 HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' 4d304da234829ebc8ec69dae8a26e41c11433675..HEAD
-git diff --stat 4d304da234829ebc8ec69dae8a26e41c11433675..HEAD
+git merge-base --is-ancestor 8a68e0c8d9cc1290d7f19f83763b07573f6dd1eb HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' 8a68e0c8d9cc1290d7f19f83763b07573f6dd1eb..HEAD
+git diff --stat 8a68e0c8d9cc1290d7f19f83763b07573f6dd1eb..HEAD
 ```
 
 Append a dated, evidence-linked update and advance this SHA to the newest inspected
