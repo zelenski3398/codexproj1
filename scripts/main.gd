@@ -6,6 +6,7 @@ var environment_id: String = "countryside"
 var field: Node3D
 var missions_menu: MissionsMenu
 var aa_defence: DiveDefenceMission
+var tutorial: TutorialMission
 var harbour: HarbourInterception
 var interception: VallettaInterception
 var malta_menu: MaltaDepartureMenu
@@ -59,8 +60,18 @@ func show_intro() -> void:
 		return
 	selector.active = false
 	startup_intro = GameIntro.new()
-	startup_intro.completed.connect(_dismiss_intro)
+	startup_intro.completed.connect(_complete_intro)
 	add_child(startup_intro)
+
+func _complete_intro() -> void:
+	var training: bool=is_instance_valid(startup_intro) and startup_intro.destination=="tutorial"
+	_dismiss_intro()
+	if training:
+		selector.active=false
+		call_deferred("start_tutorial")
+
+func start_tutorial() -> void:
+	start_malta("ta_qali","sea_gladiator","tutorial")
 
 func _dismiss_intro() -> void:
 	if is_instance_valid(startup_intro):
@@ -72,6 +83,9 @@ func _dismiss_intro() -> void:
 
 func show_selection(replay_poster: bool = true) -> void:
 	_dismiss_intro()
+	if is_instance_valid(tutorial):
+		tutorial.cancel();remove_child(tutorial);tutorial.queue_free()
+	tutorial=null
 	if is_instance_valid(harbour):
 		harbour.cancel()
 		remove_child(harbour)
@@ -174,7 +188,7 @@ func _exported_settings(component: Node) -> Dictionary:
 	return settings
 
 func _remember_difficulty() -> void:
-	if game_mode=="aa_defence":return # mission attack settings never leak into normal encounters
+	if game_mode in ["aa_defence","tutorial"]:return # mission attack settings never leak into normal encounters
 	# Never copy ace aiming overrides back into normal pilots.
 	if is_instance_valid(enemy) and not enemy.encounter_ace and enemy.aircraft_kind == "stuka":
 		var settings: Dictionary = _exported_settings(enemy.ai)
@@ -336,7 +350,7 @@ func start_malta(field_id: String, kind: String, selected_mode: String = "encoun
 	if StElmoLocations.is_fort(field_id):
 		if selected_mode not in ["encounter","survival"]:return
 		field_id="luqa"
-	if selected_mode not in ["encounter", "survival", "interception", "aa_defence", "harbour"]:
+	if selected_mode not in ["encounter", "survival", "interception", "aa_defence", "harbour", "tutorial"]:
 		return
 	if MaltaGeography.field(field_id).is_empty() or kind not in AlliedAircraft.KINDS:
 		return
@@ -374,7 +388,11 @@ func start_malta(field_id: String, kind: String, selected_mode: String = "encoun
 	malta_mission.initial_kind = kind
 	add_child(malta_mission)
 	aircraft = malta_mission.initial_aircraft
-	if game_mode == "harbour":
+	if game_mode == "tutorial":
+		session_number+=1;defeat_notifications=0;enemy_defeated=false
+		encounters.begin_external()
+		tutorial=TutorialMission.new();tutorial.session=self;add_child(tutorial)
+	elif game_mode == "harbour":
 		session_number += 1
 		defeat_notifications = 0
 		enemy_defeated = false

@@ -84,6 +84,7 @@ func run() -> void:
 	for mode in ["survival","harbour","aa_defence"]:
 		game.show_selection(false);game.start_malta("hal_far" if mode=="harbour" else "luqa","sea_gladiator" if mode=="harbour" else "spitfire",mode,false);await frames(30)
 		check(ui.tracker.visible and not ui.objective.text.is_empty(),mode+": shared objective populated")
+		check(ui.controls_panel.visible and "Guns" in ui.basic_controls.text and "Q" in ui.basic_controls.text,mode+": top-left aircraft controls remain visible")
 		check(ui.supporting.text.count("\n")<=2,mode+": at most three supporting lines")
 	game.show_selection(false);await frames();check(not ui.root.visible,"HUD removed from menu")
 	game.queue_free();await frames(10)

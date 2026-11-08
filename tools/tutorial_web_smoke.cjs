@@ -1,0 +1,45 @@
+const {chromium}=require('playwright');
+const {spawn}=require('node:child_process');
+const path=require('node:path');
+const assert=require('node:assert/strict');
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+(async()=>{
+ const server=spawn('python3',['-m','http.server','8799','--bind','127.0.0.1','--directory',path.resolve(__dirname,'../builds/web')],{stdio:'ignore'});
+ let browser,count=0;const errors=[];
+ const check=(ok,label)=>{assert.ok(ok,label);count++;console.log('PASS:',label);};
+ try{
+  await sleep(500);
+  browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--disable-dev-shm-usage']});
+  const page=await browser.newPage({viewport:{width:1100,height:800}});
+  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+  page.on('response',r=>{if(r.status()>=400)errors.push(r.status()+' '+r.url());});
+  const state=()=>page.evaluate(()=>window.firstSortieState);
+  const wait=(f,arg=null)=>page.waitForFunction(f,arg,{timeout:240000});
+  await page.goto('http://127.0.0.1:8799/index.html?smoke=1');
+  await wait(()=>window.firstSortieState?.startup_intro?.phase===1);
+  const [x,y]=(await state()).startup_intro.tutorial_button;
+  check(x>0&&y>0,'Poster exposes the integrated tutorial button');
+  await page.screenshot({path:'/tmp/tutorial-poster-browser.png'});
+  await page.mouse.click(x,y);
+  await wait(()=>window.firstSortieState.tutorial?.phase==='BOARD'&&window.firstSortieState.on_foot);
+  const world=(await state()).world_id;
+  check(!(await state()).startup_intro.active&&(await state()).enemy_count===0,'Real tutorial click creates a peaceful continuous training world');
+  check((await state()).minimal_hud.basic_controls_visible,'Top-left controls reference is visible');
+  const controls=(await state()).minimal_hud.basic_controls;
+  check(['Q','Guns','Throttle','Space','F1'].every(x=>controls.includes(x)),'Controls reference includes current flight, device and firing bindings');
+  await page.screenshot({path:'/tmp/tutorial-on-foot-browser.png'});
+  await page.keyboard.press('e');await wait(()=>window.firstSortieState.tutorial.phase==='ENGINE');
+  check(!(await state()).on_foot&&(await state()).selected==='sea_gladiator','Existing E boards the assigned Gladiator');
+  await page.keyboard.press('F1');await wait(()=>window.firstSortieState.minimal_hud.help);
+  await page.keyboard.press('i');await page.keyboard.press('e');
+  check((await state()).paused&&!(await state()).minimal_hud.basic_controls_visible&&(await state()).tutorial.phase==='ENGINE','Help blocks lesson controls and hides the background reference');
+  await page.keyboard.press('Escape');await wait(()=>!window.firstSortieState.paused);
+  await page.keyboard.press('i');await wait(()=>window.firstSortieState.tutorial.phase==='TAXI');
+  check((await state()).minimal_hud.basic_controls_visible,'Engine lesson advances and restores the controls reference');
+  await page.setViewportSize({width:800,height:600});await sleep(800);
+  await page.screenshot({path:'/tmp/tutorial-mounted-browser.png'});
+  check((await state()).world_id===world,'Boarding, help and resize preserve the running world');
+  check(errors.length===0,'No browser script, resource or JavaScript errors');
+  console.log(`TUTORIAL WEB RESULT: ${count}/${count} passed`);
+ }finally{if(browser)await browser.close();server.kill();}
+})().catch(e=>{console.error(e);process.exitCode=1;});

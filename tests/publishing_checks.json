@@ -1,4 +1,6 @@
 [
+  ["godot", "--headless", "--path", ".", "--fixed-fps", "120", "--script", "res://tests/tutorial_glide_checks.gd"],
+  ["godot", "--headless", "--path", ".", "--fixed-fps", "120", "--script", "res://tests/tutorial_checks.gd"],
   ["godot", "--headless", "--path", ".", "--fixed-fps", "120", "--script", "res://tests/flight_devices_checks.gd"],
   ["godot", "--headless", "--path", ".", "--fixed-fps", "120", "--script", "res://tests/universal_damage_checks.gd"],
   ["godot", "--headless", "--path", ".", "--fixed-fps", "120", "--script", "res://tests/aircraft_failure_flight_checks.gd"],

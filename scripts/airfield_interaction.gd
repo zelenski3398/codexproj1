@@ -166,6 +166,7 @@ func _gun_destroyed(gun: BritishAAGun) -> void:
 		mission._message("Command post destroyed · surviving guns remain available individually" if gun is AACommandStation else ("AA gun destroyed · reach the other operational gun" if mission.session.game_mode=="aa_defence" else "AA gun destroyed · aircraft remain available"))
 
 func mission_ended() -> bool:
+	if is_instance_valid(mission.session.tutorial):return mission.session.tutorial.is_finished()
 	if is_instance_valid(mission.session.aa_defence):return mission.session.aa_defence.is_finished()
 	return mission.session.encounters.ended or mission.session.encounters.complete or (is_instance_valid(mission.session.interception) and mission.session.interception.phase in ["SUCCESS","FAILED"])
 

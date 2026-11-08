@@ -25,7 +25,7 @@ func _process(delta: float) -> void:
 	var state: Dictionary = {"selecting": session.selector != null, "selected": session.selected_aircraft, "paused": get_tree().paused, "environment": session.environment_id, "airfield_selecting": is_instance_valid(session.malta_menu), "on_foot": is_instance_valid(session.malta_mission) and session.malta_mission.pilot.active}
 	if is_instance_valid(session.gameplay_hud):
 		var hud: GameplayHUD=session.gameplay_hud
-		state.minimal_hud={"help":hud.help_open,"tracker":hud.tracker.visible,"objective":hud.objective.text,"supporting":hud.supporting.text,"actions":hud.actions.text,"help_text":hud.help_text.get_parsed_text(),"help_close":_center(hud.help.get_child(0).get_child(2)),"parts":hud.parts.visible,"debug":hud.debug.visible,"pause_menu":hud.pause_panel.visible,"vital":hud.vital.text}
+		state.minimal_hud={"basic_controls":hud.basic_controls.text,"basic_controls_visible":hud.controls_panel.visible,"help":hud.help_open,"tracker":hud.tracker.visible,"objective":hud.objective.text,"supporting":hud.supporting.text,"actions":hud.actions.text,"help_text":hud.help_text.get_parsed_text(),"help_close":_center(hud.help.get_child(0).get_child(2)),"parts":hud.parts.visible,"debug":hud.debug.visible,"pause_menu":hud.pause_panel.visible,"vital":hud.vital.text}
 	if is_instance_valid(session.malta_mission) and is_instance_valid(session.malta_mission.world.landscape_details) and is_instance_valid(session.malta_mission.world.landscape_details.trees):
 		var trees: MalteseTrees=session.malta_mission.world.landscape_details.trees
 		state.vegetation={"count":trees.instance_count,"meshes":trees.meshes.size(),"batches":trees.batch_count,"colliders":trees.collider_count,"collider_cap":trees.maximum_colliders,"species":trees.layout.species_counts,"opaque":trees.material.transparency==BaseMaterial3D.TRANSPARENCY_DISABLED,"near":trees.near_distance,"far":trees.far_distance}
@@ -49,6 +49,9 @@ func _process(delta: float) -> void:
 		state.startup_intro.music_starts = session.startup_intro.music_starts
 		state.startup_intro.music_asset = GameIntro.POSTER_AUDIO.resource_path
 		state.startup_intro.play_button = _center(session.startup_intro.play_button)
+		state.startup_intro.tutorial_button = _center(session.startup_intro.tutorial_button)
+	if is_instance_valid(session.tutorial):
+		state.tutorial={"phase":session.tutorial.phase,"route_index":session.tutorial.route_index,"spawns":session.tutorial.spawn_count,"damage_count":session.tutorial.damage_count,"kills":session.tutorial.kills}
 	state.missions_selecting = is_instance_valid(session.missions_menu)
 	if is_instance_valid(session.missions_menu):
 		state.mission_picker = _center(session.missions_menu.mission_picker)

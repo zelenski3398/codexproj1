@@ -39,6 +39,7 @@ func _ready() -> void:
 		# Mission-local roster: leave the shared airfield/free-roam records intact.
 		if session.game_mode == "harbour" and id == home:
 			kinds = ["sea_gladiator", "sea_gladiator", "sea_gladiator"]
+		if session.game_mode=="tutorial" and id==home:kinds=["sea_gladiator","spitfire"]
 		if id == home and kinds.has(initial_kind):
 			kinds.erase(initial_kind)
 			kinds.push_front(initial_kind)
@@ -180,7 +181,7 @@ func _input(event: InputEvent) -> void:
 		else: interaction.call_deferred("interact")
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("engine") and is_instance_valid(occupied) and not get_tree().paused:
-		if occupied.is_destroyed or occupied.is_crashed or occupied.components.power_factor() <= 0:
+		if occupied.is_destroyed or occupied.is_crashed or (occupied.components.power_factor() <= 0 and not occupied.engine_running):
 			_message("Engine unserviceable")
 		else:
 			occupied.engine_running = not occupied.engine_running
@@ -213,6 +214,9 @@ func board_nearest() -> bool:
 	return board_aircraft(aircraft)
 
 func board_aircraft(aircraft: FlightAircraft) -> bool:
+	if is_instance_valid(session.tutorial) and not session.tutorial.allowed_aircraft(aircraft):
+		_message("Tutorial: follow the marker to the assigned aircraft")
+		return false
 	# Keep the same validation for calls from UI and tests; no remote boarding.
 	if not survival.alive() or recovery.state in ["RETURNING","FADING_IN"] or occupied != null or interaction.is_operating() or not pilot.active or aircraft != nearest_serviceable():
 		return false
@@ -278,6 +282,10 @@ func _process(delta: float) -> void:
 	if chart.show_objective:
 		chart.objective_position = session.interception.current_checkpoint()
 		chart.objective_label = "CHECKPOINT %d/%d" % [session.interception.checkpoint_index + 1, session.interception.definition.checkpoint_positions.size()]
+	if is_instance_valid(session.tutorial) and not session.tutorial.is_finished():
+		chart.show_objective=true
+		chart.objective_position=session.tutorial.objective_point()
+		chart.objective_label="LESSON"
 	if return_flow.pending:
 		chart.show_objective=true
 		chart.objective_position=return_flow.objective_point()
@@ -322,6 +330,7 @@ func _process(delta: float) -> void:
 		status.text += "\n" + notice
 
 func can_travel() -> bool:
+	if is_instance_valid(session.tutorial) and not session.tutorial.is_finished():return false
 	return not world is CountrysideWorld and occupied==null and not interaction.is_operating() and pilot.active and pilot.health.hp>0 and not get_tree().paused and not interaction.mission_ended()
 
 func teleport_to(id: String) -> bool:

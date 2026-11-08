@@ -23,6 +23,8 @@ var video_last_position: float = -1
 var video_stalled: float = 0
 var video_restarts: int = 0
 var movie: VideoStreamPlayer
+var destination: String = "menu"
+var tutorial_button: Button
 var play_button: Button
 var opening: Label
 var blackout: ColorRect
@@ -82,6 +84,11 @@ func _ready() -> void:
 		play_button.add_theme_stylebox_override(variant, style)
 	artwork.add_child(play_button)
 	play_button.pressed.connect(begin_play)
+	tutorial_button=Button.new();tutorial_button.text="T U T O R I A L"
+	for variant in ["normal","hover","pressed","focus"]:
+		tutorial_button.add_theme_stylebox_override(variant,play_button.get_theme_stylebox(variant))
+	tutorial_button.add_theme_color_override("font_color",Color("722c1e"))
+	artwork.add_child(tutorial_button);tutorial_button.pressed.connect(begin_tutorial)
 	opening = Label.new()
 	opening.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	opening.text = "WINGS OVER MALTA\n1940 — 1942"
@@ -114,6 +121,9 @@ func _layout() -> void:
 	# Printed-poster style panel in the lower-left sea; preserve the original slogan.
 	play_button.position = dimensions * Vector2(0.055, 0.935)
 	play_button.size = dimensions * Vector2(0.46, 0.052)
+	tutorial_button.position=dimensions*Vector2(.055,.878)
+	tutorial_button.size=dimensions*Vector2(.46,.044)
+	tutorial_button.add_theme_font_size_override("font_size",maxi(12,int(dimensions.y*.022)))
 	play_button.add_theme_font_size_override("font_size", maxi(16, int(dimensions.y * 0.027)))
 
 func _input(event: InputEvent) -> void:
@@ -123,8 +133,17 @@ func _input(event: InputEvent) -> void:
 		_start_audio()
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode in [KEY_ENTER, KEY_KP_ENTER, KEY_SPACE]:
-			begin_play()
+			if get_viewport().gui_get_focus_owner()==tutorial_button:begin_tutorial()
+			else:begin_play()
+		elif event.keycode==KEY_TAB and phase==Phase.POSTER:
+			if get_viewport().gui_get_focus_owner()==tutorial_button:play_button.grab_focus()
+			else:tutorial_button.grab_focus()
 		get_viewport().set_input_as_handled()
+
+func begin_tutorial() -> void:
+	if phase!=Phase.POSTER:return
+	destination="tutorial"
+	begin_play()
 
 func begin_play() -> void:
 	if phase != Phase.POSTER:
@@ -157,7 +176,7 @@ func _process(delta: float) -> void:
 		movie.stop()
 		poster_audio.stop()
 		surface.hide()
-		GameAudioMixer.instance.set_menu_active(true)
+		GameAudioMixer.instance.set_menu_active(destination=="menu")
 	elif phase == Phase.MENU and elapsed >= menu_fade_seconds:
 		phase = Phase.DONE
 		completed.emit()
@@ -168,12 +187,13 @@ func _update_visuals() -> void:
 	artwork.modulate.a = reveal
 	opening.modulate.a = (1.0 - reveal) * smoothstep(0.0, opening_seconds * 0.7, elapsed) if phase == Phase.OPENING else 0.0
 	play_button.disabled = phase != Phase.POSTER
+	tutorial_button.disabled = phase != Phase.POSTER
 	play_button.modulate.a = smoothstep(0.65, 1.0, reveal)
 	var shade: float = 0.0
 	if phase == Phase.LEAVING:
 		shade = smoothstep(0.0, exit_fade_seconds, elapsed)
 	elif phase == Phase.MENU:
-		shade = 1.0 - smoothstep(0.0, menu_fade_seconds, elapsed)
+		shade = 1.0 if destination=="tutorial" else 1.0 - smoothstep(0.0, menu_fade_seconds, elapsed)
 	blackout.color.a = shade
 	poster_audio.volume_db = linear_to_db(maxf(0.0001, reveal * (1.0 - shade) * db_to_linear(poster_music_volume_db)))
 

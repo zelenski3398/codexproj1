@@ -30,6 +30,7 @@ func _ready() -> void:
 	mission.canvas.add_child(fade)
 func available() -> bool:
 	if not mission.survival.alive() or mission.interaction.is_operating():return false
+	if is_instance_valid(mission.session.tutorial) and mission.session.tutorial.transport_allowed():return true
 	var aircraft: FlightAircraft=mission.occupied
 	if is_instance_valid(aircraft):return aircraft.is_destroyed or aircraft.is_crashed
 	if is_instance_valid(mission.last_abandoned) and mission.pilot.global_position.distance_to(mission.last_abandoned.global_position)<60:return true

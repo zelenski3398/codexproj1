@@ -9,6 +9,8 @@ var title: Label
 var objective: Label
 var supporting: Label
 var completion: Label
+var basic_controls: Label
+var controls_panel: PanelContainer
 var vital: Label
 var actions: Label
 var notification: Label
@@ -52,6 +54,10 @@ func _ready() -> void:
 	var health_box:=MarginContainer.new();health_box.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
 	health_box.offset_left=20;health_box.offset_top=20;root.add_child(health_box)
 	vital=label(16);vital.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;vital.custom_minimum_size.x=250;health_box.add_child(vital)
+	controls_panel=PanelContainer.new();controls_panel.position=Vector2(20,55)
+	controls_panel.add_theme_stylebox_override("panel",panel_style());root.add_child(controls_panel)
+	controls_panel.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	basic_controls=label(14);basic_controls.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;controls_panel.add_child(basic_controls)
 	tracker=PanelContainer.new();tracker.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 	tracker.offset_left=-360;tracker.offset_right=-20;tracker.offset_top=20;tracker.add_theme_stylebox_override("panel",panel_style());root.add_child(tracker)
 	var column:=VBoxContainer.new();column.add_theme_constant_override("separation",6);tracker.add_child(column)
@@ -188,6 +194,7 @@ func _process(delta: float) -> void:
 	suppress_legacy()
 	if not get_tree().paused:age+=delta;completion_time=maxf(0,completion_time-delta);notice_clock=maxf(0,notice_clock-delta)
 	var mission: MaltaMission=session.malta_mission
+	update_basic_controls()
 	var player: FlightAircraft=mission.occupied if is_instance_valid(mission) else session.aircraft
 	var alive: bool=not is_instance_valid(mission) or mission.survival.alive()
 	var playing: bool=not get_tree().paused and alive
@@ -280,10 +287,28 @@ func context_actions() -> String:
 		hints.append(binding("reset")+" — Restart flight")
 	return "    ·    ".join(hints.slice(0,4))
 
+func update_basic_controls() -> void:
+	controls_panel.custom_minimum_size.x=minf(350,get_viewport().get_visible_rect().size.x*.44)
+	controls_panel.size.x=controls_panel.custom_minimum_size.x
+	basic_controls.text="AIRCRAFT · while aboard\n%s/%s Pitch · %s/%s Bank\n%s Throttle · %s Rudder\n%s Guns · %s Wheel brakes\n%s Engine · %s Board/leave · %s Gear\n%s Flaps · %s Airbrakes (if fitted)\n%s Map · %s Help · %s Pause · %s Restart" % [binding("pitch_down"),binding("pitch_up"),binding("roll_left"),binding("roll_right"),binding("throttle_up")+"/"+binding("throttle_down"),binding("rudder_left")+"/"+binding("rudder_right"),binding("fire"),binding("brake"),binding("engine"),binding("board"),binding("gear"),binding("flaps"),binding("airbrakes"),binding("navigation_map"),binding("controls_help"),binding("pause"),binding("reset")]
+	controls_panel.visible=not get_tree().paused
+	var narrow: bool=get_viewport().get_visible_rect().size.x<760
+	tracker.offset_top=controls_panel.position.y+controls_panel.size.y+15 if narrow else 20
+	tracker.offset_left=-minf(360,get_viewport().get_visible_rect().size.x-40)
+	notification.offset_top=controls_panel.position.y+controls_panel.size.y+15
+	debug.position.y=controls_panel.position.y+controls_panel.size.y+40
+
 func update_objective() -> void:
 	var current: String="";var details: String="";var heading: String=""
 	var director: Node=session.interception
-	if is_instance_valid(director):
+	if is_instance_valid(session.tutorial):
+		director=session.tutorial;heading="FLIGHT SCHOOL · MALTA"
+		current=director.objective_text();details=director.instructions()
+		if not director.is_finished():
+			var anchor: Node3D=session.malta_mission.occupied if is_instance_valid(session.malta_mission.occupied) else session.malta_mission.pilot
+			var offset: Vector3=director.objective_point()-anchor.global_position
+			details="%d m · bearing %03d°\n%s"%[roundi(offset.length()),roundi(fposmod(rad_to_deg(atan2(offset.x,-offset.z)),360)),details]
+	elif is_instance_valid(director):
 		heading="DEFEND VALLETTA"
 		if director.phase=="CHECKPOINT":
 			var anchor: Node3D=session.malta_mission.occupied if is_instance_valid(session.malta_mission.occupied) else session.malta_mission.pilot
