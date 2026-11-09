@@ -67,9 +67,22 @@ func run() -> void:
 	check(game._ai_settings==normal_settings,"Training enemy tuning does not leak into normal encounters")
 	check(tutorial.phase=="RETURN" and tutorial.kills==1,"Actual enemy destruction requests landing, not an early result")
 	await ground(tutorial.first,"ta_qali")
-	check(tutorial.phase=="SHUTDOWN","Stable grounded runway landing advances the return lesson")
+	check(tutorial.phase=="TAXI_HANDOVER","Landing away from the hangar advances to taxi guidance, not an early exit")
+	tutorial.first.engine_running=false
+	check(not mission.leave_aircraft() and mission.occupied==tutorial.first and "green stand" in mission.notice,"Even after shutdown, distant-runway exit is blocked with handover guidance")
+	tutorial.first.engine_running=true
+	var base: MaltaAirfield=mission.world.fields["ta_qali"]
+	var band: Vector3=base.to_local(tutorial.landing_position)
+	check(absf(band.x)<.1 and absf(band.z)+tutorial.lessons.landing_sector_length*.5<base.runway_length*.5,"Marked touchdown sector stays inside the existing runway")
+	check(tutorial.handover_point().distance_to(tutorial.second.global_position)<tutorial.lessons.handover_maximum_walk,"Handover stand is a short walk from the actual Spitfire")
+	var cross: Array[Vector3]=tutorial.handover_taxi_points()
+	check(is_equal_approx(base.to_local(cross[1]).z,base.runway_length*.31),"Taxi guidance crosses through the clear central gap between AA emplacements")
+	await pose(tutorial.first,tutorial.handover_point()+base.global_basis.y*1.18,base.global_basis*Basis(Vector3.RIGHT,.117))
+	await frames(420)
+	check(tutorial.phase=="SHUTDOWN" and tutorial.handover_ready(),"Only settled parking in the green stand unlocks shutdown and exit")
 	tutorial.first.engine_running=false;tutorial.first.pilot.throttle=0;tutorial.first.take_damage(10)
 	check(mission.leave_aircraft(),"Existing safe dismount exits the landed Gladiator")
+	check(mission.pilot.global_position.distance_to(tutorial.second.global_position)<55,"Actual safe exit leaves the pilot within a short walk of the Spitfire")
 	await frames(4)
 	mission.pilot.global_position=tutorial.second.global_position+tutorial.second.global_basis.x*6.7
 	await frames(3);check(mission.board_aircraft(tutorial.second),"Player can board the second plane without reloading the world")
@@ -125,6 +138,16 @@ func run() -> void:
 	tutorial.choose_result(true);tutorial.choose_result(true);await frames(120)
 	check(game.session_number==sessions+1,"Repeated Retry presses queue exactly one clean tutorial restart")
 	check(game.tutorial!=tutorial and game.tutorial.phase=="BOARD" and game.tutorial.spawn_count==0 and game.encounters.active.is_empty(),"Retry clears tutorial steps, enemies, damage trigger and old ordnance")
+	mission=game.malta_mission
+	var rescue: TutorialMission=game.tutorial
+	check(mission.board_nearest(),"Fresh attempt can board for disabled-engine handover coverage")
+	rescue.advance("RETURN")
+	var engine: AircraftComponentDefinition=rescue.first.components.definitions[&"engine"]
+	rescue.first.components.apply_damage(&"engine",engine.max_integrity/engine.damage_multiplier,rescue.first.global_position,false,"training")
+	await ground(rescue.first,"ta_qali")
+	check(rescue.phase=="FIRST_RECOVERY","A disabled Gladiator is offered recovery instead of an impossible taxi")
+	rescue.first.engine_running=false
+	check(mission.leave_aircraft() and mission.recovery.request(),"Disabled-engine exception permits safe exit and a short truck pickup")
 	game.malta_mission.pilot.take_damage(100);await frames(4)
 	check(game.tutorial.phase=="FAILED" and not game.malta_mission.survival.death_panel.visible and game.tutorial.results.visible,"Pilot death ends training with one result panel and blocks further spawns")
 	game.show_selection(false);await frames(5)

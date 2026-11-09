@@ -5,6 +5,16 @@ extends Resource
 @export var checkpoint_radius: float = 650
 @export var minimum_flight_agl: float = 35
 @export var landing_settle_seconds: float = 2
+@export_group("Gladiator return and short walk to Spitfire")
+@export var landing_sector_length: float = 240
+@export var landing_sector_width: float = 46
+@export var landing_rollout_lead: float = 250
+@export var handover_apron_x: float = 61
+@export var handover_parking_radius: float = 8
+@export var handover_maximum_walk: float = 45
+@export var handover_maximum_speed: float = 1.5
+@export var handover_minimum_taxi_power: float = .15
+@export_group("Emergency exercise")
 @export var emergency_setup_distance: float = 1800
 @export var emergency_setup_height: float = 450
 @export var emergency_capture_radius: float = 650

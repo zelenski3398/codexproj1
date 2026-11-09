@@ -239,6 +239,9 @@ func leave_aircraft() -> bool:
 		return false
 	if not survival.alive():return false
 	var wreck: bool=occupied.is_destroyed or occupied.is_crashed
+	if not wreck and is_instance_valid(session.tutorial) and not session.tutorial.exit_allowed(occupied):
+		_message("Taxi to the marked green stand near the Spitfire, stop, then shut down and exit")
+		return false
 	if not wreck and (occupied.airspeed>maximum_exit_speed or occupied.gear.contact_count==0):
 		_message("Stop on the ground before leaving")
 		return false
@@ -285,7 +288,7 @@ func _process(delta: float) -> void:
 	if is_instance_valid(session.tutorial) and not session.tutorial.is_finished():
 		chart.show_objective=true
 		chart.objective_position=session.tutorial.objective_point()
-		chart.objective_label="LESSON"
+		chart.objective_label=session.tutorial.navigation_label()
 	if return_flow.pending:
 		chart.show_objective=true
 		chart.objective_position=return_flow.objective_point()

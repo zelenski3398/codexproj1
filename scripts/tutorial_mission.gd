@@ -15,6 +15,12 @@ var guns: Array[BritishAAGun] = []
 var centre: Vector3
 var effects: Node3D
 var siren: InterceptionSiren
+var handover_position: Vector3
+var landing_position: Vector3
+var handover_visuals: Node3D
+var landing_outline: Node3D
+var parking_outline: Node3D
+var handover_taxi_index: int = 0
 var marker: Label
 var results: PanelContainer
 var result_title: Label
@@ -51,12 +57,57 @@ func _ready() -> void:
 	marker.add_theme_font_size_override("font_size",17);marker.add_theme_color_override("font_color",Color("e4bf75"))
 	marker.add_theme_color_override("font_shadow_color",Color.BLACK);marker.add_theme_constant_override("shadow_offset_x",1)
 	session.malta_mission.canvas.add_child(marker)
+	_build_handover_areas()
 	_build_results()
 	session.malta_mission.pilot.combat_enabled=true
 	session.malta_mission.pilot.add_to_group("damageable_ground_pilots")
 	recovery_returns=session.malta_mission.recovery.returns
 	visited[phase]=true
 	call_deferred("_find_guns")
+
+func _build_handover_areas() -> void:
+	var field: MaltaAirfield=session.field.fields[session.home_airfield]
+	var stand: Vector3=field.to_local(second.global_position)
+	handover_position=field.to_global(Vector3(lessons.handover_apron_x,0,stand.z))
+	var touchdown_z: float=stand.z-lessons.landing_rollout_lead
+	landing_position=field.to_global(Vector3(0,0,touchdown_z))
+	handover_visuals=Node3D.new();handover_visuals.name="ReturnAndHandoverAreas";add_child(handover_visuals)
+	handover_visuals.global_transform=field.global_transform
+	landing_outline=Node3D.new();handover_visuals.add_child(landing_outline)
+	var gold:=MeshKit.material(Color("e4bf75"));gold.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
+	var half_width: float=lessons.landing_sector_width*.5
+	var half_length: float=lessons.landing_sector_length*.5
+	for side in [-1,1]:
+		MeshKit.box(landing_outline,Vector3(1.2,.025,lessons.landing_sector_length),Vector3(side*half_width,.25,touchdown_z),gold)
+		MeshKit.box(landing_outline,Vector3(lessons.landing_sector_width,.025,1.2),Vector3(0,.25,touchdown_z+side*half_length),gold)
+	parking_outline=Node3D.new();handover_visuals.add_child(parking_outline)
+	var ring:=TorusMesh.new();ring.inner_radius=maxf(lessons.handover_parking_radius-.25,.1);ring.outer_radius=lessons.handover_parking_radius
+	ring.rings=48;ring.ring_segments=6
+	var green:=MeshKit.material(Color("8bc49a"));green.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
+	MeshKit.mesh(parking_outline,ring,green,Vector3(lessons.handover_apron_x,.25,stand.z))
+	for visual in handover_visuals.find_children("*","GeometryInstance3D",true,false):visual.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	handover_visuals.hide() # Visual overlays only: no new ground or obstacles.
+
+func handover_point() -> Vector3:return handover_position
+
+func handover_ready() -> bool:
+	if session.malta_mission.return_flow.landed_field(first)!=session.home_airfield:return false
+	var position: Vector2=Vector2(first.global_position.x,first.global_position.z)
+	return first.linear_velocity.length()<=lessons.handover_maximum_speed and position.distance_to(Vector2(handover_position.x,handover_position.z))<=lessons.handover_parking_radius and position.distance_to(Vector2(second.global_position.x,second.global_position.z))<=lessons.handover_maximum_walk
+
+func exit_allowed(plane: FlightAircraft) -> bool:
+	if plane==first and phase in ["RETURN","TAXI_HANDOVER","SHUTDOWN"]:return phase=="SHUTDOWN" and handover_ready()
+	return true
+
+func handover_taxi_points() -> Array[Vector3]:
+	var field: MaltaAirfield=session.field.fields[session.home_airfield]
+	# Cross through the middle gap in the existing AA line, not through the
+	# emplacement directly between the runway and the Spitfire's stand.
+	var cross_z: float=field.runway_length*.31
+	return [field.to_global(Vector3(0,0,cross_z)),field.to_global(Vector3(lessons.handover_apron_x,0,cross_z)),handover_position]
+
+func navigation_label() -> String:
+	return "LANDING SECTOR" if phase=="RETURN" else ("TAXI / PARK" if phase in ["TAXI_HANDOVER","SHUTDOWN"] else "LESSON")
 
 func _find_guns() -> void:
 	for gun in session.field.aa_battery.guns:
@@ -89,6 +140,9 @@ func _input(event: InputEvent) -> void:
 func advance(next: String) -> void:
 	if is_finished():return
 	phase=next;settled=0;visited[next]=true
+	if next=="TAXI_HANDOVER":
+		var local: Vector3=session.field.fields[session.home_airfield].to_local(first.global_position)
+		handover_taxi_index=2 if local.x>45 else 0
 
 func is_finished() -> bool:return cancelled or phase in ["SUCCESS","FAILED"]
 func cancel() -> void:
@@ -98,9 +152,10 @@ func cancel() -> void:
 	if is_instance_valid(results):results.queue_free()
 
 func allowed_aircraft(plane: FlightAircraft) -> bool:
-	return plane==(second if phase in ["BOARD_SECOND","SECOND_ENGINE","SECOND_TAKEOFF","DEVICES","FAILURE_ROUTE","EMERGENCY","EXIT_DAMAGED"] else first) and phase not in ["CALL_TRANSPORT","TRUCK","MOUNT_AA","AA_COMBAT","DRAINING","SUCCESS","FAILED"]
+	return plane==(second if phase in ["BOARD_SECOND","SECOND_ENGINE","SECOND_TAKEOFF","DEVICES","FAILURE_ROUTE","EMERGENCY","EXIT_DAMAGED"] else first) and phase not in ["FIRST_RECOVERY","CALL_TRANSPORT","TRUCK","MOUNT_AA","AA_COMBAT","DRAINING","SUCCESS","FAILED"]
 
 func transport_allowed() -> bool:
+	if phase=="FIRST_RECOVERY" and session.malta_mission.occupied==null:return true
 	return emergency_landed and phase in ["CALL_TRANSPORT","TRUCK"] and session.malta_mission.occupied==null
 
 func _physics_process(delta: float) -> void:
@@ -109,7 +164,7 @@ func _physics_process(delta: float) -> void:
 	var mission: MaltaMission=session.malta_mission
 	if not mission.survival.alive():finish(false,"Pilot lost — retry the tutorial");return
 	var plane: FlightAircraft=mission.occupied
-	var required: FlightAircraft=first if phase in ["BOARD","ENGINE","TAXI","TAKEOFF","NAVIGATION","AIR_COMBAT","RETURN","SHUTDOWN"] else (second if phase in ["BOARD_SECOND","SECOND_ENGINE","SECOND_TAKEOFF","DEVICES","FAILURE_ROUTE","EMERGENCY","EXIT_DAMAGED"] else null)
+	var required: FlightAircraft=first if phase in ["BOARD","ENGINE","TAXI","TAKEOFF","NAVIGATION","AIR_COMBAT","RETURN","TAXI_HANDOVER","SHUTDOWN"] else (second if phase in ["BOARD_SECOND","SECOND_ENGINE","SECOND_TAKEOFF","DEVICES","FAILURE_ROUTE","EMERGENCY","EXIT_DAMAGED"] else null)
 	if is_instance_valid(required) and (required.is_crashed or required.is_destroyed):finish(false,"Lesson aircraft lost — retry for a gentler landing");return
 	if is_instance_valid(plane) and (plane.is_crashed or plane.is_destroyed):finish(false,"Aircraft lost — retry and aim for a gentler landing");return
 	if phase=="BOARD" and plane==first:advance("ENGINE")
@@ -122,8 +177,18 @@ func _physics_process(delta: float) -> void:
 			route_index+=1
 			if route_index==route.size():
 				advance("AIR_COMBAT");spawn_stuka(false)
-	elif phase=="RETURN" and landed(first,session.home_airfield,delta):advance("SHUTDOWN")
-	elif phase=="SHUTDOWN" and mission.occupied==null:advance("BOARD_SECOND")
+	elif phase=="RETURN" and landed(first,session.home_airfield,delta):advance("TAXI_HANDOVER")
+	elif phase=="TAXI_HANDOVER":
+		if first.components.power_factor()<lessons.handover_minimum_taxi_power and session.malta_mission.return_flow.landed_field(first)==session.home_airfield:
+			advance("FIRST_RECOVERY");return
+		var waypoints:=handover_taxi_points()
+		if first.global_position.distance_to(waypoints[handover_taxi_index]+Vector3.UP)<10 and handover_taxi_index<2:handover_taxi_index+=1
+		settled=settled+delta if handover_ready() else 0
+		if settled>=lessons.landing_settle_seconds:advance("SHUTDOWN")
+	elif phase=="SHUTDOWN":
+		if mission.occupied==null:advance("BOARD_SECOND")
+		elif not handover_ready():advance("TAXI_HANDOVER")
+	elif phase=="FIRST_RECOVERY" and mission.recovery.returns>recovery_returns and mission.recovery.state=="IDLE":advance("BOARD_SECOND")
 	elif phase=="BOARD_SECOND" and plane==second:advance("SECOND_ENGINE")
 	elif phase=="SECOND_ENGINE" and second.engine_running:advance("SECOND_TAKEOFF")
 	elif phase=="SECOND_TAKEOFF" and second.altitude>lessons.minimum_flight_agl and second.gear.contact_count==0:advance("DEVICES")
@@ -245,11 +310,11 @@ func finish(won: bool,message: String) -> void:
 
 func objective_text() -> String:
 	if phase=="AA_COMBAT" and session.malta_mission.interaction.occupied_gun==null:return "Mount another operational AA gun"
-	return {"BOARD":"Board the Sea Gladiator","ENGINE":"Start the engine","TAXI":"Release brakes and taxi","TAKEOFF":"Take off and climb","NAVIGATION":"Fly lesson checkpoint %d/%d"%[route_index+1,route.size()],"AIR_COMBAT":"Destroy the Stuka over Valletta","RETURN":"Return and land at Ta’ Qali","SHUTDOWN":"Stop engine and leave the Gladiator","BOARD_SECOND":"Walk to and board the Spitfire","SECOND_ENGINE":"Start the Spitfire engine","SECOND_TAKEOFF":"Take off for the second lesson","DEVICES":"Practise gear and landing flaps","FAILURE_ROUTE":"Fly to the emergency exercise entry","EMERGENCY":"Engine failed — glide onto Luqa runway","EXIT_DAMAGED":"Stop and leave the damaged aircraft","CALL_TRANSPORT":"Call the recovery vehicle","TRUCK":"Enter the recovery truck","MOUNT_AA":"Mount an AA gun at base","AA_COMBAT":"Defend base against the Stuka","DRAINING":"Wait for the last bomb to clear","SUCCESS":"Tutorial complete","FAILED":"Tutorial failed"}.get(phase,phase)
+	return {"BOARD":"Board the Sea Gladiator","ENGINE":"Start the engine","TAXI":"Release brakes and taxi","TAKEOFF":"Take off and climb","NAVIGATION":"Fly lesson checkpoint %d/%d"%[route_index+1,route.size()],"AIR_COMBAT":"Destroy the Stuka over Valletta","RETURN":"Land in the marked Ta’ Qali runway sector","TAXI_HANDOVER":"Taxi to the Spitfire handover stand","SHUTDOWN":"Parked nearby — shut down and exit","FIRST_RECOVERY":"Unable to taxi — request a short truck recovery","BOARD_SECOND":"Walk to and board the Spitfire","SECOND_ENGINE":"Start the Spitfire engine","SECOND_TAKEOFF":"Take off for the second lesson","DEVICES":"Practise gear and landing flaps","FAILURE_ROUTE":"Fly to the emergency exercise entry","EMERGENCY":"Engine failed — glide onto Luqa runway","EXIT_DAMAGED":"Stop and leave the damaged aircraft","CALL_TRANSPORT":"Call the recovery vehicle","TRUCK":"Enter the recovery truck","MOUNT_AA":"Mount an AA gun at base","AA_COMBAT":"Defend base against the Stuka","DRAINING":"Wait for the last bomb to clear","SUCCESS":"Tutorial complete","FAILED":"Tutorial failed"}.get(phase,phase)
 
 func instructions() -> String:
 	if phase=="AA_COMBAT" and session.malta_mission.interaction.occupied_gun==null:return "The Stuka is still attacking. Approach another surviving base gun and press E. Unoccupied guns stay idle."
-	return {"BOARD":"WASD walk, mouse look. Approach the marked Gladiator; E boards it.","ENGINE":"I starts the engine. W adds power; S reduces it. Throttle stays where set.","TAXI":"A/D steer. Space holds wheel brakes on the ground only. Follow the marker onto the runway; keep speed low and align with its far-end marker before full power.","TAKEOFF":"W full power. At 115–135 km/h, gently press Down Arrow to raise the nose. Up Arrow lowers it. Climb through 35 m.","NAVIGATION":"Arrows pitch and bank; A/D rudder; W/S power. Practise each, reduce power once, and open/close M map. Gladiator gear is fixed; it has no flaps or airbrakes. F1 explains all controls.","AIR_COMBAT":"F fires real guns (Ctrl also works). Lead the aircraft; close to 200–350 m. Avoid lingering behind its rear gunner. Keep speed above 110 km/h.","RETURN":"M map shows Ta’ Qali. Reduce power with S. Approach at 115–135 km/h; gently flare, then Space brakes. Stop below 29 km/h for two seconds.","SHUTDOWN":"S idle, Space to stop, I engine off, E exit. The aircraft keeps its damage and fuel.","BOARD_SECOND":"Follow the marker to the other aircraft. E boards the Spitfire; the Gladiator remains parked.","SECOND_ENGINE":"I engine start; W power. Taxi with A/D and Space brakes.","SECOND_TAKEOFF":"Take off at 160–180 km/h and climb. Keep the Spitfire intact for the emergency exercise.","DEVICES":"G retracts gear. Below 252 km/h, Q deploys flaps; allow them to extend, then Q retracts them. Use S to slow down. B is airbrakes only where fitted; the Spitfire has none.","FAILURE_ROUTE":"Climb to roughly 600 m above sea level, then follow the marker northwest of Luqa. A scripted training engine failure begins there, not enemy damage.","EMERGENCY":"Keep 180–200 km/h initially by lowering the nose. Keep gear/flaps up until the runway is assured; G down, then Q on final below its limit. Begin a gentle flare early if sinking quickly; Space after touchdown. No autopilot or repair is applied.","EXIT_DAMAGED":"S idle and I engine off. Once stopped, E exits. Your damaged Spitfire stays here.","CALL_TRANSPORT":"V requests the existing recovery truck. Wait beside the aircraft; follow the truck marker when it arrives.","TRUCK":"Walk to the arriving truck and press E. This uses the normal recovery transfer to Ta’ Qali, preserving the world and damaged aircraft.","MOUNT_AA":"Follow the gun marker. E mounts a gun; Bofors is recommended. You can walk or drive a base truck (E, WASD, Space brakes).","AA_COMBAT":"Mouse aims the actual barrel; LMB fires; RMB zooms. B toggles Bofors aim assist. Heavy AA needs a fresh click and five-second reload. E dismounts. All unoccupied guns remain idle.","DRAINING":"Enemy destroyed. Stay alive while remaining physical ordnance clears."}.get(phase,reason)
+	return {"BOARD":"WASD walk, mouse look. Approach the marked Gladiator; E boards it.","ENGINE":"I starts the engine. W adds power; S reduces it. Throttle stays where set.","TAXI":"A/D steer. Space holds wheel brakes on the ground only. Follow the marker onto the runway; keep speed low and align with its far-end marker before full power.","TAKEOFF":"W full power. At 115–135 km/h, gently press Down Arrow to raise the nose. Up Arrow lowers it. Climb through 35 m.","NAVIGATION":"Arrows pitch and bank; A/D rudder; W/S power. Practise each, reduce power once, and open/close M map. Gladiator gear is fixed; it has no flaps or airbrakes. F1 explains all controls.","AIR_COMBAT":"F fires real guns (Ctrl also works). Lead the aircraft; close to 200–350 m. Avoid lingering behind its rear gunner. Keep speed above 110 km/h.","RETURN":"Approach from the southeast end toward the hangars; touch down in the gold runway sector before the apron. M shows LANDING SECTOR. Approach at 115–135 km/h, flare gently and Space brake. Keep the engine running: next, taxi to the green stand near the Spitfire.","TAXI_HANDOVER":"Keep the engine running (I restarts it if you shut it down); use a little W power and A/D to follow the taxi markers through the clear apron crossing. Stop inside the green circle with Space for two seconds. The Spitfire will be a short walk away. Do not exit on the runway.","SHUTDOWN":"You are parked beside the Spitfire hangar. S idle, hold Space, I engine off, E exit. Walk to the marked Spitfire; aircraft damage and fuel are retained.","FIRST_RECOVERY":"The Gladiator has insufficient engine power to taxi. S idle, I engine off if still running, E exit, then V call recovery. Approach the truck and E returns you beside the hangars without a long walk.","BOARD_SECOND":"Follow the marker to the other aircraft. E boards the Spitfire; the Gladiator remains parked.","SECOND_ENGINE":"I engine start; W power. Taxi with A/D and Space brakes.","SECOND_TAKEOFF":"Take off at 160–180 km/h and climb. Keep the Spitfire intact for the emergency exercise.","DEVICES":"G retracts gear. Below 252 km/h, Q deploys flaps; allow them to extend, then Q retracts them. Use S to slow down. B is airbrakes only where fitted; the Spitfire has none.","FAILURE_ROUTE":"Climb to roughly 600 m above sea level, then follow the marker northwest of Luqa. A scripted training engine failure begins there, not enemy damage.","EMERGENCY":"Keep 180–200 km/h initially by lowering the nose. Keep gear/flaps up until the runway is assured; G down, then Q on final below its limit. Begin a gentle flare early if sinking quickly; Space after touchdown. No autopilot or repair is applied.","EXIT_DAMAGED":"S idle and I engine off. Once stopped, E exits. Your damaged Spitfire stays here.","CALL_TRANSPORT":"V requests the existing recovery truck. Wait beside the aircraft; follow the truck marker when it arrives.","TRUCK":"Walk to the arriving truck and press E. This uses the normal recovery transfer to Ta’ Qali, preserving the world and damaged aircraft.","MOUNT_AA":"Follow the gun marker. E mounts a gun; Bofors is recommended. You can walk or drive a base truck (E, WASD, Space brakes).","AA_COMBAT":"Mouse aims the actual barrel; LMB fires; RMB zooms. B toggles Bofors aim assist. Heavy AA needs a fresh click and five-second reload. E dismounts. All unoccupied guns remain idle.","DRAINING":"Enemy destroyed. Stay alive while remaining physical ordnance clears."}.get(phase,reason)
 
 func objective_point() -> Vector3:
 	if phase in ["TAXI","TAKEOFF"]:
@@ -263,14 +328,19 @@ func objective_point() -> Vector3:
 	if phase=="FAILURE_ROUTE":return emergency_setup()
 	if phase=="EMERGENCY":return session.field.fields["luqa"].to_global(Vector3(0,3,200))
 	if phase in ["EXIT_DAMAGED","CALL_TRANSPORT"]:return second.global_position+Vector3.UP*3
-	if phase=="TRUCK" and is_instance_valid(session.malta_mission.recovery.truck):return session.malta_mission.recovery.truck.global_position+Vector3.UP*3
+	if phase in ["TRUCK","FIRST_RECOVERY"] and is_instance_valid(session.malta_mission.recovery.truck):return session.malta_mission.recovery.truck.global_position+Vector3.UP*3
 	if phase in ["MOUNT_AA","AA_COMBAT"]:
 		for gun in guns:
 			if not gun.weapon.heavy and not gun.is_destroyed:return gun.global_position+Vector3.UP*3
-	if phase in ["RETURN","SHUTDOWN"]:return session.field.fields[session.home_airfield].global_position+Vector3.UP*3
+	if phase=="RETURN":return landing_position+Vector3.UP*3
+	if phase=="TAXI_HANDOVER":return handover_taxi_points()[handover_taxi_index]+Vector3.UP*3
+	if phase=="SHUTDOWN":return handover_position+Vector3.UP*3
 	return first.global_position+Vector3.UP*3
 
 func _process(_delta: float) -> void:
+	handover_visuals.visible=not is_finished() and phase in ["RETURN","TAXI_HANDOVER","SHUTDOWN"]
+	landing_outline.visible=phase=="RETURN"
+	parking_outline.visible=phase in ["TAXI_HANDOVER","SHUTDOWN"]
 	if is_finished() or route.is_empty():marker.hide();return
 	var camera:=get_viewport().get_camera_3d()
 	if camera==null:marker.hide();return
@@ -278,4 +348,4 @@ func _process(_delta: float) -> void:
 	marker.visible=not camera.is_position_behind(point)
 	marker.position=camera.unproject_position(point)-Vector2(80,35)
 	var anchor: Node3D=session.malta_mission.occupied if is_instance_valid(session.malta_mission.occupied) else session.malta_mission.pilot
-	marker.text="LESSON · %d m"%roundi(anchor.global_position.distance_to(point))
+	marker.text=navigation_label()+" · %d m"%roundi(anchor.global_position.distance_to(point))
