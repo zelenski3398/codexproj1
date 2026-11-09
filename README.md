@@ -16,7 +16,7 @@ The [Hurricane Mk I](docs/hawker-hurricane.md) has its own broad-winged 3D model
 
 ## Flight school tutorial
 
-Click **Tutorial** inside the animated poster to start on foot beside a Sea Gladiator at Ta’ Qali. Learn takeoff and navigation, fight a Stuka over Valletta, return and land, then fly a Spitfire through a gear/flap lesson and a scripted engine failure. Land at Luqa, call the recovery truck with **V**, return to base, and fight another Stuka from a manually operated AA gun. The same Malta world and aircraft damage persist throughout. [Lesson sequence, tuning and verification](docs/tutorial-flight-school.md).
+Click **Tutorial** inside the animated poster to start on foot beside a Sea Gladiator at Ta’ Qali. Learn takeoff and navigation, fight a Stuka over Valletta, land in the marked Ta’ Qali sector and taxi to the green stand beside the Spitfire, then fly that Spitfire through a gear/flap lesson and a scripted engine failure. Land at Luqa, call the recovery truck with **V**, return to base, and fight another Stuka from a manually operated AA gun. The same Malta world and aircraft damage persist throughout. [Lesson sequence, tuning and verification](docs/tutorial-flight-school.md).
 
 ## Faith, Hope and Charity — Harbour Interception
 
@@ -54,10 +54,10 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`8a68e0c8d9cc1290d7f19f83763b07573f6dd1eb`](https://github.com/zelenski3398/codexproj1/commit/8a68e0c8d9cc1290d7f19f83763b07573f6dd1eb)
+**Latest documented commit:** [`4f9e676be7a69a1f1b1f64493836b433fbbbdaf0`](https://github.com/zelenski3398/codexproj1/commit/4f9e676be7a69a1f1b1f64493836b433fbbbdaf0)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest tutorial and controls update](docs/development-updates/tutorial-flight-school.md)
+[latest tutorial landing/parking update](docs/development-updates/2026-11-09-tutorial-handover.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -66,9 +66,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor 8a68e0c8d9cc1290d7f19f83763b07573f6dd1eb HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' 8a68e0c8d9cc1290d7f19f83763b07573f6dd1eb..HEAD
-git diff --stat 8a68e0c8d9cc1290d7f19f83763b07573f6dd1eb..HEAD
+git merge-base --is-ancestor 4f9e676be7a69a1f1b1f64493836b433fbbbdaf0 HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' 4f9e676be7a69a1f1b1f64493836b433fbbbdaf0..HEAD
+git diff --stat 4f9e676be7a69a1f1b1f64493836b433fbbbdaf0..HEAD
 ```
 
 Append a dated, evidence-linked update and advance this SHA to the newest inspected

@@ -21,7 +21,7 @@ Current keys: arrows pitch/bank; W/S throttle; A/D rudder/ground steering; F/Ctr
 3. **Takeoff:** accelerate to approximately 115–135 km/h, gently raise the nose with Down Arrow, and climb through 35 m AGL.
 4. **Navigation and handling:** fly three generous checkpoints toward Valletta. Practise pitch, bank, rudder and reducing power, and open/close M. The current lesson target appears on the 3D marker and map, with distance and bearing in the HUD. Checkpoints require actual airborne clearance; taxiing through their horizontal positions does not count.
 5. **Air combat over Valletta:** one airborne Stuka appears near the final checkpoint. Fire ordinary physical bullets, lead the target, and avoid its rear gunner. The tutorial sets locally forgiving front aim and a Cadet rear gunner; it does not alter normal enemies or aces. Smoke and low HP do not complete the objective; a real destruction event does.
-6. **Return and land:** fly back to Ta’ Qali, reduce power, land the same Gladiator with its fixed gear, and stop below 8 m/s (29 km/h) for two seconds. S idle, I engine off, E exit. Damage and fuel remain.
+6. **Return and land:** approach Ta’ Qali from the southeast toward the hangars and touch down in the gold runway sector before the apron. Brake to a safe stop; keep the engine running. Follow the taxi markers through the clear gap between the AA positions, then park in the green circle outside the Spitfire hangar. Stop below 1.5 m/s for two seconds, then S idle, I engine off, E exit. The stand is about 32 m from the actual Spitfire; exiting earlier on the runway is blocked. Damage and fuel remain. A safe landing elsewhere on the home runway is accepted, followed by taxi guidance. If engine power is below 15%, an existing recovery-truck pickup replaces the impossible taxi.
 7. **Second aircraft:** walk to the marked Spitfire, board, start, taxi and take off. The Gladiator stays parked.
 8. **Gear and flaps:** retract gear with G. Below 70 m/s (252 km/h), use Q to deploy flaps, allow them to extend, then retract them. Actual device states complete the lesson; a rejected overspeed request does not count. B is explained as unavailable on this aircraft.
 9. **Emergency exercise entry:** climb toward roughly 600 m above sea level and fly to the marked northwest approach to Luqa. The configurable setup is 1,800 m before the runway threshold and at least 450 m above the local surface.
@@ -50,7 +50,10 @@ stateDiagram-v2
     TAKEOFF --> NAVIGATION: Airborne above 35 m AGL
     NAVIGATION --> AIR_COMBAT: Three checkpoints and control practice
     AIR_COMBAT --> RETURN: First Stuka destruction
-    RETURN --> SHUTDOWN: Stable landing at home
+    RETURN --> TAXI_HANDOVER: Stable landing at home
+    TAXI_HANDOVER --> SHUTDOWN: Stopped in nearby green stand
+    TAXI_HANDOVER --> FIRST_RECOVERY: Insufficient taxi power
+    FIRST_RECOVERY --> BOARD_SECOND: Existing truck pickup returns to hangars
     SHUTDOWN --> BOARD_SECOND: Safe exit
     BOARD_SECOND --> SECOND_ENGINE: Board Spitfire
     SECOND_ENGINE --> SECOND_TAKEOFF: Engine running
@@ -68,6 +71,16 @@ stateDiagram-v2
 ```
 
 Pilot death and loss of the required lesson aircraft lead to FAILED; total AA loss also fails the final exercise. The failure path has one result panel, and further spawns stop.
+
+## Gladiator landing and handover placement
+
+The return marker and M map label **LANDING SECTOR** identify a 240×46 m runway region. Its centre is derived from the parked Spitfire's airfield-local Z coordinate, 250 m before the stand to allow rollout toward the apron. The **TAXI / PARK** marker then follows the runway to the central AA gap, crosses the apron and ends at a green 8 m radius parking circle at local X=61 m, aligned with the Spitfire. It stays clear of the hangar wall, the X=78 vehicle lane and the gun emplacements.
+
+The plane must be grounded, upright, within the circle, below 1.5 m/s and no more than 45 m horizontally from the Spitfire for two seconds before the exit lesson unlocks. The safe dismount is also checked by the existing interaction system. Drifting out returns to taxi guidance. Only this first tutorial handover restricts exit; ordinary modes and the second emergency landing retain their existing rules. No aircraft is moved, spawned again or repaired.
+
+![Native debug view of the landing sector before the hangar apron](previews/tutorial-handover-landing.png)
+
+These tutorial-only unlit, non-colliding visual overlays are shown during return/parking and removed with the director. Configurable return settings live in TutorialDefinition alongside the existing lessons. [Handover change and exact verification](development-updates/2026-11-09-tutorial-handover.md).
 
 ## Verification and honest limits
 

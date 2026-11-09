@@ -1,0 +1,126 @@
+{
+  "source_commit": "4f9e676be7a69a1f1b1f64493836b433fbbbdaf0",
+  "date": "2026-11-09",
+  "godot_version": "4.6.3.stable.official.7d41c59c4",
+  "suites": [
+    {
+      "suite": "tutorial_checks",
+      "script": "res://tests/tutorial_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/tutorial_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 16.91,
+      "errors": [],
+      "result_lines": [
+        "TUTORIAL RESULT: 53/53 passed"
+      ],
+      "log": "tutorial_checks.log"
+    },
+    {
+      "suite": "mission_return_checks",
+      "script": "res://tests/mission_return_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/mission_return_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 21.77,
+      "errors": [],
+      "result_lines": [
+        "MISSION RETURN RESULT: 33/33 passed"
+      ],
+      "log": "mission_return_checks.log"
+    },
+    {
+      "suite": "tutorial_glide_checks",
+      "script": "res://tests/tutorial_glide_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/tutorial_glide_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 25.03,
+      "errors": [],
+      "result_lines": [
+        "TUTORIAL GLIDE RESULT: 1/1 passed touched=true minimum_speed=0.49496060609818 speed=0.02682925201952 hp=45.0 reason= phase=EXIT_DAMAGED"
+      ],
+      "log": "tutorial_glide_checks.log"
+    },
+    {
+      "suite": "pilot_recovery_checks",
+      "script": "res://tests/pilot_recovery_checks.gd",
+      "command": [
+        "godot",
+        "--headless",
+        "--path",
+        ".",
+        "--fixed-fps",
+        "120",
+        "--script",
+        "res://tests/pilot_recovery_checks.gd"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 42.97,
+      "errors": [],
+      "result_lines": [
+        "PILOT RECOVERY RESULT: 73/73 passed"
+      ],
+      "log": "pilot_recovery_checks.log"
+    }
+  ],
+  "assertions_passed": 160,
+  "web_export": "passed",
+  "native_capture": {
+    "renderer": "Compatibility Xvfb/llvmpipe",
+    "stand_to_spitfire_metres": 32.0373954772949,
+    "landing_local": [
+      0,
+      0,
+      168.4937
+    ],
+    "parking_local": [
+      61,
+      0,
+      418.4939
+    ],
+    "exit_code": 0,
+    "shutdown_diagnostics": "Two GL texture-leak diagnostics; not resolved here"
+  },
+  "limits": {
+    "parking_radius_m": 8,
+    "maximum_aircraft_to_spitfire_m": 45,
+    "maximum_parking_speed_mps": 1.5,
+    "settle_seconds": 2,
+    "insufficient_taxi_power_below": 0.15
+  },
+  "limitations": [
+    "No human-flown complete landing/taxi route",
+    "Progression checks use setup poses",
+    "No new browser flight validation or live deployment confirmation",
+    "Full 68-suite publishing manifest not rerun locally"
+  ]
+}
