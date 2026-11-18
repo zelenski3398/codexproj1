@@ -187,3 +187,12 @@ func animate(delta: float, throttle: float, gear: LandingGear, broken: bool) -> 
 		link.scale.y = wheel.distance_to(attach) / 0.5
 		var direction: Vector3 = (wheel - attach).normalized()
 		link.quaternion = Quaternion(Vector3.UP.cross(direction).normalized(), Vector3.UP.angle_to(direction))
+
+func _animate_landing_gear(_delta: float, gear: LandingGear) -> void:
+	for i in range(3):
+		wheel_roots[i].visible = gear.extended
+		struts[i].visible = gear.extended
+		var length := gear.travel[i] - gear.compression[i]
+		wheel_roots[i].position = gear.anchors[i] + Vector3.DOWN * length
+		struts[i].position = gear.anchors[i] + Vector3.DOWN * length * 0.5
+		struts[i].scale.y = length / 0.5

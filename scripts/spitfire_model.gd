@@ -7,6 +7,7 @@ var engine_factors: Dictionary = {}
 var propeller: Node3D
 var wheel_roots: Array[Node3D] = []
 var struts: Array[MeshInstance3D] = []
+var gear_mix: float = 1.0
 var gun_ports: Array[Marker3D] = []
 var green := MeshKit.material(Color("505b40"))
 var brown := MeshKit.material(Color("655442"))
@@ -232,11 +233,27 @@ func _reference_details() -> void:
 func animate(delta: float, throttle: float, gear: LandingGear, broken: bool) -> void:
 	if not broken:
 		propeller.rotation.z += delta * (3.0 + throttle * 95.0) * float(engine_factors.get(0, 1))
-	for i in range(3):
-		wheel_roots[i].visible = gear.extended
-		struts[i].visible = gear.extended
-		var length := gear.travel[i] - gear.compression[i]
-		wheel_roots[i].position = gear.anchors[i] + Vector3.DOWN * length
-		struts[i].position = gear.anchors[i] + Vector3.DOWN * length * 0.5
-		struts[i].scale.y = length / 0.5
+	_animate_landing_gear(delta, gear)
 
+func _animate_landing_gear(delta: float, gear: LandingGear) -> void:
+	# The Spitfire folds its main wheels outward into the wings.
+	_animate_retractable_gear(delta, gear, Vector3(1.25, -0.10, -1.05), 2.25, gear.anchors[2])
+
+func _animate_retractable_gear(delta: float, gear: LandingGear, main_mount: Vector3, stowed_x: float, tail_mount: Vector3) -> void:
+	gear_mix = move_toward(gear_mix, 1.0 if gear.extended else 0.0, delta * 0.65)
+	for i in range(3):
+		var anchor := gear.anchors[i]
+		var travel := gear.travel[i] - gear.compression[i]
+		var deployed := anchor + Vector3.DOWN * travel
+		var side := signf(anchor.x)
+		var stowed := Vector3(side * stowed_x, -0.15, anchor.z)
+		var wheel := wheel_roots[i]
+		wheel.position = deployed if i == 2 else stowed.lerp(deployed, gear_mix)
+		wheel.visible = i == 2 or gear_mix > 0.01
+		var mount := Vector3(side * main_mount.x, main_mount.y, main_mount.z) if i < 2 else tail_mount
+		var offset := wheel.position - mount
+		var strut := struts[i]
+		strut.visible = wheel.visible
+		strut.position = mount + offset * 0.5
+		strut.scale.y = maxf(offset.length(), 0.01) / 0.5
+		strut.quaternion = Quaternion(Vector3.UP, offset.normalized()) if offset.length_squared() > 0.000001 else Quaternion.IDENTITY
