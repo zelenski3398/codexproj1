@@ -32,6 +32,8 @@ For testing, use the existing F3 inspector to damage a selected part. H changes 
 
 ## Aircraft crash effects and Spitfire appearance
 
+The Spitfire’s main wheels now extend and retract at the Hurricane’s animation speed. They fold outward into the wings, and the tailwheel remains down. [Landing gear behaviour and checks](docs/development-updates/2026-11-18-spitfire-gear-windows.md#spitfire-landing-gear).
+
 Fatal ground impacts break the aircraft's actual model into eight simulated fragments, with an explosion, smoke and positional impact sound. Sea impacts produce a splash and a force-driven plunge; the aircraft's wheels no longer rest on the Mediterranean collision plane. Safe landings retain the existing suspension and flight controls. Existing reset/retry clears wreckage and restores the aircraft.
 
 The Spitfire has reference-inspired dark green/grey paint, pale undersides, upper-wing red/blue roundels, fuselage roundels, code letters, framed canopy, six exhausts per side, panel lines, yellow leading edges and an aerial wire. Its eight wing guns and flight tuning are unchanged. This remains an original procedural game model.
@@ -54,10 +56,10 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`4f9e676be7a69a1f1b1f64493836b433fbbbdaf0`](https://github.com/zelenski3398/codexproj1/commit/4f9e676be7a69a1f1b1f64493836b433fbbbdaf0)
+**Latest documented commit:** [`4bf92809747871d8582e424d13e437623a498218`](https://github.com/zelenski3398/codexproj1/commit/4bf92809747871d8582e424d13e437623a498218)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest tutorial landing/parking update](docs/development-updates/2026-11-09-tutorial-handover.md)
+[latest Spitfire landing gear and Windows build update](docs/development-updates/2026-11-18-spitfire-gear-windows.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -66,15 +68,25 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor 4f9e676be7a69a1f1b1f64493836b433fbbbdaf0 HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' 4f9e676be7a69a1f1b1f64493836b433fbbbdaf0..HEAD
-git diff --stat 4f9e676be7a69a1f1b1f64493836b433fbbbdaf0..HEAD
+git merge-base --is-ancestor 4bf92809747871d8582e424d13e437623a498218 HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' 4bf92809747871d8582e424d13e437623a498218..HEAD
+git diff --stat 4bf92809747871d8582e424d13e437623a498218..HEAD
 ```
 
-Append a dated, evidence-linked update and advance this SHA to the newest inspected
-source commit. The commit publishing this README is naturally outside its own
+For every project update, update this README and the relevant guides, append a
+dated, evidence-linked journal entry, and record the newest inspected source
+commit in this README and the journal state. Include verification results and
+any known limitations. The commit publishing this README is naturally outside its own
 source boundary; review it as documentation maintenance next time. Do not restart
 the original full-history reconstruction unless earlier evidence changes.
+
+## Windows download
+
+Download **First-Sortie-Windows-x64.zip** from **First Sortie for Windows (64-bit)**
+on the [GitHub Releases page](https://github.com/zelenski3398/codexproj1/releases).
+The build is currently a draft, so sign in with repository write access to see it.
+Extract the ZIP and run **First-Sortie.exe**. The portable build bundles its assets
+and targets 64-bit Windows 10 or 11 with OpenGL 3.3 support.
 
 ## Browser version and free hosting
 

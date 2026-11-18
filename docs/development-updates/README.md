@@ -4,6 +4,7 @@
 
 The original report is a frozen 50-commit audit through `588ac7b`. Later changes are recorded here with explicit commit boundaries, avoiding a repeated reconstruction of unchanged history.
 
+- [18 November 2026 — Spitfire landing gear animation and portable Windows build](2026-11-18-spitfire-gear-windows.md).
 - [9 November 2026: marked Gladiator landing sector and short-walk Spitfire handover](2026-11-09-tutorial-handover.md).
 - [8 November 2026: continuous flight school, emergency landing/recovery, AA exercise and visible aircraft controls](tutorial-flight-school.md).
 - [6 November 2026: supplied Cinematic March and continuous forward/return poster animation](2026-11-06-poster-march.md).
