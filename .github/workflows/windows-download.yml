@@ -1,0 +1,29 @@
+name: Build Windows download
+on:
+  push:
+    branches: [build/windows-4bf9280]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Godot and the Windows template
+        run: |
+          bash tools/install_godot_web.sh
+          echo /tmp/first-sortie-godot >> "$GITHUB_PATH"
+          unzip -j /tmp/first-sortie-downloads/Godot_v4.6.3-stable_export_templates.tpz templates/windows_release_x86_64.exe -d "$HOME/.local/share/godot/export_templates/4.6.3.stable"
+      - name: Export and verify package
+        run: |
+          mkdir -p builds/windows
+          godot --headless --editor --import
+          godot --headless --export-release "Windows Desktop" "$PWD/builds/windows/First-Sortie.exe"
+          cd builds/windows
+          file First-Sortie.exe | grep 'PE32+'
+          zip -q -6 First-Sortie-Windows-x64.zip First-Sortie.exe
+          unzip -t First-Sortie-Windows-x64.zip
+      - name: Attach the build to the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload windows-4bf9280 builds/windows/First-Sortie-Windows-x64.zip --repo "${{ github.repository }}"
