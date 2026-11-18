@@ -4,7 +4,6 @@ extends SpitfireModel
 var ailerons: Array[Node3D]=[]
 var elevators: Array[Node3D]=[]
 var rudder: Node3D
-var gear_mix: float=1
 var fabric: StandardMaterial3D
 func _ready() -> void:
 	reference_finish=true
@@ -122,17 +121,7 @@ func animate(delta: float,throttle: float,gear: LandingGear,broken: bool) -> voi
 	var plane: FlightAircraft=get_parent() as FlightAircraft
 	var running: bool=plane.engine_running if plane!=null else throttle>0
 	if not broken and running:propeller.rotation.z+=delta*(24+throttle*85)*float(engine_factors.get(0,1))
-	gear_mix=move_toward(gear_mix,1 if gear.extended else 0,delta*.65)
-	for i in 3:
-		var length: float=gear.travel[i]-gear.compression[i]
-		var extended: Vector3=gear.anchors[i]+Vector3.DOWN*length
-		wheel_roots[i].position=extended if i==2 else Vector3(signf(extended.x)*.65,-.15,extended.z).lerp(extended,gear_mix)
-		wheel_roots[i].visible=i==2 or gear_mix>.01
-		struts[i].visible=wheel_roots[i].visible
-		var mount: Vector3=Vector3(signf(extended.x)*2.25,-.10,-1.05) if i<2 else Vector3(0,-.10,4.65)
-		var offset: Vector3=wheel_roots[i].position-mount
-		struts[i].position=mount+offset*.5;struts[i].scale.y=maxf(offset.length(),.01)/.5
-		struts[i].quaternion=Quaternion(Vector3.UP,offset.normalized()) if offset.length_squared()>.000001 else Quaternion.IDENTITY
+	_animate_retractable_gear(delta, gear, Vector3(2.25, -0.10, -1.05), 0.65, Vector3(0.0, -0.10, 4.65))
 	if plane!=null:
 		for i in ailerons.size():ailerons[i].rotation.x=lerpf(ailerons[i].rotation.x,plane.pilot.roll*(1 if i==0 else -1)*.30*plane.components.roll_factor(plane.pilot.roll),minf(delta*9,1))
 		for elevator in elevators:elevator.rotation.x=lerpf(elevator.rotation.x,plane.pilot.pitch*.3*plane.components.elevator_factor(),minf(delta*9,1))
