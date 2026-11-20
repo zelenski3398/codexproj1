@@ -2,6 +2,7 @@ class_name MaltaWorld
 extends Node3D
 ## A single 1:1 environment. Only built on mission start; no travel triggers.
 var fields: Dictionary = {}
+var destructible_hangars: bool = false
 var trucks: Array[MilitaryTruck] = []
 var terrain: Node3D
 var terrain_appearance: MaltaTerrainAppearance
@@ -43,6 +44,7 @@ func _ready() -> void:
 	for record in MaltaGeography.data().airfields:
 		var field: MaltaAirfield = MaltaAirfield.new()
 		field.record = record
+		field.destructible_hangars = destructible_hangars
 		add_child(field)
 		fields[record.id] = field
 		var truck := MilitaryTruck.new()

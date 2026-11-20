@@ -78,3 +78,9 @@ ground crash and secondary impacts. These are not historical aircraft recordings
 Replace event_sounds slots in audio_profiles/aircraft_impacts.tres with licensed
 recordings for production. Existing penetration/cannon-like heavy-hit, water
 impact and explosion sounds remain in that same profile and capped audio pool.
+
+Raid on St Elmo (20 November 2026): raid/bomb_whistle.ogg and
+raid/bomb_impact.ogg are original synthesized gameplay effects. The seven
+raid/commander_*.ogg files are generated German speech using eSpeak NG 1.52
+(de+m3), filtered and encoded with FFmpeg. The recordings portray a fictional
+commander. No archival samples or real person's voice were used.

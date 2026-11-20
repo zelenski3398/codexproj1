@@ -5,6 +5,7 @@ const PLAYER: int = 1
 const ENEMY: int = 2
 
 static func can_damage(shooter_team: int, receiver: Object) -> bool:
+	if not is_instance_valid(receiver): return false
 	if shooter_team == NEUTRAL or not receiver.has_method("get_team_id"):
 		return true
 	var receiver_team: int = int(receiver.call("get_team_id"))

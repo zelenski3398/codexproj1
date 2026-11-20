@@ -26,6 +26,9 @@ var sliders: Dictionary = {}
 ## Temporary mix overlay, never written into the user's saved volume settings.
 var radio_owner: int = 0
 var radio_duck_db: float = 0
+var radio_music_duck_db: float = 0
+var raid_voice_volume: float = 0.85
+var raid_subtitles: bool = true
 
 func _enter_tree() -> void:
 	instance = self
@@ -47,6 +50,8 @@ func _ready() -> void:
 	if settings.load(SETTINGS_PATH) == OK:
 		for bus in volumes:
 			volumes[bus] = clampf(float(settings.get_value("volume", bus, volumes[bus])), 0, 1)
+		raid_voice_volume = clampf(float(settings.get_value("radio", "raid_voice_volume", raid_voice_volume)), 0, 1)
+		raid_subtitles = bool(settings.get_value("radio", "raid_subtitles", true))
 		muted = bool(settings.get_value("volume", "muted", false))
 	for bus in volumes:
 		_apply_volume(bus)
@@ -95,16 +100,17 @@ func set_volume(bus: String, value: float, persist: bool = true) -> void:
 		_save_settings()
 
 func _apply_volume(bus: String) -> void:
-	var attenuation: float = radio_duck_db if bus in ["Aircraft", "Guns"] else 0.0
+	var attenuation: float = radio_duck_db if bus in ["Aircraft", "Guns"] else (radio_music_duck_db if bus == "Music" else 0.0)
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index(bus), linear_to_db(maxf(float(volumes[bus]), 0.0001)) + attenuation)
 
-func begin_radio(owner: Node, attenuation_db: float) -> bool:
+func begin_radio(owner: Node, attenuation_db: float, music_attenuation_db: float = 0.0) -> bool:
 	# A single radio channel prevents overlapping mission transmissions.
 	if radio_owner != 0:
 		return false
 	radio_owner = owner.get_instance_id()
 	radio_duck_db = clampf(attenuation_db, -12, 0)
-	for bus in ["Aircraft", "Guns"]:
+	radio_music_duck_db = clampf(music_attenuation_db, -12, 0)
+	for bus in ["Aircraft", "Guns", "Music"]:
 		_apply_volume(bus)
 	return true
 
@@ -113,7 +119,8 @@ func end_radio(owner: Node) -> void:
 		return
 	radio_owner = 0
 	radio_duck_db = 0
-	for bus in ["Aircraft", "Guns"]:
+	radio_music_duck_db = 0
+	for bus in ["Aircraft", "Guns", "Music"]:
 		_apply_volume(bus)
 
 func set_muted(value: bool, persist: bool = true) -> void:
@@ -129,6 +136,8 @@ func _save_settings() -> void:
 	for bus in volumes:
 		settings.set_value("volume", bus, volumes[bus])
 	settings.set_value("volume", "muted", muted)
+	settings.set_value("radio", "raid_voice_volume", raid_voice_volume)
+	settings.set_value("radio", "raid_subtitles", raid_subtitles)
 	settings.save(SETTINGS_PATH)
 
 func _process(delta: float) -> void:
@@ -186,6 +195,20 @@ func _build_controls() -> void:
 		slider.value_changed.connect(func(value: float): set_volume(bus, value))
 		stack.add_child(slider)
 		sliders[bus] = slider
+	var voice_label := Label.new()
+	voice_label.text = "Raid commander volume"
+	stack.add_child(voice_label)
+	var voice_slider := HSlider.new()
+	voice_slider.max_value = 1
+	voice_slider.step = 0.01
+	voice_slider.value = raid_voice_volume
+	voice_slider.value_changed.connect(func(value: float): raid_voice_volume = value; _save_settings())
+	stack.add_child(voice_slider)
+	var subtitles := CheckButton.new()
+	subtitles.text = "Raid subtitles"
+	subtitles.button_pressed = raid_subtitles
+	subtitles.toggled.connect(func(value: bool): raid_subtitles = value; _save_settings())
+	stack.add_child(subtitles)
 	mute_button = CheckButton.new()
 	mute_button.text = "Mute all audio"
 	mute_button.focus_mode = Control.FOCUS_NONE

@@ -2,6 +2,7 @@ class_name MissionsMenu
 extends CanvasLayer
 signal launch_requested(kind: String)
 signal harbour_requested
+signal raid_requested
 signal aa_requested
 signal back_requested
 var mission_picker: OptionButton
@@ -38,6 +39,7 @@ func _ready() -> void:
 	mission_picker.add_item("Defend Valletta — Ta’ Qali Interception")
 	mission_picker.add_item("Under Dive-Bomber Attack — Ħal Luqa")
 	mission_picker.add_item("Faith, Hope and Charity — Harbour Interception")
+	mission_picker.add_item("Raid on St Elmo — Ju 87 Stuka")
 	mission_picker.custom_minimum_size.y=44
 	column.add_child(mission_picker)
 	mission_picker.item_selected.connect(_choose_mission)
@@ -50,6 +52,8 @@ func _ready() -> void:
 	aircraft_picker = OptionButton.new()
 	aircraft_picker.add_item("Spitfire Mk I · faster interception")
 	aircraft_picker.add_item("Sea Gladiator · slower, more challenging")
+	aircraft_picker.add_item("Ju 87 Stuka · assigned")
+	aircraft_picker.set_item_disabled(2, true)
 	aircraft_picker.custom_minimum_size.y = 44
 	column.add_child(aircraft_picker)
 	launch_button = Button.new()
@@ -81,7 +85,8 @@ func _launch() -> void:
 	if launch_button.disabled:
 		return
 	launch_button.disabled = true
-	if mission_picker.selected==2:harbour_requested.emit()
+	if mission_picker.selected==3:raid_requested.emit()
+	elif mission_picker.selected==2:harbour_requested.emit()
 	elif mission_picker.selected==1:aa_requested.emit()
 	else:launch_requested.emit("sea_gladiator" if aircraft_picker.selected == 1 else "spitfire")
 
@@ -96,6 +101,18 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 
 func _choose_mission(index: int) -> void:
+	if index == 3:
+		title.text = "Raid on St Elmo"
+		briefing.text = "Fly a Ju 87 Stuka against a marked storehouse inside Fort St Elmo. One bomb is available. An Allied Sea Gladiator will intercept."
+		guide.text = "AIRBORNE START · ENGINE RUNNING
+X release bomb · B dive brakes · F guns"
+		mission_note.text = "Fictional scenario · 2 stars for a strike · 1 star for the fighter after a miss"
+		mission_chart.home = "st_elmo"
+		aircraft_picker.select(2)
+		aircraft_picker.disabled = true
+		launch_button.text = "START RAID"
+		return
+	if aircraft_picker.selected == 2: aircraft_picker.select(0)
 	if index == 2:
 		var harbour: HarbourDefinition = preload("res://mission_definitions/harbour.tres")
 		title.text = harbour.title
