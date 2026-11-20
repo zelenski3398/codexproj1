@@ -17,9 +17,7 @@ func _ready() -> void:
 	mission.pilot.combat_enabled = true
 	mission.pilot.add_to_group("damageable_ground_pilots")
 	mission.pilot.health.depleted.connect(_died)
-	for aircraft in mission.fleet:
-		aircraft.impact_assessed.connect(_impact.bind(aircraft))
-		aircraft.components.component_hit.connect(_component_hit.bind(aircraft))
+	for aircraft in mission.fleet: track_aircraft(aircraft)
 	death_panel = PanelContainer.new()
 	death_panel.position = Vector2(440,270)
 	death_panel.custom_minimum_size = Vector2(530,180)
@@ -39,6 +37,10 @@ func _ready() -> void:
 	menu.pressed.connect(mission.session.show_selection,CONNECT_DEFERRED)
 	column.add_child(menu)
 	death_panel.hide()
+func track_aircraft(aircraft: FlightAircraft) -> void:
+	aircraft.impact_assessed.connect(_impact.bind(aircraft))
+	aircraft.components.component_hit.connect(_component_hit.bind(aircraft))
+
 func alive() -> bool: return not died and mission.pilot.health.hp > 0
 func _impact(result: Dictionary, aircraft: FlightAircraft) -> void:
 	if mission.occupied != aircraft or impact_latches.has(aircraft.get_instance_id()) or not alive(): return

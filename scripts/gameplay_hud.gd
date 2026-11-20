@@ -142,12 +142,12 @@ func controls_text() -> String:
 	var text: String=""
 	var sections: Dictionary={
 		"On Foot":[["throttle_up","Walk forward"],["throttle_down","Walk back"],["rudder_left","Walk left"],["rudder_right","Walk right"],["roll_left","Turn left"],["roll_right","Turn right"],["board","Enter / exit nearest aircraft, gun or truck (safe conditions apply)"],["battery_command","Enter / exit nearby command post"]],
-		"Aircraft":[["pitch_up","Nose up"],["pitch_down","Nose down"],["roll_left","Bank left"],["roll_right","Bank right"],["rudder_left","Left rudder"],["rudder_right","Right rudder"],["throttle_up","Increase throttle"],["throttle_down","Decrease throttle"],["engine","Start / stop engine"],["gear","Retract / extend gear; Gladiator gear is fixed"],["flaps","Toggle landing flaps (where fitted)"],["airbrakes","Toggle dive brakes (Stuka; other types unavailable unless gameplay assist enabled)"],["brake","Wheel brakes (ground only)"],["fire","Forward guns"],["bomb_release","Release bomb (Stuka)"]],
+		"Aircraft":[["pitch_up","Nose up"],["pitch_down","Nose down"],["roll_left","Bank left"],["roll_right","Bank right"],["rudder_left","Left rudder"],["rudder_right","Right rudder"],["throttle_up","Increase throttle"],["throttle_down","Decrease throttle"],["engine","Start / stop engine"],["gear","Retract / extend gear; Gladiator gear is fixed"],["flaps","Landing flaps. Bf 109: hold to extend, release to hold, Shift+Q to retract"],["airbrakes","Toggle dive brakes (Stuka; other types unavailable unless gameplay assist enabled)"],["brake","Wheel brakes (ground only)"],["fire","Forward guns"],["bomb_release","Release bomb (Stuka)"],["radiator_open","Open Emil coolant shutters"],["radiator_close","Close Emil coolant shutters"]],
 		"AA Guns":[["aa_fire","Fire: heavy single shot / 5 s reload; Bofors automatic / 0.5 s reload"],["aa_zoom","Gun-sight zoom; at the heavy command post, designate a target / approximate area (aim estimate)"],["brake","Fine aim"],["board","Mount / dismount gun"],["throttle_up","Heavy gun: increase timed fuze"],["throttle_down","Heavy gun: decrease timed fuze"],["aa_battery_toggle","Bofors post: toggle battery aim assist; St Elmo gun: gunner relay"],["battery_command","Operate / exit predictor or heavy command station"]],
 		"Vehicles":[["throttle_up","Accelerate"],["throttle_down","Brake / reverse"],["rudder_left","Steer left"],["rudder_right","Steer right"],["brake","Brake"],["board","Enter / exit at low speed; recovery truck returns to base"]],
 		"Radio":[["wingman_status","Faith, Hope and Charity: request wingman status; unavailable in other modes"]],
 		"Recovery":[["call_transport","Request transport after aircraft loss or away from base, if pilot survives"]],
-		"General":[["navigation_map","Navigation / on-foot travel; map does not pause"],["confirm_encounter","Spawn random enemy / confirm next encounter or Survival stage"],["pause","Pause / resume (closes Help first)"],["controls_help","Toggle this window; pauses simulation and mission timers"],["reset","Full session restart"],["hud_debug","Toggle HUD diagnostics"],["debug_components","Developer component inspection, when enabled"],["debug_terrain_heatmap","Developer terrain heatmap"],["debug_damage","Developer damage test"]]}
+		"General":[["navigation_map","Navigation / on-foot travel; map does not pause"],["confirm_encounter","Add a random enemy in Malta Free Roam / confirm a Survival stage"],["aircraft_spawner","Open Free Roam aircraft spawning and in-flight transfers"],["pause","Pause / resume (closes Help first)"],["controls_help","Toggle this window; pauses simulation and mission timers"],["reset","Full session restart"],["hud_debug","Toggle HUD diagnostics"],["debug_components","Developer component inspection, when enabled"],["debug_terrain_heatmap","Developer terrain heatmap"],["debug_damage","Developer damage test"]]}
 	for heading in sections:
 		text+="[color=#e4bf75][b]"+heading+"[/b][/color]\n"
 		for entry in sections[heading]:text+="[b]"+binding(entry[0])+"[/b] — "+entry[1]+"\n"
@@ -200,7 +200,7 @@ func _process(delta: float) -> void:
 	var playing: bool=not get_tree().paused and alive
 	confirm_action.visible=playing and session.encounters.awaiting_confirmation and not session.encounters.ended and not session.encounters.complete
 	confirm_action.disabled=session.encounters.spawning
-	confirm_action.text=("Confirm next stage · " if session.game_mode=="survival" else ("Spawn random enemy · " if session.encounters.initial_spawn_pending else "Spawn next enemy · "))+binding("confirm_encounter")
+	confirm_action.text=("Confirm next stage · " if session.game_mode=="survival" else ("Spawn random enemy · " if session.encounters.initial_spawn_pending else "Spawn another enemy · "))+binding("confirm_encounter")
 	pause_panel.visible=get_tree().paused and not help_open
 	
 	if get_tree().paused:Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
@@ -216,6 +216,10 @@ func _process(delta: float) -> void:
 		parts.grid.columns=6 if get_viewport().get_visible_rect().size.x>=1100 else 4
 	instruments.visible=is_instance_valid(player)
 	if instruments.visible:instruments.text="%d km/h    AGL %d m    Power %d%%    Gear %s    Fuel %d%%"%[roundi(player.airspeed*3.6),roundi(player.altitude),roundi(player.pilot.throttle*100),"down" if player.gear.extended else "up",roundi(player.components.fuel_remaining*100)] + "    " + player.devices.status()
+	if player is Bf109:
+		instruments.text += "    MG %d · Cannon %d" % [_rounds_left(player.guns), _rounds_left(player.cannon)]
+		if player.variant == Bf109.EMIL:
+			instruments.text += "    Radiator %d%%" % roundi(player.radiator * 100)
 	if player is PlayerStuka: instruments.text += "\n" + player.bomb_status()
 	if is_instance_valid(mission) and mission.interaction.occupied_gun!=null:
 		var gun: BritishAAGun=mission.interaction.occupied_gun
@@ -298,6 +302,11 @@ func update_basic_controls() -> void:
 	tracker.offset_left=-minf(360,get_viewport().get_visible_rect().size.x-40)
 	notification.offset_top=controls_panel.position.y+controls_panel.size.y+15
 	debug.position.y=controls_panel.position.y+controls_panel.size.y+40
+
+func _rounds_left(battery: WingGuns) -> int:
+	var total := 0
+	for amount in battery.remaining_by_port: total += amount
+	return total
 
 func update_objective() -> void:
 	var current: String="";var details: String="";var heading: String=""

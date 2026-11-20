@@ -11,6 +11,7 @@ extends Node
 @export var fatal_sink_speed: float = 5.5
 var extended: bool = true
 var retractable: bool = true
+var fixed_tailwheel: bool = false
 var contact_count: int = 0
 var compression: Array[float] = [0.0, 0.0, 0.0]
 var last_notice: String = ""
@@ -49,7 +50,7 @@ func integrate(state: PhysicsDirectBodyState3D, aircraft: RigidBody3D, brakes: b
 		compression[i] = 0.0
 		if damage_system != null and damage_system.integrity_ratio(&"landing_gear") <= damage_system.profile.gear_collapse_ratio:
 			continue
-		if not extended:
+		if not extended and not (fixed_tailwheel and i == 2):
 			continue
 		var offset := basis * anchors[i]
 		var origin := state.transform.origin + offset

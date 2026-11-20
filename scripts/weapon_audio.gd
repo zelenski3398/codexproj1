@@ -18,7 +18,7 @@ func _exit_tree() -> void:
 func _ready() -> void:
 	player = AudioStreamPlayer3D.new()
 	player.name = "GunBatterySound"
-	player.stream = GameAudioMixer.instance.loop_stream(GameAudioMixer.instance.gun_stream(guns.aircraft))
+	player.stream = GameAudioMixer.instance.loop_stream(guns.firing_sound if guns.firing_sound != null else GameAudioMixer.instance.gun_stream(guns.aircraft))
 	player.bus = "Guns"
 	player.playback_type = AudioServer.PLAYBACK_TYPE_SAMPLE if OS.has_feature("web") else AudioServer.PLAYBACK_TYPE_STREAM
 	player.volume_db = -80

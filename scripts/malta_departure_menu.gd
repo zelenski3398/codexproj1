@@ -12,6 +12,8 @@ var depart_button: Button
 var fighter_picker: OptionButton
 var field_picker: OptionButton
 var active: bool = true
+var german_airborne := true
+var german_spawn: CheckButton
 
 func _ready() -> void:
 	layer = 25
@@ -50,12 +52,17 @@ func _ready() -> void:
 	mode_picker.select(1 if selected_mode == "survival" else 0)
 	mode_picker.item_selected.connect(func(index: int): selected_mode = "survival" if index == 1 else "encounter")
 	left.add_child(mode_picker)
+	german_spawn = CheckButton.new()
+	german_spawn.text = "Airborne start"
+	german_spawn.button_pressed = german_airborne
+	german_spawn.toggled.connect(func(value: bool): german_airborne = value; _choose_kind(fighter_picker.selected))
+	left.add_child(german_spawn)
 	depart_button = Button.new()
 	depart_button.text = "DEPART · SPAWN BESIDE AIRCRAFT"
 	depart_button.custom_minimum_size.y = 58
 	depart_button.pressed.connect(depart)
 	left.add_child(depart_button)
-	left.add_child(_label("E  Board / leave · I  Engine\nWASD  Walk · Arrows  Turn on foot\nM  Navigation · C  Spawn / confirm fight\nR  Full mission restart\n\nAll airfields share one persistent world.\nAircraft damage and fuel persist.\n\nApproximate historical airfield positions;\nprototype runway layouts.", 16))
+	left.add_child(_label("E  Board / leave · I  Engine\nWASD  Walk · Arrows  Turn on foot\nM  Navigation · C  Spawn / confirm fight\nP  Spawn aircraft / take control in flight\nR  Full session restart", 16))
 	var back: Button = Button.new()
 	back.text = "BACK TO COUNTRYSIDE / AIRCRAFT"
 	back.pressed.connect(func(): back_requested.emit())
@@ -78,7 +85,8 @@ func _label(text: String, size: int) -> Label:
 func select_field(id: String) -> void:
 	if StElmoLocations.is_fort(id):
 		selected_field=id
-		if selected_kind == "stuka": selected_kind = "spitfire"
+		if selected_kind == "stuka" or selected_kind in Bf109.KINDS: selected_kind = "spitfire"
+		german_spawn.hide()
 		mode_picker.disabled = false
 		chart.home="st_elmo"
 		for i in range(StElmoLocations.options().size()):
@@ -103,20 +111,31 @@ func select_field(id: String) -> void:
 	for kind in AlliedAircraft.roster(record):
 		fighter_picker.add_item(AlliedAircraft.title(kind))
 	fighter_picker.add_item("Ju 87 Stuka · airborne bombing free roam")
-	var selected_index: int = fighter_picker.item_count - 1 if selected_kind == "stuka" else AlliedAircraft.roster(record).find(selected_kind)
+	for kind in Bf109.KINDS:
+		fighter_picker.add_item("German · " + Bf109.title(kind))
+	var selected_index := _kinds().find(selected_kind)
 	fighter_picker.select(maxi(selected_index, 0))
-	info.text = "%s\nDeparture strip: %d m\nParked aircraft start on foot.\nThe Stuka starts airborne offshore." % [record.name, roundi(float(record.length))]
 	_choose_kind(fighter_picker.selected)
 
+func _kinds() -> Array:
+	return AlliedAircraft.roster(MaltaGeography.field(selected_field)) + ["stuka"] + Bf109.KINDS
+
 func _choose_kind(index: int) -> void:
-	if StElmoLocations.is_fort(selected_field):return
-	var roster := AlliedAircraft.roster(MaltaGeography.field(selected_field))
-	selected_kind = "stuka" if index == roster.size() else roster[index]
-	mode_picker.disabled = selected_kind == "stuka"
-	if selected_kind == "stuka":
+	if StElmoLocations.is_fort(selected_field): return
+	selected_kind = _kinds()[index]
+	var german := selected_kind in Bf109.KINDS
+	german_spawn.visible = german
+	mode_picker.disabled = german or selected_kind == "stuka"
+	if mode_picker.disabled:
 		selected_mode = "encounter"
 		mode_picker.select(0)
-	depart_button.text = "START AIRBORNE · STUKA" if selected_kind == "stuka" else "DEPART · SPAWN BESIDE AIRCRAFT"
+	var record := MaltaGeography.field(selected_field)
+	if german:
+		info.text = Bf109.title(selected_kind) + ("\nRounded wing tips · hub cannon · automatic radiator" if selected_kind == Bf109.FRIEDRICH else "\nBraced tail · wing cannons · manual radiator")
+		info.text += "\nHold Q for flaps · Shift+Q retracts"
+	else:
+		info.text = "%s · %d m runway\n%s" % [record.name, roundi(float(record.length)), "Stuka starts airborne offshore." if selected_kind == "stuka" else "Start on foot beside the aircraft."]
+	depart_button.text = "START AIRBORNE" if (german and german_airborne) or selected_kind == "stuka" else "DEPART · SPAWN BESIDE AIRCRAFT"
 
 func depart() -> void:
 	if not active:

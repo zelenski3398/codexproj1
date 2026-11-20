@@ -120,7 +120,7 @@ func run() -> void:
 	game.return_to_missions()
 	game.show_selection(false)
 	game.show_malta_selection()
-	game.malta_menu._choose_kind(game.malta_menu.fighter_picker.item_count - 1)
+	game.malta_menu._choose_kind(game.malta_menu._kinds().find("stuka"))
 	game.malta_menu.depart()
 	await frames(10)
 	raid = game.stuka_sortie

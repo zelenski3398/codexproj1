@@ -15,6 +15,7 @@ var malta_mission: MaltaMission
 var home_airfield: String = "ta_qali"
 var departure_spawn: String = "ta_qali"
 var departure_kind: String = "spitfire"
+var departure_airborne: bool = false
 var aircraft: FlightAircraft
 var chase: ChaseCamera
 var hud: FlightHUD
@@ -134,7 +135,7 @@ func show_selection(replay_poster: bool = true) -> void:
 	selector.chosen.connect(start_free_roam, CONNECT_DEFERRED)
 	selector.test_requested.connect(start_test_departure, CONNECT_DEFERRED)
 	add_child(selector)
-	selector.select("spitfire" if selected_aircraft == "stuka" else selected_aircraft)
+	selector.select("spitfire" if selected_aircraft == "stuka" or selected_aircraft in Bf109.KINDS else selected_aircraft)
 	selector.malta_requested.connect(show_malta_selection, CONNECT_DEFERRED)
 	selector.missions_requested.connect(show_missions, CONNECT_DEFERRED)
 	if replay_poster and DisplayServer.get_name()!="headless" and "--skip-intro" not in OS.get_cmdline_user_args():show_intro()
@@ -320,9 +321,12 @@ func show_malta_selection() -> void:
 	malta_menu = MaltaDepartureMenu.new()
 	malta_menu.selected_field = departure_spawn
 	malta_menu.selected_kind = selected_aircraft
-	malta_menu.departed.connect(start_malta, CONNECT_DEFERRED)
+	malta_menu.departed.connect(_start_malta_from_departure, CONNECT_DEFERRED)
 	malta_menu.back_requested.connect(_return_from_malta_options, CONNECT_DEFERRED)
 	add_child(malta_menu)
+
+func _start_malta_from_departure(field_id: String, kind: String, mode: String) -> void:
+	start_malta(field_id, kind, mode, false, is_instance_valid(malta_menu) and malta_menu.german_airborne)
 
 func _return_from_malta_options() -> void:
 	if is_instance_valid(malta_menu):
@@ -349,7 +353,7 @@ func _clear_malta() -> void:
 		add_child(field)
 	environment_id = "countryside"
 
-func start_malta(field_id: String, kind: String, selected_mode: String = "encounter", test_environment: bool = false) -> void:
+func start_malta(field_id: String, kind: String, selected_mode: String = "encounter", test_environment: bool = false, german_airborne: bool = false) -> void:
 	_dismiss_intro()
 	var spawn_id: String=field_id
 	if StElmoLocations.is_fort(field_id):
@@ -357,9 +361,10 @@ func start_malta(field_id: String, kind: String, selected_mode: String = "encoun
 		field_id="luqa"
 	if selected_mode not in ["encounter", "survival", "interception", "aa_defence", "harbour", "tutorial", "st_elmo_raid"]:
 		return
+	if kind in Bf109.KINDS and (test_environment or selected_mode != "encounter" or StElmoLocations.is_fort(spawn_id)): return
 	if kind == "stuka" and (test_environment or selected_mode not in ["encounter", "st_elmo_raid"]):
 		return
-	if MaltaGeography.field(field_id).is_empty() or (kind not in AlliedAircraft.KINDS and kind != "stuka"):
+	if MaltaGeography.field(field_id).is_empty() or (kind not in AlliedAircraft.KINDS and kind != "stuka" and kind not in Bf109.KINDS):
 		return
 	if is_instance_valid(malta_mission):
 		return
@@ -385,6 +390,7 @@ func start_malta(field_id: String, kind: String, selected_mode: String = "encoun
 	departure_spawn = spawn_id
 	selected_aircraft = kind
 	departure_kind = kind
+	departure_airborne = german_airborne
 	field = CountrysideWorld.new() if test_environment else MaltaWorld.new()
 	if not test_environment: field.destructible_hangars = kind == "stuka"
 	add_child(field)
@@ -396,6 +402,12 @@ func start_malta(field_id: String, kind: String, selected_mode: String = "encoun
 	malta_mission.initial_kind = kind
 	add_child(malta_mission)
 	aircraft = malta_mission.initial_aircraft
+	if kind in Bf109.KINDS:
+		_spawn_enemy()
+		var fighter := malta_mission.free_roam_aircraft.spawn(kind, german_airborne, true)
+		if is_instance_valid(fighter): aircraft = fighter
+		get_viewport().gui_release_focus()
+		return
 	if kind == "stuka":
 		if game_mode == "st_elmo_raid":
 			session_number += 1
@@ -450,7 +462,7 @@ func attach_malta_player(player: FlightAircraft) -> void:
 			remove_child(node)
 			node.queue_free()
 	aircraft = player
-	selected_aircraft = "stuka" if player is PlayerStuka else AlliedAircraft.kind_of(player)
+	selected_aircraft = player.variant if player is Bf109 else ("stuka" if player is PlayerStuka else AlliedAircraft.kind_of(player))
 	chase = ChaseCamera.new()
 	chase.aircraft = player
 	add_child(chase)
@@ -475,8 +487,9 @@ func restart_malta() -> void:
 	var saved_home: String = departure_spawn
 	var saved_kind: String = departure_kind
 	var saved_mode: String = game_mode
+	var saved_airborne := departure_airborne
 	show_selection(false)
-	start_malta(saved_home, saved_kind, saved_mode, saved_test)
+	start_malta(saved_home, saved_kind, saved_mode, saved_test, saved_airborne)
 
 func show_missions() -> void:
 	_dismiss_intro()

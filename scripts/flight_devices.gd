@@ -11,6 +11,9 @@ var notice_time: float = 0
 var surfaces: Array[Node3D] = []
 var brake_surfaces: Array[Node3D] = []
 
+func uses_progressive_flaps() -> bool:
+	return false
+
 func _ready() -> void:
 	for side in [-1.0, 1.0]:
 		if aircraft.flaps_available:

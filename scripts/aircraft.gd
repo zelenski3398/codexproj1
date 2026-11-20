@@ -55,6 +55,11 @@ signal impact_assessed(result: Dictionary)
 @export var input_enabled: bool = true
 @export var fuel_consumption_rate: float = 0.0
 
+var slat_stall_bonus: float = 0.0
+var slat_lift_bonus: float = 0.0
+var slat_roll_moment: float = 0.0
+var cooling_drag: float = 0.0
+var flap_pitch_moment: float = 0.0
 var devices: FlightDevices
 var pilot: PilotInput
 var gear: LandingGear
@@ -127,7 +132,7 @@ func _ready() -> void:
 	components.profile = damage_profile if damage_profile != null else default_damage_profile()
 	add_child(components)
 	gear.damage_system = components
-	devices = FlightDevices.new()
+	devices = create_flight_devices()
 	devices.name = "FlightDevices"
 	devices.aircraft = self
 	add_child(devices)
@@ -139,6 +144,7 @@ func _ready() -> void:
 	guns = WingGuns.new()
 	guns.aircraft = self
 	guns.name = "EightWingGuns"
+	configure_gun_battery(guns)
 	add_child(guns)
 	aircraft_audio = AircraftAudio.new()
 	aircraft_audio.name = "AircraftAudio"
@@ -170,6 +176,12 @@ func _ready() -> void:
 func default_damage_profile() -> AircraftDamageProfile:
 	return preload("res://damage_profiles/spitfire.tres")
 
+func create_flight_devices() -> FlightDevices:
+	return FlightDevices.new()
+
+func advance_airframe(_dt: float, _local_velocity: Vector3, _local_spin: Vector3) -> void:
+	pass
+
 func create_model() -> SpitfireModel:
 	return SpitfireModel.new()
 
@@ -178,7 +190,7 @@ func _input(event: InputEvent) -> void:
 		return
 	# HUD owns reset/pause. Discrete commands ignore OS key-repeat.
 	if not is_destroyed and not is_crashed and not event.is_echo():
-		if event.is_action_pressed("flaps"):
+		if event.is_action_pressed("flaps") and not devices.uses_progressive_flaps():
 			devices.command_flaps(not devices.flap_target)
 			get_viewport().set_input_as_handled()
 			return
@@ -209,9 +221,16 @@ func _destroy() -> void:
 	damage_effects.emitting = false
 	pilot.reset_commands()
 	guns.reset(false) # Clear rounds/flashes, retain this life's combat telemetry.
+	clear_secondary_weapons(false)
 	aircraft_audio.clear()
 	impact_effects.on_destroyed()
 	destroyed.emit()
+
+func configure_gun_battery(_battery: WingGuns) -> void:
+	pass
+
+func clear_secondary_weapons(_restore: bool) -> void:
+	pass
 
 func request_reset() -> void:
 	pending_reset_pose = Transform3D(Basis(Vector3.RIGHT, 0.117), reset_position)
@@ -236,6 +255,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		devices.reset()
 		health.reset()
 		guns.reset()
+		clear_secondary_weapons(true)
 		damage_effects.clear()
 		crash_reason = ""
 		stalled = false
@@ -263,6 +283,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	var local_velocity := basis.transposed() * air_velocity
 	var forward_speed := maxf(-local_velocity.z, 0.0)
 	angle_of_attack = atan2(-local_velocity.y, maxf(forward_speed, 0.1))
+	advance_airframe(dt, local_velocity, basis.transposed() * state.angular_velocity)
 	_update_altitude(state.transform.origin)
 	var sink := gear.integrate(state, self, pilot.brakes or is_crashed or is_destroyed)
 	if gear.contact_count == 0:
@@ -298,15 +319,15 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		state.apply_torque(-state.angular_velocity * 20000.0)
 		return
 	var q := 0.5 * air_density * forward_speed * forward_speed
-	var alpha_limit := deg_to_rad(stall_angle_degrees)
+	var alpha_limit := deg_to_rad(stall_angle_degrees) + slat_stall_bonus
 	var alpha_abs := absf(angle_of_attack)
 	var stall_blend := smoothstep(alpha_limit, alpha_limit + deg_to_rad(14.0), alpha_abs)
 	var flap_lift := devices.flaps * flap_lift_coefficient
-	var cl := clampf(lift_at_zero_alpha + lift_slope * angle_of_attack + flap_lift, -1.5, 1.8 + flap_lift)
+	var cl := clampf(lift_at_zero_alpha + lift_slope * angle_of_attack + flap_lift + slat_lift_bonus, -1.5, 1.8 + flap_lift + slat_lift_bonus)
 	# This forgiving stall fades lift rather than imposing a scripted fall.
 	# Residual lift and pitch authority allow recovery by lowering the nose.
 	cl *= lerpf(1.0, 0.22, stall_blend)
-	stalled = gear.contact_count == 0 and (airspeed < stall_speed / sqrt(maxf(components.lift_factor(), 0.1) * (1.0 + devices.flaps * flap_lift_coefficient / 1.8)) or alpha_abs > alpha_limit)
+	stalled = gear.contact_count == 0 and (airspeed < stall_speed / sqrt(maxf(components.lift_factor(), 0.1) * (1.0 + (devices.flaps * flap_lift_coefficient + slat_lift_bonus) / 1.8)) or alpha_abs > alpha_limit)
 	var direction := air_velocity.normalized() if airspeed > 0.1 else -basis.z
 	var lift_direction := basis.y.slide(direction).normalized()
 	# Healthy factors are exactly 1/0, preserving the original flight tuning.
@@ -317,7 +338,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	# propeller damage term takes over. Do not stack two full prop penalties.
 	var prop_drag: float = idle_propeller_drag * components.power_factor() * pow(1.0 - pilot.throttle if engine_running else 1.0, 2)
 	var device_drag := devices.flaps * flap_drag_coefficient + devices.airbrakes * airbrake_drag_coefficient
-	var drag_coefficient := parasite_drag + induced_drag * cl * cl + stall_blend * 0.28 + components.additional_drag() + device_drag + prop_drag
+	var drag_coefficient := parasite_drag + induced_drag * cl * cl + stall_blend * 0.28 + components.additional_drag() + device_drag + prop_drag + cooling_drag
 	if gear.extended:
 		drag_coefficient += gear_drag_coefficient
 	state.apply_central_force(-direction * 0.5 * air_density * airspeed * airspeed * wing_area * drag_coefficient)
@@ -336,6 +357,9 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		# Dead engine/controls, but passive lift, drag, gravity and angular
 		# stability still act. Do not freeze or scripted-translate the wreck.
 		torque = Vector3.ZERO
+	if not is_destroyed:
+		torque.x += flap_pitch_moment * devices.flaps * authority
+		torque.z += slat_roll_moment * authority
 	# Mild weathercock stability and nose-down stall tendency, not an autopilot.
 	if gear.contact_count == 0:
 		torque.x += -angle_of_attack * 5500.0 * authority * components.elevator_factor() - stall_blend * 8000.0

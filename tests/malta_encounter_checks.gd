@@ -41,14 +41,20 @@ func _run() -> void:
 	player.guns.pool.spawn(position + Vector3.UP * 100, Vector3.RIGHT, 20, 1, player.get_rid(), false, player.team_id)
 	director.random.seed = 1942
 	key_c()
-	for i in range(10): director.confirm_button.pressed.emit()
+
 	await frames(4)
-	check(director.active.size() == 1 and director.stage == 1 and not director.initial_spawn_pending, "C plus button spam creates exactly one first encounter")
+	check(director.active.size() == 1 and director.stage == 1 and not director.initial_spawn_pending, "One deliberate C press creates one first encounter")
 	check(director.free_roam_enemy_types.has(session.enemy.aircraft_kind), "Spawned hostile belongs to requested four-aircraft roster")
 	check(player.get_instance_id() == player_id and mission.world.get_instance_id() == world_id and player.global_position == position and player.linear_velocity == velocity, "Spawning preserves player/world identity, position and velocity")
 	check(player.health.hp == 77 and player.components.integrity[&"engine"] == 75 and is_equal_approx(player.components.fuel_remaining, .64) and player.engine_running and is_equal_approx(player.pilot.throttle, .57), "Spawning preserves health, mechanical damage, fuel, engine and throttle")
 	check(player.guns.pool.active.size() == 1 and not paused, "Spawning preserves in-flight bullets without pausing controls")
-	retire_enemy()
+	director.confirm_button.pressed.emit()
+	director.confirm_button.pressed.emit()
+	await frames(4)
+	check(director.active.size() == 3 and director.active.has(session.enemy), "Two more spawn presses preserve the existing enemy and add exactly two aircraft")
+	for foe in director.active.duplicate():
+		foe.freeze = true
+		foe.take_damage(1000)
 	await frames(5)
 	check(director.active.is_empty() and director.awaiting_confirmation, "A kill waits for another command without automatic replacement")
 	var original_roster: Array[String] = director.free_roam_enemy_types.duplicate()

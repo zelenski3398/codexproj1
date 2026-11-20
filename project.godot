@@ -19,6 +19,19 @@ window/stretch/mode="canvas_items"
 
 [input]
 
+aircraft_spawner={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":80), Object(InputEventKey,"keycode":80)]
+}
+radiator_open={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":76), Object(InputEventKey,"keycode":76)]
+}
+radiator_close={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":74), Object(InputEventKey,"keycode":74)]
+}
+
 bomb_release={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"physical_keycode":88), Object(InputEventKey,"keycode":88)]

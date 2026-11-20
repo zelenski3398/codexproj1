@@ -20,6 +20,7 @@ var recovery: TransportRecovery
 var interaction: AirfieldInteraction
 var last_abandoned: FlightAircraft
 var initial_aircraft: FlightAircraft
+var free_roam_aircraft: FreeRoamAircraft
 var canvas: CanvasLayer
 var status: Label
 var chart_panel: PanelContainer
@@ -82,6 +83,10 @@ func _ready() -> void:
 	return_flow=MissionReturn.new()
 	return_flow.mission=self
 	add_child(return_flow)
+	if session.game_mode == "encounter" and session.environment_id == "malta":
+		free_roam_aircraft = FreeRoamAircraft.new()
+		free_roam_aircraft.mission = self
+		add_child(free_roam_aircraft)
 	set_process_input(true)
 
 func start_stuka(reserves: bool) -> PlayerStuka:
@@ -251,6 +256,7 @@ func board_aircraft(aircraft: FlightAircraft) -> bool:
 	aircraft.seated_pilot.visible = true
 	aircraft.pilot.reset_commands()
 	aircraft.pilot.automated = false
+	if is_instance_valid(free_roam_aircraft): free_roam_aircraft.stop_standby(aircraft)
 	session.attach_malta_player(aircraft)
 	session.encounters.set_target(aircraft)
 	_message("I starts engine · W sets throttle · taxi onto the runway")

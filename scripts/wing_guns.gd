@@ -13,6 +13,9 @@ signal cleared
 @export var pool_capacity: int = 384
 ## Alternative mount reuses the same fire timing, flashes and swept projectiles.
 ## Empty ports retain the aircraft's forward guns and existing player input.
+@export var rounds_per_port: int = -1
+var remaining_by_port: Array[int] = []
+var firing_sound: AudioStreamOggVorbis
 var firing_ports: Array[Marker3D] = []
 var externally_controlled: bool = false
 var external_fire: bool = false
@@ -41,6 +44,8 @@ func _ready() -> void:
 	add_child(pool)
 	if firing_ports.is_empty():
 		firing_ports.assign(aircraft.model.gun_ports)
+	remaining_by_port.resize(firing_ports.size())
+	remaining_by_port.fill(rounds_per_port)
 	var mat: StandardMaterial3D = MeshKit.material(Color("ffe0a0"))
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	for port in firing_ports:
@@ -90,6 +95,7 @@ func _fire_salvo() -> void:
 	var emitted: int = 0
 	for i in range(firing_ports.size()):
 		var port: Marker3D = firing_ports[i]
+		if remaining_by_port[i] == 0: continue
 		# Fixed wing guns leave with their wing. Flexible defensive mounts and
 		# fuselage/nose guns keep their own existing control and clearance rules.
 		if port in aircraft.model.gun_ports:
@@ -113,8 +119,9 @@ func _fire_salvo() -> void:
 		var spawned: bool = pool.spawn(port.global_position, velocity, bullet_lifetime, bullet_damage, aircraft.get_rid(), (salvo_count + i) % maxi(tracer_every, 1) == 0, aircraft.team_id, distance)
 		if spawned:
 			emitted += 1
-		flash_times[i] = 0.035
-		flashes[i].visible = true
+			if remaining_by_port[i] > 0: remaining_by_port[i] -= 1
+			flash_times[i] = 0.035
+			flashes[i].visible = true
 	salvo_count += 1
 	if emitted > 0:
 		salvo_fired.emit(emitted)
@@ -122,6 +129,7 @@ func _fire_salvo() -> void:
 func reset(reset_statistics: bool = true) -> void:
 	cleared.emit()
 	pool.clear(reset_statistics)
+	if reset_statistics: remaining_by_port.fill(rounds_per_port)
 	rng.seed = spread_seed
 	use_assisted_aim = false
 	external_fire = false

@@ -132,12 +132,30 @@ func pilot_died() -> void:
 	spawning=false
 
 func confirm() -> void:
+	if is_manual_free_roam():
+		if not ended and not complete and _player_live() and not get_tree().paused:
+			call_deferred("_spawn_free_roam_enemy", generation)
+		return
 	if not awaiting_confirmation or spawning or ended or complete or not _player_live() or get_tree().paused:
 		return
 	# Latch BEFORE deferral. Button spam/key repeat cannot queue another batch.
 	awaiting_confirmation = false
 	spawning = true
 	call_deferred("_confirmed_spawn", generation)
+
+func _spawn_free_roam_enemy(token: int) -> void:
+	if token != generation or ended or complete or not _player_live() or get_tree().paused: return
+	var point := _safe_position(active.size(), [])
+	if not point.is_finite():
+		session.malta_mission._message("No safe enemy spawn available")
+		return
+	var first := initial_spawn_pending
+	initial_spawn_pending = false
+	if not first: stage += 1
+	var foe: EnemyAircraft = session.create_encounter_enemy(point, false, _enemy_kind(0))
+	track_enemy(foe)
+	session.encounter_tracking_changed()
+	set_target(session.malta_mission.occupied)
 
 func _confirmed_spawn(token: int) -> void:
 	if token != generation or ended or complete or not _player_live():
