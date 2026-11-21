@@ -131,13 +131,13 @@ func _run() -> void:
 	_check(enemy.health.hp == 100 and not enemy.is_destroyed, "Moving rear fire cannot damage the Stuka itself")
 
 	await _fixture(Vector3(50, 35, 250))
-	enemy.components.apply_damage(&"cockpit", 40)
+	enemy.components.apply_damage(enemy.rear_gunner.crew_component, 60)
 	await _frames(120)
-	_check(not enemy.is_destroyed and enemy.rear_gunner.status == "CREW DISABLED" and enemy.rear_gunner.guns.pool.total_spawned == 0, "Shared cockpit failure disables the gunner before hull destruction")
+	_check(not enemy.is_destroyed and enemy.rear_gunner.status == "CREW DISABLED" and enemy.rear_gunner.guns.pool.total_spawned == 0, "Rear crew failure disables the gunner before hull destruction")
 	enemy.components.reset()
 	enemy.health.heal(100)
 	await _frames(120)
-	_check(enemy.rear_gunner.guns.pool.total_spawned > 0, "Live cockpit repair restores rear-gunner operation")
+	_check(enemy.rear_gunner.guns.pool.total_spawned > 0, "Live rear crew repair restores rear-gunner operation")
 	var rounds: int = enemy.rear_gunner.guns.pool.total_spawned
 	enemy.take_damage(100)
 	await _frames(120)

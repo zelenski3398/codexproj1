@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "3229b03b2d038e9c54274c4fcc4884cf01583235",
-  "last_documented_commit": "4f9e676be7a69a1f1b1f64493836b433fbbbdaf0",
-  "update_document": "2026-11-09-tutorial-handover.md",
-  "review_range": "8a68e0c8d9cc1290d7f19f83763b07573f6dd1eb..4f9e676be7a69a1f1b1f64493836b433fbbbdaf0",
-  "date": "2026-11-09",
+  "previous_documentation_publication": "040e3fb3faca59f1f2654e275632066d1f960956",
+  "last_documented_commit": "b964ed125e57b93d944ea2bf54b6e5dc422d162c",
+  "update_document": "2026-11-20-st-elmo-raid.md",
+  "review_range": "4bf92809747871d8582e424d13e437623a498218..b964ed125e57b93d944ea2bf54b6e5dc422d162c",
+  "date": "2026-11-20",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }

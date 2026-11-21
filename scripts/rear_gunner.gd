@@ -25,7 +25,9 @@ extends Node
 @export var spread_degrees: float = 0.15
 var mount_model: Node3D
 @export var crew_component: StringName = &"cockpit"
-var aircraft: EnemyAircraft
+var aircraft: FlightAircraft
+var player_target: FlightAircraft
+@export var maximum_distance: float = INF
 var guns: WingGuns
 var yaw: float = 0
 var elevation: float = deg_to_rad(12)
@@ -66,6 +68,9 @@ var _wobble_goal: Vector2 = Vector2.ZERO
 var _wobble_clock: float = 0
 var _profile: GunnerSkillProfile
 
+func _target() -> FlightAircraft:
+	return aircraft.target if aircraft is EnemyAircraft else player_target
+
 func skill_profile() -> GunnerSkillProfile:
 	if skill_override != null:
 		return skill_override
@@ -94,7 +99,7 @@ func _ready() -> void:
 	guns.convergence_distance = 0
 	guns.pool_capacity = 128
 	guns.shot_clearance = Callable(self, "shot_has_clearance")
-	guns.telemetry_target = aircraft.target
+	guns.telemetry_target = _target()
 	add_child(guns)
 	guns.pool.tracer_material.albedo_color = Color("ff8050")
 	reset()
@@ -165,18 +170,21 @@ func _physics_process(delta: float) -> void:
 	if aircraft.components.integrity_ratio(crew_component) <= 0:
 		status = "CREW DISABLED"
 		return
-	if not aircraft.ai.engagement_ready():
+	if aircraft is EnemyAircraft and not aircraft.ai.engagement_ready():
 		status = "WAITING FOR TAKEOFF"
 		_clear_observation()
 		return
-	var target: FlightAircraft = aircraft.target
-	if not CombatTeams.can_damage(aircraft.team_id, target):
+	var target: FlightAircraft = _target()
+	if not is_instance_valid(target) or target.is_destroyed or target.is_crashed or not CombatTeams.can_damage(aircraft.team_id, target):
 		status = "FRIENDLY"
 		return
 	var offset: Vector3 = target.global_position - aircraft.global_position
 	engagement_distance = offset.length()
 	if engagement_distance < minimum_distance:
 		_lose_sight(delta, "TOO CLOSE")
+		return
+	if engagement_distance > maximum_distance:
+		_lose_sight(delta, "OUT OF RANGE")
 		return
 	if not inside_arc(aircraft.global_basis.transposed() * offset):
 		_lose_sight(delta, "OUTSIDE REAR ARC")
@@ -335,4 +343,4 @@ func clear_line_of_sight(point: Vector3) -> bool:
 	if hit.is_empty():
 		return true
 	var collider: Object = hit.collider
-	return collider == aircraft.target or (collider is AircraftHitbox and collider.damage_system.aircraft == aircraft.target)
+	return collider == _target() or (collider is AircraftHitbox and collider.damage_system.aircraft == _target())

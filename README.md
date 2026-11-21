@@ -14,6 +14,18 @@ Ju 87-inspired opponent; Malta free roam starts peacefully until you request com
 
 The [Hurricane Mk I](docs/hawker-hurricane.md) has its own broad-winged 3D model, eight .303 wing guns, retractable gear, damage profile and shared survivor recovery. It is available in Malta free roam at all three airfields, without changing scripted mission formations. Historical source verification and gameplay approximations are documented in its guide.
 
+## Raid on St Elmo and Stuka free roam
+
+Choose **Missions → Raid on St Elmo** to fly the fictional Stuka raid. Press **X**
+to release your one bomb and **B** for dive brakes. A direct hit that damages
+the marked storehouse earns two stars. If your bomb misses, defeating the
+intercepting Sea Gladiator earns one.
+
+For repeatable bombing, choose the **Ju 87 Stuka** under **Malta · Airfield /
+Mode Options**. It starts airborne and reloads after 15 seconds. Both modes
+have an automatic rear gunner and local structural damage.
+[Controls, scoring, and destructible scenery](docs/st-elmo-raid.md).
+
 ## Flight school tutorial
 
 Click **Tutorial** inside the animated poster to start on foot beside a Sea Gladiator at Ta’ Qali. Learn takeoff and navigation, fight a Stuka over Valletta, land in the marked Ta’ Qali sector and taxi to the green stand beside the Spitfire, then fly that Spitfire through a gear/flap lesson and a scripted engine failure. Land at Luqa, call the recovery truck with **V**, return to base, and fight another Stuka from a manually operated AA gun. The same Malta world and aircraft damage persist throughout. [Lesson sequence, tuning and verification](docs/tutorial-flight-school.md).
@@ -31,6 +43,8 @@ The bottom of the flight screen shows a colour-coded top-down aircraft diagram a
 For testing, use the existing F3 inspector to damage a selected part. H changes overall HP and does not simulate a specific component hit. Native checks: `godot --headless --path . --fixed-fps 120 --script tests/aircraft_damage_hud_checks.gd`.
 
 ## Aircraft crash effects and Spitfire appearance
+
+The Spitfire’s main wheels now extend and retract at the Hurricane’s animation speed. They fold outward into the wings, and the tailwheel remains down. [Landing gear behaviour and checks](docs/development-updates/2026-11-18-spitfire-gear-windows.md#spitfire-landing-gear).
 
 Fatal ground impacts break the aircraft's actual model into eight simulated fragments, with an explosion, smoke and positional impact sound. Sea impacts produce a splash and a force-driven plunge; the aircraft's wheels no longer rest on the Mediterranean collision plane. Safe landings retain the existing suspension and flight controls. Existing reset/retry clears wreckage and restores the aircraft.
 
@@ -54,10 +68,10 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`4f9e676be7a69a1f1b1f64493836b433fbbbdaf0`](https://github.com/zelenski3398/codexproj1/commit/4f9e676be7a69a1f1b1f64493836b433fbbbdaf0)
+**Latest documented commit:** [`b964ed125e57b93d944ea2bf54b6e5dc422d162c`](https://github.com/zelenski3398/codexproj1/commit/b964ed125e57b93d944ea2bf54b6e5dc422d162c)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest tutorial landing/parking update](docs/development-updates/2026-11-09-tutorial-handover.md)
+[latest Raid on St Elmo and Stuka update](docs/development-updates/2026-11-20-st-elmo-raid.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -66,15 +80,25 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor 4f9e676be7a69a1f1b1f64493836b433fbbbdaf0 HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' 4f9e676be7a69a1f1b1f64493836b433fbbbdaf0..HEAD
-git diff --stat 4f9e676be7a69a1f1b1f64493836b433fbbbdaf0..HEAD
+git merge-base --is-ancestor b964ed125e57b93d944ea2bf54b6e5dc422d162c HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' b964ed125e57b93d944ea2bf54b6e5dc422d162c..HEAD
+git diff --stat b964ed125e57b93d944ea2bf54b6e5dc422d162c..HEAD
 ```
 
-Append a dated, evidence-linked update and advance this SHA to the newest inspected
-source commit. The commit publishing this README is naturally outside its own
+For every project update, update this README and the relevant guides, append a
+dated, evidence-linked journal entry, and record the newest inspected source
+commit in this README and the journal state. Include verification results and
+any known limitations. The commit publishing this README is naturally outside its own
 source boundary; review it as documentation maintenance next time. Do not restart
 the original full-history reconstruction unless earlier evidence changes.
+
+## Windows download
+
+Download **First-Sortie-Windows-x64.zip** from **First Sortie for Windows (64-bit)**
+on the [GitHub Releases page](https://github.com/zelenski3398/codexproj1/releases).
+The build is currently a draft, so sign in with repository write access to see it.
+Extract the ZIP and run **First-Sortie.exe**. The portable build bundles its assets
+and targets 64-bit Windows 10 or 11 with OpenGL 3.3 support.
 
 ## Browser version and free hosting
 

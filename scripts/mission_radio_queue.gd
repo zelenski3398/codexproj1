@@ -14,6 +14,7 @@ var current_entry: Dictionary = {}
 var gap_remaining: float = 0
 var start_delay: float = 0
 var voice_started: bool = false
+var use_raid_audio_settings: bool = false
 signal transmission_started(id: String)
 signal transmission_ended(id: String)
 
@@ -114,14 +115,16 @@ func _process(delta: float) -> void:
 
 func _start_voice() -> void:
 	voice_started = true
-	caption.show()
+	caption.visible = not use_raid_audio_settings or GameAudioMixer.instance.raid_subtitles
 	var stream: AudioStream = current_entry.get("voice")
 	var mixer := GameAudioMixer.instance
 	if stream == null or mixer == null or not mixer.playback_enabled: return
-	if not mixer.begin_radio(self, definition.radio_duck_db): return
+	if use_raid_audio_settings and mixer.raid_voice_volume <= 0: return
+	if not mixer.begin_radio(self, definition.radio_duck_db, -4.0 if use_raid_audio_settings else 0.0): return
 	player.stream = stream.duplicate()
 	if player.stream is AudioStreamOggVorbis: player.stream.loop = false
 	player.volume_db = definition.wingman_radio_volume_db if current_entry.get("group", "") == "wingman_status" else definition.voice_volume_db
+	if use_raid_audio_settings: player.volume_db += linear_to_db(mixer.raid_voice_volume)
 	player.play()
 	played.append(current_id)
 

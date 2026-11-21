@@ -78,6 +78,8 @@ func _label(text: String, size: int) -> Label:
 func select_field(id: String) -> void:
 	if StElmoLocations.is_fort(id):
 		selected_field=id
+		if selected_kind == "stuka": selected_kind = "spitfire"
+		mode_picker.disabled = false
 		chart.home="st_elmo"
 		for i in range(StElmoLocations.options().size()):
 			if StElmoLocations.options()[i].id==id:field_picker.select(i)
@@ -100,14 +102,21 @@ func select_field(id: String) -> void:
 	fighter_picker.clear()
 	for kind in AlliedAircraft.roster(record):
 		fighter_picker.add_item(AlliedAircraft.title(kind))
-	var selected_index: int = AlliedAircraft.roster(record).find(selected_kind)
+	fighter_picker.add_item("Ju 87 Stuka · airborne bombing free roam")
+	var selected_index: int = fighter_picker.item_count - 1 if selected_kind == "stuka" else AlliedAircraft.roster(record).find(selected_kind)
 	fighter_picker.select(maxi(selected_index, 0))
+	info.text = "%s\nDeparture strip: %d m\nParked aircraft start on foot.\nThe Stuka starts airborne offshore." % [record.name, roundi(float(record.length))]
 	_choose_kind(fighter_picker.selected)
-	info.text = "%s\nDeparture strip: %d m\nAvailable: %s\nSpawn on foot at the dispersal area.\nFly freely to any other airfield." % [record.name, roundi(float(record.length)), " / ".join(AlliedAircraft.roster(record).map(AlliedAircraft.title))]
 
 func _choose_kind(index: int) -> void:
 	if StElmoLocations.is_fort(selected_field):return
-	selected_kind = AlliedAircraft.roster(MaltaGeography.field(selected_field))[index]
+	var roster := AlliedAircraft.roster(MaltaGeography.field(selected_field))
+	selected_kind = "stuka" if index == roster.size() else roster[index]
+	mode_picker.disabled = selected_kind == "stuka"
+	if selected_kind == "stuka":
+		selected_mode = "encounter"
+		mode_picker.select(0)
+	depart_button.text = "START AIRBORNE · STUKA" if selected_kind == "stuka" else "DEPART · SPAWN BESIDE AIRCRAFT"
 
 func depart() -> void:
 	if not active:

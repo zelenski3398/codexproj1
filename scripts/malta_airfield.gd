@@ -9,9 +9,11 @@ var access_record: Dictionary
 var apron_surface: MeshInstance3D
 var pilot_spawn: Vector3
 var installations: Array[AirfieldInstallation] = []
+var destructible_hangars: bool = false
 var runway_length: float
 
 func _ready() -> void:
+	add_to_group("bomb_runways")
 	if not existing_hangars.is_empty():
 		name="CountrysideAirfieldLayout"
 		runway_length=float(record.length)
@@ -46,6 +48,7 @@ func _ready() -> void:
 		var ground := to_global(Vector3(100,0,runway_length*.31-45-i*80))
 		building.transform = global_transform.affine_inverse() * Transform3D(Basis(Vector3.UP,-heading+PI*.5),ground)
 		building.floor_grade_x = float(record.slope)
+		if destructible_hangars: building.bomb_section_prefix = "%s_hangar_%d" % [record.id, i]
 		building.display_name = String(record.name) + " hangar " + str(i+1)
 		add_child(building)
 		installations.append(building)

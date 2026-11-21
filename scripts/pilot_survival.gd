@@ -77,5 +77,8 @@ func _died() -> void:
 	if is_instance_valid(mission.session.interception):mission.session.interception._finish(false,"Pilot killed — interception failed")
 	if is_instance_valid(mission.session.harbour):mission.session.harbour._queue_resolution()
 	if is_instance_valid(mission.session.aa_defence):mission.session.aa_defence._queue_resolution()
+	if is_instance_valid(mission.session.stuka_sortie) and mission.session.stuka_sortie.raid_mode:
+		mission.session.stuka_sortie._player_lost()
+		return
 	death_panel.show()
 	Input.mouse_mode=Input.MOUSE_MODE_VISIBLE

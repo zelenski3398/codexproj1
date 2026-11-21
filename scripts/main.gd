@@ -6,6 +6,7 @@ var environment_id: String = "countryside"
 var field: Node3D
 var missions_menu: MissionsMenu
 var aa_defence: DiveDefenceMission
+var stuka_sortie: StElmoRaid
 var tutorial: TutorialMission
 var harbour: HarbourInterception
 var interception: VallettaInterception
@@ -83,6 +84,10 @@ func _dismiss_intro() -> void:
 
 func show_selection(replay_poster: bool = true) -> void:
 	_dismiss_intro()
+	if is_instance_valid(stuka_sortie):
+		remove_child(stuka_sortie)
+		stuka_sortie.queue_free()
+	stuka_sortie = null
 	if is_instance_valid(tutorial):
 		tutorial.cancel();remove_child(tutorial);tutorial.queue_free()
 	tutorial=null
@@ -129,7 +134,7 @@ func show_selection(replay_poster: bool = true) -> void:
 	selector.chosen.connect(start_free_roam, CONNECT_DEFERRED)
 	selector.test_requested.connect(start_test_departure, CONNECT_DEFERRED)
 	add_child(selector)
-	selector.select(selected_aircraft)
+	selector.select("spitfire" if selected_aircraft == "stuka" else selected_aircraft)
 	selector.malta_requested.connect(show_malta_selection, CONNECT_DEFERRED)
 	selector.missions_requested.connect(show_missions, CONNECT_DEFERRED)
 	if replay_poster and DisplayServer.get_name()!="headless" and "--skip-intro" not in OS.get_cmdline_user_args():show_intro()
@@ -350,9 +355,11 @@ func start_malta(field_id: String, kind: String, selected_mode: String = "encoun
 	if StElmoLocations.is_fort(field_id):
 		if selected_mode not in ["encounter","survival"]:return
 		field_id="luqa"
-	if selected_mode not in ["encounter", "survival", "interception", "aa_defence", "harbour", "tutorial"]:
+	if selected_mode not in ["encounter", "survival", "interception", "aa_defence", "harbour", "tutorial", "st_elmo_raid"]:
 		return
-	if MaltaGeography.field(field_id).is_empty() or kind not in AlliedAircraft.KINDS:
+	if kind == "stuka" and (test_environment or selected_mode not in ["encounter", "st_elmo_raid"]):
+		return
+	if MaltaGeography.field(field_id).is_empty() or (kind not in AlliedAircraft.KINDS and kind != "stuka"):
 		return
 	if is_instance_valid(malta_mission):
 		return
@@ -379,6 +386,7 @@ func start_malta(field_id: String, kind: String, selected_mode: String = "encoun
 	selected_aircraft = kind
 	departure_kind = kind
 	field = CountrysideWorld.new() if test_environment else MaltaWorld.new()
+	if not test_environment: field.destructible_hangars = kind == "stuka"
 	add_child(field)
 	malta_mission = MaltaMission.new()
 	malta_mission.session = self
@@ -388,6 +396,21 @@ func start_malta(field_id: String, kind: String, selected_mode: String = "encoun
 	malta_mission.initial_kind = kind
 	add_child(malta_mission)
 	aircraft = malta_mission.initial_aircraft
+	if kind == "stuka":
+		if game_mode == "st_elmo_raid":
+			session_number += 1
+			encounters.begin_external()
+		else:
+			_spawn_enemy()
+		var stuka := malta_mission.start_stuka(game_mode != "st_elmo_raid")
+		stuka_sortie = StElmoRaid.new()
+		stuka_sortie.session = self
+		stuka_sortie.player = stuka
+		stuka_sortie.raid_mode = game_mode == "st_elmo_raid"
+		add_child(stuka_sortie)
+		encounters.set_target(stuka)
+		get_viewport().gui_release_focus()
+		return
 	if game_mode == "tutorial":
 		session_number+=1;defeat_notifications=0;enemy_defeated=false
 		encounters.begin_external()
@@ -427,7 +450,7 @@ func attach_malta_player(player: FlightAircraft) -> void:
 			remove_child(node)
 			node.queue_free()
 	aircraft = player
-	selected_aircraft = AlliedAircraft.kind_of(player)
+	selected_aircraft = "stuka" if player is PlayerStuka else AlliedAircraft.kind_of(player)
 	chase = ChaseCamera.new()
 	chase.aircraft = player
 	add_child(chase)
@@ -465,6 +488,7 @@ func show_missions() -> void:
 	selector = null
 	missions_menu = MissionsMenu.new()
 	missions_menu.launch_requested.connect(start_interception, CONNECT_DEFERRED)
+	missions_menu.raid_requested.connect(start_st_elmo_raid, CONNECT_DEFERRED)
 	missions_menu.harbour_requested.connect(start_harbour, CONNECT_DEFERRED)
 	missions_menu.aa_requested.connect(start_aa_defence,CONNECT_DEFERRED)
 	missions_menu.back_requested.connect(show_selection, CONNECT_DEFERRED)
@@ -482,3 +506,6 @@ func start_aa_defence() -> void:
 
 func start_harbour() -> void:
 	start_malta("hal_far", "sea_gladiator", "harbour")
+
+func start_st_elmo_raid() -> void:
+	start_malta("luqa", "stuka", "st_elmo_raid")

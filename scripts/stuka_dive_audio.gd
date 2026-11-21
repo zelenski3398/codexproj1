@@ -4,7 +4,7 @@ extends Node
 @export var minimum_speed: float=35
 @export var minimum_descent: float=5
 @export var volume_db: float=-8
-var aircraft: EnemyAircraft
+var aircraft: FlightAircraft
 var director: Node3D
 var player: AudioStreamPlayer3D
 var gain: float=0
@@ -21,11 +21,11 @@ func _ready() -> void:
 	player.playback_type=AudioServer.PLAYBACK_TYPE_SAMPLE if OS.has_feature("web") else AudioServer.PLAYBACK_TYPE_STREAM
 	aircraft.add_child(player)
 func should_sound() -> bool:
-	if not is_instance_valid(aircraft) or not is_instance_valid(director) or director.is_finished():return false
-	if aircraft.is_destroyed or aircraft.is_crashed or not aircraft.ai is DiveAttackPilot:return false
-	var descent: bool=aircraft.linear_velocity.y < -minimum_descent
-	var pitch: float=(-aircraft.global_basis.z).y
-	return aircraft.ai.attack_state in ["DIVE","PULL OUT"] and descent and pitch<-.10 and aircraft.linear_velocity.length()>minimum_speed
+	if not is_instance_valid(aircraft) or aircraft.is_destroyed or aircraft.is_crashed: return false
+	if aircraft.linear_velocity.y >= -minimum_descent or (-aircraft.global_basis.z).y >= -0.10 or aircraft.linear_velocity.length() <= minimum_speed: return false
+	if aircraft is PlayerStuka: return aircraft.devices.brake_target
+	if not is_instance_valid(director) or director.is_finished() or not aircraft is EnemyAircraft or not aircraft.ai is DiveAttackPilot: return false
+	return aircraft.ai.attack_state in ["DIVE", "PULL OUT"]
 func _process(delta: float) -> void:
 	var active:=should_sound()
 	if active and not requested:starts+=1

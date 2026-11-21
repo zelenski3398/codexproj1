@@ -84,6 +84,28 @@ func _ready() -> void:
 	add_child(return_flow)
 	set_process_input(true)
 
+func start_stuka(reserves: bool) -> PlayerStuka:
+	var stuka := PlayerStuka.new()
+	stuka.process_mode = Node.PROCESS_MODE_PAUSABLE
+	stuka.reserve_bombs = reserves
+	stuka.engine_running = true
+	var goal := RaidRange.fort_anchor()
+	var start := goal + Vector3(3000, 0, -1300)
+	start.y = 520
+	var facing := Basis.looking_at(Vector3(goal.x - start.x, 0, goal.z - start.z).normalized(), Vector3.UP)
+	stuka.reset_position = start
+	add_child(stuka)
+	stuka.request_reset()
+	stuka.pending_reset_pose = Transform3D(facing, start)
+	stuka.pending_reset_velocity = -facing.z * 58
+	stuka.reset_completed.connect(func(): stuka.pilot.throttle = 0.74, CONNECT_ONE_SHOT)
+	initial_aircraft = stuka
+	fleet.append(stuka)
+	occupied = stuka
+	pilot.set_active(false)
+	session.attach_malta_player(stuka)
+	return stuka
+
 func _build_ui() -> void:
 	canvas = CanvasLayer.new()
 	canvas.layer = 8
@@ -238,6 +260,9 @@ func leave_aircraft() -> bool:
 	if not is_instance_valid(occupied):
 		return false
 	if not survival.alive():return false
+	if occupied is PlayerStuka:
+		_message("Use R to restart the airborne Stuka sortie")
+		return false
 	var wreck: bool=occupied.is_destroyed or occupied.is_crashed
 	if not wreck and is_instance_valid(session.tutorial) and not session.tutorial.exit_allowed(occupied):
 		_message("Taxi to the marked green stand near the Spitfire, stop, then shut down and exit")
@@ -289,6 +314,10 @@ func _process(delta: float) -> void:
 		chart.show_objective=true
 		chart.objective_position=session.tutorial.objective_point()
 		chart.objective_label=session.tutorial.navigation_label()
+	if is_instance_valid(session.stuka_sortie) and session.stuka_sortie.raid_mode:
+		chart.show_objective = session.stuka_sortie.stars < 0 and not session.stuka_sortie.bomb_resolved
+		chart.objective_position = RaidRange.fort_anchor()
+		chart.objective_label = "ST ELMO TARGET"
 	if return_flow.pending:
 		chart.show_objective=true
 		chart.objective_position=return_flow.objective_point()
@@ -314,6 +343,10 @@ func _process(delta: float) -> void:
 		for foe in session.encounters.active:
 			if position.distance_to(foe.global_position) < foe.ai.detection_range:
 				chart.contacts.append({"position": foe.global_position, "ace": foe.encounter_ace})
+	if is_instance_valid(session.stuka_sortie) and is_instance_valid(session.stuka_sortie.interceptor):
+		var foe: RaidInterceptor = session.stuka_sortie.interceptor
+		if not foe.is_destroyed:
+			chart.contacts.append({"position": foe.global_position, "ace": false})
 	chart.show_contact = not chart.contacts.is_empty()
 	if chart.show_contact:
 		chart.contact_position = chart.contacts[0].position

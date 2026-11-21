@@ -17,6 +17,8 @@ extends AirfieldInstallation
 ## faces out of the doorway. Slots can be edited without changing spawn logic.
 @export var parking_points: Array[Vector3] = [Vector3(0,0,-7),Vector3(-14,0,-7),Vector3(14,0,-7),Vector3(-14,0,7),Vector3(0,0,7),Vector3(14,0,7)]
 var truss_count: int = 0
+var bomb_section_prefix: String = ""
+var shell_section_count: int = 0
 static var _shared_materials: Dictionary = {}
 static var _shared_geometry: Dictionary = {}
 var _batches: Dictionary = {}
@@ -52,9 +54,10 @@ func _ready() -> void:
 		_batches[key] = surface
 	_shell()
 	_structure()
-	_sheets()
-	var geometry_key := str([width,depth,eaves_height,ridge_height,entrance_width,entrance_height,truss_spacing,eaves_projection])
+	if bomb_section_prefix.is_empty(): _sheets()
+	var geometry_key := str([width,depth,eaves_height,ridge_height,entrance_width,entrance_height,truss_spacing,eaves_projection,bomb_section_prefix.is_empty()])
 	for key in _batches:
+		if key in ["roof", "roof_dark"] and not bomb_section_prefix.is_empty(): continue
 		var cache_key: String = geometry_key + String(key)
 		var geometry: ArrayMesh
 		if key != "floor" and _shared_geometry.has(cache_key):
@@ -62,6 +65,7 @@ func _ready() -> void:
 		else:
 			geometry = _batches[key].commit()
 			if key != "floor": _shared_geometry[cache_key] = geometry
+		if geometry == null: continue
 		var mesh := MeshKit.mesh(self, geometry, _materials[key])
 		mesh.name = String(key).to_pascal_case()
 		if key in ["roof_light", "roof_dark", "seams", "rust"]: mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -79,6 +83,9 @@ func floor_height(x: float, z: float) -> float:
 	return floor_grade_x * x + floor_grade_z * z
 
 func _box(dimensions: Vector3, centre: Vector3, material_key: String, basis: Basis = Basis.IDENTITY, solid: bool = false) -> void:
+	if not bomb_section_prefix.is_empty() and solid and material_key in ["roof", "cladding"]:
+		_add_shell_sections(dimensions, centre, material_key, basis)
+		return
 	var pose := Transform3D(basis * Basis.from_scale(dimensions), centre)
 	_batches[material_key].append_from(_box_mesh, 0, pose)
 	if solid:
@@ -88,6 +95,23 @@ func _box(dimensions: Vector3, centre: Vector3, material_key: String, basis: Bas
 		collision.shape = shape
 		collision.transform = Transform3D(basis, centre)
 		add_child(collision)
+
+func _add_shell_sections(dimensions: Vector3, centre: Vector3, material_key: String, basis: Basis) -> void:
+	var splits := maxi(1, ceili(maxf(dimensions.x, dimensions.z) / 12.0))
+	var axis := Vector3.RIGHT if dimensions.x > dimensions.z else Vector3.BACK
+	var extent := absf(dimensions.dot(axis))
+	var step := extent / splits
+	var section_size := dimensions - axis * (extent - step)
+	for i in range(splits):
+		var section := BombStructureSection.new()
+		section.section_id = StringName("%s_%s_%d" % [bomb_section_prefix, material_key, shell_section_count])
+		section.name = section.section_id
+		section.size = section_size
+		section.limestone = _materials[material_key]
+		section.damaged_stone = _materials.steel
+		section.transform = Transform3D(basis, centre + basis * axis * (step * (i + 0.5) - extent * 0.5))
+		add_child(section)
+		shell_section_count += 1
 
 func _member(a: Vector3, b: Vector3, thickness: float = .18, solid: bool = false) -> void:
 	var direction := (b-a).normalized()

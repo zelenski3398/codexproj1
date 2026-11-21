@@ -5,6 +5,9 @@ var callsign: String = "Hope"
 var ai: HarbourCombatPilot
 var wreck_age: float = 0
 
+func create_combat_pilot() -> HarbourCombatPilot:
+	return HarbourCombatPilot.new()
+
 func _ready() -> void:
 	input_enabled = false
 	engine_running = true
@@ -14,7 +17,7 @@ func _ready() -> void:
 	collision_mask = 7
 	pilot.automated = true
 	seated_pilot.visible = true
-	ai = HarbourCombatPilot.new()
+	ai = create_combat_pilot()
 	ai.aircraft = self
 	ai.measured_terrain = true
 	ai.world_extent = INF
