@@ -14,6 +14,7 @@ var fort_battery: StElmoBattery
 var cottonera_region: CottoneraRegion
 var mdina_city: MdinaCity
 var valletta_city: VallettaCity
+var mosta_village: MostaVillage
 var countryside: MaltaCountryside
 var landscape_details: MaltaLandscapeDetails
 
@@ -57,6 +58,7 @@ func _ready() -> void:
 	add_child(aa_battery)
 	_lighting()
 	for marker in MaltaGeography.data().landmarks:
+		if marker.get("chart_only", false): continue
 		var label: Label3D = Label3D.new()
 		label.text = marker.name
 		label.position = MaltaGeography.vector(marker.position) + Vector3.UP * 40
@@ -74,6 +76,9 @@ func _ready() -> void:
 	fort_battery = StElmoBattery.new()
 	fort_battery.world = self
 	add_child(fort_battery)
+	mosta_village = MostaVillage.new()
+	mosta_village.terrain_root = terrain
+	add_child(mosta_village)
 	countryside = MaltaCountryside.new()
 	add_child(countryside)
 	landscape_details = MaltaLandscapeDetails.new()
@@ -82,6 +87,7 @@ func _ready() -> void:
 	terrain_appearance.debug_mode_changed.connect(func(enabled: bool):
 		countryside.visible = not enabled
 		landscape_details.visible = not enabled
+		mosta_village.visible = not enabled
 		valletta_city.visible = not enabled
 		mdina_city.visible = not enabled
 		cottonera_region.visible = not enabled

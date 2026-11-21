@@ -116,11 +116,14 @@ func _arrive() -> void:
 	if state!="REQUESTED":return
 	var origin:=_origin()
 	var candidates: Array[Vector3]=[]
-	# Read the existing mapped road network once; no new routing/GIS data.
+	# Sample the island network and the locally realigned Mosta streets once.
 	if road_points.is_empty():
 		var network: Dictionary=JSON.parse_string(FileAccess.get_file_as_string("res://assets/malta/roads/world_paths.json"))
 		for road in network.get("paths",[]):
-			for point in road.points:road_points.append(Vector2(point[0],point[1]))
+			for point in road.points:
+				var sample := Vector3(point[0],0,point[1])
+				if not MostaVillage.replaces_scenery(sample): road_points.append(Vector2(sample.x,sample.z))
+		road_points.append_array(MostaVillage.recovery_street_points())
 	for point in road_points:
 		if point.distance_to(Vector2(origin.x,origin.z))<100:candidates.append(Vector3(point.x,0,point.y))
 	# Prefer a nearby existing road access point, followed by local open ground.

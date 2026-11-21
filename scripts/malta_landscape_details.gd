@@ -27,6 +27,7 @@ func _populate() -> void:
 	for centre in layout.scrub_centres:
 		for plant in range(4):
 			var point: Vector3 = Vector3(float(centre[0]) + random.randf_range(-12, 12), 0, float(centre[1]) + random.randf_range(-12, 12))
+			if MostaVillage.replaces_scenery(point): continue
 			var hit: Dictionary = _ground(point)
 			# New city roofs are physical ground hits, but never planting sites.
 			if not hit.is_empty() and (world.valletta_city.is_ancestor_of(hit.collider) or world.mdina_city.is_ancestor_of(hit.collider) or world.cottonera_region.is_ancestor_of(hit.collider)):

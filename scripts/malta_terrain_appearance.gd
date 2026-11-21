@@ -13,6 +13,10 @@ var debug_notice: Label
 func _ready() -> void:
 	# Only this render/debug component runs while paused, not world physics.
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	var mosta := MostaVillage.layout()
+	LANDSCAPE.set_shader_parameter("mosta_surface_mask", preload("res://assets/malta/mosta/surface_mask.png"))
+	LANDSCAPE.set_shader_parameter("mosta_surface_min", Vector2(float(mosta.mask_world_min[0]), float(mosta.mask_world_min[1])))
+	LANDSCAPE.set_shader_parameter("mosta_surface_span", float(mosta.mask_span))
 	var canvas: CanvasLayer = CanvasLayer.new()
 	canvas.layer = 90
 	add_child(canvas)

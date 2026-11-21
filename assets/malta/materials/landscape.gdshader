@@ -34,6 +34,9 @@ uniform vec2 old_access_end[8];
 uniform int access_repair_count = 0;
 uniform vec2 access_repair_start[4];
 uniform vec2 access_repair_end[4];
+uniform sampler2D mosta_surface_mask : filter_linear_mipmap, repeat_disable;
+uniform vec2 mosta_surface_min;
+uniform float mosta_surface_span = 0.0;
 varying vec3 terrain_position;
 float segment_distance(vec2 p, vec2 a, vec2 b) {
     vec2 v = b-a;
@@ -111,7 +114,16 @@ void fragment() {
     // UV.x is an offline road coverage mask on the actual terrain vertices.
     // No raised road strip, depth offset, separate floor or runtime projection.
     vec3 road = road_color * (0.97 + (detail.g - 0.5) * 0.14 * detail_fade);
-    ALBEDO = mix(color, road, access_mask(terrain_position.xz,clamp(UV.x,0.0,1.0)));
+    float route = access_mask(terrain_position.xz, clamp(UV.x,0.0,1.0));
+    vec2 mosta_uv = (terrain_position.xz - mosta_surface_min) / max(1.0, mosta_surface_span);
+    if (mosta_surface_span > 0.0 && all(greaterThan(mosta_uv, vec2(0.0))) && all(lessThan(mosta_uv, vec2(1.0)))) {
+        vec3 site = texture(mosta_surface_mask, mosta_uv).rgb;
+        float cultivation = smoothstep(0.07, 0.35, site.b) * (1.0 - smoothstep(0.39, 0.75, site.b));
+        color = mix(color, cultivated_color * (0.84 + detail.g * 0.22), cultivation * 0.82);
+        route = max(route * (1.0 - site.g), site.r);
+        color = mix(color, limestone_color * (0.99 + detail.r * 0.12), smoothstep(0.43, 0.96, site.b));
+    }
+    ALBEDO = mix(color, road, route);
     ROUGHNESS = 1.0;
     METALLIC = 0.0;
 }
