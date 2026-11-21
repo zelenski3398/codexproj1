@@ -14,6 +14,13 @@ Ju 87-inspired opponent; Malta free roam starts peacefully until you request com
 
 The [Hurricane Mk I](docs/hawker-hurricane.md) has its own broad-winged 3D model, eight .303 wing guns, retractable gear, damage profile and shared survivor recovery. It is available in Malta free roam at all three airfields, without changing scripted mission formations. Historical source verification and gameplay approximations are documented in its guide.
 
+## Wartime Mosta
+
+Look for **Mosta** on the Malta chart. Its Rotunda sits at the supplied
+geographic anchor and overlooks a compact village of limestone houses,
+courtyards, gardens and field walls. The historic street trace connects
+to the existing island roads. [Alignment, sources and in-engine views](docs/mosta-reconstruction.md).
+
 ## Raid on St Elmo and Stuka free roam
 
 Choose **Missions → Raid on St Elmo** to fly the fictional Stuka raid. Press **X**
@@ -68,10 +75,10 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`b964ed125e57b93d944ea2bf54b6e5dc422d162c`](https://github.com/zelenski3398/codexproj1/commit/b964ed125e57b93d944ea2bf54b6e5dc422d162c)
+**Latest documented commit:** [`8e015db4eda91133243dbae1325ede29c4e6559b`](https://github.com/zelenski3398/codexproj1/commit/8e015db4eda91133243dbae1325ede29c4e6559b)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest Raid on St Elmo and Stuka update](docs/development-updates/2026-11-20-st-elmo-raid.md)
+[latest wartime Mosta reconstruction](docs/development-updates/2026-11-21-wartime-mosta.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -80,9 +87,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor b964ed125e57b93d944ea2bf54b6e5dc422d162c HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' b964ed125e57b93d944ea2bf54b6e5dc422d162c..HEAD
-git diff --stat b964ed125e57b93d944ea2bf54b6e5dc422d162c..HEAD
+git merge-base --is-ancestor 8e015db4eda91133243dbae1325ede29c4e6559b HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' 8e015db4eda91133243dbae1325ede29c4e6559b..HEAD
+git diff --stat 8e015db4eda91133243dbae1325ede29c4e6559b..HEAD
 ```
 
 For every project update, update this README and the relevant guides, append a
