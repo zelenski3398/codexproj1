@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "19be47b5d8423d3141aee7dceb401c64cb85cb63",
-  "last_documented_commit": "8e015db4eda91133243dbae1325ede29c4e6559b",
-  "update_document": "2026-11-21-wartime-mosta.md",
-  "review_range": "b964ed125e57b93d944ea2bf54b6e5dc422d162c..8e015db4eda91133243dbae1325ede29c4e6559b",
+  "previous_documentation_publication": "169db4e2c309368745d37b4d5254d545e1e407ad",
+  "last_documented_commit": "0d8787f1574c8b015216c89a1a1907aca578dc4f",
+  "update_document": "2026-11-21-bf109-fighters.md",
+  "review_range": "8e015db4eda91133243dbae1325ede29c4e6559b..0d8787f1574c8b015216c89a1a1907aca578dc4f",
   "date": "2026-11-21",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }
