@@ -20,7 +20,15 @@ Choose a German fighter from **Malta · Airfield / Mode Options**. Both offer
 parked and airborne starts. **P** opens the Free Roam spawn and transfer panel,
 and **C** adds another AI opponent. [Controls and historical references](docs/bf109-fighters.md).
 
-## Wartime Mosta
+## Wartime villages
+
+Open the **Malta Free Roam** chart to find 22 new districts, including Attard,
+Birkirkara, Għargħur, Qormi, Żebbuġ and Żurrieq. Follow the traced roads and
+spot 53 modelled churches and chapels alongside the existing Mosta and Mdina.
+The St Andrew’s, Pembroke and St Julian’s layouts are provisional. [Area and
+church inventory, historical sources and screenshot atlases](docs/wartime-villages.md).
+
+### Mosta
 
 Look for **Mosta** on the Malta chart. Its Rotunda sits at the supplied
 geographic anchor and overlooks a compact village of limestone houses,
@@ -81,10 +89,10 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`0d8787f1574c8b015216c89a1a1907aca578dc4f`](https://github.com/zelenski3398/codexproj1/commit/0d8787f1574c8b015216c89a1a1907aca578dc4f)
+**Latest documented commit:** [`702eeacffa73768b7b42620b78f61d01b7f7d7ab`](https://github.com/zelenski3398/codexproj1/commit/702eeacffa73768b7b42620b78f61d01b7f7d7ab)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest fighter and Free Roam update](docs/development-updates/2026-11-21-bf109-fighters.md)
+[latest wartime villages update](docs/development-updates/2026-11-21-wartime-villages.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -93,9 +101,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor 0d8787f1574c8b015216c89a1a1907aca578dc4f HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' 0d8787f1574c8b015216c89a1a1907aca578dc4f..HEAD
-git diff --stat 0d8787f1574c8b015216c89a1a1907aca578dc4f..HEAD
+git merge-base --is-ancestor 702eeacffa73768b7b42620b78f61d01b7f7d7ab HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' 702eeacffa73768b7b42620b78f61d01b7f7d7ab..HEAD
+git diff --stat 702eeacffa73768b7b42620b78f61d01b7f7d7ab..HEAD
 ```
 
 For every project update, update this README and the relevant guides, append a

@@ -1,5 +1,7 @@
 # Wings Over Malta: one continuous mission
 
+Explore the [wartime village reconstructions](wartime-villages.md) to see historical street networks, churches and chapels across the same terrain.
+
 **Current free-roam spawning:** Malta starts peacefully. Press **C** or click
 **Spawn Random Enemy** for one Stuka, CR.42, C.200 or C.202. Further enemies
 require another confirmation after the current loss; retry starts peaceful again.
