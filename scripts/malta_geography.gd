@@ -18,6 +18,9 @@ static func data() -> Dictionary:
 			_data.landmarks.append({"name":place.name,"position":place.position})
 		var mosta: Array = MostaVillage.layout().origin_world.duplicate()
 		_data.landmarks.append({"name":"Mosta","position":mosta,"chart_only":true})
+		for site in WartimeVillages.layout().sites:
+			if not _data.landmarks.any(func(marker): return marker.name == site.name):
+				_data.landmarks.append({"name": site.name, "position": [site.origin[0], 0, site.origin[1]], "chart_only": true})
 	return _data
 
 static func vector(value: Array) -> Vector3:

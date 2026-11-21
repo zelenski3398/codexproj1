@@ -13,6 +13,7 @@ var debug_notice: Label
 func _ready() -> void:
 	# Only this render/debug component runs while paused, not world physics.
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	WartimeVillages.apply_mask(LANDSCAPE)
 	var mosta := MostaVillage.layout()
 	LANDSCAPE.set_shader_parameter("mosta_surface_mask", preload("res://assets/malta/mosta/surface_mask.png"))
 	LANDSCAPE.set_shader_parameter("mosta_surface_min", Vector2(float(mosta.mask_world_min[0]), float(mosta.mask_world_min[1])))

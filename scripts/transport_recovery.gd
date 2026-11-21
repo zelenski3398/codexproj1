@@ -122,8 +122,9 @@ func _arrive() -> void:
 		for road in network.get("paths",[]):
 			for point in road.points:
 				var sample := Vector3(point[0],0,point[1])
-				if not MostaVillage.replaces_scenery(sample): road_points.append(Vector2(sample.x,sample.z))
+				if not MostaVillage.replaces_scenery(sample) and not WartimeVillages.replaces_scenery(sample): road_points.append(Vector2(sample.x,sample.z))
 		road_points.append_array(MostaVillage.recovery_street_points())
+	road_points.append_array(WartimeVillages.recovery_street_points())
 	for point in road_points:
 		if point.distance_to(Vector2(origin.x,origin.z))<100:candidates.append(Vector3(point.x,0,point.y))
 	# Prefer a nearby existing road access point, followed by local open ground.

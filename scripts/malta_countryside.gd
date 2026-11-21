@@ -28,6 +28,7 @@ func _ready() -> void:
 	var mosta := MostaVillage.layout()
 	var mask_min := Vector2(float(mosta.mask_world_min[0]), float(mosta.mask_world_min[1]))
 	for material in [stone_material,soil_material]:
+		WartimeVillages.apply_mask(material)
 		material.set_shader_parameter("mosta_scenery_mask",preload("res://assets/malta/mosta/scenery_mask.png"))
 		material.set_shader_parameter("mosta_mask_min",mask_min)
 		material.set_shader_parameter("mosta_mask_span",float(mosta.mask_span))
@@ -80,7 +81,7 @@ func _wall_collision_shape(mesh: Mesh, pose: Transform3D) -> Shape3D:
 	var box := pose * mesh.get_aabb()
 	var anchor := MostaVillage.anchor()
 	var near_site := AABB(anchor - Vector3(960,20,960),Vector3(1920,400,1920))
-	if not box.intersects(near_site): return mesh.create_trimesh_shape()
+	if not box.intersects(near_site) and not WartimeVillages.intersects_area(box): return mesh.create_trimesh_shape()
 	var faces := mesh.get_faces()
 	var retained := PackedVector3Array()
 	for i in range(0,faces.size(),3):
@@ -88,6 +89,7 @@ func _wall_collision_shape(mesh: Mesh, pose: Transform3D) -> Shape3D:
 		if MostaVillage.replaces_scenery(center):
 			mosta_removed_collision_triangles += 1
 			continue
+		if WartimeVillages.replaces_scenery(center): continue
 		retained.append(faces[i])
 		retained.append(faces[i+1])
 		retained.append(faces[i+2])

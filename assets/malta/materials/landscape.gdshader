@@ -34,6 +34,9 @@ uniform vec2 old_access_end[8];
 uniform int access_repair_count = 0;
 uniform vec2 access_repair_start[4];
 uniform vec2 access_repair_end[4];
+uniform sampler2D village_surface_mask : filter_linear_mipmap, repeat_disable;
+uniform vec2 village_surface_min;
+uniform float village_surface_span = 0.0;
 uniform sampler2D mosta_surface_mask : filter_linear_mipmap, repeat_disable;
 uniform vec2 mosta_surface_min;
 uniform float mosta_surface_span = 0.0;
@@ -122,6 +125,12 @@ void fragment() {
         color = mix(color, cultivated_color * (0.84 + detail.g * 0.22), cultivation * 0.82);
         route = max(route * (1.0 - site.g), site.r);
         color = mix(color, limestone_color * (0.99 + detail.r * 0.12), smoothstep(0.43, 0.96, site.b));
+    }
+    vec2 village_uv = (terrain_position.xz - village_surface_min) / max(1.0, village_surface_span);
+    if (village_surface_span > 0.0 && all(greaterThan(village_uv, vec2(0.0))) && all(lessThan(village_uv, vec2(1.0)))) {
+        vec3 village = texture(village_surface_mask, village_uv).rgb;
+        route = max(route * (1.0 - village.g), smoothstep(0.08, 0.60, village.r) * 0.94);
+        color = mix(color, limestone_color * (0.93 + detail.r * 0.12), village.b * 0.80);
     }
     ALBEDO = mix(color, road, route);
     ROUGHNESS = 1.0;

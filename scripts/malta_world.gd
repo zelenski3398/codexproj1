@@ -15,6 +15,7 @@ var cottonera_region: CottoneraRegion
 var mdina_city: MdinaCity
 var valletta_city: VallettaCity
 var mosta_village: MostaVillage
+var wartime_villages: WartimeVillages
 var countryside: MaltaCountryside
 var landscape_details: MaltaLandscapeDetails
 
@@ -79,6 +80,9 @@ func _ready() -> void:
 	mosta_village = MostaVillage.new()
 	mosta_village.terrain_root = terrain
 	add_child(mosta_village)
+	wartime_villages = WartimeVillages.new()
+	wartime_villages.terrain_root = terrain
+	add_child(wartime_villages)
 	countryside = MaltaCountryside.new()
 	add_child(countryside)
 	landscape_details = MaltaLandscapeDetails.new()
@@ -88,6 +92,7 @@ func _ready() -> void:
 		countryside.visible = not enabled
 		landscape_details.visible = not enabled
 		mosta_village.visible = not enabled
+		wartime_villages.visible = not enabled
 		valletta_city.visible = not enabled
 		mdina_city.visible = not enabled
 		cottonera_region.visible = not enabled

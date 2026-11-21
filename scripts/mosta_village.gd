@@ -12,6 +12,9 @@ const SITE_RADIUS := 950.0
 static var _layout: Dictionary
 static var _footprints: Array[Dictionary] = []
 var terrain_root: Node3D
+var section_prefix := "mosta"
+var damage_limit := 40
+var shell_visibility_range := DISTANT_DISTANCE
 var rotunda: MostaRotunda
 var ready_for_flight: bool
 var construction_usec: int
@@ -142,10 +145,10 @@ func _house(record: Dictionary) -> void:
 	var chunk := _cell(center)
 	house_positions[record.id] = center
 	# Townhouses facing the square and some farm wings have independent damage.
-	if (xz.length() < 104 or record.kind == "farm") and damageable_count < 40:
+	if (xz.length() < 104 or record.kind == "farm") and damageable_count < damage_limit:
 		var section := MostaHouseSection.new()
 		section.name = record.id
-		section.section_id = StringName("mosta_" + record.id)
+		section.section_id = StringName(section_prefix + "_" + record.id)
 		section.size = dimensions
 		section.position = center
 		section.rotation.y = yaw
@@ -185,7 +188,7 @@ func _house_details(section: MostaHouseSection, base: Vector3, basis: Basis, wid
 func _detail_box(section: MostaHouseSection, base: Vector3, basis: Basis, offset: Vector3, dimensions: Vector3, colour: Color, close: bool) -> void:
 	if section != null:
 		var part := MeshKit.box(section, dimensions, base+basis*offset, _material(colour))
-		part.visibility_range_end = DETAIL_DISTANCE if close else DISTANT_DISTANCE
+		part.visibility_range_end = DETAIL_DISTANCE if close else shell_visibility_range
 		section.collapsed.connect(func(_id: StringName): part.hide())
 	else:
 		_batch_box(base+basis*offset, dimensions, basis, colour, close)
@@ -236,7 +239,7 @@ func _cell_origin(cell: Vector2i) -> Vector3:
 func _box_collision(cell: Vector2i, center: Vector3, dimensions: Vector3, basis: Basis, id: String) -> void:
 	if not _cells.has(cell):
 		var body := StaticBody3D.new()
-		body.name = "MostaBlock_%d_%d" % [cell.x,cell.y]
+		body.name = "%s_Block_%d_%d" % [section_prefix, cell.x, cell.y]
 		body.position = _cell_origin(cell)
 		body.collision_layer = 1
 		body.collision_mask = 0
@@ -285,7 +288,7 @@ func _finish_batches() -> void:
 		batch.position = _cell_origin(record.cell)
 		batch.material_override = palette
 		batch.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		batch.visibility_range_end = DETAIL_DISTANCE if record.close else DISTANT_DISTANCE
+		batch.visibility_range_end = DETAIL_DISTANCE if record.close else shell_visibility_range
 		add_child(batch)
 		draw_batches += 1
 	_batches.clear()

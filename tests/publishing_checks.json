@@ -1,4 +1,5 @@
 [
+  ["godot", "--headless", "--path", ".", "--fixed-fps", "120", "--script", "res://tests/wartime_villages_checks.gd"],
   ["godot", "--headless", "--path", ".", "--fixed-fps", "120", "--script", "res://tests/mosta_checks.gd"],
   ["godot", "--headless", "--path", ".", "--fixed-fps", "120", "--script", "res://tests/bf109_checks.gd"],
   ["godot", "--headless", "--path", ".", "--fixed-fps", "120", "--script", "res://tests/st_elmo_raid_checks.gd"],

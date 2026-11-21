@@ -47,3 +47,10 @@ or a verified 1940-42 agricultural reconstruction. Urban exclusion buffers are
 conservative editorial masks. Existing bundled procedural surface_detail.png is
 reused. The supplied comparison informed field-shape principles only; no photo,
 watermark or third-party image texture was embedded. See docs/malta-countryside.md.
+
+
+Wartime village church plans use present-day footprint coordinates from
+© OpenStreetMap contributors under ODbL 1.0 (https://www.openstreetmap.org/copyright).
+The way IDs and separate heritage point estimates are recorded in
+assets/malta/villages/church_footprints.json. Map interpretation and game
+geometry use the supplied cropped wartime references and original procedural art.
