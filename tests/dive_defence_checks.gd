@@ -26,7 +26,12 @@ func run() -> void:
 	var mission_names: Array[String] = []
 	for index in session.missions_menu.mission_picker.item_count:
 		mission_names.append(session.missions_menu.mission_picker.get_item_text(index))
-	check(mission_names == ["Defend Valletta — Ta’ Qali Interception", "Under Dive-Bomber Attack — Ħal Luqa", "Faith, Hope and Charity — Harbour Interception"], "Missions menu preserves interception and AA choices and includes harbour interception")
+	check(mission_names == [
+		"Defend Valletta — Ta’ Qali Interception",
+		"Under Dive-Bomber Attack — Ħal Luqa",
+		"Faith, Hope and Charity — Harbour Interception",
+		"Raid on St Elmo — Ju 87 Stuka",
+	], "Missions menu preserves interception and AA choices alongside the St Elmo raid")
 	session.missions_menu.mission_picker.select(1)
 	session.missions_menu._choose_mission(1)
 	check(session.missions_menu.briefing.text==DiveDefenceMission.BRIEFING and session.missions_menu.aircraft_picker.disabled,"AA briefing and ground departure selection")

@@ -44,7 +44,7 @@ func _run() -> void:
 	foe.ai.combat_enabled = false
 	foe.take_damage(51)
 	await _frames(3)
-	_check(session.encounters.active.size() == 1 and not session.encounters.awaiting_confirmation, "Low HP or damage/smoke cannot clear an encounter")
+	_check(session.encounters.active.has(foe) and session.encounters.stage == 1 and session.defeat_notifications == 0, "Low HP or damage/smoke cannot clear an encounter")
 	foe.take_damage(100)
 	foe.take_damage(100)
 	_check(session.encounters.active.is_empty() and session.encounters.wrecks.has(foe) and session.defeat_notifications == 1, "Destruction removes active tracking once while retaining a physical wreck")
@@ -58,7 +58,7 @@ func _run() -> void:
 	player.guns.pool.spawn(position + Vector3.UP * 50, Vector3.FORWARD * 10, 20, 1, player.get_rid(), false, player.team_id)
 	var rounds: int = player.guns.pool.active.size()
 	var echo: InputEventKey = InputEventKey.new()
-	echo.keycode = KEY_C
+	echo.physical_keycode = KEY_C
 	echo.pressed = true
 	echo.echo = true
 	Input.parse_input_event(echo)
@@ -70,11 +70,9 @@ func _run() -> void:
 	key = key.duplicate()
 	key.pressed = false
 	Input.parse_input_event(key)
-	for press in range(8):
-		session.encounters.confirm()
-	_check(session.encounters.spawning and not session.encounters.awaiting_confirmation and session.encounters.active.is_empty(), "Confirmation latches once before deferred physics-safe spawning")
+	_check(session.encounters.active.is_empty(), "Free roam defers the spawn until physics is ready")
 	await _frames(3)
-	_check(session.encounters.active.size() == 1 and session.enemy != foe, "Repeated confirmation spawns exactly one replacement")
+	_check(session.encounters.active.size() == 1 and session.enemy != foe, "One explicit Free Roam key press spawns one replacement")
 	_check(session.malta_mission == mission and mission.world.get_instance_id() == scene_id and session.aircraft == player and session.session_number == life, "Confirmation retains session, continuous world and exact player instance")
 	_check(player.global_position.distance_to(position) < 5 and player.linear_velocity.distance_to(velocity) < 5 and not player.reset_pending, "Airborne position and velocity continue through forces without runway reset")
 	_check(player.health.hp == 57 and player.components.integrity[&"engine"] == 71 and absf(player.components.fuel_remaining - 0.43) < 0.001 and player.engine_running and not player.gear.extended and player.pilot.throttle == 0.61, "Health, component damage, fuel, engine, gear and throttle persist")
