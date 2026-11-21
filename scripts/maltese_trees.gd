@@ -28,6 +28,7 @@ func _ready() -> void:
 	for i in layout.trees.size():
 		var tree: Dictionary=layout.trees[i]
 		var point:=MaltaGeography.vector(tree.position)
+		if MostaVillage.replaces_scenery(point): continue
 		var cell:=Vector2i(floori(point.x/float(layout.settings.batch_size_m)),floori(point.z/float(layout.settings.batch_size_m)))
 		var key: String="%d_%d_%s_%d"%[cell.x,cell.y,tree.species,int(tree.variant)]
 		if not grouped.has(key):grouped[key]=[]

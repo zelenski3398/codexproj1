@@ -16,6 +16,8 @@ static func data() -> Dictionary:
 		var cottonera: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://assets/malta/cottonera/alignment.json"))
 		for place in cottonera.regions:
 			_data.landmarks.append({"name":place.name,"position":place.position})
+		var mosta: Array = MostaVillage.layout().origin_world.duplicate()
+		_data.landmarks.append({"name":"Mosta","position":mosta,"chart_only":true})
 	return _data
 
 static func vector(value: Array) -> Vector3:

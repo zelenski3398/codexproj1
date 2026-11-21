@@ -1,5 +1,6 @@
 shader_type spatial;
 render_mode cull_back;
+#include "res://assets/malta/materials/mosta_scenery_mask.gdshaderinc"
 uniform sampler2D surface_detail : repeat_enable, filter_linear_mipmap;
 varying vec3 world_point;
 void vertex() {
@@ -15,6 +16,7 @@ void vertex() {
     POSITION = clip;
 }
 void fragment() {
+    if (inside_mosta_reconstruction(world_point.xz)) { discard; }
     float earth = texture(surface_detail, world_point.xz * 0.11).g;
     // GLB vertex colours are stored in sRGB; ALBEDO uses linear colour.
     // Decode once to keep neighbouring plots earthy rather than pastel tiles.
