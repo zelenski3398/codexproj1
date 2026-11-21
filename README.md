@@ -89,10 +89,10 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`b9caf8ddd1a0823110d876072087da286f447bc4`](https://github.com/zelenski3398/codexproj1/commit/b9caf8ddd1a0823110d876072087da286f447bc4)
+**Latest documented commit:** [`c1f63e0969c7c62da506eeb18afa4f42dfa28497`](https://github.com/zelenski3398/codexproj1/commit/c1f63e0969c7c62da506eeb18afa4f42dfa28497)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest wartime villages update](docs/development-updates/2026-11-21-wartime-villages.md)
+[latest Windows release update](docs/development-updates/2026-11-21-windows-download.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -101,9 +101,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor b9caf8ddd1a0823110d876072087da286f447bc4 HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' b9caf8ddd1a0823110d876072087da286f447bc4..HEAD
-git diff --stat b9caf8ddd1a0823110d876072087da286f447bc4..HEAD
+git merge-base --is-ancestor c1f63e0969c7c62da506eeb18afa4f42dfa28497 HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' c1f63e0969c7c62da506eeb18afa4f42dfa28497..HEAD
+git diff --stat c1f63e0969c7c62da506eeb18afa4f42dfa28497..HEAD
 ```
 
 For every project update, update this README and the relevant guides, append a
@@ -115,11 +115,10 @@ the original full-history reconstruction unless earlier evidence changes.
 
 ## Windows download
 
-Download **First-Sortie-Windows-x64.zip** from **First Sortie for Windows (64-bit)**
-on the [GitHub Releases page](https://github.com/zelenski3398/codexproj1/releases).
-The build is currently a draft, so sign in with repository write access to see it.
-Extract the ZIP and run **First-Sortie.exe**. The portable build bundles its assets
-and targets 64-bit Windows 10 or 11 with OpenGL 3.3 support.
+[Download First Sortie for Windows (64-bit)](https://github.com/zelenski3398/codexproj1/releases/latest/download/First-Sortie-Windows-x64.zip).
+Extract the ZIP and run **First-Sortie.exe**. This portable, unsigned build
+bundles the game assets and targets 64-bit Windows 10 or 11 with OpenGL 3.3.
+[Release notes and SHA-256 checksum](https://github.com/zelenski3398/codexproj1/releases/latest).
 
 ## Browser version and free hosting
 

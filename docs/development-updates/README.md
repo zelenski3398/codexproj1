@@ -4,6 +4,7 @@
 
 The original report is a frozen 50-commit audit through `588ac7b`. Later changes are recorded here with explicit commit boundaries, avoiding a repeated reconstruction of unchanged history.
 
+- [21 November 2026 — Downloadable Windows build with wartime Malta](2026-11-21-windows-download.md).
 - [21 November 2026 — Wartime villages and churches across Malta](2026-11-21-wartime-villages.md).
 - [21 November 2026 — Playable Bf 109 fighters and repeatable Free Roam spawning](2026-11-21-bf109-fighters.md).
 - [21 November 2026 — Wartime Mosta, the Rotunda and village roads](2026-11-21-wartime-mosta.md).
