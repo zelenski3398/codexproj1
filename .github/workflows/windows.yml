@@ -1,0 +1,75 @@
+name: Publish Windows build
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Full main commit SHA to package
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency: windows-release
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      SOURCE_SHA: ${{ inputs.source_sha }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check out the requested main commit
+        run: |
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          git merge-base --is-ancestor "$SOURCE_SHA" origin/main
+          git checkout --detach "$SOURCE_SHA"
+      - name: Install verified Godot editor and Windows template
+        run: |
+          version=4.6.3
+          base="https://github.com/godotengine/godot/releases/download/$version-stable"
+          cd "$RUNNER_TEMP"
+          editor="Godot_v$version-stable_linux.x86_64.zip"
+          templates="Godot_v$version-stable_export_templates.tpz"
+          for item in SHA512-SUMS.txt "$editor" "$templates"; do
+            curl --fail --location --retry 3 "$base/$item" -o "$item"
+          done
+          awk -v editor="$editor" -v templates="$templates" '$2 == editor || $2 == templates' SHA512-SUMS.txt > windows-checksums
+          test "$(wc -l < windows-checksums)" -eq 2
+          sha512sum --check --strict windows-checksums
+          unzip -o "$editor"
+          mv "Godot_v$version-stable_linux.x86_64" godot
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+          template_dir="$HOME/.local/share/godot/export_templates/$version.stable"
+          mkdir -p "$template_dir"
+          unzip -jo "$templates" templates/windows_release_x86_64.exe templates/version.txt -d "$template_dir"
+      - name: Export and verify the portable ZIP
+        run: |
+          output="$RUNNER_TEMP/windows-build"
+          mkdir -p "$output"
+          godot --headless --editor --import --quit
+          godot --headless --export-release "Windows Desktop" "$output/First-Sortie.exe"
+          file "$output/First-Sortie.exe" | grep -E 'PE32\+.*x86-64'
+          cp web/GODOT-LICENSE.txt web/GODOT-COPYRIGHT.txt "$output/"
+          cp assets/malta/ATTRIBUTION.txt "$output/MALTA-ATTRIBUTION.txt"
+          cd "$output"
+          printf 'Extract this ZIP and run First-Sortie.exe.\nSource commit: %s\n' "$SOURCE_SHA" > Readme.txt
+          zip -q First-Sortie-Windows-x64.zip First-Sortie.exe *.txt
+          unzip -tq First-Sortie-Windows-x64.zip
+          sha256sum First-Sortie-Windows-x64.zip > First-Sortie-Windows-x64.zip.sha256
+      - name: Upload and publish the GitHub release
+        run: |
+          tag="windows-${SOURCE_SHA:0:7}"
+          output="$RUNNER_TEMP/windows-build"
+          if ! gh release view "$tag" >/dev/null 2>&1; then
+            gh release create "$tag" --draft --target "$SOURCE_SHA" \
+              --title "First Sortie for Windows (64-bit)" \
+              --notes "Extract the ZIP and run First-Sortie.exe. Requires 64-bit Windows 10 or 11 with OpenGL 3.3 support. The executable is unsigned."
+          fi
+          test "$(gh release view "$tag" --json isDraft --jq .isDraft)" = true
+          gh release upload "$tag" "$output/First-Sortie-Windows-x64.zip" "$output/First-Sortie-Windows-x64.zip.sha256" --clobber
+          gh release edit "$tag" --draft=false --latest
