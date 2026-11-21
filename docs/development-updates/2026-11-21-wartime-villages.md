@@ -6,4 +6,7 @@ The native scenery checks loaded 7,911 buildings in 1,244 geometry batches and s
 
 The map edition, one-point crop residuals and some peripheral chapel identifications remain open. The Pembroke and St Julian’s area uses a provisional layout from heritage references because the coastal sheet could not be identified among the supplied screenshots.
 
+
+The pre-update publishing run exposed two stale fixtures. The mission picker fixture now expects the existing St Elmo entry. The Survival fixture exercises one explicit spawn in repeatable Free Roam, while its later Survival-stage checks still cover repeated confirmations. Survival passed 84/84 and Dive Defence passed 47/47 locally. The final Web export includes the registry and texture, and Chromium reached the airborne St Elmo objective. [Previous publishing run](https://github.com/zelenski3398/codexproj1/actions/runs/44927405136) · [Fixture update](https://github.com/zelenski3398/codexproj1/commit/b9caf8ddd1a0823110d876072087da286f447bc4)
+
 [Area and church inventory, registration residuals and screenshot atlases](../wartime-villages.md)
