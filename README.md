@@ -4,6 +4,7 @@
 Aircraft now have [universal component failures, progressive fires and severity-based crashes](docs/universal-aircraft-damage.md), including independent SM.79 engines and non-explosive engine-out gliding.
 
 Startup and return to the title show the supplied live poster as a continuous forward-and-return animation, accompanied by the supplied **Cinematic March** soundtrack, with **Play integrated into the artwork**. Play fades into the existing main menu. See the [startup guide and previews](docs/startup-poster.md).
+Startup opens directly on the animated poster. Browser builds can play a full-screen video while the game downloads. [Loading video setup](docs/startup-poster.md).
 The primary **Free Roam** action opens Malta on foot beside the selected aircraft inside a hangar. **E** boards/exits; **V** requests recovery after an aircraft loss. Pilot health is independent of aircraft HP. [Hangar departures, survival, recovery and poster fixes](docs/pilot-survival-and-recovery.md).
 
 A single-player 3D **Godot 4 / GDScript** flight prototype set at a fictional RAF
@@ -89,10 +90,10 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`c1f63e0969c7c62da506eeb18afa4f42dfa28497`](https://github.com/zelenski3398/codexproj1/commit/c1f63e0969c7c62da506eeb18afa4f42dfa28497)
+**Latest documented commit:** [`30aadc967c8b2a10c62ee6f8f2751fcb74855a5f`](https://github.com/zelenski3398/codexproj1/commit/30aadc967c8b2a10c62ee6f8f2751fcb74855a5f)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest Windows release update](docs/development-updates/2026-11-21-windows-download.md)
+[latest startup update](docs/development-updates/2026-11-22-loading-intro.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -101,9 +102,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor c1f63e0969c7c62da506eeb18afa4f42dfa28497 HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' c1f63e0969c7c62da506eeb18afa4f42dfa28497..HEAD
-git diff --stat c1f63e0969c7c62da506eeb18afa4f42dfa28497..HEAD
+git merge-base --is-ancestor 30aadc967c8b2a10c62ee6f8f2751fcb74855a5f HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' 30aadc967c8b2a10c62ee6f8f2751fcb74855a5f..HEAD
+git diff --stat 30aadc967c8b2a10c62ee6f8f2751fcb74855a5f..HEAD
 ```
 
 For every project update, update this README and the relevant guides, append a
