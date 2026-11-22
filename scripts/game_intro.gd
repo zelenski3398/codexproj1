@@ -2,8 +2,6 @@ class_name GameIntro
 extends CanvasLayer
 ## Startup-only presentation. The existing selector stays alive underneath.
 signal completed
-@export var opening_seconds: float = 1.2
-@export var poster_fade_seconds: float = 2.8
 @export var exit_fade_seconds: float = 1.6
 @export var menu_fade_seconds: float = 1.6
 @export var decode_video: bool = true
@@ -11,8 +9,8 @@ signal completed
 const POSTER = preload("res://assets/intro/malta_poster.png")
 const POSTER_AUDIO = preload("res://assets/intro/wings_over_malta_cinematic_march.ogg")
 const MOVIE = preload("res://assets/intro/malta_poster.ogv")
-enum Phase { OPENING, POSTER, LEAVING, MENU, DONE }
-var phase: Phase = Phase.OPENING
+enum Phase { POSTER, LEAVING, MENU, DONE }
+var phase: Phase = Phase.POSTER
 var elapsed: float = 0.0
 var surface: Control
 var artwork: Control
@@ -26,7 +24,6 @@ var movie: VideoStreamPlayer
 var destination: String = "menu"
 var tutorial_button: Button
 var play_button: Button
-var opening: Label
 var blackout: ColorRect
 var poster_rect: Rect2
 var _audio_button_visible: bool = true
@@ -89,15 +86,6 @@ func _ready() -> void:
 		tutorial_button.add_theme_stylebox_override(variant,play_button.get_theme_stylebox(variant))
 	tutorial_button.add_theme_color_override("font_color",Color("722c1e"))
 	artwork.add_child(tutorial_button);tutorial_button.pressed.connect(begin_tutorial)
-	opening = Label.new()
-	opening.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	opening.text = "WINGS OVER MALTA\n1940 — 1942"
-	opening.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	opening.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	opening.add_theme_color_override("font_color", Color("e8c58b"))
-	opening.add_theme_font_size_override("font_size", 42)
-	surface.add_child(opening)
-	opening.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	blackout = ColorRect.new()
 	blackout.color = Color.BLACK
 	blackout.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -155,7 +143,7 @@ func begin_play() -> void:
 
 func _process(delta: float) -> void:
 	elapsed += delta
-	if decode_video and phase in [Phase.OPENING,Phase.POSTER] and DisplayServer.get_name()!="headless":
+	if decode_video and phase == Phase.POSTER and DisplayServer.get_name()!="headless":
 		var position:=movie.stream_position
 		# A slow frame/background tab is not a stopped decoder. Only recover
 		# an unexpectedly stopped player; normal looping belongs to Godot.
@@ -167,10 +155,7 @@ func _process(delta: float) -> void:
 			video_stalled=0
 			video_last_position=-1
 			video_restarts+=1
-	if phase == Phase.OPENING and elapsed >= opening_seconds + poster_fade_seconds:
-		phase = Phase.POSTER
-		elapsed = 0.0
-	elif phase == Phase.LEAVING and elapsed >= exit_fade_seconds:
+	if phase == Phase.LEAVING and elapsed >= exit_fade_seconds:
 		phase = Phase.MENU
 		elapsed = 0.0
 		movie.stop()
@@ -183,26 +168,22 @@ func _process(delta: float) -> void:
 	_update_visuals()
 
 func _update_visuals() -> void:
-	var reveal: float = smoothstep(opening_seconds, opening_seconds + poster_fade_seconds, elapsed) if phase == Phase.OPENING else 1.0
-	artwork.modulate.a = reveal
-	opening.modulate.a = (1.0 - reveal) * smoothstep(0.0, opening_seconds * 0.7, elapsed) if phase == Phase.OPENING else 0.0
 	play_button.disabled = phase != Phase.POSTER
 	tutorial_button.disabled = phase != Phase.POSTER
-	play_button.modulate.a = smoothstep(0.65, 1.0, reveal)
 	var shade: float = 0.0
 	if phase == Phase.LEAVING:
 		shade = smoothstep(0.0, exit_fade_seconds, elapsed)
 	elif phase == Phase.MENU:
 		shade = 1.0 if destination=="tutorial" else 1.0 - smoothstep(0.0, menu_fade_seconds, elapsed)
 	blackout.color.a = shade
-	poster_audio.volume_db = linear_to_db(maxf(0.0001, reveal * (1.0 - shade) * db_to_linear(poster_music_volume_db)))
+	poster_audio.volume_db = linear_to_db(maxf(0.0001, (1.0 - shade) * db_to_linear(poster_music_volume_db)))
 
 func _start_video() -> void:
-	if not is_inside_tree() or phase not in [Phase.OPENING,Phase.POSTER] or not decode_video or DisplayServer.get_name()=="headless":return
+	if not is_inside_tree() or phase != Phase.POSTER or not decode_video or DisplayServer.get_name()=="headless":return
 	if not movie.is_playing():movie.play()
 
 func _start_audio() -> void:
-	if not is_inside_tree() or phase not in [Phase.OPENING,Phase.POSTER]: return
+	if not is_inside_tree() or phase != Phase.POSTER: return
 	if GameAudioMixer.instance.playback_enabled and not poster_audio.playing:
 		poster_audio.play()
 		music_starts += 1

@@ -13,9 +13,10 @@ $GODOT_HEAD_INCLUDE
 body{margin:0;background:#101b17;color:#e9e8d7;font:16px/1.55 system-ui,sans-serif;overflow:hidden}
 #game{position:fixed;inset:0;background:#101b17}
 canvas{display:block;width:100%;height:100%;outline:none}
-#loading{position:fixed;inset:0;display:grid;place-items:center;padding:30px;background:#101b17}
-#loading[hidden],button[hidden],progress[hidden]{display:none}
-.loading-panel{width:min(420px,100%);text-align:center}
+#loading{position:fixed;inset:0;display:grid;place-items:center;background:#000}
+#loading[hidden],#loading-video[hidden],.loading-panel[hidden],button[hidden],progress[hidden]{display:none}
+#loading-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.loading-panel{position:relative;width:min(420px,calc(100% - 48px));text-align:center}
 #status{overflow-wrap:anywhere}
 progress{display:block;width:100%;height:8px;accent-color:#e4bf75;margin:18px 0}
 button{border:1px solid #e4bf75;border-radius:3px;background:#e4bf75;color:#17211a;font:700 15px system-ui;padding:15px 25px;cursor:pointer}
@@ -25,12 +26,13 @@ button:focus-visible{outline:3px solid white;outline-offset:4px}
 <body>
 <div id="game"><canvas id="canvas" tabindex="0" aria-label="Wings Over Malta game">Your browser needs canvas and WebGL 2 support.</canvas></div>
 <div id="loading">
-<div class="loading-panel">
-<div id="status" role="status" aria-live="polite">Loading Wings Over Malta…</div>
-<progress id="progress" aria-label="Loading game"></progress>
+<video id="loading-video" muted playsinline loop preload="none" aria-hidden="true" hidden></video>
+<div class="loading-panel" id="loading-panel" hidden>
+<div id="status" role="status" aria-live="polite"></div>
+<progress id="progress" aria-label="Loading game" hidden></progress>
 <button id="retry" type="button" hidden>TRY AGAIN</button>
-<noscript><p>JavaScript is required to run the game.</p></noscript>
 </div>
+<noscript><p>JavaScript is required to run the game.</p></noscript>
 </div>
 <script src="$GODOT_URL"></script>
 <script>
@@ -39,7 +41,10 @@ const config = $GODOT_CONFIG;
 const engine = new Engine(config);
 const overlay = document.getElementById('loading');
 const status = document.getElementById('status');
+const panel = document.getElementById('loading-panel');
+const video = document.getElementById('loading-video');
 const progress = document.getElementById('progress');
+const loadingVideo = ''; // build_web.sh sets this when the supplied video is available.
 const retry = document.getElementById('retry');
 const canvas = document.getElementById('canvas');
 let loading = false;
@@ -50,15 +55,23 @@ async function startGame(){
   if(loading || missing.length) return;
   loading = true;
   retry.hidden = true;
-  progress.hidden = false;
+  panel.hidden = true;
   progress.removeAttribute('value');
-  status.textContent = 'Loading Wings Over Malta…';
+  overlay.setAttribute('aria-busy','true');
+  if(loadingVideo){
+    video.src = loadingVideo;
+    video.muted = true;
+    video.hidden = false;
+    video.play().catch(showFallback);
+  }else{
+    showFallback();
+  }
   window.firstSortieReady = false;
   try{
-    await engine.startGame({canvas:canvas,onProgress:(current,total)=>{
-      if(total>0){progress.max=total;progress.value=current}
-      else{progress.removeAttribute('value')}
+    await engine.startGame({canvas,onProgress:(current,total)=>{
+      if(total>0){progress.max=total;progress.value=current;}
     }});
+    stopVideo();
     overlay.hidden = true;
     canvas.focus();
     window.firstSortieReady = true;
@@ -67,12 +80,29 @@ async function startGame(){
     status.textContent = 'The game could not start. '+String(error.message||error);
     retry.hidden = false;
     loading = false;
+    stopVideo();
     progress.hidden = true;
+    panel.hidden = false;
   }
+}
+function showFallback(){
+  if(!overlay.hasAttribute('aria-busy')) return;
+  video.hidden = true;
+  status.textContent = 'Loading game…';
+  progress.hidden = false;
+  panel.hidden = false;
+}
+video.addEventListener('error',showFallback);
+function stopVideo(){
+  overlay.removeAttribute('aria-busy');
+  video.pause();
+  video.removeAttribute('src');
+  video.load();
+  video.hidden = true;
 }
 retry.addEventListener('click',startGame);
 if(missing.length){
-  progress.hidden = true;
+  panel.hidden = false;
   status.textContent = 'This browser cannot run the game: ' + missing.join(', ') + '. Try an up-to-date desktop browser with hardware acceleration enabled.';
 }else{
   startGame();

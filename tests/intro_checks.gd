@@ -27,10 +27,7 @@ func run() -> void:
 		var button_rect := Rect2(intro.play_button.position, intro.play_button.size)
 		check(Rect2(Vector2.ZERO,intro.poster_rect.size).encloses(button_rect), "Play remains inside poster at " + str(dimensions))
 		check(is_equal_approx(intro.poster_rect.size.x / intro.poster_rect.size.y,834.0/1112.0), "Full uncropped portrait aspect preserved")
-	intro.begin_play()
-	check(intro.phase == GameIntro.Phase.OPENING, "Opening cannot accidentally launch menu")
-	intro._process(4.1)
-	check(intro.phase == GameIntro.Phase.POSTER and not intro.play_button.disabled, "Slow dissolve reveals usable printed Play panel")
+	check(intro.phase == GameIntro.Phase.POSTER and not intro.play_button.disabled, "Startup opens directly on the interactive poster")
 	var key := InputEventKey.new()
 	key.keycode = KEY_ENTER
 	key.pressed = true
@@ -51,7 +48,6 @@ func run() -> void:
 	session.show_intro()
 	var second: GameIntro = session.startup_intro
 	second.set_process(false)
-	second._process(4.1)
 	var click := InputEventMouseButton.new()
 	click.position = second.poster_rect.position + second.play_button.position + second.play_button.size * 0.5
 	click.button_index = MOUSE_BUTTON_LEFT

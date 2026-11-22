@@ -6,6 +6,13 @@ output_dir="$project_dir/builds/web"
 mkdir -p "$output_dir"
 "$godot_bin" --headless --path "$project_dir" --editor --import --quit
 "$godot_bin" --headless --path "$project_dir" --export-release Web "$output_dir/index.html"
+for intro in loading-intro.mp4 loading-intro.webm; do
+    if [[ -s "$project_dir/web/$intro" ]]; then
+        cp "$project_dir/web/$intro" "$output_dir/"
+        sed -i "s/const loadingVideo = '';/const loadingVideo = '$intro';/" "$output_dir/index.html"
+        break
+    fi
+done
 cp "$project_dir/web/GODOT-LICENSE.txt" "$project_dir/web/GODOT-COPYRIGHT.txt" "$output_dir/"
 cp "$project_dir/assets/fonts/DejaVu-LICENSE.txt" "$output_dir/DejaVu-LICENSE.txt"
 cp "$project_dir/assets/malta/ATTRIBUTION.txt" "$output_dir/MALTA-ATTRIBUTION.txt"
