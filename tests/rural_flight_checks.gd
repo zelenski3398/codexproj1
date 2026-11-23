@@ -13,13 +13,21 @@ func run() -> void:
 	var game=load("res://main.tscn").instantiate();root.add_child(game);game.start_free_roam("spitfire");await frames(80)
 	check(game.malta_mission.board_nearest(),"Original manual boarding works with rural vegetation present")
 	var trees: MalteseTrees=game.field.landscape_details.trees
-	var group: Array=trees.layout.trees.filter(func(t):return t.context=="olive_grove" and t.position[2]>0)
-	var point:=MaltaGeography.vector(group[group.size()/2].position)
+	var initial_tree_count := trees.instance_count
+	var retained_indices: Array[int] = []
+	for cell in trees.placement_cells.values():
+		retained_indices.append_array(cell)
+	retained_indices.sort()
+	var grove_indices := retained_indices.filter(func(index):
+		var tree: Dictionary = trees.layout.trees[index]
+		return tree.context == "olive_grove" and tree.position[2] > 0)
+	var point := MaltaGeography.vector(trees.layout.trees[grove_indices[grove_indices.size() / 2]].position)
 	var plane: FlightAircraft=game.aircraft
 	# Disclosed low-flight initial pose; all subsequent movement uses forces.
 	plane.request_reset();plane.pending_reset_pose=Transform3D(Basis(Vector3.RIGHT,.03),point+Vector3.UP*110);plane.pending_reset_velocity=Vector3(0,0,-65)
 	plane.engine_running=true;plane.pilot.automated=true;await frames(3)
 	var origin: Vector3=plane.global_position;var identity: int=game.field.get_instance_id();var minimum_agl: float=INF
+	var peak_colliders := trees.collider_count
 	for tick in 1200:
 		var probe: Vector3=plane.global_position-plane.global_basis.z*180
 		var hit:=plane.get_world_3d().direct_space_state.intersect_ray(PhysicsRayQueryParameters3D.create(probe+Vector3.UP*1000,probe-Vector3.UP*1500,1))
@@ -29,11 +37,12 @@ func run() -> void:
 		plane.pilot.roll=clampf(-plane.global_basis.x.y*3-plane.angular_velocity.z*.4,-.5,.5)
 		plane.pilot.throttle=.75
 		await physics_frame
+		peak_colliders = maxi(peak_colliders, trees.collider_count)
 		minimum_agl=minf(minimum_agl,plane.altitude)
 		if plane.is_crashed:break
 	check(not plane.is_crashed and not plane.is_destroyed and plane.health.hp==100 and minimum_agl>20,"Real low flight over fields and tree groups retains healthy aircraft and terrain clearance")
 	check(plane.global_position.distance_to(origin)>450 and game.field.get_instance_id()==identity,"Continuous aerodynamic flight traverses rural scenery without world reload")
-	check(trees.collider_count<=trees.maximum_colliders and trees.instance_count==4800,"Flight keeps trunk physics bounded and planting stable")
+	check(peak_colliders <= trees.maximum_colliders and initial_tree_count > 2500 and trees.instance_count == initial_tree_count,"Flight keeps trunk physics bounded and planting stable")
 	check(game.encounters.active.is_empty() and game.malta_mission.fleet.size()>=6,"Scenery changes preserve peaceful departure and original stationed aircraft")
 	print("LOW FLIGHT minAGL=",minimum_agl," distance=",plane.global_position.distance_to(origin)," colliders=",trees.collider_count)
 	game.queue_free();await frames(5);print("RURAL FLIGHT RESULT: %d/%d passed"%[passed,passed+failed]);quit(1 if failed else 0)

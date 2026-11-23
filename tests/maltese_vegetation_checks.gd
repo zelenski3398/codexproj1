@@ -12,18 +12,33 @@ func run() -> void:
 	GameAudioMixer.instance.playback_enabled=false
 	var world:=MaltaWorld.new();root.add_child(world);await frames(8)
 	var trees: MalteseTrees=world.landscape_details.trees
-	check(is_instance_valid(trees) and trees.instance_count==trees.layout.trees.size() and trees.instance_count>2500,"Actual Malta scene includes the baked tree population")
+	var expected_indices: Array[int] = []
+	for i in trees.layout.trees.size():
+		var point := MaltaGeography.vector(trees.layout.trees[i].position)
+		if not MostaVillage.replaces_scenery(point) and not WartimeVillages.replaces_scenery(point):
+			expected_indices.append(i)
+	var planted_indices: Array[int] = []
+	for cell in trees.placement_cells.values():
+		planted_indices.append_array(cell)
+	planted_indices.sort()
+	check(planted_indices == expected_indices and trees.instance_count == expected_indices.size(),
+		"Trunk placement preserves exactly the baked trees outside village exclusions")
+	check(trees.instance_count > 2500 and trees.instance_count < trees.layout.trees.size(),
+		"Malta retains substantial vegetation and clears overlapping village plots")
 	check(trees.meshes.size()==18 and trees.batch_count>0,"All nine species variants use shared near/far meshes and MultiMesh batches")
 	check(trees.material.transparency==BaseMaterial3D.TRANSPARENCY_DISABLED and trees.material.vertex_color_use_as_albedo,"Foliage uses one shared opaque Compatibility material")
 	var batch_ok:=true
+	var rendered_instances := 0
 	for child in trees.get_children():
 		if child is MultiMeshInstance3D:
+			rendered_instances += child.multimesh.instance_count
 			batch_ok=batch_ok and child.multimesh.mesh!=null and child.visibility_range_end<=trees.far_distance
 			for i in child.multimesh.instance_count:
 				var pose: Transform3D=child.multimesh.get_instance_transform(i)
 				batch_ok=batch_ok and pose.basis.y.normalized().dot(Vector3.UP)>.999
 	check(batch_ok,"Trees remain upright on slopes and every visual batch has bounded range")
-	var record: Dictionary=trees.layout.trees[0];var position:=MaltaGeography.vector(record.position)
+	check(rendered_instances == expected_indices.size() * 2, "Both visual LODs contain one instance for each retained placement")
+	var record: Dictionary=trees.layout.trees[expected_indices[0]];var position:=MaltaGeography.vector(record.position)
 	var camera:=Camera3D.new();world.add_child(camera);camera.make_current();camera.global_position=position+Vector3(0,2,5)
 	trees.refresh_collisions(camera.global_position);await frames(3)
 	check(trees.collider_count>0 and trees.collider_count<=trees.maximum_colliders,"Nearby simple trunk colliders obey the strict active-body cap")

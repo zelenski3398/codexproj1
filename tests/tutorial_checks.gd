@@ -33,9 +33,10 @@ func run() -> void:
 	game=load("res://main.tscn").instantiate();root.add_child(game)
 	await frames(3);game.show_intro()
 	var poster: GameIntro=game.startup_intro;poster.set_process(false)
-	check(poster.tutorial_button.disabled,"Tutorial button is shielded during the opening dissolve")
-	poster._process(4.1)
-	check(not poster.tutorial_button.disabled and Rect2(Vector2.ZERO,poster.artwork.size).encloses(Rect2(poster.tutorial_button.position,poster.tutorial_button.size)),"Tutorial is integrated inside the poster and enabled after reveal")
+	check(poster.phase == GameIntro.Phase.POSTER and not poster.tutorial_button.disabled,
+		"Tutorial is available immediately on the interactive poster")
+	check(Rect2(Vector2.ZERO,poster.artwork.size).encloses(Rect2(poster.tutorial_button.position,poster.tutorial_button.size)),
+		"Tutorial button remains inside the poster artwork")
 	poster.begin_tutorial();poster.begin_tutorial();poster._process(1.7);poster._process(1.7)
 	await frames(180)
 	tutorial=game.tutorial;mission=game.malta_mission
