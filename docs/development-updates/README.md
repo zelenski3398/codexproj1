@@ -4,6 +4,7 @@
 
 The original report is a frozen 50-commit audit through `588ac7b`. Later changes are recorded here with explicit commit boundaries, avoiding a repeated reconstruction of unchanged history.
 
+- [23 November 2026 — Tutorial and vegetation publishing checks](2026-11-23-publishing-checks.md).
 - [22 November 2026 — Browser loading video support and date card removal](2026-11-22-loading-intro.md).
 - [21 November 2026 — Downloadable Windows build with wartime Malta](2026-11-21-windows-download.md).
 - [21 November 2026 — Wartime villages and churches across Malta](2026-11-21-wartime-villages.md).

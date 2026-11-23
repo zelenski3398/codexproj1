@@ -1,6 +1,6 @@
 # Maltese countryside — 26 October 2026
 
-The continuous world contains **9,703 inferred plots across 389 groups**, **378 dirt-track pieces**, approximately **45 km of physical rubble walls**, and **4,800 planted trees**. The supplied terrain, coastline, roads, airfields, city/fort geometry and mission coordinates are unchanged.
+The continuous world contains **9,703 inferred plots across 389 groups**, **378 dirt-track pieces**, approximately **45 km of physical rubble walls**, and a baked layout of **4,800 tree placements**. At runtime, Mosta and the wartime village footprints exclude overlapping placements. The supplied terrain, coastline, roads, airfields, city/fort geometry and mission coordinates are unchanged.
 
 ## Larger, coherent fields
 

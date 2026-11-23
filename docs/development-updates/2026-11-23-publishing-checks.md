@@ -1,0 +1,5 @@
+# 23 November 2026 — Tutorial and vegetation publishing checks
+
+Three checks failed after the startup and wartime village updates. The Tutorial check now verifies that the button is immediately available and still launches the lesson. The vegetation check compares trunk placement against the exact retained tree IDs and verifies that both visual detail ranges cover the retained placements. The rural flight check samples the trunk collider cap throughout the flight and compares final planting to the initial live count. The browser smoke script also uses the live population. [Failed browser publishing run](https://github.com/zelenski3398/codexproj1/actions/runs/45043080922) · [Test changes](https://github.com/zelenski3398/codexproj1/commit/f45cfadb840caccf18c814f82812654679412554)
+
+The three reported failures reproduced locally before the update. Tutorial, vegetation, rural flight, intro and wartime villages passed after the update. The browser smoke script passed its syntax check. These changes affect test expectations and documentation.
