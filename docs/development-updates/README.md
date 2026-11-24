@@ -4,6 +4,7 @@
 
 The original report is a frozen 50-commit audit through `588ac7b`. Later changes are recorded here with explicit commit boundaries, avoiding a repeated reconstruction of unchanged history.
 
+- [24 November 2026 — First multiplayer 1v1 dogfight](2026-11-24-multiplayer-dogfight.md).
 - [24 November 2026 — Harbour survivor recovery and browser loading cinematic](2026-11-24-harbour-recovery.md).
 - [23 November 2026 — Tutorial and vegetation publishing checks](2026-11-23-publishing-checks.md).
 - [22 November 2026 — Browser loading video support and date card removal](2026-11-22-loading-intro.md).

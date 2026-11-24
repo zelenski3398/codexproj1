@@ -15,6 +15,13 @@ Ju 87-inspired opponent; Malta free roam starts peacefully until you request com
 
 The [Hurricane Mk I](docs/hawker-hurricane.md) has its own broad-winged 3D model, eight .303 wing guns, retractable gear, damage profile and shared survivor recovery. It is available in Malta free roam at all three airfields, without changing scripted mission formations. Historical source verification and gameplay approximations are documented in its guide.
 
+## Multiplayer 1v1 Dogfight
+
+The multiplayer preview is on the `feature/multiplayer-dogfight` branch. Open
+**Multiplayer → 1v1 Dogfight**, connect both browsers to the same dedicated
+server, then create guests and challenge each other. [Play locally, host with
+HTTPS, and read the verification notes](docs/multiplayer-dogfight.md).
+
 ## Bf 109 Emil and Friedrich
 
 Choose a German fighter from **Malta · Airfield / Mode Options**. Both offer
@@ -92,10 +99,10 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`2b7becfd6bdbe36e4281cfe4cc531d151d7f6950`](https://github.com/zelenski3398/codexproj1/commit/2b7becfd6bdbe36e4281cfe4cc531d151d7f6950)
+**Latest documented commit:** [`e1eb1d7b02ed723a385aed938dc7f61538149068`](https://github.com/zelenski3398/codexproj1/commit/e1eb1d7b02ed723a385aed938dc7f61538149068)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest harbour recovery update](docs/development-updates/2026-11-24-harbour-recovery.md)
+[latest multiplayer update](docs/development-updates/2026-11-24-multiplayer-dogfight.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -104,9 +111,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor 2b7becfd6bdbe36e4281cfe4cc531d151d7f6950 HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' 2b7becfd6bdbe36e4281cfe4cc531d151d7f6950..HEAD
-git diff --stat 2b7becfd6bdbe36e4281cfe4cc531d151d7f6950..HEAD
+git merge-base --is-ancestor e1eb1d7b02ed723a385aed938dc7f61538149068 HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' e1eb1d7b02ed723a385aed938dc7f61538149068..HEAD
+git diff --stat e1eb1d7b02ed723a385aed938dc7f61538149068..HEAD
 ```
 
 For every project update, update this README and the relevant guides, append a
