@@ -28,7 +28,7 @@ Then the existing mission controller awards success once and shows its results. 
 
 A pilot already safely grounded at a friendly duty station is not forced to take off solely to land again. If combat ends on foot away from base, return to a friendly base using the existing travel/recovery systems. An aircraft recorded as airborne at victory must itself land: exiting, remote travel or changing aircraft cannot bypass that requirement.
 
-Failure screens remain immediate. Losing the required aircraft or pilot during the return cancels success; congratulations cannot play. Existing harbour sea-loss and fort-loss rules still apply. Retry/menu exit frees the return controller and invalidates queued awards. A returning player keeps normal control, health, fuel and damage, and the ongoing world is preserved.
+Pilot death during the return cancels success. In Faith, Hope and Charity, a survivor who loses their aircraft can complete the pending return by reaching a friendly base with recovery transport. Fort loss still fails harbour defence. The other flight missions require the returning aircraft to survive and land. Retry/menu exit frees the return controller and invalidates queued awards. A returning player keeps normal control, health, fuel and damage, and the ongoing world is preserved.
 
 ![Completion after safe landing](previews/mission-return-landed.png)
 

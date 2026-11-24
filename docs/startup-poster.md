@@ -39,4 +39,4 @@ Manual verification: launch normally, wait for the full moving poster, click the
 
 ## Browser loading video
 
-Place the supplied clip at `web/loading-intro.mp4` or `web/loading-intro.webm`. The web build copies it beside the game bundle. The browser plays it muted, fits it to the window and loops it while Godot loads. Once Godot is ready, the shell stops playback and focuses the game. The progress display serves as a fallback if the clip is absent or playback fails. The source video is pending because the uploaded M4V exceeds the workspace transfer limit.
+The supplied `ww2 game intro video v1.m4v` is packaged as `web/loading-intro.mp4`. The web build copies it beside the game bundle. The browser plays it muted, fits it to the window and loops it while Godot loads. Once Godot is ready, the shell stops playback and focuses the game. The progress display serves as a fallback if the clip is absent or playback fails. The 110-second browser copy is 1280 × 536 H.264 at 24 fps with fast-start metadata. It is about 14 MB. The audio track was omitted because the loading screen uses muted autoplay. The existing poster follows when the game is ready.

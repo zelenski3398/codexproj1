@@ -2,7 +2,7 @@
 
 **24 October audio update:** the supplied air-raid siren loops from departure through the interception and fades out on the mission result. It uses the existing Aircraft volume control and radio ducking. Retry restarts one alarm; returning to the menu stops it. AA defence keeps its existing positional siren without a duplicate.
 
-**20 October update:** Ħal Far's departure hangar contains Faith and two additional serviceable Sea Gladiators, replacing this mission's parked Spitfire. The chase camera stays below the roof when boarding. Pilot health remains independent from hull HP, but **a sea crash in the currently occupied aircraft immediately fails this mission**, even if the pilot survives. Survivable land wrecks retain **V → E truck entry** recovery without resetting the mission. [Current survival/recovery rules](pilot-survival-and-recovery.md).
+Ħal Far’s departure hangar contains Faith and two spare Sea Gladiators. After a survivable land crash or ditching, press **V** to call transport and **E** to leave the wreck when safe. Walk to the truck or swim to the sea pickup, then press **E** nearby to return to Ħal Far. Board a serviceable spare with **E**. The formations and wingmen continue the battle during pickup. [Pilot recovery rules](pilot-survival-and-recovery.md).
 
 A **fictional** three-wave mission inspired by Malta's early air defence, not a reconstruction of a documented engagement. Launch it from **Main menu → Missions → Faith, Hope and Charity → Depart from Ħal Far**. The existing continuous Malta world, terrain, cities, military installations and flight controllers are retained.
 
@@ -40,15 +40,15 @@ stateDiagram-v2
     ACTIVE --> REGROUP: Bomber destroyed and all escorts destroyed or withdrawn
     REGROUP --> SPAWNING: Twelve seconds and another wave remains
     ACTIVE --> SUCCESS: Third wave resolved and all bombers stopped / forts alive
-    TAKEOFF --> FAILED: Pilot killed, sea crash or fort lost
-    SPAWNING --> FAILED: Pilot killed, sea crash or no safe spawn
-    ACTIVE --> FAILED: Pilot killed, sea crash, fort lost or live bomber releases
+    TAKEOFF --> FAILED: Pilot killed or fort lost
+    SPAWNING --> FAILED: Pilot killed or no safe spawn
+    ACTIVE --> FAILED: Pilot killed, fort lost or live bomber releases
     ACTIVE --> FAILED: Bomber contact watchdog expires
 ```
 
 Bombers navigate toward a ballistic release point upstream of the actual fort. Fall time is estimated from release height and gravity; inherited horizontal velocity carries **physical `MissionBomb` objects** toward it. Swept impacts produce the existing explosion effects. Only the resulting blast positions subtract fort HP, using distance to the real footprint and a vertical allowance for the fort's masonry. There is no countdown-driven fort damage.
 
-A release immediately fails the interception objective. The released bombs continue falling and the live bomber continues beyond the target. Killing a bomber before release prevents release, even if a stale arrival callback follows it. Pilot death, a sea crash in the occupied aircraft, and either fort reaching zero HP also fail immediately. A survivable land crash or hull depletion alone does not kill the pilot. Results are latched once. The result panel keeps fort HP current while outstanding bombs land.
+A release immediately fails the interception objective. The released bombs continue falling and the live bomber continues beyond the target. Killing a bomber before release prevents release, even if a stale arrival callback follows it. Pilot death and either fort reaching zero HP also fail immediately. A surviving pilot can recover after aircraft loss, including during the final return to base. Results are latched once. The result panel keeps fort HP current while outstanding bombs land.
 
 Each fort starts with a configurable **1,000 HP**; no existing whole-fort health component was present. These mission receivers add no geometry or collision bodies and do not replace city meshes. Their stored footprints come from the existing St Elmo outline and supplied Cottonera **OSM `way/54896162`** for St Angelo. St Elmo uses the existing Valletta peninsula axes; St Angelo uses the existing **EPSG:32633** origin **14.4° E, 35.93° N**, with north as negative Z and units in metres. Interior target points are approximately `(10681.53, sampled Y, 3132.48)` and `(10662.06, sampled Y, 4294.61)` respectively. Heights are sampled from live collision. Source geographic anchors are also retained in the JSON. No terrain, coastline, airfield or fort geometry is moved.
 
