@@ -16,7 +16,8 @@ canvas{display:block;width:100%;height:100%;outline:none}
 #loading{position:fixed;inset:0;display:grid;place-items:center;background:#000}
 #loading[hidden],#loading-video[hidden],.loading-panel[hidden],button[hidden],progress[hidden]{display:none}
 #loading-video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-#intro-sound{position:absolute;right:24px;bottom:24px;padding:10px 16px}
+#intro-controls{position:absolute;right:24px;bottom:24px;display:flex;gap:8px}
+#intro-controls button{padding:10px 16px}
 .loading-panel{position:relative;width:min(420px,calc(100% - 48px));text-align:center}
 #status{overflow-wrap:anywhere}
 progress{display:block;width:100%;height:8px;accent-color:#e4bf75;margin:18px 0}
@@ -27,8 +28,11 @@ button:focus-visible{outline:3px solid white;outline-offset:4px}
 <body>
 <div id="game"><canvas id="canvas" tabindex="0" aria-label="Wings Over Malta game">Your browser needs canvas and WebGL 2 support.</canvas></div>
 <div id="loading">
-<video id="loading-video" muted playsinline loop preload="none" aria-hidden="true" hidden></video>
+<video id="loading-video" muted playsinline preload="none" aria-hidden="true" hidden></video>
+<div id="intro-controls">
 <button id="intro-sound" type="button" hidden>Enable intro sound</button>
+<button id="intro-skip" type="button" hidden>Skip intro</button>
+</div>
 <div class="loading-panel" id="loading-panel" hidden>
 <div id="status" role="status" aria-live="polite"></div>
 <progress id="progress" aria-label="Loading game" hidden></progress>
@@ -46,11 +50,13 @@ const status = document.getElementById('status');
 const panel = document.getElementById('loading-panel');
 const video = document.getElementById('loading-video');
 const sound = document.getElementById('intro-sound');
+const skip = document.getElementById('intro-skip');
 const progress = document.getElementById('progress');
 const loadingVideo = ''; // build_web.sh sets this when the supplied video is available.
 const retry = document.getElementById('retry');
 const canvas = document.getElementById('canvas');
 let loading = false;
+let finishIntro = null;
 const missing = Engine.getMissingFeatures({threads: $GODOT_THREADS_ENABLED});
 canvas.addEventListener('pointerdown',()=>canvas.focus());
 canvas.addEventListener('contextmenu',event=>event.preventDefault());
@@ -61,21 +67,12 @@ async function startGame(){
   panel.hidden = true;
   progress.removeAttribute('value');
   overlay.setAttribute('aria-busy','true');
-  if(loadingVideo){
-    video.src = loadingVideo;
-    video.muted = true;
-    video.hidden = false;
-    sound.textContent = "Enable intro sound";
-    sound.hidden = false;
-    video.play().catch(showFallback);
-  }else{
-    showFallback();
-  }
+  const introDone = playIntro();
   window.firstSortieReady = false;
   try{
-    await engine.startGame({canvas,onProgress:(current,total)=>{
+    await Promise.all([introDone, engine.startGame({canvas,onProgress:(current,total)=>{
       if(total>0){progress.max=total;progress.value=current;}
-    }});
+    }})]);
     stopVideo();
     overlay.hidden = true;
     canvas.focus();
@@ -90,26 +87,57 @@ async function startGame(){
     panel.hidden = false;
   }
 }
+function playIntro(){
+  if(!loadingVideo){
+    showFallback();
+    return Promise.resolve();
+  }
+  return new Promise(resolve=>{
+    finishIntro = resolve;
+    video.src = loadingVideo;
+    video.muted = true;
+    video.hidden = false;
+    sound.textContent = 'Enable intro sound';
+    sound.hidden = false;
+    skip.hidden = false;
+    video.play().catch(()=>{
+      if(finishIntro === resolve) showFallback();
+    });
+  });
+}
+function settleIntro(){
+  if(!finishIntro) return;
+  const resolve = finishIntro;
+  finishIntro = null;
+  resolve();
+}
 function showFallback(){
   if(!overlay.hasAttribute('aria-busy')) return;
+  settleIntro();
+  video.pause();
   video.hidden = true;
   sound.hidden = true;
+  skip.hidden = true;
   status.textContent = 'Loading game…';
   progress.hidden = false;
   panel.hidden = false;
 }
 video.addEventListener('error',showFallback);
+video.addEventListener('ended',showFallback);
+skip.addEventListener('click',showFallback);
 sound.addEventListener('click',()=>{
   video.muted = !video.muted;
   sound.textContent = video.muted ? 'Enable intro sound' : 'Mute intro sound';
 });
 function stopVideo(){
   overlay.removeAttribute('aria-busy');
+  settleIntro();
   video.pause();
   video.removeAttribute('src');
   video.load();
   video.hidden = true;
   sound.hidden = true;
+  skip.hidden = true;
 }
 retry.addEventListener('click',startGame);
 if(missing.length){
