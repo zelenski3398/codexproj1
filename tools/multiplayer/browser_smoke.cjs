@@ -119,6 +119,7 @@ async function create(page,value) {
     await a.keyboard.up('f');
     console.log('PASS browser challenge, shared selection/readiness, runway/airborne spawns, disabled AA and delivered gunfire');
     await a.keyboard.press('Escape');
+    await wait(a,()=>window.firstSortieState.duel.widgets.some(w=>w.label==='Resume flight'));
     await click(a,'Leave duel');
     await wait(b,()=>window.firstSortieState?.duel?.match?.state==='results');
     assert.equal((await duel(b)).match.result.winner,1);
