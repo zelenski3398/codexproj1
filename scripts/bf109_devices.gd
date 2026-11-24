@@ -10,6 +10,9 @@ func _ready() -> void:
 func advance(dt: float) -> void:
 	notice_time = maxf(0, notice_time - dt)
 	if notice_time == 0: notice = ""
+	if remote_commands:
+		super.advance(dt)
+		return
 	if not aircraft.input_enabled or aircraft.is_destroyed or aircraft.is_crashed or aircraft.pilot.automated:
 		return
 	if not Input.is_action_pressed("flaps"): return

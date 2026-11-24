@@ -1,6 +1,7 @@
 class_name ProjectilePool
 extends Node3D
 signal round_finished(point: Vector3, collider: Object, team: int)
+signal damage_confirmed(target: FlightAircraft, point: Vector3)
 ## Fixed-size world-space pool. No per-shot nodes, rigid bodies, or timers.
 ## Every round (including invisible ones) sweeps its ENTIRE travelled segment.
 @export var shell_definition: AAWeaponDefinition
@@ -142,6 +143,7 @@ func _physics_process(delta: float) -> void:
 			var component_damaged:bool = collider is AircraftHitbox and float(collider.damage_system.integrity[collider.definition.id])<component_before
 			if hit_aircraft!=null and (hit_aircraft.health.hp<hp_before or component_damaged):
 				AircraftImpactService.obtain().aircraft_hit(hit_aircraft,hit.position,shell_definition!=null)
+				damage_confirmed.emit(hit_aircraft, hit.position)
 			_impact(hit.position)
 			round_finished.emit(hit.position, collider, teams[index])
 			_release(slot)

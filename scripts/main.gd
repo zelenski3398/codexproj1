@@ -23,6 +23,7 @@ var enemy: EnemyAircraft
 var component_debug: ComponentDamageDebug
 var startup_intro: GameIntro
 var selector: AircraftSelector
+var duel_client: DuelClient
 var selected_aircraft: String = "spitfire"
 @export var enemy_spawn_position: Vector3 = Vector3(-450, 160, 0)
 var encounter_effects: Node3D
@@ -84,6 +85,13 @@ func _dismiss_intro() -> void:
 		selector.active = true
 
 func show_selection(replay_poster: bool = true) -> void:
+	if is_instance_valid(duel_client):
+		remove_child(duel_client)
+		duel_client.queue_free()
+		duel_client = null
+	if game_mode == "duel":
+		game_mode = "encounter"
+		gameplay_hud.show()
 	_dismiss_intro()
 	if is_instance_valid(stuka_sortie):
 		remove_child(stuka_sortie)
@@ -138,7 +146,24 @@ func show_selection(replay_poster: bool = true) -> void:
 	selector.select("spitfire" if selected_aircraft == "stuka" or selected_aircraft in Bf109.KINDS else selected_aircraft)
 	selector.malta_requested.connect(show_malta_selection, CONNECT_DEFERRED)
 	selector.missions_requested.connect(show_missions, CONNECT_DEFERRED)
+	selector.multiplayer_requested.connect(show_dogfight, CONNECT_DEFERRED)
 	if replay_poster and DisplayServer.get_name()!="headless" and "--skip-intro" not in OS.get_cmdline_user_args():show_intro()
+
+func show_dogfight() -> void:
+	if is_instance_valid(duel_client): return
+	show_selection(false)
+	remove_child(selector)
+	selector.queue_free()
+	selector = null
+	game_mode = "duel"
+	gameplay_hud.hide()
+	remove_child(field)
+	field.queue_free()
+	field = null
+	GameAudioMixer.instance.set_menu_active(false)
+	duel_client = DuelClient.new()
+	duel_client.closed.connect(func(): show_selection.call_deferred(false))
+	add_child(duel_client)
 
 func start_free_roam(kind: String) -> void:
 	var destination: String=departure_spawn
@@ -348,6 +373,8 @@ func _clear_malta() -> void:
 		if is_instance_valid(field):
 			remove_child(field)
 			field.queue_free()
+		field = null
+	if not is_instance_valid(field):
 		field = Airfield.new()
 		field.name = "CountrysideAirfield"
 		add_child(field)

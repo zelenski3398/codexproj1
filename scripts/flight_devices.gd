@@ -2,6 +2,7 @@ class_name FlightDevices
 extends Node
 ## Commands and animated ratios only; FlightAircraft applies all aerodynamic forces.
 var aircraft: FlightAircraft
+var remote_commands := false
 var flap_target: bool = false
 var brake_target: bool = false
 var flaps: float = 0
@@ -66,7 +67,7 @@ func message(text: String) -> void:
 	notice_time = 3
 
 func advance(dt: float) -> void:
-	if aircraft.pilot.automated and aircraft is EnemyAircraft and not aircraft.is_destroyed and not aircraft.is_crashed:
+	if not remote_commands and aircraft.pilot.automated and aircraft is EnemyAircraft and not aircraft.is_destroyed and not aircraft.is_crashed:
 		var enemy := aircraft as EnemyAircraft
 		var diving: bool = enemy.ai is DiveAttackPilot and (enemy.ai as DiveAttackPilot).attack_state == "DIVE"
 		# Devices use the same commands/forces. Normal combat always retracts;
