@@ -55,14 +55,42 @@ func run() -> void:
 	await sea_impact(spare)
 	check(spare.impact_effects.water and not game.harbour.is_finished(), "An unoccupied aircraft hitting water does not fail the player's mission")
 	check(mission.board_nearest(), "Board Faith for a real water-surface crash fixture")
-	await sea_impact(mission.occupied)
-	check(mission.occupied.impact_effects.water and mission.survival.alive() and game.harbour.phase == "FAILED", "Even a survivable sea crash immediately fails this harbour mission")
-	check(game.harbour.final_reason.contains("lost at sea") and game.harbour.result_count == 1, "Sea failure gives a specific reason and exactly one result")
-	await frames(120)
-	check(game.harbour.result_count == 1 and game.encounters.active.is_empty(), "Sinking cannot repeat results or start enemy waves")
+	var harbour: HarbourInterception = game.harbour
+	# Start an active formation from the hangar fixture before moving Faith offshore.
+	harbour.phase = "SPAWNING"
+	harbour._spawn_wave()
+	var bomber := harbour.bomber
+	var original_wingmen := harbour.wingmen.duplicate()
+	var wreck := mission.occupied
+	await sea_impact(wreck)
+	check(wreck.impact_effects.water and mission.survival.alive() and harbour.phase == "ACTIVE",
+		"A survivable ditching keeps the active harbour mission running")
+	check(mission.leave_aircraft(), "A living pilot can leave the sinking Gladiator")
+	var recovery := mission.recovery
+	recovery.response_seconds = 0.05
+	check(recovery.request() and recovery.destination == "hal_far", "A sea survivor can request pickup back to Ħal Far")
+	for tick in 720:
+		await physics_frame
+		if recovery.state == "READY": break
+	check(is_instance_valid(recovery.pontoon) and is_instance_valid(recovery.truck), "Sea recovery supplies the shared pontoon and transport")
+	if is_instance_valid(recovery.truck):
+		# Place the pilot beside the pickup. The shared recovery suite covers swimming here.
+		mission.pilot.global_position = recovery.truck.global_position + Vector3(2.5, 1.0, 0)
+		await frames(3)
+		check(mission.interaction.interact(), "Nearby vehicle interaction starts the return")
+		await frames(200)
+	check(recovery.returns == 1 and recovery.pontoon == null and recovery.truck == null,
+		"Transport returns the pilot and removes the temporary pickup")
+	check(harbour == game.harbour and harbour.wave == 1 and harbour.bomber == bomber and harbour.wingmen == original_wingmen,
+		"Recovery preserves the active mission, bomber and wingmen")
+	check(mission.board_nearest() and mission.occupied != wreck and mission.occupied is SeaGladiator,
+		"The rescued pilot can board a replacement Sea Gladiator")
+	mission.pilot.take_damage(1000)
+	await frames(3)
+	check(harbour.phase == "FAILED" and harbour.result_count == 1, "Pilot death still resolves harbour failure once")
 	game.restart_malta()
 	await frames(180)
-	check(not game.harbour.player_sea_crash and game.harbour.phase == "TAKEOFF" and game.harbour.result_count == 0, "Retry clears the sea-loss latch and mission outcome")
+	check(game.harbour.phase == "TAKEOFF" and game.harbour.result_count == 0, "Retry starts a fresh harbour mission")
 	game.show_selection(false)
 	game.start_free_roam("spitfire")
 	await frames(180)

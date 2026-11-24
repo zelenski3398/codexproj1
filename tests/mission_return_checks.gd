@@ -92,6 +92,16 @@ func run() -> void:
 	check(not harbour.radio.seen.has("success"),"Congratulations cannot play during the return flight")
 	await preload("res://tests/return_landing_fixture.gd").park(game,"luqa")
 	check(harbour.phase=="SUCCESS" and harbour.results.visible and harbour.radio.seen.has("success"),"Landing at another friendly airfield releases existing success recording and panel")
+	await fresh("harbour");await airborne()
+	harbour = game.harbour
+	harbour._finish(true, "Harbour defended before aircraft loss")
+	game.aircraft.is_crashed = true
+	await frames(4)
+	check(game.malta_mission.return_flow.accepts_ground_return() and harbour.phase == "RETURNING" and harbour.result_count == 0,
+		"Surviving a crash on the harbour return keeps the award pending and permits ground recovery")
+	game.malta_mission.pilot.take_damage(100)
+	await frames(4)
+	check(harbour.phase == "FAILED" and harbour.result_count == 1, "Pilot death still prevents the harbour return award")
 	await fresh("survival");await airborne()
 	game.encounters.stage=5
 	game.encounters.finish_survival(true,"Five stages secured")

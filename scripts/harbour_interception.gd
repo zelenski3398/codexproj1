@@ -5,7 +5,6 @@ signal finished(success: bool, reason: String)
 @export var definition: HarbourDefinition = preload("res://mission_definitions/harbour.tres")
 var session: Node3D
 var phase: String = "TAKEOFF"
-var player_sea_crash: bool = false
 var wave: int = 0
 var roster: AircraftWaveRoster
 var bomber: EnemyAircraft
@@ -73,9 +72,6 @@ func _prepare() -> void:
 		forts.append(fort)
 	var faith: FlightAircraft = session.aircraft
 	faith.display_name = "Faith · Sea Gladiator"
-	faith.destroyed.connect(_queue_resolution)
-	for aircraft in session.malta_mission.fleet:
-		aircraft.crashed.connect(_player_crashed.bind(aircraft))
 	session.malta_mission.pilot.combat_enabled = true
 	session.malta_mission.pilot.health.depleted.connect(_queue_resolution)
 	var field: MaltaAirfield = session.field.fields.hal_far
@@ -116,9 +112,9 @@ func _physics_process(delta: float) -> void:
 			payload_clock += definition.payload_interval
 	if is_finished() or forts.size() != 2: return
 	_queue_resolution()
-	var faith: FlightAircraft = session.aircraft
+	var faith := _active_aircraft()
 	if phase == "TAKEOFF":
-		var flying: bool = session.malta_mission.occupied == faith and faith.gear.contact_count == 0 and faith.altitude >= definition.takeoff_activation_agl
+		var flying: bool = faith != null and faith.gear.contact_count == 0 and faith.altitude >= definition.takeoff_activation_agl
 		airborne_clock = airborne_clock + delta if flying else 0
 		if airborne_clock >= definition.takeoff_activation_seconds:
 			for friend in wingmen:
@@ -163,14 +159,16 @@ func _spawn_wave() -> void:
 		return
 	target_fort = forts[0] if wave == 1 else forts[1]
 	if wave == 3: target_fort = forts[0] if forts[0].hp <= forts[1].hp else forts[1]
-	var player: FlightAircraft = session.aircraft
-	var inward: Vector3 = ((target_fort.global_position - player.global_position) * Vector3(1, 0, 1)).normalized()
+	var player := _active_aircraft()
+	var home: MaltaAirfield = session.malta_mission.world.fields[session.malta_mission.home]
+	var approach_anchor: Vector3 = player.global_position if player != null else home.global_position
+	var inward: Vector3 = ((target_fort.global_position - approach_anchor) * Vector3(1, 0, 1)).normalized()
 	if inward.length_squared() < .1: inward = Vector3.FORWARD
 	# Crossing inbound formation rather than a faster bomber fleeing directly ahead.
-	var start: Vector3 = player.global_position - inward * definition.incoming_distance * .65 + inward.cross(Vector3.UP) * definition.incoming_distance * .76
+	var start: Vector3 = approach_anchor - inward * definition.incoming_distance * .65 + inward.cross(Vector3.UP) * definition.incoming_distance * .76
 	var outward: Vector3 = ((start - target_fort.global_position) * Vector3(1, 0, 1)).normalized()
 	if start.distance_to(target_fort.global_position) < 3800: start = target_fort.global_position + outward * 3800
-	start.y = maxf(maxf(player.global_position.y + 60, definition.approach_height), _ground(start) + 220)
+	start.y = maxf(maxf(approach_anchor.y + 60, definition.approach_height), _ground(start) + 220)
 	var direction: Vector3 = ((target_fort.global_position - start) * Vector3(1, 0, 1)).normalized()
 	var composition := AircraftWaveRoster.composition(wave)
 	var planned: Array[Vector3] = [start]
@@ -248,7 +246,7 @@ func _spawn_wave() -> void:
 	_cue("wave_%d" % wave, "Formation %d detected: bomber heading for %s. %s" % [wave, target_fort.title, "Two ace escorts — stay together!" if wave == 3 else "Three fighter escorts."])
 
 func _spawn_safe(point: Vector3, planned: Array[Vector3], index: int) -> bool:
-	if point.distance_to(session.aircraft.global_position) < definition.minimum_player_separation: return false
+	if point.distance_to(_pilot_position()) < definition.minimum_player_separation: return false
 	for i in index:
 		if point.distance_to(planned[i]) < 95: return false
 	var sphere := SphereShape3D.new()
@@ -262,7 +260,8 @@ func _spawn_safe(point: Vector3, planned: Array[Vector3], index: int) -> bool:
 func _assign_targets() -> void:
 	if roster == null: return
 	var defenders: Array[FlightAircraft] = []
-	if _player_alive() and session.malta_mission.occupied == session.aircraft: defenders.append(session.aircraft)
+	var player := _active_aircraft()
+	if player != null: defenders.append(player)
 	for friend in wingmen:
 		if is_instance_valid(friend) and not friend.is_destroyed and not friend.is_crashed and friend.ai.departed: defenders.append(friend)
 	var assigned: Dictionary = {}
@@ -270,7 +269,7 @@ func _assign_targets() -> void:
 		if not is_instance_valid(wingmen[i]): continue
 		var friend: FriendlyGladiator = wingmen[i]
 		if not is_instance_valid(friend) or friend.is_destroyed: continue
-		friend.ai.leader = session.aircraft
+		friend.ai.leader = player
 		var selected: FlightAircraft
 		var score: float = INF
 		for foe in roster.active:
@@ -348,7 +347,7 @@ func _order_withdrawal() -> void:
 func _retire_withdrawn() -> void:
 	for escort in escorts:
 		if not is_instance_valid(escort) or not roster.active.has(escort): continue
-		var separated: bool = escort.global_position.distance_to(session.aircraft.global_position) > definition.withdrawal_distance
+		var separated: bool = escort.global_position.distance_to(_pilot_position()) > definition.withdrawal_distance
 		if not separated and withdrawal_clock < definition.escort_engagement_seconds + definition.withdrawal_timeout: continue
 		roster.resolve(escort, false)
 		session.encounters.active.erase(escort)
@@ -390,12 +389,15 @@ func _drop_bomb() -> void:
 func _player_alive() -> bool:
 	return session.malta_mission.pilot.health.hp > 0
 
-func _player_crashed(_reason: String, aircraft: FlightAircraft) -> void:
-	# Only the currently occupied aircraft can cause the mission's sea loss.
-	# Water is set by the real swept surface check before crashed is emitted.
-	if session.malta_mission.occupied == aircraft and aircraft.impact_effects.water:
-		player_sea_crash = true
-	_queue_resolution()
+func _active_aircraft() -> FlightAircraft:
+	var aircraft: FlightAircraft = session.malta_mission.occupied
+	if not _player_alive() or not is_instance_valid(aircraft) or aircraft.is_destroyed or aircraft.is_crashed:
+		return null
+	return aircraft
+
+func _pilot_position() -> Vector3:
+	var mission: MaltaMission = session.malta_mission
+	return mission.occupied.global_position if is_instance_valid(mission.occupied) else mission.pilot.global_position
 
 func _queue_resolution() -> void:
 	if _resolution_queued or is_finished(): return
@@ -406,7 +408,6 @@ func _resolve() -> void:
 	_resolution_queued = false
 	if is_finished(): return
 	if not _player_alive(): _finish(false, "Faith lost — harbour defence failed"); return
-	if player_sea_crash: _finish(false, "Aircraft lost at sea — harbour defence failed"); return
 	if forts.any(func(f): return f.hp <= 0): _finish(false, "A defended fort has been destroyed"); return
 	if phase != "ACTIVE" or roster == null or not roster.active.is_empty(): return
 	if not bomber_stopped: return
@@ -527,11 +528,11 @@ func _process(_delta: float) -> void:
 	objective.text = "FAITH, HOPE AND CHARITY · WAVE %d/3\nIntercept the bombers before they release their bombs.\nSt Elmo %d/%d HP · St Angelo %d/%d HP\nHope: %s · Charity: %s\n%s" % [maxi(wave, 1), ceili(forts[0].hp), ceili(forts[0].maximum_hp), ceili(forts[1].hp), ceili(forts[1].maximum_hp), wingman_states.Hope, wingman_states.Charity, ("I engine · taxi and take off; wingmen follow" if session.malta_mission.occupied != null else "E board Faith · I engine · take off; wingmen follow") if phase == "TAKEOFF" else ("Regroup · next formation in %d s" % ceili(clock) if phase == "REGROUP" else phase)]
 	marker.hide()
 	if is_instance_valid(bomber) and not bomber.is_destroyed:
-		_marker(marker, bomber.global_position + Vector3.UP * 20, "▼ SM.79 → %s · %d m" % [target_fort.title, roundi(session.aircraft.global_position.distance_to(bomber.global_position))], true)
+		_marker(marker, bomber.global_position + Vector3.UP * 20, "▼ SM.79 → %s · %d m" % [target_fort.title, roundi(_pilot_position().distance_to(bomber.global_position))], true)
 	for i in friendly_markers.size():
 		friendly_markers[i].hide()
 		if i < wingmen.size() and is_instance_valid(wingmen[i]) and not wingmen[i].is_destroyed:
-			_marker(friendly_markers[i], wingmen[i].global_position + Vector3.UP * 8, "◆ %s · %d HP · %d m" % [wingmen[i].callsign.to_upper(), ceili(wingmen[i].health.hp), roundi(session.aircraft.global_position.distance_to(wingmen[i].global_position))], true)
+			_marker(friendly_markers[i], wingmen[i].global_position + Vector3.UP * 8, "◆ %s · %d HP · %d m" % [wingmen[i].callsign.to_upper(), ceili(wingmen[i].health.hp), roundi(_pilot_position().distance_to(wingmen[i].global_position))], true)
 
 			if i > 0 and friendly_markers[0].visible and absf(friendly_markers[i].position.y - friendly_markers[0].position.y) < 24 and absf(friendly_markers[i].position.x - friendly_markers[0].position.x) < 260:
 				friendly_markers[i].position.y -= 24

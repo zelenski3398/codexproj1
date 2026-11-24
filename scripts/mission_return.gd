@@ -99,8 +99,15 @@ func _physics_process(delta: float) -> void:
 	var field: String=""
 	if required_aircraft!=null:
 		if not is_instance_valid(required_aircraft) or required_aircraft.is_crashed or required_aircraft.is_destroyed:
-			_fail("Aircraft lost before completing its return and landing");return
-		if mission.occupied==required_aircraft:field=landed_field(required_aircraft)
+			if not director is HarbourInterception:
+				_fail("Aircraft lost before completing its return and landing")
+				return
+			# A living harbour pilot can finish the return by rescue transport.
+			required_aircraft = null
+			settled = 0
+			mission._message("Survived the crash · E exit the wreck · V call transport to base")
+		elif mission.occupied == required_aircraft:
+			field = landed_field(required_aircraft)
 	else:
 		field=landed_field(mission.occupied) if is_instance_valid(mission.occupied) else _ground_base()
 	settled=settled+delta if not field.is_empty() else 0
@@ -124,6 +131,9 @@ func _deliver(token: int) -> void:
 	else:director._finish(true,reason)
 	clear()
 
+func accepts_ground_return() -> bool:
+	return pending and director is HarbourInterception and required_aircraft == null
+
 func objective_point() -> Vector3:
 	return mission.world.fields[destination].global_position if mission.world.fields.has(destination) else mission.world.fields[mission.home].global_position
 
@@ -139,4 +149,5 @@ func _process(_delta: float) -> void:
 	if direction.length_squared()<.001:direction=Vector2.RIGHT
 	var point: Vector2=camera.unproject_position(target) if local.z<-.1 else size*.5+direction.normalized()*size.length()
 	marker.position=Vector2(clampf(point.x-100,20,size.x-280),clampf(point.y,200,size.y-270))
-	marker.text="◇ LAND · %s · %d m"%[mission.world.fields[destination].record.name,roundi(camera.global_position.distance_to(target))]
+	var action := "RETURN" if accepts_ground_return() else "LAND"
+	marker.text="◇ %s · %s · %d m"%[action,mission.world.fields[destination].record.name,roundi(camera.global_position.distance_to(target))]

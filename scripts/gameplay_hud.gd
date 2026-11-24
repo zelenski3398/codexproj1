@@ -351,9 +351,14 @@ func update_objective() -> void:
 		details="Stage %d/5 · enemies remaining: %d"%[encounter.stage,encounter.active.size()]
 	if is_instance_valid(session.malta_mission) and session.malta_mission.return_flow.pending:
 		var returning: MissionReturn=session.malta_mission.return_flow
-		current="Return and land at "+session.malta_mission.world.fields[returning.destination].record.name
+		var instruction := "Return to " if returning.accepts_ground_return() else "Return and land at "
+		current = instruction + session.malta_mission.world.fields[returning.destination].record.name
 		var anchor: Node3D=session.malta_mission.occupied if is_instance_valid(session.malta_mission.occupied) else session.malta_mission.pilot
-		details="Objectives secured · %d m\nLand at a friendly airfield and slow below %d km/h"%[roundi(anchor.global_position.distance_to(returning.objective_point())),roundi(returning.maximum_landing_speed*3.6)]
+		var meters := roundi(anchor.global_position.distance_to(returning.objective_point()))
+		if returning.accepts_ground_return():
+			details = "Objectives secured · %d m\nUse transport if stranded" % meters
+		else:
+			details = "Objectives secured · %d m\nLand at a friendly airfield and slow below %d km/h" % [meters, roundi(returning.maximum_landing_speed * 3.6)]
 	tracker.visible=not current.is_empty()
 	if not current.is_empty() and previous_objective!="" and previous_objective!=current:completion_time=2
 	completion.text="✓ Previous objective complete" if completion_time>0 and "failed" not in current.to_lower() and "ended" not in current.to_lower() else ""
