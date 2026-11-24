@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "ce25bfd5414ae3badc1761b3ad8d4cf6811867c0",
-  "last_documented_commit": "e1eb1d7b02ed723a385aed938dc7f61538149068",
+  "previous_documentation_publication": "6065d49488869bac1f5fdc13781fe0e09a8c17ad",
+  "last_documented_commit": "373b546df04809eda07d9d9309dcecab68d154e5",
   "update_document": "2026-11-24-multiplayer-dogfight.md",
-  "review_range": "2b7becfd6bdbe36e4281cfe4cc531d151d7f6950..e1eb1d7b02ed723a385aed938dc7f61538149068",
+  "review_range": "2b7becfd6bdbe36e4281cfe4cc531d151d7f6950..373b546df04809eda07d9d9309dcecab68d154e5",
   "date": "2026-11-24",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }

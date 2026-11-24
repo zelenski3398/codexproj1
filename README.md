@@ -99,7 +99,7 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`e1eb1d7b02ed723a385aed938dc7f61538149068`](https://github.com/zelenski3398/codexproj1/commit/e1eb1d7b02ed723a385aed938dc7f61538149068)
+**Latest documented commit:** [`373b546df04809eda07d9d9309dcecab68d154e5`](https://github.com/zelenski3398/codexproj1/commit/373b546df04809eda07d9d9309dcecab68d154e5)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
 [latest multiplayer update](docs/development-updates/2026-11-24-multiplayer-dogfight.md)
@@ -111,9 +111,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor e1eb1d7b02ed723a385aed938dc7f61538149068 HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' e1eb1d7b02ed723a385aed938dc7f61538149068..HEAD
-git diff --stat e1eb1d7b02ed723a385aed938dc7f61538149068..HEAD
+git merge-base --is-ancestor 373b546df04809eda07d9d9309dcecab68d154e5 HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' 373b546df04809eda07d9d9309dcecab68d154e5..HEAD
+git diff --stat 373b546df04809eda07d9d9309dcecab68d154e5..HEAD
 ```
 
 For every project update, update this README and the relevant guides, append a
