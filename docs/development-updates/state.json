@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "44d4265f21c0bfa9823ab18d1459133c0017d880",
-  "last_documented_commit": "2b7becfd6bdbe36e4281cfe4cc531d151d7f6950",
-  "update_document": "2026-11-24-harbour-recovery.md",
-  "review_range": "f45cfadb840caccf18c814f82812654679412554..2b7becfd6bdbe36e4281cfe4cc531d151d7f6950",
+  "previous_documentation_publication": "ce25bfd5414ae3badc1761b3ad8d4cf6811867c0",
+  "last_documented_commit": "5b1deff7b750c1cd95fcb2253eeba4bc8abc2786",
+  "update_document": "2026-11-24-loading-audio.md",
+  "review_range": "2b7becfd6bdbe36e4281cfe4cc531d151d7f6950..5b1deff7b750c1cd95fcb2253eeba4bc8abc2786",
   "date": "2026-11-24",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }

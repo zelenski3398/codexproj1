@@ -4,7 +4,7 @@
 Aircraft now have [universal component failures, progressive fires and severity-based crashes](docs/universal-aircraft-damage.md), including independent SM.79 engines and non-explosive engine-out gliding.
 
 Startup and return to the title show the supplied live poster as a continuous forward-and-return animation, accompanied by the supplied **Cinematic March** soundtrack, with **Play integrated into the artwork**. Play fades into the existing main menu. See the [startup guide and previews](docs/startup-poster.md).
-Startup opens directly on the animated poster. The browser plays the supplied cinematic while the game downloads. [Loading video setup](docs/startup-poster.md).
+Startup opens directly on the animated poster. The browser plays the supplied cinematic while the game downloads. Click **Enable intro sound** to hear its soundtrack. [Loading video setup](docs/startup-poster.md).
 The primary **Free Roam** action opens Malta on foot beside the selected aircraft inside a hangar. **E** boards/exits; **V** requests recovery after an aircraft loss. Pilot health is independent of aircraft HP. [Hangar departures, survival, recovery and poster fixes](docs/pilot-survival-and-recovery.md).
 
 A single-player 3D **Godot 4 / GDScript** flight prototype set at a fictional RAF
@@ -92,10 +92,10 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`2b7becfd6bdbe36e4281cfe4cc531d151d7f6950`](https://github.com/zelenski3398/codexproj1/commit/2b7becfd6bdbe36e4281cfe4cc531d151d7f6950)
+**Latest documented commit:** [`5b1deff7b750c1cd95fcb2253eeba4bc8abc2786`](https://github.com/zelenski3398/codexproj1/commit/5b1deff7b750c1cd95fcb2253eeba4bc8abc2786)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest harbour recovery update](docs/development-updates/2026-11-24-harbour-recovery.md)
+[latest intro audio update](docs/development-updates/2026-11-24-loading-audio.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -104,9 +104,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor 2b7becfd6bdbe36e4281cfe4cc531d151d7f6950 HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' 2b7becfd6bdbe36e4281cfe4cc531d151d7f6950..HEAD
-git diff --stat 2b7becfd6bdbe36e4281cfe4cc531d151d7f6950..HEAD
+git merge-base --is-ancestor 5b1deff7b750c1cd95fcb2253eeba4bc8abc2786 HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' 5b1deff7b750c1cd95fcb2253eeba4bc8abc2786..HEAD
+git diff --stat 5b1deff7b750c1cd95fcb2253eeba4bc8abc2786..HEAD
 ```
 
 For every project update, update this README and the relevant guides, append a
