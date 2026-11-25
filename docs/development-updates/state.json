@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "351c36cd19fd54ff045dc72c3a95201481ac2d3b",
-  "last_documented_commit": "355b3f58bab7d397d97e916d9a4c49a61d32af8b",
-  "update_document": "2026-11-24-full-loading-intro.md",
-  "review_range": "5b1deff7b750c1cd95fcb2253eeba4bc8abc2786..355b3f58bab7d397d97e916d9a4c49a61d32af8b",
-  "date": "2026-11-24",
+  "previous_documentation_publication": "8bbbd5a6290287f1339dd9d64a3c935a2667c976",
+  "last_documented_commit": "5ee241de5d6c5b8c8fb75b3551662faf9835d6f1",
+  "update_document": "2026-11-25-dawns-quiet-courage.md",
+  "review_range": "355b3f58bab7d397d97e916d9a4c49a61d32af8b..5ee241de5d6c5b8c8fb75b3551662faf9835d6f1",
+  "date": "2026-11-25",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }

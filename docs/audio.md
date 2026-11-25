@@ -1,9 +1,10 @@
 # Supplied music and aircraft sound
 
-The complete 83-second **Wings Over Malta** theme plays on the aircraft menu
-and continues through Malta airfield selection. It fades out on departure,
-stays off during gameplay/pause, and returns when choosing another aircraft.
-Only one theme player exists, independently of the loaded world.
+The supplied 55-second **Dawn’s Quiet Courage** track loops across the animated
+poster and the aircraft, mission and Malta departure menus using one Music-bus
+player. Playback continues through departure, the tutorial and pause. In gameplay
+the player uses 25% of its menu gain so engine and radio cues are easier to hear.
+Returning to selection restores menu volume without restarting the loop.
 
 Spitfire and Sea Gladiator each use the corresponding supplied idle-engine,
 flight-engine and gun recordings. Engine layers blend with throttle, RPM
@@ -35,8 +36,8 @@ and Guns** volumes or mute everything. Settings persist in `user://audio.cfg`
 paused and do not capture the flight keyboard. Pause silences both gameplay
 buses while retaining their settings.
 
-The browser opens directly to the game menu. Click or press a key inside the
-menu to activate audio through a user gesture.
+The browser plays the loading cinematic before the poster. Click or press a key
+on the poster or menu if your browser requires a gesture to enable sound.
 If the browser/site or tab is muted, unmute it as well as the in-game mixer.
 Desktop uses Ogg streaming; web uses browser-native sample playback so audio
 continues smoothly even when a software-rendered frame is slow. Live pitch,

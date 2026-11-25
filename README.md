@@ -3,7 +3,7 @@
 
 Aircraft now have [universal component failures, progressive fires and severity-based crashes](docs/universal-aircraft-damage.md), including independent SM.79 engines and non-explosive engine-out gliding.
 
-Startup and return to the title show the supplied live poster as a continuous forward-and-return animation, accompanied by the supplied **Cinematic March** soundtrack, with **Play integrated into the artwork**. Play fades into the existing main menu. See the [startup guide and previews](docs/startup-poster.md).
+Startup and return to the title show the supplied live poster as a continuous forward-and-return animation, accompanied by the supplied **Dawn’s Quiet Courage** soundtrack, with **Play integrated into the artwork**. Play fades into the existing main menu. See the [startup guide and previews](docs/startup-poster.md).
 Startup opens directly on the animated poster. The browser plays the full loading cinematic before opening the poster. Use **Enable intro sound** to hear its soundtrack or **Skip intro** to go straight to the game once it is ready. [Loading video setup](docs/startup-poster.md).
 The primary **Free Roam** action opens Malta on foot beside the selected aircraft inside a hangar. **E** boards/exits; **V** requests recovery after an aircraft loss. Pilot health is independent of aircraft HP. [Hangar departures, survival, recovery and poster fixes](docs/pilot-survival-and-recovery.md).
 
@@ -92,10 +92,10 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`355b3f58bab7d397d97e916d9a4c49a61d32af8b`](https://github.com/zelenski3398/codexproj1/commit/355b3f58bab7d397d97e916d9a4c49a61d32af8b)
+**Latest documented commit:** [`5ee241de5d6c5b8c8fb75b3551662faf9835d6f1`](https://github.com/zelenski3398/codexproj1/commit/5ee241de5d6c5b8c8fb75b3551662faf9835d6f1)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest loading cinematic update](docs/development-updates/2026-11-24-full-loading-intro.md)
+[latest soundtrack update](docs/development-updates/2026-11-25-dawns-quiet-courage.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -104,9 +104,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor 355b3f58bab7d397d97e916d9a4c49a61d32af8b HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' 355b3f58bab7d397d97e916d9a4c49a61d32af8b..HEAD
-git diff --stat 355b3f58bab7d397d97e916d9a4c49a61d32af8b..HEAD
+git merge-base --is-ancestor 5ee241de5d6c5b8c8fb75b3551662faf9835d6f1 HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' 5ee241de5d6c5b8c8fb75b3551662faf9835d6f1..HEAD
+git diff --stat 5ee241de5d6c5b8c8fb75b3551662faf9835d6f1..HEAD
 ```
 
 For every project update, update this README and the relevant guides, append a
@@ -140,8 +140,7 @@ The workflow also saves a downloadable **first-sortie-web** artifact. All 65 pub
 
 ## Music and aircraft audio
 
-The supplied **Wings Over Malta** theme plays through both selection menus and
-fades out on departure. Spitfire and Sea Gladiator use their supplied engine
+**Dawn’s Quiet Courage** loops across the poster and selection menus. It continues at a lower volume during gameplay without restarting. Spitfire and Sea Gladiator use their supplied engine
 and gun sounds, with throttle/damage-driven engine mixing and spatial playback. The Hurricane reuses the existing Merlin/Spitfire engine and rifle-calibre gun audio.
 Click **AUDIO** for saved music/engine/gun volumes and mute. In a browser, the
 first click or key press in the game menu enables sound. The Stuka temporarily

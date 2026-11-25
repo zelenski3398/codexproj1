@@ -1,6 +1,6 @@
 # Flight school tutorial and always-visible aircraft controls
 
-Choose **Tutorial** inside the live poster, just above Play. Tab switches between the two buttons; Enter/Space activates the focused button. The normal Play/main-menu route remains available. The poster and march fade out before the tutorial starts.
+Choose **Tutorial** inside the live poster, just above Play. Tab switches between the two buttons; Enter/Space activates the focused button. The normal Play/main-menu route remains available. The poster fades out and Dawn’s Quiet Courage continues at gameplay volume.
 
 The player starts on foot beside a **Gloster Sea Gladiator at RAF Ta’ Qali** in the existing continuous Malta world. Instructions are on-screen text, not generated radio speech. There is no lesson timer or autopilot. Normal flight, weapons, health, damage, gear, flaps, on-foot movement, vehicles and AA inputs remain authoritative.
 
