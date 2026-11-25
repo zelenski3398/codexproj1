@@ -4,7 +4,7 @@ matplotlib, triangle). No dependency/network access is needed by the game.
 All geometry is additive; the terrain GLB and gameplay coordinates are read-only.
 """
 from pathlib import Path
-import json, hashlib, os
+import argparse, json, hashlib, os
 os.environ.setdefault('MPLCONFIGDIR','/tmp/malta-mpl-cache')
 import numpy as np
 import trimesh
@@ -12,8 +12,16 @@ from pyproj import Transformer
 from shapely.geometry import Polygon, box, shape, LineString, Point
 from shapely.ops import polygonize, unary_union, transform
 from grade_malta_terrain import GroundSampler
+from cottonera.geography import Geography
 ROOT=Path(__file__).resolve().parents[1]
 ASSET=ROOT/'assets/malta'; OUT=ASSET/'valletta';OUT.mkdir(exist_ok=True)
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--refit',action='store_true',help='Keep the saved building footprints while refitting terrain')
+args=parser.parse_args()
+saved_centres=None
+if args.refit:
+    previous=json.loads((OUT/'layout.json').read_text())
+    saved_centres={tuple(record['centre']) for record in previous['buildings']}
 rng=np.random.default_rng(1941)
 projection=Transformer.from_crs(4326,32633,always_xy=True)
 origin=projection.transform(14.4,35.93)
@@ -35,8 +43,11 @@ land=transform(to_local,land)
 # clips every lot. This is an authored period-inspired plan, not cadastral data.
 envelope=Polygon([(-260,-75),(185,-75),(285,140),(310,480),(260,800),(160,1040),(100,1210),(-160,1200),(-290,990),(-335,650),(-330,250)])
 city=land.buffer(-12).intersection(envelope)
-terrain=trimesh.load(ASSET/'terrain.glb',force='scene',process=False)
-sampler=GroundSampler(terrain.geometry['Malta'])
+if args.refit:
+    sampler=Geography()
+else:
+    terrain=trimesh.load(ASSET/'terrain.glb',force='scene',process=False)
+    sampler=GroundSampler(terrain.geometry['Malta'])
 def heights(points):return sampler.heights(world(np.asarray(points)))
 def h(point):return float(heights([point])[0])
 
@@ -95,13 +106,15 @@ def window(x,z,side,along_x,bottom):
 def building(x,z,sx,sz,height,ornate=False):
     footprint=box(x-sx/2,z-sz/2,x+sx/2,z+sz/2)
     if not city.covers(footprint):return False
+    centre=world([x,z]).tolist()
+    if saved_centres is not None and tuple(centre) not in saved_centres:return False
     sample=np.array(footprint.exterior.coords)[:-1];hh=heights(np.vstack([sample,[x,z]]))
     if not np.isfinite(hh).all() or hh.min()<2:return False
     # Foundations embed into the existing slope. No flattening or floating slabs.
     base=float(hh.min()-.65);roof=float(hh.max()+height)
     colour=np.clip(STONE+rng.integers(-12,13)*np.array([1,1,1,0]),0,255)
     cube(x,z,sx,sz,base,roof-base,colour)
-    buildings.append(dict(centre=world([x,z]).tolist(),size=[sx,sz],base=base,roof=roof))
+    buildings.append(dict(centre=centre,size=[sx,sz],base=base,roof=roof))
     cube(x,z,sx+.25,sz+.25,roof-.35,.45,ROOF,False)
     for px,pz,wx,wz in [(x,z-sz/2,sx,.28),(x,z+sz/2,sx,.28),(x-sx/2,z,.28,sz),(x+sx/2,z,.28,sz)]:
         cube(px,pz,wx,wz,roof,.8,TRIM,False)
@@ -141,6 +154,9 @@ for ix in range(-5,5):
                 building(x0+(n+.5)*width,z,width-.5,14,rng.uniform(8,15))
         for x in [x0+7,x1-7]:
             for z in [z0+22,z0+35]:building(x,z,14,12.5,rng.uniform(8,15))
+
+if saved_centres is not None:
+    assert {tuple(record['centre']) for record in buildings} == saved_centres, 'A saved Valletta lot lost terrain support'
 
 # Terrain-following road ribbons, sampled every 5 m, preserve original slopes.
 road_count=0
