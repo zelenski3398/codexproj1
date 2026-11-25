@@ -42,13 +42,11 @@ travelling or switching aircraft never calls scene loading or mission reset.
 
 ## Geography and airfield placement
 
-The supplied `terrain.glb` is copied byte-for-byte. Its bounds are approximately
-X -19,404…15,888 m, Z -16,980…15,938 m, Y -30…250.865 m. This verifies a land
-span of 35.292 × 32.918 km at **1 Godot unit = 1 metre**, without vertical
-exaggeration. The artificial -30 m bottom cap is from the supplied model.
-All 36 imported meshes, including Malta, Gozo, Comino and smaller islands,
-retain their coordinates. X is east, Y up and -Z north; the origin is
-longitude 14.4°, latitude 35.93° in EPSG:32633.
+The mainland terrain is refined from Malta’s measured 2012 elevation survey. Its
+land span remains approximately 35.292 × 32.918 km at **1 Godot unit = 1 metre**.
+Sea level is at Y=0 and the artificial underside remains at Y=−30 m. X is east,
+Y up and −Z north, with an origin of longitude 14.4°, latitude 35.93° in EPSG:32633.
+[Calibration, sample heights and refit](malta-elevation.md).
 
 Terrain appearance uses an explicit shared Mediterranean landscape material on every
 imported mesh, in both native and web builds, with all texture data bundled.
@@ -72,10 +70,9 @@ These are **not surveyed WWII runway coordinates, lengths, headings or
 layouts**. External historical pages could not be accessed through the cloud
 proxy. A supplied historical map can refine the configurable markers/layouts
 without changing the coordinate system or creating additional terrain scenes.
-Runway/apron decks are independently graded above sampled source heights so
-landing gear cannot intersect the coarse terrain. They do not flatten or
-alter the island mesh. This can create visible raised edges; it is a prototype
-solution, not a reconstruction of wartime earthworks.
+Runways and aprons follow planes cut and filled into the island mesh. Smooth
+transitions blend them into the surrounding terrain. The same ground supports
+wheels, parking, access roads and the runway visuals.
 
 `MaltaGeography.chart_uv()` / `chart_to_world()` are the only chart transform.
 Map bounds are [-21,000, -18,500]…[18,000, 17,500] in world X/Z. The full chart

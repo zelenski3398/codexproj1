@@ -92,10 +92,10 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`4722e0f45c969da39359005acdb804491d3de63f`](https://github.com/zelenski3398/codexproj1/commit/4722e0f45c969da39359005acdb804491d3de63f)
+**Latest documented commit:** [`23a7e5f6712b08b4247531e98c2d72328c357ac0`](https://github.com/zelenski3398/codexproj1/commit/23a7e5f6712b08b4247531e98c2d72328c357ac0)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[multiplayer publishing update](docs/development-updates/2026-11-25-multiplayer-pages.md)
+[mainland elevation update](docs/development-updates/2026-11-25-malta-elevation.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -104,9 +104,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor 4722e0f45c969da39359005acdb804491d3de63f HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' 4722e0f45c969da39359005acdb804491d3de63f..HEAD
-git diff --stat 4722e0f45c969da39359005acdb804491d3de63f..HEAD
+git merge-base --is-ancestor 23a7e5f6712b08b4247531e98c2d72328c357ac0 HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' 23a7e5f6712b08b4247531e98c2d72328c357ac0..HEAD
+git diff --stat 23a7e5f6712b08b4247531e98c2d72328c357ac0..HEAD
 ```
 
 For every project update, update this README and the relevant guides, append a
@@ -223,12 +223,10 @@ mission restart. The original countryside controls and start remain intact.
 See [Malta geography, controls, tuning and acceptance flight](docs/malta-world.md).
 Malta terrain uses bundled limestone/soil detail, irregular dry and cultivated
 fields, muted scrub, rocky slopes and Mediterranean water locally and in web exports.
-**F4** deliberately toggles the original elevation heatmap and displays a debug
+**F4** deliberately toggles the elevation heatmap and displays a debug
 notice; every new mission starts in normal mode. See the
 [landscape materials, provenance, tuning and checks](docs/malta-landscape.md).
-The source terrain uses measured modern elevations/coastline; airfield sites
-are approximate and runway layouts are playable prototypes, pending the
-historical 2D reference. Terrain attribution is included in-game and in the web build.
+Malta’s mainland relief was refined using its measured 2012 survey and checked against the supplied elevation heatmaps. Roads, airfields and baked scenery were refit to the corrected ground. [Elevation sources, samples and rebuild notes](docs/malta-elevation.md).
 
 Validation: **559/559 existing native checks**, **35/35 Malta integration checks**
 **18/18 uninterrupted journey checks**, and **41/41 browser checks** passed. Full browser flight feel and

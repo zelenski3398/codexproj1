@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "0e6053a392ef770b0813da1e6d99cf7fa518b29a",
-  "last_documented_commit": "4722e0f45c969da39359005acdb804491d3de63f",
-  "update_document": "2026-11-25-multiplayer-pages.md",
-  "review_range": "5ee241de5d6c5b8c8fb75b3551662faf9835d6f1..4722e0f45c969da39359005acdb804491d3de63f",
+  "previous_documentation_publication": "57a4ed4e6e218313443436245db6644deed1e7a4",
+  "last_documented_commit": "23a7e5f6712b08b4247531e98c2d72328c357ac0",
+  "update_document": "2026-11-25-malta-elevation.md",
+  "review_range": "4722e0f45c969da39359005acdb804491d3de63f..23a7e5f6712b08b4247531e98c2d72328c357ac0",
   "date": "2026-11-25",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }
