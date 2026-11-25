@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "8bbbd5a6290287f1339dd9d64a3c935a2667c976",
-  "last_documented_commit": "5ee241de5d6c5b8c8fb75b3551662faf9835d6f1",
-  "update_document": "2026-11-25-dawns-quiet-courage.md",
-  "review_range": "355b3f58bab7d397d97e916d9a4c49a61d32af8b..5ee241de5d6c5b8c8fb75b3551662faf9835d6f1",
+  "previous_documentation_publication": "0e6053a392ef770b0813da1e6d99cf7fa518b29a",
+  "last_documented_commit": "4722e0f45c969da39359005acdb804491d3de63f",
+  "update_document": "2026-11-25-multiplayer-pages.md",
+  "review_range": "5ee241de5d6c5b8c8fb75b3551662faf9835d6f1..4722e0f45c969da39359005acdb804491d3de63f",
   "date": "2026-11-25",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }

@@ -92,10 +92,10 @@ After securing a flight mission’s objectives, return to a friendly runway/apro
 
 ## Development history and update boundary
 
-**Latest documented commit:** [`5ee241de5d6c5b8c8fb75b3551662faf9835d6f1`](https://github.com/zelenski3398/codexproj1/commit/5ee241de5d6c5b8c8fb75b3551662faf9835d6f1)
+**Latest documented commit:** [`4722e0f45c969da39359005acdb804491d3de63f`](https://github.com/zelenski3398/codexproj1/commit/4722e0f45c969da39359005acdb804491d3de63f)
 
 Read the [complete history and architecture](docs/WWII-Malta-Development-Complete.md),
-[latest soundtrack update](docs/development-updates/2026-11-25-dawns-quiet-courage.md)
+[multiplayer publishing update](docs/development-updates/2026-11-25-multiplayer-pages.md)
 and [four supplied diagram concepts](docs/development-updates/reference-diagrams.md).
 The original report remains frozen at `588ac7b`; later changes are tracked in the
 [incremental journal](docs/development-updates/README.md) and [machine-readable state](docs/development-updates/state.json).
@@ -104,9 +104,9 @@ For the next documentation update, verify this boundary is an ancestor, then ins
 only commits after it:
 
 ```sh
-git merge-base --is-ancestor 5ee241de5d6c5b8c8fb75b3551662faf9835d6f1 HEAD
-git log --reverse --date=iso-strict --format='%h %aI %s' 5ee241de5d6c5b8c8fb75b3551662faf9835d6f1..HEAD
-git diff --stat 5ee241de5d6c5b8c8fb75b3551662faf9835d6f1..HEAD
+git merge-base --is-ancestor 4722e0f45c969da39359005acdb804491d3de63f HEAD
+git log --reverse --date=iso-strict --format='%h %aI %s' 4722e0f45c969da39359005acdb804491d3de63f..HEAD
+git diff --stat 4722e0f45c969da39359005acdb804491d3de63f..HEAD
 ```
 
 For every project update, update this README and the relevant guides, append a
@@ -136,7 +136,11 @@ The cloud proxy blocks direct access to the public Pages domain, so browser
 checks run against the actual release WebAssembly/WebGL build locally.
 
 See [web build, deployment and validation details](docs/web-hosting.md).
-The workflow also saves a downloadable **first-sortie-web** artifact. All 65 publishing checks run from `tests/publishing_checks.json`; failures retain a **godot-check-logs** artifact and job summary. [Local reproduction and diagnostics](docs/web-hosting.md#publishing-checks-and-failure-logs).
+The workflow also saves a downloadable **first-sortie-web** artifact. The publishing checks run from `tests/publishing_checks.json`; failures retain a **godot-check-logs** artifact and job summary. [Local reproduction and diagnostics](docs/web-hosting.md#publishing-checks-and-failure-logs).
+
+## Multiplayer 1v1 Dogfight
+
+Open **Multiplayer → 1v1 Dogfight** from the main menu. The browser client is included in the GitHub Pages build. Both players need the same secure `wss://` server address to create guests and start a match. A public server is currently unconfigured. [Play locally or host a match](docs/multiplayer-dogfight.md).
 
 ## Music and aircraft audio
 
@@ -828,8 +832,8 @@ worktree is required.
 
 ## Known limitations and next steps
 
-* One simple AI opponent; no multiplayer, campaign, AI landing,
-  ammunition management, rear-gunner reloads or complex menus.
+* One simple AI opponent in the original encounter; no campaign or AI landing.
+  The original encounter also omits ammunition management and rear-gunner reloads.
 * Meshes, buildings and camouflage are simple original placeholders. The
   Spitfire uses its familiar elliptical-wing silhouette; the Stuka follows
   the supplied photograph with approximate proportions and detail. The Sea
