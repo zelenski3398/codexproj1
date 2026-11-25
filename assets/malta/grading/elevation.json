@@ -1,0 +1,8 @@
+{
+  "raster": "Malta-DTM-2012-32m.tif",
+  "sample_spacing_metres": 40,
+  "minimum_relief_difference_metres": 2,
+  "full_detail_coast_distance_metres": 100,
+  "vertical_scale": 1,
+  "vertical_offset_metres": 0
+}

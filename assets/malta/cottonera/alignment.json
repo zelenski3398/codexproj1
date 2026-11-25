@@ -52,7 +52,7 @@
       ],
       "position": [
         11477.737667675363,
-        31.488627593123965,
+        29.681873992517467,
         4992.191263840068
       ],
       "on_land": true,
@@ -78,8 +78,8 @@
     }
   ],
   "source_hashes": {
-    "terrain.glb": "4f5137ce21c038f1af815a853578b32e9501e5d382fb67ac74f6df169b2f39f8",
-    "world_data.json": "6bb3be486b754cb72b8afd785acc45f23fa32557c5e571ca412a384ff3618bc1",
+    "terrain.glb": "7515a58a1645bee93f98fc6afa5f738e768fd6d142a9cbf502090bd33888ac0f",
+    "world_data.json": "2ee942e76bec51142fa879c9187006b695ae1d48c136099bbefaeb1e4af1a50c",
     "roads/world_paths.json": "72a6aefc3a6983ff7ebecfea80c47386ed1549e94caa3db1fd5130b48c659319",
     "source/Malta-Coastline.geojson": "d1c45d33dc36936bc41f3c4cf69fd84f1a55ad7ced377c092db778c3c36d19c5"
   },

@@ -188,7 +188,7 @@
     }
   ],
   "terrain_chunks": 130,
-  "mask_vertices": 44433,
+  "mask_vertices": 44123,
   "max_road_cut_fill": 1.5,
   "original_island_geometries": 36,
   "collision": "Nonoverlapping terrain faces; shared render/physics geometry",

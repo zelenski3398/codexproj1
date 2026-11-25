@@ -44,6 +44,30 @@ func _run() -> void:
 	var collider_data: Array = _colliders(appearance.meshes)
 	_check(collider_data.size() == original.size(), "Each continuous terrain chunk has one matching static collider")
 	_check(world.fields.luqa.record.position == MaltaGeography.field("luqa").position and world.fields.ta_qali.record.position == MaltaGeography.field("ta_qali").position and world.fields.hal_far.record.position == MaltaGeography.field("hal_far").position, "All three airfields retain the original geography records")
+	var space := world.get_world_3d().direct_space_state
+	var control_points := [
+		Vector3(-3470, 85.73, -2585), # Mellieħa slope
+		Vector3(4135, 89.62, 145), # Naxxar ridge shoulder
+		Vector3(-350, 242.45, 9050), # Dingli escarpment
+		Vector3(1470, 105.92, 10350), # Southern valley shoulder
+	]
+	for point: Vector3 in control_points:
+		var hit := space.intersect_ray(PhysicsRayQueryParameters3D.create(point + Vector3.UP * 300, point - Vector3.UP * 100, 1))
+		_check(not hit.is_empty() and world.terrain.is_ancestor_of(hit.collider) and absf(hit.position.y - point.y) < 0.25,
+			"Corrected elevation is present in terrain collision at " + str(Vector2(point.x, point.z)))
+	var seam := Vector3(-36.0438, 58, 836.0438)
+	var west := space.intersect_ray(PhysicsRayQueryParameters3D.create(seam + Vector3(-0.01, 5, 0), seam + Vector3(-0.01, -5, 0), 1))
+	var east := space.intersect_ray(PhysicsRayQueryParameters3D.create(seam + Vector3(0.01, 5, 0), seam + Vector3(0.01, -5, 0), 1))
+	_check(not west.is_empty() and not east.is_empty() and absf(west.position.y - east.position.y) < 0.02,
+		"An original triangle edge stays continuous across the refinement")
+	for field: MaltaAirfield in world.fields.values():
+		var runway_supported := true
+		for station in [-0.45, 0.0, 0.45]:
+			for edge in [-24.0, 0.0, 24.0]:
+				var point := field.to_global(Vector3(edge, 0, field.runway_length * station))
+				var hit := space.intersect_ray(PhysicsRayQueryParameters3D.create(point + Vector3.UP * 2, point - Vector3.UP * 2, 1))
+				runway_supported = runway_supported and not hit.is_empty() and world.terrain.is_ancestor_of(hit.collider) and absf(hit.position.y - point.y) < 0.12
+		_check(runway_supported, str(field.record.id) + " runway edges and centre agree with graded terrain collision")
 	_key(KEY_F4, true)
 	await _frames(3)
 	_check(appearance.debug_heatmap_enabled and appearance.debug_notice.visible, "Explicit F4 press enables and labels elevation heatmap debug")

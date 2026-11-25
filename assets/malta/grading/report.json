@@ -3,26 +3,26 @@
     {
       "id": "ta_qali",
       "previous_elevation": 123.98494682256587,
-      "elevation": 109.3331115039709,
-      "grade": 0.005059263305823612,
-      "runway_sample_min": 98.24035332448344,
-      "runway_sample_max": 119.42842245070995
+      "elevation": 109.30403882223578,
+      "grade": 0.005162578495197032,
+      "runway_sample_min": 98.1324462890625,
+      "runway_sample_max": 120.30393005135858
     },
     {
       "id": "luqa",
       "previous_elevation": 79.31992287343888,
-      "elevation": 76.68908272716621,
-      "grade": 0.007164247990796656,
-      "runway_sample_min": 54.706633450685786,
-      "runway_sample_max": 81.60575297910103
+      "elevation": 76.7157245784784,
+      "grade": 0.006974389494814391,
+      "runway_sample_min": 55.75260041839182,
+      "runway_sample_max": 82.80940246582031
     },
     {
       "id": "hal_far",
       "previous_elevation": 67.90009501110268,
-      "elevation": 62.656023023829846,
+      "elevation": 62.6646825846524,
       "grade": -0.008,
       "runway_sample_min": 37.0191100798088,
-      "runway_sample_max": 79.78393281308541
+      "runway_sample_max": 79.83035453752751
     }
   ],
   "settings": {
@@ -36,11 +36,19 @@
     "description": "Localized cut/fill grading of runway plus apron and usable base grounds; C2 blend into measured terrain."
   },
   "original_triangles": 107714,
-  "graded_triangles": 342434,
-  "added_vertices": 117360,
-  "changed_original_vertices": 992,
-  "max_cut_fill": 44.45859110281616,
-  "unmodified_original_vertices": 45162,
+  "graded_triangles": 355326,
+  "added_vertices": 123806,
+  "changed_original_vertices": 8253,
+  "max_cut_fill": 44.64919796442548,
+  "unmodified_original_vertices": 37901,
   "coastline_preserved": true,
-  "geometry_outside_local_footprints_preserved": true
+  "elevation_settings": {
+    "raster": "Malta-DTM-2012-32m.tif",
+    "sample_spacing_metres": 40,
+    "minimum_relief_difference_metres": 2,
+    "full_detail_coast_distance_metres": 100,
+    "vertical_scale": 1,
+    "vertical_offset_metres": 0
+  },
+  "refinement_points": 8387
 }

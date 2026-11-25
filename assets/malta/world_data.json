@@ -19,12 +19,12 @@
       "latitude": 35.8953,
       "position": [
         1357.1550942739705,
-        109.3331115039709,
+        109.30403882223578,
         3857.117503037676
       ],
       "heading": 130.0,
       "length": 1450.0,
-      "slope": 0.005059263305823612,
+      "slope": 0.005162578495197032,
       "stationed_aircraft": [
         "spitfire",
         "sea_gladiator"
@@ -38,12 +38,12 @@
       "latitude": 35.8586,
       "position": [
         6948.8215844673105,
-        76.68908272716621,
+        76.7157245784784,
         7959.45468694903
       ],
       "heading": 140.0,
       "length": 1600.0,
-      "slope": 0.007164247990796656,
+      "slope": 0.006974389494814391,
       "stationed_aircraft": [
         "spitfire",
         "sea_gladiator"
@@ -57,7 +57,7 @@
       "latitude": 35.8153,
       "position": [
         9561.061691343435,
-        62.656023023829846,
+        62.6646825846524,
         12775.674105946906
       ],
       "heading": 130.0,
@@ -75,7 +75,7 @@
       "name": "Valletta",
       "position": [
         10131.40449513786,
-        42.14868927001953,
+        42.36462372986912,
         3472.6771794026718
       ]
     },
@@ -107,14 +107,14 @@
   "terrain_bounds": [
     [
       -19403.959,
-      -30,
+      -30.0,
       -16980.369
     ],
     [
       15887.997,
-      250.865,
+      251.876,
       15938.015
     ]
   ],
-  "placement_note": "Approximate historical sites and runway layouts. Elevations fitted to original terrain by localized cut/fill grading, with smoothly blended base grounds; island scale/coastline preserved."
+  "placement_note": "Approximate historical sites. Runways and local roads refitted to the calibrated 2012 DTM; horizontal alignment and coastline preserved."
 }

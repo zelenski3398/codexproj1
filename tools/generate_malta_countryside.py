@@ -202,6 +202,49 @@ def build(output=OUT):
             sections.append((p,q,h));wall_length+=length
             region_lengths[region]=region_lengths.get(region,0)+length
         if wall_length>=settings['maximum_wall_length_m']-2:break
+    coverage={}
+    def coverage_at(point):
+        key=tuple(np.floor(np.asarray(point)/2500).astype(int))
+        return coverage.setdefault(key,dict(cell=list(key),eligible_centres=0,clusters=0,plots=0,wall_m=0.0))
+    for point in eligible_centres:coverage_at(point)['eligible_centres']+=1
+    return bake(output,g,settings,rng,plots,tracks,clusters,sections,coverage,allowed=allowed)
+
+def refit(output):
+    """Reuse the saved horizontal layout and re-evaluate its ground support."""
+    manifest=json.loads((output/'manifest.json').read_text())
+    vegetation=json.loads((output/'trees.json').read_text())
+    settings=manifest['settings']
+    g=RuralGeography()
+    plots=[]
+    for record in manifest['plots']:
+        polygon=shape(record['footprint'])
+        if g.maximum_slope(polygon)<=settings['maximum_plot_slope']:
+            plots.append({**record,'polygon':polygon})
+    counts={}
+    for record in plots:
+        counts[record['cluster']]=counts.get(record['cluster'],0)+1
+    clusters=[]
+    for cluster in manifest['clusters']:
+        if cluster['id'] not in counts:continue
+        centre=cluster['centre']
+        centre[1]=float(g.heights([centre[::2]])[0])
+        clusters.append({**cluster,'plots':counts[cluster['id']]})
+    tracks=[shape(track) for track in manifest['tracks']]
+    endpoints=np.asarray([[s['a'][::2],s['b'][::2]] for s in manifest['sections']])
+    midpoints=endpoints.mean(axis=1)
+    probes=np.stack([endpoints[:,0],midpoints,endpoints[:,1]],axis=1)
+    levels=g.heights(probes.reshape(-1,2)).reshape(-1,3)
+    sections=[(a,b,h) for (a,b),h in zip(endpoints,levels)
+              if np.isfinite(h).all() and np.ptp(h)<=.55 and abs(h[1]-(h[0]+h[2])/2)<=.1]
+    trees=vegetation['trees']
+    heights=g.heights([tree['position'][::2] for tree in trees])
+    assert np.isfinite(heights).all(),'An existing tree lost its terrain support'
+    for tree,height in zip(trees,heights):
+        tree['position'][1]=float(height)
+    coverage={tuple(cell['cell']):dict(cell,clusters=0,plots=0,wall_m=0.0) for cell in manifest['coverage_cells']}
+    return bake(output,g,settings,np.random.default_rng(settings['seed']),plots,tracks,clusters,sections,coverage,vegetation=vegetation)
+
+def bake(output,g,settings,rng,plots,tracks,clusters,sections,coverage,allowed=None,vegetation=None):
     print('PARCELS',len(plots),'clusters',len(clusters),'median area',float(np.median([p['polygon'].area for p in plots])),flush=True)
     chunks={};chunk_size=settings.get('chunk_size_m',300)
     def chunk_at(point):
@@ -235,20 +278,27 @@ def build(output=OUT):
             stale.unlink();metadata=Path(str(stale)+'.import')
             if metadata.exists():metadata.unlink()
     protected_files=['terrain.glb','world_data.json','roads/world_paths.json','valletta/layout.json','mdina/layout.json','cottonera/region.json','landscape/landcover.png']
-    coverage={}
     def coverage_at(point):
         key=tuple(np.floor(np.asarray(point)/2500).astype(int))
         return coverage.setdefault(key,dict(cell=list(key),eligible_centres=0,clusters=0,plots=0,wall_m=0.0))
-    for point in eligible_centres:coverage_at(point)['eligible_centres']+=1
     for cluster in clusters:
         cell=coverage_at(cluster['centre'][::2]);cell['clusters']+=1;cell['plots']+=cluster['plots']
-    for a,b,h in sections:coverage_at((a+b)/2)['wall_m']+=float(np.linalg.norm(b-a))
-    from rural_vegetation import place_vegetation
-    vegetation=place_vegetation(g,allowed,plots,tracks,sections,clusters,settings)
+    wall_length=0.0
+    for a,b,h in sections:
+        length=float(np.linalg.norm(b-a))
+        coverage_at((a+b)/2)['wall_m']+=length
+        wall_length+=length
+    if vegetation is None:
+        from rural_vegetation import place_vegetation
+        vegetation=place_vegetation(g,allowed,plots,tracks,sections,clusters,settings)
     (output/'trees.json').write_text(json.dumps(vegetation,indent=2,allow_nan=False,default=numpy_scalar)+'\n')
-    report=dict(version=3,seed=settings['seed'],units='metres',inferred=True,note='Recursive unequal, road-clipped parcels. Plausible 1940-42 agricultural scenery, not mapped parcels. Contour strips suggest terraces; original ground elevation is unchanged.',settings=settings,vegetation=dict(count=len(vegetation['trees']),species_counts=vegetation['species_counts']),coverage_cells=list(coverage.values()),clusters=clusters,plots=[dict(cluster=p['cluster'],footprint=mapping(p['polygon']),colour=p['colour'],terraced=p['terraced'],angle=p['angle']) for p in plots],tracks=[mapping(p) for p in tracks],sections=[dict(a=[float(a[0]),float(h[0]),float(a[1])],b=[float(b[0]),float(h[2]),float(b[1])]) for a,b,h in sections],wall_length_m=float(wall_length),chunks=entries,triangles=triangles,source_hashes={p:hashlib.sha256((ASSET/p).read_bytes()).hexdigest() for p in protected_files})
+    report=dict(version=3,seed=settings['seed'],units='metres',inferred=True,note='Recursive unequal, road-clipped parcels. Plausible 1940-42 agricultural scenery, not mapped parcels. Contour strips suggest terraces; baked surfaces and wall bases follow the playable terrain.',settings=settings,vegetation=dict(count=len(vegetation['trees']),species_counts=vegetation['species_counts']),coverage_cells=list(coverage.values()),clusters=clusters,plots=[dict(cluster=p['cluster'],footprint=mapping(p['polygon']),colour=p['colour'],terraced=p['terraced'],angle=p['angle']) for p in plots],tracks=[mapping(p) for p in tracks],sections=[dict(a=[float(a[0]),float(h[0]),float(a[1])],b=[float(b[0]),float(h[2]),float(b[1])]) for a,b,h in sections],wall_length_m=float(wall_length),chunks=entries,triangles=triangles,source_hashes={p:hashlib.sha256((ASSET/p).read_bytes()).hexdigest() for p in protected_files})
     (output/'manifest.json').write_text(json.dumps(report,indent=2,allow_nan=False,default=numpy_scalar)+'\n')
     print(json.dumps(dict(clusters=len(clusters),plots=len(plots),tracks=len(tracks),wall_m=wall_length,chunks=len(entries),triangles=triangles)),flush=True)
     return report
 if __name__=='__main__':
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--output',type=Path,default=OUT);build(parser.parse_args().output)
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output',type=Path,default=OUT)
+    parser.add_argument('--refit',action='store_true',help='Rebake the saved layout against current terrain')
+    args=parser.parse_args()
+    (refit if args.refit else build)(args.output)

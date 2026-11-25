@@ -20,7 +20,7 @@ func run() -> void:
 	var hashes_ok: bool=true
 	for path in data.source_hashes:
 		hashes_ok=hashes_ok and FileAccess.get_sha256("res://assets/malta/"+path)==data.source_hashes[path]
-	check(hashes_ok,"Terrain, all source airfield/mission coordinates and road network are byte-for-byte unchanged")
+	check(hashes_ok,"City was baked against the current terrain, geography and roads")
 	check(data.building_count>=170 and data.buildings.any(func(b):return b.courtyard),"Dense irregular housing includes actual open courtyards")
 	check(data.wall_segments>=90 and data.outline_world_xz.size()>12,"Fortified footprint has many irregular curtain-wall and bastion segments")
 	check(city.layout.triangles<150000 and city.structure_count<=24 and city.detail_count<=24,"City geometry and render chunks stay within a bounded budget")

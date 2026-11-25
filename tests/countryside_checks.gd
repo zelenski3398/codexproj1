@@ -16,7 +16,7 @@ func run() -> void:
 	check(rural.collision_count>0 and rural.close_visuals.is_empty(),"Coarse wall collisions load independently of detailed rock visuals")
 	var valid := true
 	for path in rural.manifest.source_hashes: valid = valid and FileAccess.get_sha256("res://assets/malta/"+path)==rural.manifest.source_hashes[path]
-	check(valid,"Protected terrain roads city and Cottonera source hashes match the original world")
+	check(valid,"Countryside matches the runtime terrain, roads and settlement inputs")
 	var section: Dictionary = rural.manifest.sections[rural.manifest.sections.size()/2]
 	var a := MaltaGeography.vector(section.a)
 	var b := MaltaGeography.vector(section.b)
