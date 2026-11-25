@@ -3,7 +3,8 @@ extends Node
 ## Session-independent mixer: one menu theme, three buses and saved volumes.
 ## Aircraft sounds are owned by their aircraft/weapons, never by menu previews.
 const SETTINGS_PATH: String = "user://audio.cfg"
-const THEME: String = "res://assets/audio/main_menu.ogg"
+const THEME: String = "res://assets/audio/dawns_quiet_courage.ogg"
+const GAMEPLAY_MUSIC_GAIN: float = 0.25
 const SPITFIRE_IDLE: String = "res://assets/audio/spitfire_engine_idle_loop.ogg"
 const SPITFIRE_FLIGHT: String = "res://assets/audio/spitfire_engine_flight_loop.ogg"
 const SPITFIRE_GUNS: String = "res://assets/audio/spitfire_303_guns_burst.ogg"
@@ -15,6 +16,7 @@ static var instance: GameAudioMixer
 var volumes: Dictionary = {"Master": 0.8, "Music": 0.65, "Aircraft": 0.75, "Guns": 0.75}
 var muted: bool = false
 var menu_active: bool = false
+var music_target_gain: float = 0.0
 var music_gain: float = 0.0
 ## Headless regression runs have no audio device; opt in for lifecycle checks.
 var playback_enabled: bool = DisplayServer.get_name() != "headless"
@@ -83,11 +85,19 @@ func engine_stream(aircraft: FlightAircraft, flight: bool) -> AudioStreamOggVorb
 func gun_stream(aircraft: FlightAircraft) -> AudioStreamOggVorbis:
 	return load(GLADIATOR_GUNS if is_radial(aircraft) else SPITFIRE_GUNS) as AudioStreamOggVorbis
 
-func set_menu_active(active: bool) -> void:
+func set_menu_active(active: bool, keep_music: bool = false) -> void:
 	menu_active = active
-	panel.visible = false
-	if active and playback_enabled and not music.playing:
-		music.play()
+	music_target_gain = 1.0 if active else (GAMEPLAY_MUSIC_GAIN if keep_music else 0.0)
+	panel.hide()
+	ensure_music_playing()
+
+func ensure_music_playing() -> void:
+	if music_target_gain == 0.0 or not playback_enabled or music.playing:
+		return
+	# The HTML cinematic can still be playing after Godot has initialized.
+	if OS.has_feature("web") and JavaScriptBridge.eval("window.firstSortieReady === false"):
+		return
+	music.play()
 
 func set_volume(bus: String, value: float, persist: bool = true) -> void:
 	if not volumes.has(bus):
@@ -141,12 +151,13 @@ func _save_settings() -> void:
 	settings.save(SETTINGS_PATH)
 
 func _process(delta: float) -> void:
+	ensure_music_playing()
 	# Gameplay audio is silent during pause; the saved volume/mute is retained.
 	for bus in ["Aircraft", "Guns"]:
 		AudioServer.set_bus_mute(AudioServer.get_bus_index(bus), get_tree().paused)
-	music_gain = move_toward(music_gain, 1.0 if menu_active else 0.0, delta / maxf(menu_fade_seconds, 0.01))
+	music_gain = move_toward(music_gain, music_target_gain, delta / maxf(menu_fade_seconds, 0.01))
 	music.volume_db = linear_to_db(maxf(music_gain, 0.0001))
-	if not menu_active and music_gain <= 0 and music.playing:
+	if music_target_gain == 0.0 and music_gain <= 0 and music.playing:
 		music.stop()
 
 func _build_controls() -> void:

@@ -21,7 +21,7 @@ func _run() -> void:
 	world = preload("res://main.tscn").instantiate()
 	root.add_child(world)
 	await _frames(120)
-	OS.delay_msec(200) # Allow real mixer buffers, not only simulated frame time.
+	OS.delay_msec(500) # Allow real mixer buffers and the soundtrack’s quiet opening.
 	await _frames(3)
 	var samples: PackedVector2Array = capture.get_buffer(capture.get_frames_available())
 	var energy: float = 0
@@ -29,7 +29,7 @@ func _run() -> void:
 		energy += sample.length_squared()
 	_check(samples.size() > 0 and sqrt(energy / maxf(samples.size() * 2, 1)) > 0.001, "Native mixer decodes the supplied theme into nonzero audio samples")
 	_check(GameAudioMixer.instance.menu_active and GameAudioMixer.instance.music.playing and GameAudioMixer.instance.music_gain > 0.99, "Startup plays and fades in the supplied menu theme")
-	_check(GameAudioMixer.instance.music.stream.loop and absf(GameAudioMixer.instance.music.stream.get_length() - 83) < 0.1, "Complete 83-second theme loops without truncation")
+	_check(GameAudioMixer.instance.music.stream.loop and absf(GameAudioMixer.instance.music.stream.get_length() - 55.2) < 0.1, "Complete 55-second soundtrack loops without truncation")
 	_check(AudioServer.get_bus_name(0) == "Master" and AudioServer.get_bus_index("Music") == 1 and AudioServer.get_bus_index("Aircraft") == 2 and AudioServer.get_bus_index("Guns") == 3, "Saved layout keeps Master and all playback buses in a stable order")
 	_check(world.aircraft == null and world.enemy == null, "Menu preview has no live aircraft or engine sound")
 	for bus in ["Master", "Music", "Aircraft", "Guns"]:
@@ -39,6 +39,7 @@ func _run() -> void:
 	_check(AudioServer.is_bus_mute(0), "Mute silences the master bus")
 	GameAudioMixer.instance.set_muted(false, false)
 	_check(not AudioServer.is_bus_mute(0), "Unmute restores audio without changing volumes")
+	var music_position := GameAudioMixer.instance.music.get_playback_position()
 	world.start_flight("spitfire")
 	var plane: FlightAircraft = world.aircraft
 	plane.freeze = true
@@ -47,7 +48,7 @@ func _run() -> void:
 	await _frames(6) # Allow the enemy's initial physics reset before freezing.
 	world.enemy.freeze = true
 	await _frames(120)
-	_check(not GameAudioMixer.instance.menu_active and not GameAudioMixer.instance.music.playing, "Departure fades out and stops menu music")
+	_check(not GameAudioMixer.instance.menu_active and GameAudioMixer.instance.music.playing and is_equal_approx(GameAudioMixer.instance.music_gain, GameAudioMixer.GAMEPLAY_MUSIC_GAIN) and GameAudioMixer.instance.music.get_playback_position() >= music_position, "Departure lowers the soundtrack without restarting it")
 	_check(plane.aircraft_audio.idle.playing and plane.aircraft_audio.flight.playing and plane.aircraft_audio.flight_mix == 0, "Running engine at idle plays the idle layer, not flight timbre")
 	_check(GameAudioMixer.instance.engine_stream(plane, false).resource_path == GameAudioMixer.instance.SPITFIRE_IDLE, "Spitfire uses its supplied engine recording")
 	var idle_pitch: float = plane.aircraft_audio.idle.pitch_scale
@@ -143,7 +144,7 @@ func _run() -> void:
 	var parked_silent: bool = true
 	for parked in mission.fleet:
 		parked_silent = parked_silent and not parked.aircraft_audio.idle.playing
-	_check(parked_silent and not GameAudioMixer.instance.music.playing, "Malta departure keeps all six parked engines silent and stops menu music")
+	_check(parked_silent and GameAudioMixer.instance.music.playing, "Malta departure keeps parked engines silent while the soundtrack continues")
 	mission.board_nearest()
 	await _frames(5)
 	_check(mission.occupied != null and not mission.occupied.aircraft_audio.idle.playing, "Boarding does not start an engine or reset its state")

@@ -10,6 +10,7 @@ func wait(seconds: float) -> void:await create_timer(seconds,true).timeout
 func run() -> void:
 	var game=load("res://main.tscn").instantiate();root.add_child(game)
 	var intro: GameIntro=game.startup_intro
+	var music := GameAudioMixer.instance.music
 	check(intro!=null and intro.process_mode==Node.PROCESS_MODE_ALWAYS,"Native startup poster owns an always-processing presentation")
 	game.show_intro()
 	check(game.startup_intro==intro and intro.find_children("*","VideoStreamPlayer",true,false).size()==1,"Repeated show_intro does not create a second decoder or transition")
@@ -25,12 +26,13 @@ func run() -> void:
 	paused=false
 	await wait(10.5)
 	check(intro.phase==GameIntro.Phase.POSTER and intro.movie.is_playing() and intro.video_restarts==0,"Continuous forward/return clip loops past ten seconds without watchdog intervention")
-	check(intro.poster_audio.playing and intro.music_starts==1 and intro.poster_audio.get_playback_position()>10,"Full-length march keeps its playback position through video loop")
-	check(intro.poster_audio.stream != GameIntro.POSTER_AUDIO and GameIntro.POSTER_AUDIO.resource_path.ends_with("wings_over_malta_cinematic_march.ogg"),"Poster uses an independent instance of the supplied cinematic march")
-	var first_id:=intro.get_instance_id()
+	check(music.playing and music.get_playback_position()>10,"Shared soundtrack keeps its playback position through the video loop")
+	var first_id := intro.get_instance_id()
+	var music_position := music.get_playback_position()
 	intro.begin_play();intro.begin_play()
 	await wait(3.7)
 	check(game.startup_intro==null and game.selector.active,"One Play transition reaches active main menu")
+	check(music.playing and music.get_playback_position()>music_position,"Music continues across Play without restarting")
 	game.show_selection()
 	await wait(1.0)
 	var again: GameIntro=game.startup_intro

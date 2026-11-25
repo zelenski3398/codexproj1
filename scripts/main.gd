@@ -153,7 +153,7 @@ func start_flight(kind: String) -> void:
 	_dismiss_intro()
 	if is_instance_valid(aircraft) or kind not in AlliedAircraft.KINDS:
 		return
-	GameAudioMixer.instance.set_menu_active(false)
+	GameAudioMixer.instance.set_menu_active(false, true)
 	game_mode = "encounter"
 	selected_aircraft = kind
 	if is_instance_valid(selector):
@@ -368,7 +368,7 @@ func start_malta(field_id: String, kind: String, selected_mode: String = "encoun
 		return
 	if is_instance_valid(malta_mission):
 		return
-	GameAudioMixer.instance.set_menu_active(false)
+	GameAudioMixer.instance.set_menu_active(false, true)
 	if is_instance_valid(missions_menu):
 		remove_child(missions_menu)
 		missions_menu.queue_free()
