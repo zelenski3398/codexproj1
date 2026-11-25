@@ -1,0 +1,16 @@
+duel.example.com {
+	@gameSocket {
+		path /duel
+		header Origin https://duel.example.com
+	}
+	handle @gameSocket {
+		reverse_proxy 127.0.0.1:9074
+	}
+	handle /duel {
+		respond "The duel is available from the game page." 403
+	}
+	handle {
+		root * /srv/wings-over-malta
+		file_server
+	}
+}

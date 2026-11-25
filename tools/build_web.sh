@@ -13,6 +13,7 @@ for intro in loading-intro.mp4 loading-intro.webm; do
         break
     fi
 done
+cp "$project_dir/web/duel-config.js" "$output_dir/"
 cp "$project_dir/web/GODOT-LICENSE.txt" "$project_dir/web/GODOT-COPYRIGHT.txt" "$output_dir/"
 cp "$project_dir/assets/fonts/DejaVu-LICENSE.txt" "$output_dir/DejaVu-LICENSE.txt"
 cp "$project_dir/assets/malta/ATTRIBUTION.txt" "$output_dir/MALTA-ATTRIBUTION.txt"

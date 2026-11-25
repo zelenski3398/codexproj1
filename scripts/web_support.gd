@@ -85,6 +85,22 @@ func _process(delta: float) -> void:
 		state.fly_button = _center(session.selector.fly_button)
 		state.malta_button = _center(session.selector.malta_button)
 		state.missions_button = _center(session.selector.missions_button)
+		state.multiplayer_button = _center(session.selector.multiplayer_button)
+	if is_instance_valid(session.duel_client):
+		var duel: DuelClient = session.duel_client
+		var widgets := []
+		for child in duel.stack.get_children():
+			if child is Button or child is LineEdit:
+				var label: String = child.placeholder_text if child is LineEdit else child.text
+				widgets.append({"label":label, "point":_center(child)})
+		state.duel = {"widgets":widgets, "notice":duel.status}
+		for key in ["profile", "available", "guests", "invite", "match", "stats"]:
+			if duel.state.has(key): state.duel[key] = duel.state[key]
+		if is_instance_valid(duel.view) and not duel.view.state.is_empty():
+			var snapshot := duel.view.state
+			state.duel.flight = {"phase":snapshot.phase, "arrived":snapshot.arrived, "remaining":snapshot.remaining,
+				"aircraft":snapshot.aircraft.map(func(plane): return {"position":plane.p, "velocity":plane.v, "gear":plane.gear, "salvos":plane.salvos}),
+				"defence_enabled":is_instance_valid(duel.view.world.aa_battery) or is_instance_valid(duel.view.world.fort_battery)}
 	if is_instance_valid(session.malta_menu):
 		state.mode_popup = session.malta_menu.mode_picker.get_popup().visible
 		state.mode_focus = session.malta_menu.mode_picker.get_popup().get_focused_item()

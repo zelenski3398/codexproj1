@@ -214,14 +214,17 @@ func take_damage(amount: float) -> void:
 func get_team_id() -> int:
 	return team_id
 
+var preserve_fired_rounds := false
+
 func _destroy() -> void:
 	if is_destroyed:
 		return
 	is_destroyed = true
 	damage_effects.emitting = false
 	pilot.reset_commands()
-	guns.reset(false) # Clear rounds/flashes, retain this life's combat telemetry.
-	clear_secondary_weapons(false)
+	if not preserve_fired_rounds:
+		guns.reset(false) # Clear rounds/flashes, retain this life's combat telemetry.
+		clear_secondary_weapons(false)
 	aircraft_audio.clear()
 	impact_effects.on_destroyed()
 	destroyed.emit()

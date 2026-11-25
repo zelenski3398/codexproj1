@@ -4,9 +4,11 @@ extends Node3D
 ## exist until Fly is chosen. Keyboard navigation works in embedded game views.
 signal chosen(kind: String)
 signal missions_requested
+signal multiplayer_requested
 signal test_requested(kind: String)
 signal malta_requested
 var missions_button: Button
+var multiplayer_button: Button
 var malta_button: Button
 const GOLD: Color = Color("e4bf75")
 const INK: Color = Color("e9e8d7")
@@ -57,6 +59,12 @@ func _build_ui() -> void:
 	missions_button.add_theme_font_size_override("font_size", 23)
 	missions_button.pressed.connect(func(): missions_requested.emit())
 	root.add_child(missions_button)
+	multiplayer_button = Button.new()
+	multiplayer_button.text = "MULTIPLAYER → 1V1 DOGFIGHT"
+	multiplayer_button.position = Vector2(550, 98)
+	multiplayer_button.custom_minimum_size = Vector2(290, 42)
+	multiplayer_button.pressed.connect(func(): multiplayer_requested.emit())
+	root.add_child(multiplayer_button)
 	var panel: PanelContainer = PanelContainer.new()
 	panel.position = Vector2(38, 145)
 	panel.custom_minimum_size.x = 470

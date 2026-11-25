@@ -37,7 +37,7 @@ var burst: DestructionBurst
 
 func _ready() -> void:
 	for surface in get_tree().get_nodes_in_group("aircraft_water"):
-		if surface is PhysicsBody3D:
+		if surface is PhysicsBody3D and surface.get_world_3d() == aircraft.get_world_3d():
 			aircraft.add_collision_exception_with(surface)
 			water_rids.append(surface.get_rid())
 
@@ -221,7 +221,7 @@ func _break_meshes(node: Node) -> void:
 						debris_root.add_child(body)
 						body.global_transform = impact_pose
 						for surface in get_tree().get_nodes_in_group("aircraft_water"):
-							if surface is PhysicsBody3D:
+							if surface is PhysicsBody3D and surface.get_world_3d() == aircraft.get_world_3d():
 								body.add_collision_exception_with(surface)
 								body.water_rids.append(surface.get_rid())
 						body.linear_velocity = impact_velocity + Vector3(aircraft.components.rng.randf_range(-1, 1), aircraft.components.rng.randf_range(0.4, 1), aircraft.components.rng.randf_range(-1, 1)) * fragment_speed
