@@ -27,6 +27,8 @@ async function open(context) {
   page.on('pageerror', e => {browserErrors.push(e.message); console.error(e.message);});
   page.on('console', m => { if (m.type()==='error' && !m.text().includes('favicon')) {browserErrors.push(m.text()); console.error(m.text());} });
   await page.goto(url);
+  await page.getByRole("button", {name:"Skip intro"}).click();
+  await wait(page,()=>window.firstSortieReady);
   await menu(page);
   console.log('Opened multiplayer menu');
   return page;
