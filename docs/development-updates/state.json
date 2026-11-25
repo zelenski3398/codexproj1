@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "original_history_snapshot": "588ac7b1b37b72014b73fe679871e790e5c79145",
-  "previous_documentation_publication": "ce25bfd5414ae3badc1761b3ad8d4cf6811867c0",
-  "last_documented_commit": "5b1deff7b750c1cd95fcb2253eeba4bc8abc2786",
-  "update_document": "2026-11-24-loading-audio.md",
-  "review_range": "2b7becfd6bdbe36e4281cfe4cc531d151d7f6950..5b1deff7b750c1cd95fcb2253eeba4bc8abc2786",
+  "previous_documentation_publication": "351c36cd19fd54ff045dc72c3a95201481ac2d3b",
+  "last_documented_commit": "355b3f58bab7d397d97e916d9a4c49a61d32af8b",
+  "update_document": "2026-11-24-full-loading-intro.md",
+  "review_range": "5b1deff7b750c1cd95fcb2253eeba4bc8abc2786..355b3f58bab7d397d97e916d9a4c49a61d32af8b",
   "date": "2026-11-24",
   "note": "Publication commits after this source boundary are included as documentation maintenance in the next review; do not attempt a self-referential commit SHA."
 }
